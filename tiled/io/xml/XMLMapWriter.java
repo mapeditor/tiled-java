@@ -217,7 +217,7 @@ public class XMLMapWriter implements MapWriter
 
                     while (tileIterator.hasNext()) {
                         Tile tile = (Tile)tileIterator.next();
-                        if (tile.getProperties().isEmpty()) {
+                        if (!tile.getProperties().isEmpty()) {
                             needWrite = true;
                             break;
                             // As long as one has properties, they all need to
