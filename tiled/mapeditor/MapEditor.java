@@ -58,7 +58,7 @@ public class MapEditor implements ActionListener,
     protected static final int PS_EYED    = 4;
     protected static final int PS_MARQUEE = 5;
     protected static final int PS_MOVE    = 6;
-    protected static final int PS_MOVEOBJ    = 7;
+    protected static final int PS_MOVEOBJ = 7;
     
     private Cursor curDefault = null;
     private Cursor curPaint   = null;
@@ -101,6 +101,7 @@ public class MapEditor implements ActionListener,
     JMenuItem   undoMenuItem, redoMenuItem;
     JMenuItem   copyMenuItem, cutMenuItem, pasteMenuItem;
     JCheckBoxMenuItem gridMenuItem, boundaryMenuItem, cursorMenuItem;
+    JCheckBoxMenuItem coordinatesMenuItem;
     JMenuItem   layerAdd, layerClone, layerDel;
     JMenuItem   layerUp, layerDown;
     JMenuItem   layerMerge, layerMergeAll;
@@ -381,9 +382,9 @@ public class MapEditor implements ActionListener,
         layerMenu.add(layerProperties);
 
         tilesetMenu = new JMenu("Tilesets");
-        tilesetMenu.add(createMenuItem("New tileset...", null,
+        tilesetMenu.add(createMenuItem("New Tileset...", null,
                     "Add a new internal tileset"));
-        tilesetMenu.add(createMenuItem("Import tileset...", null,
+        tilesetMenu.add(createMenuItem("Import Tileset...", null,
                     "Import an external tileset"));
         tilesetMenu.addSeparator();
         tilesetMenu.add(createMenuItem("Tileset Manager", null,
@@ -425,9 +426,9 @@ public class MapEditor implements ActionListener,
         boundaryMenuItem.setToolTipText("Toggle layer boundaries");
         boundaryMenuItem.setAccelerator(KeyStroke.getKeyStroke("control E"));
 
-        //coordinatesMenuItem = new JCheckBoxMenuItem("Show coordinates");
-        //coordinatesMenuItem.addActionListener(this);
-        //coordinatesMenuItem.setToolTipText("Toggle tile coordinates");
+        coordinatesMenuItem = new JCheckBoxMenuItem("Show Coordinates");
+        coordinatesMenuItem.addActionListener(this);
+        coordinatesMenuItem.setToolTipText("Toggle tile coordinates");
 
         viewMenu = new JMenu("View");
         viewMenu.add(new TMenuItem(zoomInAction));
@@ -438,8 +439,7 @@ public class MapEditor implements ActionListener,
         viewMenu.add(cursorMenuItem);
         // TODO: Enable when boudary drawing code finished.
         //viewMenu.add(boundaryMenuItem);
-        // TODO: Hook this up to coordinates drawing on tiles.
-        //viewMenu.add(coordinatesMenuItem);
+        viewMenu.add(coordinatesMenuItem);
 
         mapEventAdapter.addListener(layerMenu);
         mapEventAdapter.addListener(tilesetMenu);
@@ -1101,7 +1101,7 @@ public class MapEditor implements ActionListener,
                 command.equals("Merge Down") ||
                 command.equals("Merge All")) {
             doLayerStateChange(event);
-        } else if (command.equals("New tileset...")) {
+        } else if (command.equals("New Tileset...")) {
             if (currentMap != null) {
                 NewTilesetDialog dialog =
                     new NewTilesetDialog(appFrame, currentMap);
@@ -1110,7 +1110,7 @@ public class MapEditor implements ActionListener,
                     currentMap.addTileset(newSet);
                 }
             }
-        } else if (command.equals("Import tileset...")) {
+        } else if (command.equals("Import Tileset...")) {
             if (currentMap != null) {
                 JFileChooser ch = new JFileChooser(currentMap.getFilename());
 
@@ -1159,10 +1159,13 @@ public class MapEditor implements ActionListener,
         } else if (command.equals("Show Boundaries") ||
                 command.equals("Hide Boundaries")) {
             mapView.toggleMode(MapView.PF_BOUNDARYMODE);
-        } else if (command.equals("Show Grid") ||
-                command.equals("Hide Grid")) {
+        } else if (command.equals("Show Grid")) {
             // Toggle grid
             mapView.toggleMode(MapView.PF_GRIDMODE);
+        } else if (command.equals("Show Coordinates")) {
+            // Toggle coordinates
+            mapView.toggleMode(MapView.PF_COORDINATES);
+            mapView.repaint();
         } else if (command.equals("Highlight Cursor")) {
             configuration.addConfigPair("tiled.cursorhighlight",
                     Integer.toString(cursorMenuItem.isSelected() ? 1 : 0));
@@ -1968,6 +1971,8 @@ public class MapEditor implements ActionListener,
             currentMap.addMapChangeListener(this);
 
             gridMenuItem.setState(mapView.getMode(MapView.PF_GRIDMODE));
+            coordinatesMenuItem.setState(
+                    mapView.getMode(MapView.PF_COORDINATES));
 
             Vector tilesets = currentMap.getTilesets();
             if (tilesets.size() > 0) {

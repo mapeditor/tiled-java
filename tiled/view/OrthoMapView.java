@@ -167,7 +167,7 @@ public class OrthoMapView extends MapView
                     font.getStringBounds(coords, fontRenderContext);
 
                 int fx = gx + (int)((tsize.width - textSize.getWidth()) / 2);
-                int fy = gy - (int)((tsize.height - textSize.getHeight()) / 2);
+                int fy = gy + (int)((tsize.height + textSize.getHeight()) / 2);
 
                 g2d.drawString(coords, fx, fy);
                 gx += tsize.width;

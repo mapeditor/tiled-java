@@ -157,6 +157,8 @@ public abstract class MapView extends JPanel implements Scrollable
      * @see JComponent#paint(java.awt.Graphics)
      */
     public void paint(Graphics g) {
+        TiledConfiguration conf = TiledConfiguration.getInstance();
+
         double currentZoom = zoom;
         Graphics2D g2d = (Graphics2D)g;
         Iterator li = myMap.getLayers();
@@ -167,7 +169,6 @@ public abstract class MapView extends JPanel implements Scrollable
 
         // Do an initial fill with the background color
         try {
-            TiledConfiguration conf = TiledConfiguration.getInstance();
             String colorString = conf.getValue("tiled.background.color");
             g.setColor(Color.decode(colorString));
         } catch (NumberFormatException e) {
@@ -202,7 +203,7 @@ public abstract class MapView extends JPanel implements Scrollable
             while (li.hasNext()) {
                 layer = (MapLayer) li.next();
                 if (layer.isVisible()) {
-                    if (layer.getClass() == SelectionLayer.class) {
+                    if (layer instanceof SelectionLayer) {
                         g2d.setComposite(AlphaComposite.getInstance(
                                     AlphaComposite.SRC_ATOP, 0.3f));
                         g2d.setColor(
@@ -213,22 +214,16 @@ public abstract class MapView extends JPanel implements Scrollable
             }
         }
 
+        // Grid color (also used for coordinates)
+        try {
+            String colorString = conf.getValue("tiled.grid.color");
+            g.setColor(Color.decode(colorString));
+        } catch (NumberFormatException e) {
+            g.setColor(Color.black);
+        }
+
         if (getMode(PF_GRIDMODE)) {
-            // Configure grid properties according to preferences
-            TiledConfiguration conf = TiledConfiguration.getInstance();
-
-            // Stroke
-            g2d.setStroke(new BasicStroke());
-
-            // Color
-            try {
-                String colorString = conf.getValue("tiled.grid.color");
-                g.setColor(Color.decode(colorString));
-            } catch (NumberFormatException e) {
-                g.setColor(Color.black);
-            }
-
-            // Opacity
+            // Grid opacity
             int opacity = conf.getIntValue("tiled.grid.opacity", 255);
             if (opacity < 255) {
                 g2d.setComposite(AlphaComposite.getInstance(
@@ -237,7 +232,7 @@ public abstract class MapView extends JPanel implements Scrollable
                 g2d.setComposite(AlphaComposite.SrcOver);
             }
 
-            // Antialiasing
+            // Configure grid antialiasing
             if (conf.keyHasValue("tiled.grid.antialias", 1)) {
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                         RenderingHints.VALUE_ANTIALIAS_ON);
@@ -246,10 +241,12 @@ public abstract class MapView extends JPanel implements Scrollable
                         RenderingHints.VALUE_ANTIALIAS_OFF);
             }
 
+            g2d.setStroke(new BasicStroke());
             paintGrid(g, currentZoom);
         }
 
         if (getMode(PF_COORDINATES)) {
+            g2d.setComposite(AlphaComposite.SrcOver);
             paintCoordinates(g, zoom);
         }
     }
