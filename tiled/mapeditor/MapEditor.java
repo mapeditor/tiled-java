@@ -88,7 +88,9 @@ public class MapEditor implements ActionListener,
     JScrollPane mapScrollPane;
     JTable      layerTable;
     JList		editHistoryList;
-    JButton     tilePaletteButton;
+	
+    //JButton     tilePaletteButton;
+	TileButton  tilePaletteButton;
     JFrame      appFrame;
     JSlider     opacitySlider;
     JLabel      zoomLabel, tileCoordsLabel;
@@ -407,9 +409,12 @@ public class MapEditor implements ActionListener,
         toolBar.add(zoomInButton);
         toolBar.add(zoomOutButton);
 
-        tilePaletteButton = new JButton();
+        tilePaletteButton = new TileButton(new Dimension(24,24));
         tilePaletteButton.setActionCommand("palette");
-        tilePaletteButton.setMargin(new Insets(0,0,0,0));
+        //tilePaletteButton.setMargin(new Insets(0,0,0,0));
+		tilePaletteButton.setConstrainAspect( true );
+		tilePaletteButton.setBorder( BorderFactory.createLineBorder(
+															    Color.black ) );
         mapEventAdapter.addListener(tilePaletteButton);
         tilePaletteButton.addActionListener(this);
 
@@ -1251,7 +1256,7 @@ public class MapEditor implements ActionListener,
     }
 
     private void updateTilePaletteButton() {
-        ImageIcon icon = null;
+        /*ImageIcon icon = null;
 
         if (currentMap != null) {
             if (currentTile != null) {
@@ -1266,9 +1271,9 @@ public class MapEditor implements ActionListener,
                     icon = new ImageIcon(tileImg);
                 }
             }
-        }
+        }*/
 
-        tilePaletteButton.setIcon(icon);
+        tilePaletteButton.setCurrentTile(currentTile);
     }
 
     private boolean checkSave() {
