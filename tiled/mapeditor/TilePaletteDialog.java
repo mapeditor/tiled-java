@@ -22,10 +22,11 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import tiled.core.*;
+import tiled.mapeditor.util.*;
 
 
 public class TilePaletteDialog extends JDialog implements ActionListener,
-    MouseListener, ListSelectionListener
+    TileSelectionListener, ListSelectionListener
 {
     private MapEditor editor;
     private Map currentMap;
@@ -60,7 +61,7 @@ public class TilePaletteDialog extends JDialog implements ActionListener,
         sets.addListSelectionListener(this);
 
         pc = new TilePalettePanel();
-        pc.addMouseListener(this);
+        pc.addTileSelectionListener(this);
         JScrollPane paletteScrollPane = new JScrollPane(pc,
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -80,23 +81,11 @@ public class TilePaletteDialog extends JDialog implements ActionListener,
     public void actionPerformed(ActionEvent e) {
     }
 
-    public void mouseExited(MouseEvent e) {
-    }
-
-    public void mouseClicked(MouseEvent e) {
-        currentTile = pc.getTileAtPoint(e.getX(), e.getY());
-        if (currentTile != null) {
-            editor.setCurrentTile(currentTile);
+    public void tileSelected(TileSelectionEvent event) {
+        Tile tile = event.getTile();
+        if (tile != null) {
+            editor.setCurrentTile(tile);
         }
-    }
-
-    public void mouseEntered(MouseEvent e) {
-    }
-
-    public void mousePressed(MouseEvent e) {
-    }
-
-    public void mouseReleased(MouseEvent e) {
     }
 
     public void valueChanged(ListSelectionEvent e) {
