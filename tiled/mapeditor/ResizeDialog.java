@@ -50,12 +50,12 @@ public class ResizeDialog extends JDialog implements ActionListener,
         offsetX = new IntegerSpinner();
         offsetY = new IntegerSpinner();
 
-		offsetX.addChangeListener(this);
-		offsetY.addChangeListener(this);
-		
+        offsetX.addChangeListener(this);
+        offsetY.addChangeListener(this);
+
         orient = new ResizePanel(currentMap);
-		orient.addPropertyChangeListener(this);
-		
+        orient.addPropertyChangeListener(this);
+
         // Offset panel
         JPanel offsetPanel = new VerticalStaticJPanel();
         offsetPanel.setBorder(BorderFactory.createCompoundBorder(
@@ -150,10 +150,6 @@ public class ResizeDialog extends JDialog implements ActionListener,
         pack();
     }
 
-    public void showDialog() {
-        setVisible(true);
-    }
-
     public void actionPerformed(ActionEvent e) {
         Object src = e.getSource();
 
@@ -173,19 +169,28 @@ public class ResizeDialog extends JDialog implements ActionListener,
     }
 
     public void propertyChange(PropertyChangeEvent evt) {
-    	
-        if(evt.getPropertyName().equalsIgnoreCase("offsetX")) {
-			int val = ((Integer)evt.getNewValue()).intValue();
-        	offsetX.setValue(new Integer((int)(val/(currentMap.getTileWidth()*orient.getZoom()))));
+        double zoom = orient.getZoom();
+
+        if (evt.getPropertyName().equalsIgnoreCase("offsetX")) {
+            int val = ((Integer)evt.getNewValue()).intValue();
+            offsetX.setValue(new Integer((int)(val / (currentMap.getTileWidth() * zoom))));
         } else if(evt.getPropertyName().equalsIgnoreCase("offsetY")) {
-        	int val = ((Integer)evt.getNewValue()).intValue();
-			offsetY.setValue(new Integer((int)(val/(currentMap.getTileHeight()*orient.getZoom()))));
+            int val = ((Integer)evt.getNewValue()).intValue();
+            offsetY.setValue(new Integer((int)(val / (currentMap.getTileHeight() * zoom))));
         }
     }
     
     public void stateChanged(ChangeEvent e) {
-        if(e.getSource() == offsetX || e.getSource() == offsetY) {
-        	orient.moveMap((int)(((Integer)(offsetX.getValue())).intValue()*(currentMap.getTileWidth()*orient.getZoom())),(int)(((Integer)(offsetY.getValue())).intValue()*(currentMap.getTileHeight()*orient.getZoom())));
+        Object source = e.getSource();
+
+        if (source == offsetX || source == offsetY) {
+            int dx = offsetX.intValue();
+            int dy = offsetY.intValue();
+            double zoom = orient.getZoom();
+
+            orient.moveMap(
+                    (int)(dx * (currentMap.getTileWidth() * zoom)),
+                    (int)(dy * (currentMap.getTileHeight() * zoom)));
         }
     }
 }

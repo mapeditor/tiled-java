@@ -28,7 +28,9 @@ public class SearchDialog extends JDialog implements ActionListener
 {
     private Map myMap;
     private JComboBox searchCBox, replaceCBox;
+    private JButton bFind, bFindAll;
     private JButton bReplace, bReplaceAll;
+    private JButton bClose;
     private Point currentMatch = null;
     private SelectionLayer sl;
 
@@ -44,42 +46,24 @@ public class SearchDialog extends JDialog implements ActionListener
     }
 
     private void init() {
-        JPanel buttonPanel = new JPanel();
-        JPanel closePanel = new JPanel();
-        closePanel.setLayout(new BorderLayout());
-        JPanel scopePanel = new JPanel();
-        JPanel searchPanel = new JPanel();
-        VerticalStaticJPanel mainPanel = new VerticalStaticJPanel();
-        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-
-        JButton bFind = new JButton("Find");
-        bFind.addActionListener(this);
-        JButton bFindNext = new JButton("Find All");
-        bFindNext.addActionListener(this);
-        bReplace = new JButton("Replace");
-        bReplace.addActionListener(this);
-        bReplaceAll = new JButton("Replace All");
-        bReplaceAll.addActionListener(this);
-        JButton bCancel = new JButton("Close");
-        bCancel.addActionListener(this);
-
         /* SEARCH PANEL */
+        JPanel searchPanel = new JPanel();
         searchPanel.setBorder(BorderFactory.createEtchedBorder());
         searchPanel.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
         c.fill = GridBagConstraints.BOTH;
         c.weightx = 2; c.weighty = 1;
-        searchPanel.add(new JLabel("Find:"),c);
-        c.gridx=1;
+        searchPanel.add(new JLabel("Find:"), c);
+        c.gridx = 1;
         searchCBox = new JComboBox();
         searchCBox.setRenderer(new MultisetListRenderer(myMap, .5));
         //searchCBox.setSelectedIndex(1);
         searchCBox.setEditable(false);
-        searchPanel.add(searchCBox,c);
-        c.gridy=1;
-        c.gridx=0;
-        searchPanel.add(new JLabel("Replace:"),c);
-        c.gridx=1;
+        searchPanel.add(searchCBox, c);
+        c.gridy = 1;
+        c.gridx = 0;
+        searchPanel.add(new JLabel("Replace:"), c);
+        c.gridx = 1;
         replaceCBox = new JComboBox();
         replaceCBox.setRenderer(new MultisetListRenderer(myMap, .5));
         //searchCBox.setSelectedIndex(1);
@@ -88,36 +72,54 @@ public class SearchDialog extends JDialog implements ActionListener
         queryTiles(searchCBox);
         //replaceCBox.addItem(null);
         queryTiles(replaceCBox);
-        mainPanel.add(searchPanel, BorderLayout.NORTH);
 
         /* SCOPE PANEL */
         /*
+        JPanel scopePanel = new JPanel();
         scopePanel.setBorder(BorderFactory.createCompoundBorder(
                     BorderFactory.createTitledBorder("Scope"),
                     BorderFactory.createEmptyBorder(0, 5, 5, 5)));
-
-        mainPanel.add(scopePanel);
-        mainPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         */
 
+        bFind = new JButton("Find");
+        bFindAll = new JButton("Find All");
+        bReplace = new JButton("Replace");
+        bReplaceAll = new JButton("Replace All");
+        bClose = new JButton("Close");
+
+        bFind.addActionListener(this);
+        bFindAll.addActionListener(this);
+        bReplace.addActionListener(this);
+        bReplaceAll.addActionListener(this);
+        bClose.addActionListener(this);
+
+
         /* BUTTONS PANEL */
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
-        buttonPanel.setLayout(new GridLayout(2,2,0,0));
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayout(2, 2, 5, 5));
         buttonPanel.add(bFind);
-        buttonPanel.add(bFindNext);
+        buttonPanel.add(bFindAll);
         buttonPanel.add(bReplace);
         buttonPanel.add(bReplaceAll);
-        closePanel.add(bCancel, BorderLayout.EAST);
+
+        JPanel closePanel = new VerticalStaticJPanel();
+        closePanel.setLayout(new BorderLayout());
+        closePanel.add(bClose, BorderLayout.EAST);
+
+        JPanel mainPanel = new JPanel();
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        mainPanel.add(searchPanel, BorderLayout.NORTH);
+        mainPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        //mainPanel.add(scopePanel);
+        //mainPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         mainPanel.add(buttonPanel);
+        mainPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         mainPanel.add(closePanel);
 
         getContentPane().add(mainPanel);
         getRootPane().setDefaultButton(bFind);
         pack();
-    }
-
-    public void showDialog() {
-        setVisible(true);
     }
 
     private void queryTiles(JComboBox b) {

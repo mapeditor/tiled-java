@@ -1184,10 +1184,10 @@ public class MapEditor implements ActionListener,
             cursorHighlight.setVisible(cursorMenuItem.isSelected());
         } else if (command.equals("Resize")) {
             ResizeDialog rd = new ResizeDialog(appFrame, this);
-            rd.showDialog();
+            rd.setVisible(true);
         }  else if (command.equals("Search")) {
             SearchDialog sd = new SearchDialog(appFrame, currentMap);
-            sd.showDialog();
+            sd.setVisible(true);
         } else if (command.equals("About Tiled")) {
             if (aboutDialog == null) {
                 aboutDialog = new AboutDialog(appFrame);
