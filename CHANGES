@@ -12,6 +12,7 @@
 * Added support for creating an image snapshot of the map
 * Added additional zoom levels (by Marc Ilgen)
 * Added background color option (by Marc Ilgen)
+* Added option to show coordinates on each tile (suggested by Ahmed Mohombe)
 / Added documentation for the TMX format
 * Added an option whether to automatically create tiles from tileset images
   upon import or not.
@@ -23,6 +24,7 @@
 * Added a message framework for reporting load/save problems to the user
 * Improved GUI in several places
 * Improved TMX loading, it is now much more forgiving
+* Optimized rendering of isometric maps
 * Completed the Search/Replace dialog
 * Changed the MultisetListRenderer to show tiles actual-size when selected
 * Generalized the dialogs for properties and added delete capabilities.

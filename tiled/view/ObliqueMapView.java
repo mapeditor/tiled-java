@@ -14,6 +14,7 @@ package tiled.view;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Rectangle;
@@ -60,7 +61,7 @@ public class ObliqueMapView extends MapView
         // TODO
     }
 
-    protected void paintCoordinates(Graphics g, double zoom) {
+    protected void paintCoordinates(Graphics2D g2d, double zoom) {
         // TODO: Implement paintCoordinates for ObliqueMapView
     }
 

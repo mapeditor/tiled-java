@@ -185,7 +185,7 @@ public class HexMapView extends MapView
         }
     }
 
-    protected void paintCoordinates(Graphics g, double zoom) {
+    protected void paintCoordinates(Graphics2D g2d, double zoom) {
         // TODO: Implement paintCoordinates for HexMapView
     }
 

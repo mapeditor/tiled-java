@@ -247,7 +247,7 @@ public abstract class MapView extends JPanel implements Scrollable
 
         if (getMode(PF_COORDINATES)) {
             g2d.setComposite(AlphaComposite.SrcOver);
-            paintCoordinates(g, zoom);
+            paintCoordinates(g2d, zoom);
         }
     }
 
@@ -342,7 +342,7 @@ public abstract class MapView extends JPanel implements Scrollable
     /**
      * Draws the coordinates on each tile.
      */
-    protected abstract void paintCoordinates(Graphics g, double zoom);
+    protected abstract void paintCoordinates(Graphics2D g2d, double zoom);
 
     /**
      * Returns a Polygon that matches the grid around the specified <b>Map</b>

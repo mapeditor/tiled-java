@@ -1,6 +1,6 @@
-<?xml version="1.0" ?>
-<map orientation="orthogonal" width="40" height="40" tilewidth="35" tileheight="35">
- <tileset firstgid="1">
+<?xml version="1.0"?>
+<map version="0.99a" orientation="orthogonal" width="40" height="40" tilewidth="35" tileheight="35">
+ <tileset name="Winter" firstgid="1">
   <tile id="0">
    <image format="png">
     <data encoding="base64">
@@ -79,15 +79,15 @@
    </image>
   </tile>
  </tileset>
- <layer name="Ground">
+ <layer name="Ground" width="40" height="40" opacity="0.46">
   <data encoding="base64" compression="gzip">
    H4sIAAAAAAAAAO2TOw7AMAhDie9/6K4RaqIMILuphyeRBV74jIgY5nog4GA856/ivholVPYRySW/VUBw3E5rsvo2193VZ8901R+lfeu8hco8eIkrclY7dvy5Y+Ydef/iqHS/N3ju3JX9lR0Rmn6qXtmP7bFyYzsYY4zh8QAS+GkxABkAAA==
   </data>
  </layer>
- <objectgroup name="inanimate">
-  <object type="snowman" x="200" y="200"/>
+ <objectgroup name="inanimate" width="0" height="0">
+  <object x="200" y="200" type="snowman"/>
  </objectgroup>
- <layer name="Trees">
+ <layer name="Trees" width="40" height="40">
   <data encoding="base64" compression="gzip">
    H4sIAAAAAAAAAO3W4QqFIAwFYP9m7/++ISSFLN3mpsfqgHCJuPdra1djuBLPtQecxIDpypH4NuZ9lqn5ZnjK9PR3hN/y3fPwcus3q9dvmt8Zudu2h88z01s77+eIwabHXs7Sh2ZcaT5SNDVAmaU/Y2Pxf+o1G5QnX5P8poevViupkXOvtDdcn6R+1mdA6js176DV3kEZS2vPfHjtI1Q/JXX09kk9ZUb4erKiD8m4qg/FWPMhGJFtKci2FEQftS8i2FquUcanc4PEp3Fy9lmNgWNsnXtbZykPl9b+pXUA36jzRQAZAAA=
   </data>

@@ -13,6 +13,8 @@
 package tiled.view;
 
 import java.awt.*;
+import java.awt.font.FontRenderContext;
+import java.awt.geom.Rectangle2D;
 
 import javax.swing.SwingConstants;
 
@@ -47,53 +49,63 @@ public class IsoMapView extends MapView
     }
 
     protected void paintLayer(Graphics g, TileLayer layer, double zoom) {
+        // Turn anti alias on for selection drawing
         ((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                                          RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // Determine tile size and offset
+        Rectangle clipRect = g.getClipBounds();
         Dimension tileSize = getTileSize(zoom);
-        int tsize_width_delta = tileSize.width / 2;
-        int tsize_height_delta = tileSize.height / 2 == 0 ? 1 : tileSize.height / 2;
+        int tileStepY = (tileSize.height / 2 == 0) ? 1 : tileSize.height / 2;
 
+        Point rowItr = screenToTileCoords(clipRect.x, clipRect.y);
+        rowItr.x--;
+        Point drawLoc = tileToScreenCoords(rowItr.x, rowItr.y);
+        drawLoc.x -= tileSize.width / 2;
 
         // Determine area to draw from clipping rectangle
-        Rectangle clipRect = g.getClipBounds();
-        clipRect.height += myMap.getTileHeightMax() * zoom - tileSize.height;
-        int logical_row_max =
-            (clipRect.y + clipRect.height) / (tsize_height_delta) + 1;
-        int originx = (myMap.getHeight() - 1) * (tileSize.width / 2);
+        int columns = clipRect.width / tileSize.width + 3;
+        int rows = (clipRect.height + (int)(myMap.getTileHeightMax() * zoom)) /
+            tileStepY + 4;
 
         // Draw this map layer
-        for (int logical_row = Math.max(clipRect.y / tsize_height_delta - 1, 0); logical_row < logical_row_max; logical_row++) {
-            int x = Math.max(logical_row - (myMap.getHeight() - 1), 0);
-            int y = Math.min(logical_row, myMap.getHeight() - 1);
-            int gx = Math.abs(originx - logical_row * tsize_width_delta);
-            int gy = (logical_row * tsize_height_delta) /*- clipRect.y*/;
-            Polygon gridPoly = createGridPolygon(gx, gy, 1);
+        for (int y = 0; y < rows; y++) {
+            Point columnItr = new Point(rowItr);
 
-            while (x <= Math.min(logical_row, myMap.getWidth() - 1) &&
-                    y >= Math.max(logical_row-(myMap.getWidth() - 1), 0)) {
+            for (int x = 0; x < columns; x++) {
+                Tile tile = layer.getTileAt(columnItr.x, columnItr.y);
 
-                Tile t = layer.getTileAt(x, y);
-                if (t != null && t != myMap.getNullTile()) {
-                    if (SelectionLayer.class.isInstance(layer)) {
+                if (tile != null) {
+                    if (layer instanceof SelectionLayer) {
+                        Polygon gridPoly = createGridPolygon(
+                                drawLoc.x, drawLoc.y, 0);
                         g.fillPolygon(gridPoly);
-                        //paintEdge(g, layer, gx, gy);
+                        //paintEdge(g, layer, drawLoc.x, drawLoc.y);
                     } else {
-                        t.draw(g, gx, gy, zoom);
+                        tile.draw(g, drawLoc.x, drawLoc.y, zoom);
                     }
                 }
 
-                x++;
-                y--;
-                gx += tileSize.width;
-                gridPoly.translate(tileSize.width, 0);
+                // Advance to the next tile
+                columnItr.x++;
+                columnItr.y--;
+                drawLoc.x += tileSize.width;
             }
+
+            // Advance to the next row
+            if ((y & 1) > 0) {
+                rowItr.x++;
+                drawLoc.x += tileSize.width / 2;
+            } else {
+                rowItr.y++;
+                drawLoc.x -= tileSize.width / 2;
+            }
+            drawLoc.x -= columns * tileSize.width;
+            drawLoc.y += tileStepY;
         }
     }	
 
     protected void paintLayer(Graphics g, ObjectGroup layer, double zoom) {
-
+        // TODO: Implement objectgroup painting for IsoMapView
     }
     
     protected void paintGrid(Graphics g, double zoom) {
@@ -125,8 +137,60 @@ public class IsoMapView extends MapView
         }
     }
 
-    protected void paintCoordinates(Graphics g, double zoom) {
-        // TODO: Implement paint coordinates for IsoMapView
+    protected void paintCoordinates(Graphics2D g2d, double zoom) {
+        g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+        Rectangle clipRect = g2d.getClipBounds();
+        Dimension tileSize = getTileSize(zoom);
+        int tileStepY = (tileSize.height / 2 == 0) ? 1 : tileSize.height / 2;
+        Font font = new Font("SansSerif", Font.PLAIN, tileSize.height / 4);
+        g2d.setFont(font);
+        FontRenderContext fontRenderContext = g2d.getFontRenderContext();
+
+        Point rowItr = screenToTileCoords(clipRect.x, clipRect.y);
+        rowItr.x--;
+        Point drawLoc = tileToScreenCoords(rowItr.x, rowItr.y);
+        drawLoc.y += tileSize.height / 2;
+
+        // Determine area to draw from clipping rectangle
+        int columns = clipRect.width / tileSize.width + 3;
+        int rows = clipRect.height / tileStepY + 4;
+
+        // Draw the coordinates
+        for (int y = 0; y < rows; y++) {
+            Point columnItr = new Point(rowItr);
+
+            for (int x = 0; x < columns; x++) {
+                if (myMap.contains(columnItr.x, columnItr.y)) {
+                    String coords =
+                        "(" + columnItr.x + "," + columnItr.y + ")";
+                    Rectangle2D textSize =
+                        font.getStringBounds(coords, fontRenderContext);
+
+                    int fx = drawLoc.x - (int)(textSize.getWidth() / 2);
+                    int fy = drawLoc.y + (int)(textSize.getHeight() / 2);
+
+                    g2d.drawString(coords, fx, fy);
+                }
+
+                // Advance to the next tile
+                columnItr.x++;
+                columnItr.y--;
+                drawLoc.x += tileSize.width;
+            }
+
+            // Advance to the next row
+            if ((y & 1) > 0) {
+                rowItr.x++;
+                drawLoc.x += tileSize.width / 2;
+            } else {
+                rowItr.y++;
+                drawLoc.x -= tileSize.width / 2;
+            }
+            drawLoc.x -= columns * tileSize.width;
+            drawLoc.y += tileStepY;
+        }
     }
 
     public void repaintRegion(Rectangle region) {
@@ -157,6 +221,9 @@ public class IsoMapView extends MapView
                 (mapSides * tileSize.height) / 2 + border);
     }
 
+    /**
+     * Returns the coordinates of the tile at the given screen coordinates.
+     */
     public Point screenToTileCoords(int x, int y) {
         Dimension tileSize = getTileSize(zoom);
         double r = getTileRatio();
@@ -181,7 +248,8 @@ public class IsoMapView extends MapView
         Polygon poly = new Polygon();
         poly.addPoint((tx + tileSize.width / 2 + border), ty + border);
         poly.addPoint((tx + tileSize.width), ty + tileSize.height / 2 + border);
-        poly.addPoint((tx + tileSize.width / 2 + border), ty + tileSize.height + border);
+        poly.addPoint((tx + tileSize.width / 2 + border),
+                ty + tileSize.height + border);
         poly.addPoint((tx + border), ty + tileSize.height / 2 + border);
         return poly;
     }
@@ -196,6 +264,9 @@ public class IsoMapView extends MapView
         return (double)myMap.getTileWidth() / (double)myMap.getTileHeight();
     }
 
+    /**
+     * Returns the location on the screen of the top corner of a tile.
+     */
     public Point tileToScreenCoords(double x, double y) {
         Dimension tileSize = getTileSize(zoom);
         int originX = (myMap.getHeight() * tileSize.width) / 2;

@@ -21,8 +21,8 @@ import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
-import java.awt.geom.Rectangle2D;
 import java.awt.font.FontRenderContext;
+import java.awt.geom.Rectangle2D;
 import java.util.Iterator;
 
 import javax.swing.SwingConstants;
@@ -138,12 +138,12 @@ public class OrthoMapView extends MapView
         }
     }
 
-    protected void paintCoordinates(Graphics g, double zoom) {
+    protected void paintCoordinates(Graphics2D g2d, double zoom) {
         Dimension tsize = getTileSize(zoom);
         if (tsize.width <= 0 || tsize.height <= 0) return;
-        Graphics2D g2d = (Graphics2D)g;
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
         // Determine tile size and offset
         int toffset = (((modeFlags & PF_GRIDMODE) != 0) ? 1 : 0);
         Font font = new Font("SansSerif", Font.PLAIN, tsize.height / 4);
@@ -151,13 +151,13 @@ public class OrthoMapView extends MapView
         FontRenderContext fontRenderContext = g2d.getFontRenderContext();
 
         // Determine area to draw from clipping rectangle
-        Rectangle clipRect = g.getClipBounds();
+        Rectangle clipRect = g2d.getClipBounds();
         int startX = clipRect.x / tsize.width;
         int startY = clipRect.y / tsize.height;
         int endX = (clipRect.x + clipRect.width) / tsize.width + 1;
         int endY = (clipRect.y + clipRect.height) / tsize.height + 1;
 
-        // Draw this map layer
+        // Draw the coordinates
         int gy = startY * tsize.height + toffset;
         for (int y = startY; y < endY; y++) {
             int gx = startX * tsize.width + toffset;

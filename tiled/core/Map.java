@@ -164,10 +164,7 @@ public class Map extends MultilayerPlane implements Cloneable
 
     public void removeTileset(TileSet s) {
         // Sanity check
-        
-        //asserts must be enabled on the commandline (-ea)
-        //assert tilesets.indexOf(s) != -1;
-        if(tilesets.indexOf(s) != -1)
+        if (tilesets.indexOf(s) != -1)
             return;
         
         // Go through the map and remove any instances of the tiles in the set
@@ -367,6 +364,14 @@ public class Map extends MultilayerPlane implements Cloneable
      */
     public int getTileHeight() {
         return tileHeight;
+    }
+
+    /**
+     * Returns wether the given tile coordinates fall within the map
+     * boundaries.
+     */
+    public boolean contains(int x, int y) {
+        return x >= 0 && y >= 0 && x < widthInTiles && y < heightInTiles;
     }
 
     /**
