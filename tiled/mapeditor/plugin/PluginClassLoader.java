@@ -5,7 +5,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
@@ -62,7 +62,7 @@ public class PluginClassLoader extends URLClassLoader
                     "Could not open directory for reading plugins: " +
                     baseURL);
         }
-        
+
         File[] files = dir.listFiles();
         for (int i = 0; i < files.length; i++) {
             String aPath = files[i].getAbsolutePath();
@@ -77,37 +77,36 @@ public class PluginClassLoader extends URLClassLoader
                                 "Writer-Class");
 
                     Class readerClass = null, writerClass = null;
-                    
+
                     // Verify that the jar has the necessary files to be a
                     // plugin
                     if (readerClassName == null && writerClassName == null) {
                         continue;
                     }
-                    
+
                     JarEntry reader = jf.getJarEntry(
                             readerClassName.replace('.', '/') + ".class");
                     JarEntry writer = jf.getJarEntry(
                             writerClassName.replace('.', '/') + ".class");
 
-                    if(readerClassName != null) {
-                    	readerClass = loadFromJar(jf, reader, readerClassName);
+                    if (readerClassName != null) {
+                        readerClass = loadFromJar(jf, reader, readerClassName);
                     }
-                    if(writerClassName != null) {
-                    	writerClass = loadFromJar(jf, writer, writerClassName);
+                    if (writerClassName != null) {
+                        writerClass = loadFromJar(jf, writer, writerClassName);
                     }
-                    
+
+                    boolean bPlugin = false;
                     if (doesImplement(readerClass, "tiled.io.MapReader")) {
-                                                                                
                         _add(readerClass);
                         bPlugin = true;
                     }
-                                                                                
+
                     if (doesImplement(writerClass, "tiled.io.MapWriter")) {
-                                                                                
                         _add(writerClass);
                         bPlugin = true;
                     }
-                                                                                
+
                     if (bPlugin) {
                         //System.out.println(
                         //        "Added " + files[i].getCanonicalPath());
@@ -129,10 +128,10 @@ public class PluginClassLoader extends URLClassLoader
     		readers[i++] = (MapReader)loadClass(
                     (String)readerFormats.get(key)).newInstance();
     	}
-    	
+
     	return readers;
     }
-    
+
     public MapWriter[] getWriters() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
     	MapWriter[] writers = new MapWriter[writerFormats.size()];
     	Iterator itr = writerFormats.keySet().iterator();
@@ -142,10 +141,10 @@ public class PluginClassLoader extends URLClassLoader
     		writers[i++] = (MapWriter)loadClass(
                     (String)writerFormats.get(key)).newInstance();
     	}
-    	
+
     	return writers;
     }
-    
+
     public Object getReaderFor(String ext) throws Exception {
         Iterator itr = readerFormats.keySet().iterator();
         while (itr.hasNext()){
@@ -173,20 +172,20 @@ public class PluginClassLoader extends URLClassLoader
     public Class loadFromJar(JarFile jf, JarEntry je, String className) throws IOException {
         byte[] buffer = new byte[(int)je.getSize()];
         int n;
-        
-        InputStream in = jf.getInputStream(je); 
+
+        InputStream in = jf.getInputStream(je);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         while ((n = in.read(buffer)) > 0) {
         	baos.write(buffer,0,n);
         }
         buffer = baos.toByteArray();
-        
+
         if (buffer.length < je.getSize()) {
         	throw new IOException(
                     "Failed to read entire entry! (" + buffer.length + "<" +
                     je.getSize() + ")");
         }
-        
+
         return defineClass(className, buffer, 0, buffer.length);
     }
 
@@ -195,10 +194,10 @@ public class PluginClassLoader extends URLClassLoader
     	if(c == null) {
     		return false;
     	}
-    	
+
         Class[] interfaces = c.getInterfaces();
         for (int i = 0; i < interfaces.length; i++) {
-            String name = interfaces[i].toString(); 
+            String name = interfaces[i].toString();
             if (name.substring(name.indexOf(' ') + 1).equals(interfaceName)) {
                 return true;
             }
@@ -216,7 +215,7 @@ public class PluginClassLoader extends URLClassLoader
         clname = clname.substring(clname.indexOf(' ')+1);
         String filter = p.getFilter();
         String[] ext = filter.split(",");
-        
+
         if (isReader(c)) {
             for(int i = 0; i < ext.length; i++) {
                 readerFormats.put(ext[i], clname);
