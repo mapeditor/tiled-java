@@ -27,6 +27,7 @@ import javax.swing.undo.UndoableEditSupport;
 import tiled.core.*;
 import tiled.view.*;
 import tiled.mapeditor.brush.*;
+import tiled.mapeditor.plugin.PluginClassLoader;
 import tiled.mapeditor.selection.SelectionLayer;
 import tiled.mapeditor.util.*;
 import tiled.mapeditor.widget.*;
@@ -69,7 +70,9 @@ public class MapEditor implements ActionListener,
     UndoStack undoStack;
     UndoableEditSupport undoSupport;
     private MapEventAdapter mapEventAdapter;
-
+    private PluginClassLoader pluginLoader;
+    
+    
     int currentPointerState;
     Tile currentTile;
     int currentLayer = -1;
@@ -142,6 +145,17 @@ public class MapEditor implements ActionListener,
         currentBrush = new ShapeBrush();
         ((ShapeBrush)currentBrush).makeQuadBrush(new Rectangle(0, 0, 1, 1));
 
+        //load plugins
+        pluginLoader  = new PluginClassLoader();
+        try {
+			pluginLoader.readPlugins(null);
+		} catch (Exception e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(appFrame,
+                    e.getMessage(), "Plugin loader",
+                    JOptionPane.WARNING_MESSAGE);
+		}
+        
         // Create the actions
         zoomInAction = new ZoomInAction();
         zoomOutAction = new ZoomOutAction();
@@ -193,9 +207,14 @@ public class MapEditor implements ActionListener,
      */
     public void loadMap(String file) {
         try {
-            if (file.substring(
-                        file.lastIndexOf('.') + 1).equalsIgnoreCase("tmx")) {
-                MapReader mr = new XMLMapTransformer();
+        	MapReader mr = null;
+        	if(file.endsWith("tmx")) {   //override, so people can't overtake our format
+        		mr = new XMLMapTransformer();
+        	}else{
+        		mr = (MapReader) pluginLoader.getReaderFor(file.substring(file.lastIndexOf('.') + 1));
+        	}
+        	
+        	if(mr != null){
                 setCurrentMap(mr.readMap(file));
                 updateRecent(file);
             } else {
@@ -204,7 +223,7 @@ public class MapEditor implements ActionListener,
                         JOptionPane.ERROR_MESSAGE);
         	}
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             JOptionPane.showMessageDialog(appFrame,
                     "Error while loading " + file + ": " +
                     e.getMessage(), "Error while loading map",

@@ -157,6 +157,7 @@ public final class TiledConfiguration
         _add("tmx.save.tileSetImages", "0");
         _add("tmx.save.embedtileSetImages", "0");
         _add("tmx.undo.depth", "30");
+        _add("tiled.plugins.dir",".");
         //TODO: add any new properties here as well with a default value
     }
 }

@@ -29,6 +29,7 @@ public class SearchDialog extends JDialog implements ActionListener {
 	private JComboBox searchCBox, replaceCBox;
 	private JButton bReplace, bReplaceAll;
 	private Point currentMatch = null;
+	private SelectionLayer sl;
 	
 	public SearchDialog(JFrame parent) {
 			this(parent, null);
@@ -138,13 +139,13 @@ public class SearchDialog extends JDialog implements ActionListener {
 		String command = e.getActionCommand();
 		
 		if(command.equalsIgnoreCase("cancel")) {
-			//TODO: this must untrigger the drawing condition
+			myMap.removeLayer(sl.getId());
 			this.dispose();
 		} else if(command.equalsIgnoreCase("find")) {
 			//TODO: find must trigger a drawing condition to highlight instances of the found tile on the map
 			
 		} else if(command.equalsIgnoreCase("find all")) {
-			SelectionLayer sl = new SelectionLayer(myMap.getWidth(), myMap.getHeight());
+			sl = new SelectionLayer(myMap.getWidth(), myMap.getHeight());
 			ListIterator itr = myMap.getLayers();		
 			while(itr.hasNext()) {
 				MapLayer layer = (MapLayer) itr.next();

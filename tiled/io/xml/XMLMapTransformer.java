@@ -532,4 +532,26 @@ public class XMLMapTransformer implements MapReader
     public TileSet readTileset(String filename) throws Exception {
         return unmarshalTilesetFile(filename);
     }
+
+	/**
+	 * @see tiled.io.MapReader#getFilter()
+	 */
+	public String getFilter() throws Exception {
+		return "*.tmx,*.tsx";
+	}
+
+	public String getName() {
+		return "Default Tiled XML map reader";
+	}
+
+	public String getDescription() {
+		return "This is the core Tiled TMX format reader\n\nTiled Map Editor, (c) 2004\nAdam Turk\nBjorn Lindeijer";
+	}
+
+	public boolean filter(String ext) {
+		if(ext.endsWith("tmx")||ext.endsWith("tsx")){
+			return true;
+		}
+		return false;
+	}
 }

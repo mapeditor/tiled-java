@@ -12,29 +12,18 @@
 
 package tiled.io;
 
-import java.io.IOException;
+public interface PluggableMapIO {
 
-import tiled.core.Map;
-import tiled.core.TileSet;
-
-
-public interface MapWriter  extends PluggableMapIO
-{
-    /**
-     * Saves a map to a file.
-     *
-     * @param filename the filename of the map file
-     */
-    public void writeMap(Map map, String filename) throws IOException;
-
-    /**
-     * Saves a tileset to a file.
-     *
-     * @param filename the filename of the tileset file
-     */
-    public void writeTileset(TileSet set, String filename) throws IOException;
-    
-    /**
+	
+	/**
+	 * Check to see if an extension is supported by this I/O plugin
+	 * 
+	 * @param ext
+	 * @return <code>true</code> if it is supported, <code>false</code> otherwise
+	 */
+	public boolean filter(String ext);
+	
+	 /**
      * Lists supported file types
      * 
      * @return a comma delimited string of supported file extensions
@@ -45,4 +34,5 @@ public interface MapWriter  extends PluggableMapIO
     public String getName();
     
     public String getDescription();
+	
 }

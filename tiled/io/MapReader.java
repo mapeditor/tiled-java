@@ -16,7 +16,7 @@ import tiled.core.Map;
 import tiled.core.TileSet;
 
 
-public interface MapReader
+public interface MapReader extends PluggableMapIO
 {
     /**
      * Loads a map from a file.
@@ -31,4 +31,5 @@ public interface MapReader
      * @param filename the filename of the tileset file
      */
     public TileSet readTileset(String filename) throws Exception;
+    
 }
