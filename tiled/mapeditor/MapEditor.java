@@ -412,7 +412,7 @@ public class MapEditor implements ActionListener,
         tilePaletteButton = new TileButton(new Dimension(24,24));
         tilePaletteButton.setActionCommand("palette");
         //tilePaletteButton.setMargin(new Insets(0,0,0,0));
-		tilePaletteButton.setConstrainAspect( true );
+		tilePaletteButton.setMaintainAspect( true );
 		tilePaletteButton.setBorder( BorderFactory.createLineBorder(
 															    Color.black ) );
         mapEventAdapter.addListener(tilePaletteButton);
