@@ -92,9 +92,16 @@ public class TilePalettePanel extends JPanel implements Scrollable,
     public void paint(Graphics g) {
         Rectangle clip = g.getClipBounds();
 
-        // Draw black background
-        g.setColor(Color.black);
-        g.fillRect(clip.x, clip.y, clip.width, clip.height);
+        // Draw checkerboard background
+        int alt=1;
+        for(int k=clip.y;k<=clip.height;k+=10,alt++) {
+            for(int l=clip.x;l<=clip.width;l+=10, alt++) {
+                if(alt%2 == 1) g.setColor(Color.LIGHT_GRAY);
+                else g.setColor(Color.WHITE);
+                g.fillRect(l,k,10,10);
+            }
+            if(clip.width%2!=0) alt++;
+        }
 
         if (tilesets.size() <= 0) {
             return;

@@ -1,3 +1,13 @@
+0.5.1 - TBD
+
+* Added a "background" for tile set palette
++ Added the Shifted view, which emulates several tiling configurations
++ Added "custom" brushes
++ Added support for layer locking (not editable when locked)
++ Added support for tmx.gz map files
++ Fixed drawing on invisible layers
++ Fixed transformation so that it respects selections
+
 0.5.0 - December 14th, 2004
 
 * Added width and height attributes to layer element

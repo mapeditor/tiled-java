@@ -71,9 +71,11 @@ public final class PluginClassLoader extends URLClassLoader
 
         File dir = new File(baseURL);
         if (!dir.exists() || !dir.canRead()) {
-            throw new Exception(
-                    "Could not open directory for reading plugins: " +
-                    baseURL);
+            //FIXME: removed for webstart
+            //throw new Exception(
+            //        "Could not open directory for reading plugins: " +
+            //        baseURL);
+            return;
         }
 
         int total = 0;
