@@ -12,18 +12,18 @@
 
 package tiled.io;
 
-public interface PluggableMapIO {
-	
-	 /**
+
+public interface PluggableMapIO
+{
+    /**
      * Lists supported file types
      * 
      * @return a comma delimited string of supported file extensions
      * @throws Exception
      */
     public String getFilter() throws Exception;
-    
+
     public String getName();
-    
+
     public String getDescription();
-	
 }

@@ -23,27 +23,27 @@ import tiled.mapeditor.widget.*;
 import tiled.core.*;
 import tiled.core.Map;
 
+
 public class SearchDialog extends JDialog implements ActionListener
 {
-	private Map myMap;
-	private JComboBox searchCBox, replaceCBox;
-	private JButton bReplace, bReplaceAll;
-	private Point currentMatch = null;
-	private SelectionLayer sl;
-	
-	public SearchDialog(JFrame parent) {
-			this(parent, null);
-	}
+    private Map myMap;
+    private JComboBox searchCBox, replaceCBox;
+    private JButton bReplace, bReplaceAll;
+    private Point currentMatch = null;
+    private SelectionLayer sl;
 
-	public SearchDialog(JFrame parent, Map map) {
-			super(parent, "Search/Replace", true);			
-			myMap = map;
-			init();
-			setLocationRelativeTo(parent);
-			setModal(false);
-	}
+    public SearchDialog(JFrame parent) {
+        this(parent, null);
+    }
 
-	private void init() {
+    public SearchDialog(JFrame parent, Map map) {
+        super(parent, "Search/Replace", false);
+        myMap = map;
+        init();
+        setLocationRelativeTo(parent);
+    }
+
+    private void init() {
 		JPanel buttonPanel = new JPanel();
 		JPanel closePanel = new JPanel();
 		closePanel.setLayout(new BorderLayout());
@@ -114,16 +114,16 @@ public class SearchDialog extends JDialog implements ActionListener
 		pack();
 	}
 
-	public void showDialog() {
-		show();
-	}
-	
+    public void showDialog() {
+        show();
+    }
+
 	private void queryTiles(JComboBox b) {
 		Vector sets = myMap.getTilesets();
 		int curSlot = 0;
 		Iterator itr = sets.iterator();
 
-		while(itr.hasNext()) {
+		while (itr.hasNext()) {
 			TileSet ts = (TileSet) itr.next();
 			b.addItem(ts);
 			

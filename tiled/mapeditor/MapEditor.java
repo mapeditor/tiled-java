@@ -80,7 +80,7 @@ public class MapEditor implements ActionListener,
     Point mousePressLocation,mouseInitialPressLocation;
     int mouseButton;
     Brush currentBrush;
-	SelectionLayer marqueeSelection=null;
+	SelectionLayer marqueeSelection = null;
 
     // GUI components
     JPanel      mainPanel;
@@ -145,17 +145,17 @@ public class MapEditor implements ActionListener,
         currentBrush = new ShapeBrush();
         ((ShapeBrush)currentBrush).makeQuadBrush(new Rectangle(0, 0, 1, 1));
 
-        //load plugins
+        // Load plugins
         pluginLoader  = new PluginClassLoader();
         try {
-			pluginLoader.readPlugins(null);
-		} catch (Exception e) {
-			e.printStackTrace();
-			JOptionPane.showMessageDialog(appFrame,
+            pluginLoader.readPlugins(null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(appFrame,
                     e.getMessage(), "Plugin loader",
                     JOptionPane.WARNING_MESSAGE);
-		}
-        
+        }
+
         // Create the actions
         zoomInAction = new ZoomInAction();
         zoomOutAction = new ZoomOutAction();
@@ -208,13 +208,14 @@ public class MapEditor implements ActionListener,
     public void loadMap(String file) {
         try {
         	MapReader mr = null;
-        	if(file.endsWith("tmx")) {   //override, so people can't overtake our format
+        	if (file.endsWith("tmx")) {
+                // Override, so people can't overtake our format
         		mr = new XMLMapTransformer();
-        	}else{
-        		mr = (MapReader) pluginLoader.getReaderFor(file.substring(file.lastIndexOf('.') + 1));
+        	} else {
+        		mr = (MapReader)pluginLoader.getReaderFor(file.substring(file.lastIndexOf('.') + 1));
         	}
         	
-        	if(mr != null){
+        	if (mr != null) {
                 setCurrentMap(mr.readMap(file));
                 updateRecent(file);
             } else {

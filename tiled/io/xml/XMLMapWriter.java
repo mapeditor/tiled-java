@@ -89,7 +89,7 @@ public class XMLMapWriter implements MapWriter
             w.writeAttribute("tileheight", "" + map.getTileHeight());
 
             Enumeration keys = map.getProperties();
-            while(keys.hasMoreElements()) {
+            while (keys.hasMoreElements()) {
                 String key = (String) keys.nextElement();
                 w.startElement("property");
                 w.writeAttribute("name", key);
@@ -425,27 +425,33 @@ public class XMLMapWriter implements MapWriter
         return relPath;
     }
 
-	/**
-	 * @see tiled.io.MapReader#getFilter()
-	 */
-	public String getFilter() throws Exception {
-		return "*.tmx,*.tsx";
-	}
+    /**
+     * @see tiled.io.MapReader#getFilter()
+     */
+    public String getFilter() throws Exception {
+        return "*.tmx,*.tsx";
+    }
 
-	public String getName() {
-		return "Default Tiled XML map writer";
-	}
+    public String getName() {
+        return "Default Tiled XML map writer";
+    }
 
-	public String getDescription() {
-		return "This is the core Tiled TMX format writer\n\nTiled Map Editor, (c) 2004\nAdam Turk\nBjorn Lindeijer";
-	}
-	
-	public boolean accept(File pathname) {
-		try {
-			if(pathname.getCanonicalPath().endsWith("tmx")||pathname.getCanonicalPath().endsWith("tsx")){
-				return true;
-			}
-		} catch (IOException e) {}
-		return false;
-	}
+    public String getDescription() {
+        return
+            "This is the core Tiled TMX format writer\n" +
+            "\n" +
+            "Tiled Map Editor, (c) 2004\n" +
+            "Adam Turk\n" +
+            "Bjorn Lindeijer";
+    }
+
+    public boolean accept(File pathname) {
+        try {
+            String path = pathname.getCanonicalPath();
+            if (path.endsWith(".tmx") || path.endsWith(".tsx")) {
+                return true;
+            }
+        } catch (IOException e) {}
+        return false;
+    }
 }

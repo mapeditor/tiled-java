@@ -33,5 +33,4 @@ public interface MapReader extends PluggableMapIO, FileFilter
      * @param filename the filename of the tileset file
      */
     public TileSet readTileset(String filename) throws Exception;
-    
 }
