@@ -195,6 +195,10 @@ public class Map extends MultilayerPlane implements Cloneable
 		fireMapChanged();
     }
 
+    public void setLayerVector(Vector layers) {
+        super.setLayerVector(layers);
+        fireMapChanged();
+    }
 
 	/**
 	 * @see MultilayerPlane#swapLayerUp

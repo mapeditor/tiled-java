@@ -15,38 +15,32 @@ package tiled.core;
 import java.awt.Rectangle;
 import java.util.*;
 
-public class MultilayerPlane {
-	private Vector layers;
-	protected int widthInTiles = 0, heightInTiles = 0;
+
+public class MultilayerPlane
+{
+    private Vector layers;
+    protected int widthInTiles = 0, heightInTiles = 0;
 	
 	public MultilayerPlane() {
-		init();
-	}
-	
-	public MultilayerPlane(int width, int height) {
-		init();
-		widthInTiles = width;
-		heightInTiles = height;
-	}
-	
-	private void init() {
 		layers = new Vector();
 	}
 	
-	public int getTotalLayers() {
-		int totalLayers=0;
-		Iterator itr = layers.iterator();
-		while(itr.hasNext()) {
-			if(itr.next() != null) {
-				totalLayers++;
-			}
-		}
-		return totalLayers;
+	public MultilayerPlane(int width, int height) {
+		this();
+		widthInTiles = width;
+		heightInTiles = height;
 	}
+
+    /**
+     * Returns the total number of layers.
+     */
+    public int getTotalLayers() {
+        return layers.size();
+    }
 	
-	public Rectangle getBounds() {
-		return new Rectangle(0,0,widthInTiles,heightInTiles);
-	}
+    public Rectangle getBounds() {
+        return new Rectangle(0, 0, widthInTiles, heightInTiles);
+    }
 	
 	/**
 	 * Adds a layer to the map.
@@ -65,6 +59,13 @@ public class MultilayerPlane {
 	public void addLayerAfter(MapLayer l, MapLayer after) {
 		layers.add(layers.indexOf(after)+1,l);
 	}
+
+    /**
+     * Add a layer at the specified index, which should be a valid.
+     */
+    public void addLayer(int index, MapLayer layer) {
+        layers.add(index, layer);
+    }
 
 	public void addAllLayers(Collection c) {
 		layers.addAll(c);
@@ -85,6 +86,14 @@ public class MultilayerPlane {
 		layers.removeAllElements();
 	}
 	
+    public Vector getLayerVector() {
+        return layers;
+    }
+
+    public void setLayerVector(Vector layers) {
+        this.layers = layers;
+    }
+
 	public void swapLayerUp(int index) throws Exception {
 		if (index + 1 == layers.size()) {
 			throw new Exception(

@@ -57,6 +57,7 @@ public class MapLayer implements Cloneable
 
     public MapLayer(MapLayer ml) {
         id = ml.id;
+        name = ml.getName();
         bounds = new Rectangle(ml.getBounds());
 
         map = new Tile[bounds.height][];

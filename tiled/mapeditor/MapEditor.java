@@ -635,14 +635,12 @@ public class MapEditor implements ActionListener,
     }
 
     private void doLayerStateChange(ActionEvent event) {
-        String command = event.getActionCommand();
         if (currentMap == null) {
             return;
         }
 
-        MapLayerStateEdit mlse = new MapLayerStateEdit(currentMap);
-
-        mlse.setPresentationName(command);
+        String command = event.getActionCommand();
+        Vector layersBefore = new Vector(currentMap.getLayerVector());
 
         if (command.equals("Add Layer")) {
             currentMap.addLayer();
@@ -705,12 +703,8 @@ public class MapEditor implements ActionListener,
             setCurrentLayer(0);
         }
 
-        try {
-            mlse.end(currentMap.getLayers());
-            undoSupport.postEdit(mlse);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        undoSupport.postEdit(new MapLayerStateEdit(currentMap, layersBefore,
+                    new Vector(currentMap.getLayerVector()), command));
     }
 
     private void doMouse(MouseEvent event) {
