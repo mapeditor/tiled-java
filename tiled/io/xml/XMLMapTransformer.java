@@ -339,12 +339,13 @@ public class XMLMapTransformer implements MapReader
                         // file
                         File sourceFile = new File(source);
                         String sourcePath = tilesetBaseDir + source;
-                        if(Util.checkRoot(source)) {
+                        if (Util.checkRoot(source)) {
                             sourcePath = makeUrl(source);
                         }
 
                         set.importTileBitmap(sourcePath, tileWidth, tileHeight,
                                 tileSpacing, !hasTileTags);
+                        set.setTilesetImageFilename(source);
 
                     } else {
                         set.addImage(unmarshalImage(child, tilesetBaseDir),

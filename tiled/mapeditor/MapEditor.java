@@ -280,7 +280,7 @@ public class MapEditor implements ActionListener,
         mapEventAdapter.addListener(print);
 
         fileMenu = new JMenu("File");
-        fileMenu.add(createMenuItem("New", null, "Start a new map",
+        fileMenu.add(createMenuItem("New...", null, "Start a new map",
                     "control N"));
         fileMenu.add(createMenuItem("Open...", null, "Open a map",
                     "control O"));
@@ -1078,7 +1078,7 @@ public class MapEditor implements ActionListener,
             if (checkSave()) {
                 setCurrentMap(null);
             }
-        } else if (command.equals("New")) {
+        } else if (command.equals("New...")) {
             if (checkSave()) {
                 newMap();
             }

@@ -468,6 +468,15 @@ public class XMLMapWriter implements MapWriter
         }
     }
 
+    /**
+     * Returns the relative path from one file to the other. The function
+     * expects absolute paths, relative paths will be converted to absolute
+     * using the working directory.
+     *
+     * @param from the path of the origin file
+     * @param to   the path of the destination file
+     * @return     the relative path from origin to destination
+     */
     public static String getRelativePath(String from, String to) {
         // Make the two paths absolute and unique
         try {
