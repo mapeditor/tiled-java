@@ -52,7 +52,7 @@ public class XMLMapTransformer implements MapReader
 
     private String makeUrl(String filename) throws MalformedURLException {
         String url = "";
-        if(filename.indexOf("://") > 0 || filename.startsWith("file:")) {
+        if (filename.indexOf("://") > 0 || filename.startsWith("file:")) {
             url = filename;
         } else {
             url = (new File(filename)).toURL().toString();
@@ -265,14 +265,14 @@ public class XMLMapTransformer implements MapReader
         String tilesetBaseDir = xmlPath;
 
         if (basedir != null) {
-            tilesetBaseDir = makeUrl(basedir);
+            tilesetBaseDir = basedir; //makeUrl(basedir);
         }
 
         if (source != null) {
             String filename = tilesetBaseDir + source;
-            if (Util.checkRoot(source)) {
-                filename = makeUrl(source);
-            }
+            //if (Util.checkRoot(source)) {
+            //    filename = makeUrl(source);
+            //}
             
             TileSet ext;
 
@@ -328,10 +328,7 @@ public class XMLMapTransformer implements MapReader
                         // FIXME: importTileBitmap does not fully support URLs
                         String sourcePath = imgSource;
                         if (!Util.checkRoot(imgSource)) {
-                            sourcePath =
-                                tilesetBaseDir.substring(
-                                        tilesetBaseDir.indexOf(':') + 2) +
-                                imgSource;
+                            sourcePath = tilesetBaseDir + imgSource;
                         }
 
                         if (transStr != null) {
@@ -665,7 +662,7 @@ public class XMLMapTransformer implements MapReader
                 filename.lastIndexOf(File.separatorChar) + 1);
         
         xmlFile = makeUrl(xmlFile);
-        xmlPath = makeUrl(xmlPath);
+        //xmlPath = makeUrl(xmlPath);
         
         URL url = new URL(xmlFile);
         Map unmarshalledMap = unmarshal(url.openStream());

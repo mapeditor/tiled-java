@@ -136,14 +136,8 @@ public class MapEditor implements ActionListener,
     Action selectAllAction, inverseAction, cancelSelectionAction;
 
     public MapEditor() {
-        // Create configuration class instance and try to parse existing
-        // configuration.
-        configuration = TiledConfiguration.getOrCreateInstance();
-        try {
-            configuration.parse("tiled.conf");
-        } catch (Exception e) {
-            System.out.println("Warning: could not load configuration file.");
-        }
+        // Get instance of configuration
+        configuration = TiledConfiguration.getInstance();
 
         /*
         try {

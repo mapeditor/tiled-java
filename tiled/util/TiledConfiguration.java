@@ -28,25 +28,21 @@ public final class TiledConfiguration
     private TiledConfiguration() {
         settings = new Properties();
         populateDefaults();
+        try {
+            parse("tiled.conf");
+        } catch (Exception e) {
+            System.out.println("Warning: could not load configuration file.");
+        }
         changed = false;
-    }
-
-    /**
-     * Returns the tiled configuration class instance. Will return <code>null
-     * </code> when the instance hasn't been created yet.
-     * 
-     * @return TiledConfiguration a reference to the singleton
-     */
-    public static TiledConfiguration getInstance() {
-        return instance;
     }
 
     /**
      * Returns the tiled configuration class instance. Will create a new
      * instance when it hasn't been created yet.
-     * @return TiledConfiguration same as @link{TiledConfiguration#getInstance}, but instantiates the singleton if it is null
+     * 
+     * @return a reference to the singleton
      */
-    public static TiledConfiguration getOrCreateInstance() {
+    public static TiledConfiguration getInstance() {
         if (instance == null) {
             instance = new TiledConfiguration();
         }
@@ -61,7 +57,8 @@ public final class TiledConfiguration
      * @throws IOException
      */
     public void parse(String filename)
-        throws FileNotFoundException, IOException {
+        throws FileNotFoundException, IOException
+    {
         parse(new BufferedReader(new FileReader(filename)));
     }
 
@@ -78,7 +75,7 @@ public final class TiledConfiguration
             if (!line.trim().startsWith("#") && line.trim().length() > 0){
                 String[] keyValue = line.split("[ ]*=[ ]*");
                 if (keyValue.length > 1) {
-                    settings.put(keyValue[0], keyValue[1]);
+                    addConfigPair(keyValue[0], keyValue[1]);
                 }
             }
         }
@@ -88,7 +85,8 @@ public final class TiledConfiguration
      * Returns wether the option is available in the config file.
      * 
      * @param name the name of the option to check for
-     * @return boolean <code>true</code> if the option has a non-<code>null</code> value, <code>false</code> otherwise
+     * @return <code>true</code> if the option has a non-<code>null</code>
+     *         value, <code>false</code> otherwise
      */
     public boolean hasOption(String name) {
         return (settings.get(name) != null);
