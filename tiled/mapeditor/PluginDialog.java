@@ -22,6 +22,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
 
 import tiled.io.MapReader;
+import tiled.io.MapWriter;
 import tiled.mapeditor.plugin.PluginClassLoader;
 import tiled.mapeditor.widget.VerticalStaticJPanel;
 
@@ -45,15 +46,18 @@ public class PluginDialog extends JDialog implements ActionListener,
     private void init() {
         /* LIST PANEL */
         MapReader readers[];
+        MapWriter writers[];
 
         try {
             readers = pluginLoader.getReaders();
-            String[] plugins = new String[readers.length];
+            writers = pluginLoader.getWriters();
+            String[] plugins = new String[readers.length + writers.length];
+
             for (int i = 0; i < readers.length; i++) {
                 plugins[i] = readers[i].getPluginPackage();
-
-                // TODO: Check for a writer as well, and designate the
-                //  plugins that have both
+            }
+            for (int i = 0; i < writers.length; i++) {
+                plugins[i + readers.length] = writers[i].getPluginPackage();
             }
             pluginList = new JList(plugins);
         } catch (Throwable e) {
@@ -111,10 +115,18 @@ public class PluginDialog extends JDialog implements ActionListener,
             int index = pluginList.getSelectedIndex();
 
             MapReader[] readers;
+            MapWriter[] writers;
             try {
                 readers = pluginLoader.getReaders();
-                ta.setText(readers[index].getDescription());
-                info.setTitle(readers[index].getPluginPackage());
+                writers = pluginLoader.getWriters();
+                if (index < readers.length) {
+                    ta.setText(readers[index].getDescription());
+                    info.setTitle(readers[index].getPluginPackage());
+                } else {
+                    index -= readers.length;
+                    ta.setText(writers[index].getDescription());
+                    info.setTitle(writers[index].getPluginPackage());
+                }
             } catch (Throwable t) {
                 t.printStackTrace();
             }

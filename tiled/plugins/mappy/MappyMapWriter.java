@@ -5,7 +5,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
@@ -38,7 +38,7 @@ public class MappyMapWriter implements MapWriter
     public void writeMap(Map map, String filename) throws Exception {
         writeMap(map, new FileOutputStream(filename));
     }
-                                                                                
+
     /**
      * Loads a tileset from a file.
      *
@@ -57,18 +57,18 @@ public class MappyMapWriter implements MapWriter
 
         // TODO: write all the chunks
     }
-    
+
     public void writeTileset(TileSet set, OutputStream out) throws Exception {
         System.out.println("Tilesets are not supported!");
     }
-    
+
     /**
      * @see tiled.io.MapReader#getFilter()
      */
     public String getFilter() throws Exception {
         return "*.map";
     }
-                                                                                
+
     public String getDescription() {
         return
             "+---------------------------------------------+\n" +
@@ -77,15 +77,15 @@ public class MappyMapWriter implements MapWriter
             "|          aturk@biggeruniverse.com           |\n" +
             "+---------------------------------------------+";
     }
-                                                                                
+
     public String getPluginPackage() {
-        return "Mappy Reader/Writer Plugin";
+        return "Mappy output plugin";
     }
 
     public String getName() {
         return "Mappy Writer";
     }
-                                                                                
+
     public boolean accept(File pathname) {
         try {
             String path = pathname.getCanonicalPath().toLowerCase();
@@ -99,8 +99,8 @@ public class MappyMapWriter implements MapWriter
     public void setErrorStack(Stack es) {
         // TODO: implement setErrorStack
     }
-    
-    
+
+
     private void createMPHDChunk(Map m) throws IOException {
         Chunk c = new Chunk("MPHD");
         OutputStream out = c.getOutputStream();
@@ -123,7 +123,7 @@ public class MappyMapWriter implements MapWriter
 
         chunks.add(c);
     }
-    
+
     private void createBKDTChunk(Map m) {
         Chunk c = new Chunk("BKDT");
         LinkedList blocks = findAllBlocks(m);
@@ -134,7 +134,7 @@ public class MappyMapWriter implements MapWriter
         }
         chunks.add(c);
     }
-    
+
     private LinkedList findAllBlocks(Map m) {
         // TODO: this
         return null;

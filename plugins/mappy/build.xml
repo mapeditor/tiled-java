@@ -21,7 +21,7 @@
       jarfile="${dist}/plugins/mappy.jar"
       manifest="MANIFEST.MF"
       basedir="${build}"
-      includes="tiled/plugins/**/*.class"
+      includes="tiled/plugins/mappy/*.class"
       />
   </target>
 

@@ -131,26 +131,32 @@ public final class PluginClassLoader extends URLClassLoader
                         continue;
                     }
 
-                    JarEntry reader = jf.getJarEntry(
-                            readerClassName.replace('.', '/') + ".class");
-                    JarEntry writer = jf.getJarEntry(
-                            writerClassName.replace('.', '/') + ".class");
-
                     monitor.setNote("Loading " + aName + "...");
-                    super.addURL((new File(aPath)).toURL());
+                    addURL((new File(aPath)).toURL());
 
-                    if (readerClassName != null && reader != null) {
-                        readerClass = loadFromJar(jf, reader, readerClassName);
+                    if (readerClassName != null) {
+                        JarEntry reader = jf.getJarEntry(
+                                readerClassName.replace('.', '/') + ".class");
+
+                        if (reader != null) {
+                            readerClass = loadFromJar(
+                                    jf, reader, readerClassName);
+                        }
                     }
-                    if (writerClassName != null && writer != null) {
-                        writerClass = loadFromJar(jf, writer, writerClassName);
+                    if (writerClassName != null) {
+                        JarEntry writer = jf.getJarEntry(
+                                writerClassName.replace('.', '/') + ".class");
+
+                        if (writer != null) {
+                            writerClass = loadFromJar(
+                                    jf, writer, writerClassName);
+                        }
                     }
 
                     boolean bPlugin = false;
                     if (doesImplement(readerClass, "tiled.io.MapReader")) {
                         bPlugin = true;
                     }
-
                     if (doesImplement(writerClass, "tiled.io.MapWriter")) {
                         bPlugin = true;
                     }
@@ -209,7 +215,9 @@ public final class PluginClassLoader extends URLClassLoader
                 "No writer plugin exists for the extension: " + ext);
     }
 
-    public Class loadFromJar(JarFile jf, JarEntry je, String className) throws IOException {
+    public Class loadFromJar(JarFile jf, JarEntry je, String className)
+        throws IOException
+    {
         byte[] buffer = new byte[(int)je.getSize()];
         int n;
 
@@ -230,7 +238,8 @@ public final class PluginClassLoader extends URLClassLoader
     }
 
     public boolean doesImplement(Class c, String interfaceName)
-        throws Exception {
+        throws Exception
+    {
         if (c == null) {
             return false;
         }

@@ -108,7 +108,7 @@ public class MappyMapReader implements MapReader
     }
 
     public String getPluginPackage() {
-        return "Mappy Reader/Writer Plugin";
+        return "Mappy input plugin";
     }
 
     public String getDescription() {
