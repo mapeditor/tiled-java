@@ -36,15 +36,16 @@ public final class TiledConfiguration
         if (settings == null) {
             settings = new HashMap();
         }
-		while((line = br.readLine()) != null) {
-			if(!line.trim().startsWith("#") && line.trim().length()>0){   				//make sure it isn't a comment
-				String [] keyValue = line.split("[ ]*=[ ]*");
-				if(keyValue.length>1){
-					settings.put(keyValue[0],keyValue[1]);
-				}
-			}
-		}
-	}
+        while ((line = br.readLine()) != null) {
+            // Make sure it isn't a comment
+            if (!line.trim().startsWith("#") && line.trim().length() > 0){
+                String [] keyValue = line.split("[ ]*=[ ]*");
+                if (keyValue.length > 1) {
+                    settings.put(keyValue[0],keyValue[1]);
+                }
+            }
+        }
+    }
 
     private static void _add(String key, String value) {
         if (settings == null) {
@@ -61,6 +62,15 @@ public final class TiledConfiguration
          return (String)settings.get(option);
     }
 
+    public static int getIntValue(String option, int def) {
+        String str = getValue(option);
+        if (str != null) {
+            return Integer.parseInt(str);
+        } else {
+            return def;
+        }
+    }
+
     public static boolean keyHasValue(String option, String comp) {
         String check = getValue(option);
         return (check != null && check.equalsIgnoreCase(comp));
@@ -75,24 +85,24 @@ public final class TiledConfiguration
         settings.remove(key);
     }
 
-	public static void write(String filename) throws IOException, Exception{        
+    public static void write(String filename) throws IOException, Exception {
         BufferedWriter bw;
         Vector inputLines = new Vector();
         HashMap availableKeys = new HashMap();
         String line;
 
-		try {
-			BufferedReader br = new BufferedReader(new FileReader(filename));
-		    while((line = br.readLine()) != null) {
-		        inputLines.add(line);
-		    }
-		
-		    br.close();
-		} catch (IOException ioe) {
-			//although it's nice, it's not necessary to have a config file in existence when we go to write
-			//the config
-		}
-		
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(filename));
+            while((line = br.readLine()) != null) {
+                inputLines.add(line);
+            }
+
+            br.close();
+        } catch (IOException ioe) {
+            // Although it's nice, it's not necessary to have a config file in
+            // existence when we go to write the config
+        }
+
         bw = new BufferedWriter(new FileWriter(filename));
 
         Iterator lineItr = inputLines.iterator();
@@ -100,9 +110,9 @@ public final class TiledConfiguration
             line = (String)lineItr.next();
             // Make sure it isn't a comment
             if (!line.trim().startsWith("#") && line.trim().length() > 0) {
-				String [] keyValue = line.split("[ ]*=[ ]*");
+                String [] keyValue = line.split("[ ]*=[ ]*");
 				availableKeys.put(keyValue[0], "Tiled is cool");
-				if (hasOption(keyValue[0])) {
+                if (hasOption(keyValue[0])) {
                     String newLine = line.substring(0, line.lastIndexOf(
                                 keyValue[1])) + getValue(keyValue[0]);
                     bw.write(newLine);
@@ -140,13 +150,13 @@ public final class TiledConfiguration
     }
     
     public static void populateDefaults() {
-		_add("tmx.save.embedImages","1");
-		_add("tmx.save.tileImagePrefix","tile");
-		_add("tmx.save.layerCompression","1");
-		_add("tmx.save.encodeLayerData","1");
-		_add("tmx.save.tileSetImages","0");
-		_add("tmx.save.embedtileSetImages","0");
-		_add("tmx.undo.depth","30");
-		//TODO: add any new properties here as well with a default value
+        _add("tmx.save.embedImages", "1");
+        _add("tmx.save.tileImagePrefix", "tile");
+        _add("tmx.save.layerCompression", "1");
+        _add("tmx.save.encodeLayerData", "1");
+        _add("tmx.save.tileSetImages", "0");
+        _add("tmx.save.embedtileSetImages", "0");
+        _add("tmx.undo.depth", "30");
+        //TODO: add any new properties here as well with a default value
     }
 }

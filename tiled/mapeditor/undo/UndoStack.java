@@ -12,51 +12,39 @@
 
 package tiled.mapeditor.undo;
 
-
 import java.util.Iterator;
-
-import javax.swing.event.*;
 import javax.swing.undo.*;
 
 import tiled.mapeditor.*;
 import tiled.util.TiledConfiguration;
 
-public class UndoStack extends UndoManager implements UndoableEditListener
-{
-	UndoableEdit savedAt;
 
-    public UndoStack(MapEditor a) {
-        super();
-        try {
-        	setLimit(Integer.parseInt(TiledConfiguration.getValue("tmx.undo.depth")));
-        } catch (Exception e) {
-        	        
-        }
+public class UndoStack extends UndoManager
+{
+    UndoableEdit savedAt;
+
+    public UndoStack() {
+        setLimit(TiledConfiguration.getIntValue("tmx.undo.depth", 30));
     }
-	
-	public void undoableEditHappened(UndoableEditEvent e) {
-		//TODO: this
-	}
-	
-	public boolean isAllSaved() {
-		return (editToBeUndone() == savedAt);
-	}
-	
-	public void commitSave() {
-		savedAt = editToBeUndone();	
-	}
-	
-	public String [] getEdits() {
-		String [] list = new String[edits.size()];		
-		Iterator itr = edits.iterator();
-		int i=0;
-		
-		while(itr.hasNext()) {
-			UndoableEdit e = (UndoableEdit)itr.next();
-			list[i++] = e.getPresentationName();
-		}
-		
-		return list;
-	}
-	 
+
+    public boolean isAllSaved() {
+        return (editToBeUndone() == savedAt);
+    }
+
+    public void commitSave() {
+        savedAt = editToBeUndone();	
+    }
+
+    public String[] getEdits() {
+        String[] list = new String[edits.size()];		
+        Iterator itr = edits.iterator();
+        int i = 0;
+
+        while (itr.hasNext()) {
+            UndoableEdit e = (UndoableEdit)itr.next();
+            list[i++] = e.getPresentationName();
+        }
+
+        return list;
+    }
 }

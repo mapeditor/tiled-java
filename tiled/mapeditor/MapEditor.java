@@ -126,10 +126,10 @@ public class MapEditor implements ActionListener,
         curEyed = new Cursor(Cursor.CROSSHAIR_CURSOR);
         curDefault = new Cursor(Cursor.DEFAULT_CURSOR);
 
-        undoStack = new UndoStack(this);
+        undoStack = new UndoStack();
         mapEventAdapter = new MapEventAdapter();
-		currentBrush = new ShapeBrush();
-		((ShapeBrush)currentBrush).makeQuadBrush(new Rectangle(0,0,1,1));
+        currentBrush = new ShapeBrush();
+        ((ShapeBrush)currentBrush).makeQuadBrush(new Rectangle(0, 0, 1, 1));
 
         // Create our frame
         appFrame = new JFrame("Tiled");
@@ -239,34 +239,40 @@ public class MapEditor implements ActionListener,
         redoMenuItem.setEnabled(false);
 
 
-		transformSub = new JMenu("Transform");
-		transformSub.add(createMenuItem("Rotate 90", null, "Rotate 90 degrees counterclockwise"));
-		transformSub.add(createMenuItem("Rotate 180", null, "Rotate 180 degrees counterclockwise"));
-		transformSub.add(createMenuItem("Rotate 270", null, "Rotate 270 degrees counterclockwise"));
-		transformSub.addSeparator();
-		transformSub.add(createMenuItem("Flip Horizontal", null, "Flip the map horizontally"));
-		transformSub.add(createMenuItem("Flip Vertical", null, "Flip the map vertically"));
-		mapEventAdapter.addListener(transformSub);
+        transformSub = new JMenu("Transform");
+        transformSub.add(createMenuItem("Rotate 90",
+                    null, "Rotate 90 degrees counterclockwise"));
+        transformSub.add(createMenuItem("Rotate 180",
+                    null, "Rotate 180 degrees counterclockwise"));
+        transformSub.add(createMenuItem("Rotate 270",
+                    null, "Rotate 270 degrees counterclockwise"));
+        transformSub.addSeparator();
+        transformSub.add(createMenuItem("Flip Horizontal",
+                    null, "Flip the map horizontally"));
+        transformSub.add(createMenuItem("Flip Vertical",
+                    null, "Flip the map vertically"));
+        mapEventAdapter.addListener(transformSub);
 
         m = new JMenu("Edit");
         m.add(undoMenuItem);
         m.add(redoMenuItem);
-		m.addSeparator();
-		m.add(transformSub);		
-		m.addSeparator();
-		m.add(createMenuItem("Preferences...", null, "Configure options of the editor", null));
-	        mapEventAdapter.addListener(undoMenuItem);
-		mapEventAdapter.addListener(redoMenuItem);
-	        menuBar.add(m);
+        m.addSeparator();
+        m.add(transformSub);		
+        m.addSeparator();
+        m.add(createMenuItem("Preferences...",
+                    null, "Configure options of the editor", null));
+        mapEventAdapter.addListener(undoMenuItem);
+        mapEventAdapter.addListener(redoMenuItem);
+        menuBar.add(m);
 
-        
+
         m = new JMenu("Map");
         m.add(createMenuItem("Resize", null, "Modify map dimensions"));
         m.addSeparator();
         m.add(createMenuItem("Properties", null, "Map properties"));
         mapEventAdapter.addListener(m);
         menuBar.add(m);
-        
+
 
         layerAdd = createMenuItem("Add Layer", null, "Add a layer");
         layerClone = createMenuItem("Duplicate Layer", null,
@@ -352,10 +358,10 @@ public class MapEditor implements ActionListener,
         menuBar.add(m);
     }
 
-	/**
-	 * Creates the left hand main toolbox
-	 *
-	 */
+    /**
+     * Creates the left hand main toolbox
+     *
+     */
     private void createToolbox() {
         ImageIcon iconPaint = null, iconErase = null, iconPour = null;
         ImageIcon iconEyed = null, iconMarquee = null, iconMove = null;
@@ -413,12 +419,12 @@ public class MapEditor implements ActionListener,
         toolBar.add(zoomInButton);
         toolBar.add(zoomOutButton);
 
-        tilePaletteButton = new TileButton(new Dimension(24,24));
+        tilePaletteButton = new TileButton(new Dimension(24, 24));
         tilePaletteButton.setActionCommand("palette");
         //tilePaletteButton.setMargin(new Insets(0,0,0,0));
-		tilePaletteButton.setMaintainAspect( true );
-		tilePaletteButton.setBorder( BorderFactory.createLineBorder(
-															    Color.black ) );
+        tilePaletteButton.setMaintainAspect(true);
+        tilePaletteButton.setBorder(
+                BorderFactory.createLineBorder(Color.black));
         mapEventAdapter.addListener(tilePaletteButton);
         tilePaletteButton.addActionListener(this);
 
@@ -1003,8 +1009,8 @@ public class MapEditor implements ActionListener,
             updateHistory();
             mapView.repaint();
         } else if(command.equals("Resize")) {
-        	ResizeDialog rd = new ResizeDialog(this);
-        	rd.showDialog();
+            ResizeDialog rd = new ResizeDialog(this);
+            rd.showDialog();
         } else if (command.equals("About")) {
             if (aboutDialog == null) {
                 aboutDialog = new AboutDialog(appFrame);
@@ -1021,81 +1027,52 @@ public class MapEditor implements ActionListener,
             ConfigurationDialog d = new ConfigurationDialog(appFrame);
             d.configure();
         } else if (command.equals("Flip Horizontal")) {
-			MapLayer layer = currentMap.getLayer(currentLayer);			
-			paintEdit =
-					new MapLayerEdit(currentMap, new MapLayer(layer), null);
-			currentMap.getLayer(currentLayer).mirror(MapLayer.MIRROR_HORIZONTAL);
-			layer = new MapLayer(currentMap.getLayer(currentLayer));
-			try {
-                paintEdit.end(layer);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            MapLayer layer = currentMap.getLayer(currentLayer);			
+            paintEdit = new MapLayerEdit(currentMap, new MapLayer(layer));
+            currentMap.getLayer(currentLayer).mirror(MapLayer.MIRROR_HORIZONTAL);
+            layer = new MapLayer(currentMap.getLayer(currentLayer));
+            paintEdit.end(layer);
             paintEdit.setPresentationName("Flip Horizontal");
-			undoStack.addEdit(paintEdit);
-			updateHistory();
-			mapView.repaint();
-		} else if (command.equals("Flip Vertical")) {
-			MapLayer layer = currentMap.getLayer(currentLayer);
-			paintEdit =
-					new MapLayerEdit(currentMap, new MapLayer(layer), null);
-			currentMap.getLayer(currentLayer).mirror(MapLayer.MIRROR_VERTICAL);
-			layer = new MapLayer(currentMap.getLayer(currentLayer));
-			try {
-				paintEdit.end(layer);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			paintEdit.setPresentationName("Flip Vertical");
-			undoStack.addEdit(paintEdit);
-			updateHistory();
-			mapView.repaint();
-		} else if (command.equals("Rotate 90")) {
-			MapLayer layer = currentMap.getLayer(currentLayer);
-			paintEdit =
-					new MapLayerEdit(currentMap, new MapLayer(layer), null);
-			currentMap.getLayer(currentLayer).rotate(MapLayer.ROTATE_90);
-			layer = new MapLayer(currentMap.getLayer(currentLayer));
-			try {
-				paintEdit.end(layer);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			paintEdit.setPresentationName("Rotate 90");
-			undoStack.addEdit(paintEdit);
-			updateHistory();
-			mapView.repaint();
-		} else if (command.equals("Rotate 180")) {
-			MapLayer layer = currentMap.getLayer(currentLayer);
-			paintEdit =
-					new MapLayerEdit(currentMap, new MapLayer(layer), null);
-			currentMap.getLayer(currentLayer).rotate(MapLayer.ROTATE_180);
-			layer = new MapLayer(currentMap.getLayer(currentLayer));
-			try {
-				paintEdit.end(layer);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			paintEdit.setPresentationName("Rotate 180");
-			undoStack.addEdit(paintEdit);
-			updateHistory();
-			mapView.repaint();
-		} else if (command.equals("Rotate 270")) {
-			MapLayer layer = currentMap.getLayer(currentLayer);
-			paintEdit =
-					new MapLayerEdit(currentMap, new MapLayer(layer), null);
-			currentMap.getLayer(currentLayer).rotate(MapLayer.ROTATE_270);
-			layer = new MapLayer(currentMap.getLayer(currentLayer));
-			try {
-				paintEdit.end(layer);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			paintEdit.setPresentationName("Rotate 270");
-			undoStack.addEdit(paintEdit);
-			updateHistory();
-			mapView.repaint();
-		} else {
+            undoStack.addEdit(paintEdit);
+            updateHistory();
+            mapView.repaint();
+        } else if (command.equals("Flip Vertical")) {
+            MapLayer layer = currentMap.getLayer(currentLayer);
+            paintEdit = new MapLayerEdit(currentMap, new MapLayer(layer));
+            paintEdit.setPresentationName("Flip Vertical");
+            layer.mirror(MapLayer.MIRROR_VERTICAL);
+            paintEdit.end(new MapLayer(layer));
+            undoStack.addEdit(paintEdit);
+            updateHistory();
+            mapView.repaint();
+        } else if (command.equals("Rotate 90")) {
+            MapLayer layer = currentMap.getLayer(currentLayer);
+            paintEdit = new MapLayerEdit(currentMap, new MapLayer(layer));
+            paintEdit.setPresentationName("Rotate 90");
+            layer.rotate(MapLayer.ROTATE_90);
+            paintEdit.end(new MapLayer(layer));
+            undoStack.addEdit(paintEdit);
+            updateHistory();
+            mapView.repaint();
+        } else if (command.equals("Rotate 180")) {
+            MapLayer layer = currentMap.getLayer(currentLayer);
+            paintEdit = new MapLayerEdit(currentMap, new MapLayer(layer));
+            paintEdit.setPresentationName("Rotate 180");
+            layer.rotate(MapLayer.ROTATE_180);
+            paintEdit.end(new MapLayer(layer));
+            undoStack.addEdit(paintEdit);
+            updateHistory();
+            mapView.repaint();
+        } else if (command.equals("Rotate 270")) {
+            MapLayer layer = currentMap.getLayer(currentLayer);
+            paintEdit = new MapLayerEdit(currentMap, new MapLayer(layer));
+            paintEdit.setPresentationName("Rotate 270");
+            layer.rotate(MapLayer.ROTATE_270);
+            paintEdit.end(new MapLayer(layer));
+            undoStack.addEdit(paintEdit);
+            updateHistory();
+            mapView.repaint();
+        } else {
             System.out.println(event);
         }
     }
@@ -1565,7 +1542,7 @@ public class MapEditor implements ActionListener,
      */
     public static void main(String[] args) {
         try {
-        	TiledConfiguration.populateDefaults();
+            TiledConfiguration.populateDefaults();
             TiledConfiguration.parse(
                     new BufferedReader(new FileReader("tiled.conf")));
         } catch (Exception e) {
