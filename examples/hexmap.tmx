@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+<map orientation="hexagonal" width="32" height="32" tilewidth="48" tileheight="43">
+ <tileset firstgid="1" name="Untitled">
+  <tile id="0">
+   <image format="png">
+    <data encoding="base64">
+     iVBORw0KGgoAAAANSUhEUgAAADEAAAAsCAYAAADM1FBZAAADjUlEQVR42s1ZsYHbMAxk4SLFFyl+hB8gRYovU36RIk3KFCldagQPoBFSaAUP4AG8lPOECOgAgRJli5LdSBZECCQOwBEMYeHv5ePr7cfb4Xbowi3ex+uhTfencPv57fN6Cf3zJtw+h4gs3qOM9Jz7MSTr+meh9i9+PBpEhiVDyPBjkMnR/6Z/h54d07NkJI8TudFZfQJkzLk34vXXsOrxf/vne28UGIQyGmtkPFn2SNRZbQIMHVw9gsAprW4L0LkGDbl2WPmRLHkOPcSwrDEP+RB5oOuv9OwCRiYD4j0bl5PhgqDOGhMYgjVBgDH/7+/7AI02KMzL/cWX0TjQybKokzycdK42CVqlRjKHhhV4hFeTZTguJ2OP5HSuMoGosPl4E+XKG5gqkxGC7zSO34sygWRGJ3/P6nxoAvxRdi8r5rRJ16sOXsw4Ah8jkxhpgqoPkoqNzsdjwXyY06SaEKRehISqIxmZPDsN2QoXLRpy90Q4GFUAXgbIYIpUE2oBbjZwPZnRqQpmp9L38h/mbvsBSa3XAW74LlZzmWwD9KIZG2t1vv7+onQu9obAxeE5CAmBRjsUKW9cTubBDHViMV3sBQ/vludwrZCVP/pxwrIS7mRX3tNZPAGZiMNzaHUc7hTfi/yIV8/jTjmd6JESPlYU0LKC1zByM66eylRT/MjotDE2pdPaUhzQlucwseOgnONOmI4td+J71ulxJ86IGVtm4mCOAzncie95nPAehzvJu7kUnHTO2cLbgjGMCjnQFM+Z4kdr6xxBSwVYZ7JRhufYyosfYj04zpMhI7A6S23xNz4t7J0bvWFRldrhOZamINRQhrHABhEMHT42Z4vyhFJ61m7GnK92cxADvMW046TYTXCnHB8rsIUKc5jjQCqoM9zJ8hwvcOk/Br/RifuUpbb0nki5O/IVLijocqsYeQ4VKOA5HlRG3Y8ZPlZiCyYjRTOQA9kekcdzavWdltiiWjGCu6OPTSx2tftOhbbka4XlK1igtuo75XRaW1z6zcGHHAgL0dZ9pylbZukH4huhtGXfydOJUCraliJf2bPv5NlStJ+Y4Sub9p28ccV9V0x7e/ed2Ja7tqdq9XfsOxlblnc89u47cTq/q8n8bH0nxVgXw+pJ+k6PnQ49Qd9ptSOuPftO6x027tR3Wu/AEfj71n2naieoW/Sd6p5hV+47YVbc7ii4Qt+p7mH8Bn2ne+z6D4sUaiE8Ubh4AAAAAElFTkSuQmCC
+    </data>
+   </image>
+  </tile>
+ </tileset>
+ <layer name="Layer 0">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAAO3DAQkAAAwEofv+pddjKLhqqqqq6usHHB1pSAAQAAA=
+  </data>
+ </layer>
+</map>
