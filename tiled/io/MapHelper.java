@@ -156,7 +156,7 @@ public class MapHelper {
      *    plugin
      * @see MapReader#readTileset(String)
      */
-    public static TileSet readTileset(String file) throws Exception {
+    public static TileSet loadTileset(String file) throws Exception {
         TileSet ret = null;
         try {
             MapReader mr = null;
