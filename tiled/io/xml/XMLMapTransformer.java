@@ -282,6 +282,25 @@ public class XMLMapTransformer implements MapReader
         return set;
     }
 
+	private MapObject unmarshalObject(Node t) throws Exception {
+		MapObject obj = null;
+		try {
+			obj = (MapObject)unmarshalClass(MapObject.class,t);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		NodeList children = t.getChildNodes();
+
+		for (int i = 0; i < children.getLength(); i++) {
+			Node child = children.item(i);
+			if(child.getNodeName().equalsIgnoreCase("property")) {
+				obj.setProperty(getAttributeValue(child,"name"),getAttributeValue(child,"value"));
+			}
+		}
+		return obj;
+	}
+
     private Tile unmarshalTile(Node t) throws Exception {
         Tile tile = null;
 
@@ -416,12 +435,10 @@ public class XMLMapTransformer implements MapReader
             String tileHeightString = getAttributeValue(mapNode, "tileheight");
 
             if (tileWidthString != null) {
-                int tileWidth = Integer.parseInt(tileWidthString);
-                map.setTileWidth(tileWidth);
+                map.setTileWidth(Integer.parseInt(tileWidthString));
             }
             if (tileHeightString != null) {
-                int tileHeight = Integer.parseInt(tileHeightString);
-                map.setTileHeight(tileHeight);
+                map.setTileHeight(Integer.parseInt(tileHeightString));
             }
 
             if (orientation != null) {
@@ -455,7 +472,13 @@ public class XMLMapTransformer implements MapReader
                 }
             }
 
-            // TODO: Add object support...
+			//Load the objects
+			l = doc.getElementsByTagName("object");
+			for (int i = 0; (item = l.item(i)) != null; i++) {
+				if (item.getParentNode() == mapNode) {
+					map.addObject(unmarshalObject(item));
+				}
+			}
         }
     }
 

@@ -149,7 +149,7 @@ public class ResizeDialog extends JDialog implements ActionListener {
 			try {
 				int nwidth = Integer.parseInt(width.getText());
 				int nheight = Integer.parseInt(height.getText());
-				int x=-Integer.parseInt(offsetX.getText());
+				int x=-Integer.parseInt(offsetX.getText());        //math works out in MapLayer#resize
 				int y=-Integer.parseInt(offsetY.getText());
 				currentMap.resize(nwidth,nheight,x,y);
 			} catch (NumberFormatException nfe) {

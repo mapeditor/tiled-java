@@ -32,7 +32,7 @@ public class MapObject {
         properties = new Properties();
     }
 
-    public void addAttribute(String key, String value) {
+    public void setProperty(String key, String value) {
 		properties.put(key,value);
     }
 
