@@ -5,82 +5,81 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
+
 package tiled.mapeditor;
 
 import java.util.Properties;
-
 import javax.swing.table.AbstractTableModel;
 
-public class PropertiesTableModel extends AbstractTableModel {
+public class PropertiesTableModel extends AbstractTableModel
+{
+    private Properties properties;
 
-	private Properties properties;
+    private String[] columnNames = { "Name", "Value" };
 
-	private String[] columnNames = { "Property Name", "value" };
-	
-	public PropertiesTableModel() {
-		properties = new Properties();
-	}
-	
-	public int getRowCount() {
-		return properties.size()+1;
-	}
+    public PropertiesTableModel() {
+        properties = new Properties();
+    }
 
-	public String getColumnName(int col) {
-		return columnNames[col];
-	}
+    public int getRowCount() {
+        return properties.size() + 1;
+    }
 
-	public int getColumnCount() {
-		return columnNames.length;
-	}
+    public String getColumnName(int col) {
+        return columnNames[col];
+    }
 
-	public boolean isCellEditable(int row, int col) {
-		return true;
-	}
+    public int getColumnCount() {
+        return columnNames.length;
+    }
 
-	public Object getValueAt(int rowIndex, int columnIndex) {
-		Object [] array = properties.keySet().toArray();
-		if(rowIndex>=0 && rowIndex<properties.size()) {		
-			if(columnIndex == 0) {
-				return array[rowIndex];
-			}else if(columnIndex == 1) {
-				return properties.get(array[rowIndex]);
-			}
-		}
-		return null;
-	}
+    public boolean isCellEditable(int row, int col) {
+        return true;
+    }
 
-	public void setValueAt(Object value, int row, int col) {
+    public Object getValueAt(int rowIndex, int columnIndex) {
+        Object [] array = properties.keySet().toArray();
+        if (rowIndex >= 0 && rowIndex < properties.size()) {
+            if (columnIndex == 0) {
+                return array[rowIndex];
+            } else if(columnIndex == 1) {
+                return properties.get(array[rowIndex]);
+            }
+        }
+        return null;
+    }
 
-		if (row >= 0) {
-			if((row >= properties.size() && col == 0) || getValueAt(row, 0) == null) {
-				properties.put(value,"0");
-			} else {
+    public void setValueAt(Object value, int row, int col) {
+        if (row >= 0) {
+            if ((row >= properties.size() && col == 0) || getValueAt(row, 0) == null) {
+                properties.put(value, "0");
+            } else {
 
-				if(col == 1) {					
-					properties.setProperty((String) getValueAt(row, 0), (String) value);
-				} else if (col == 0) {
-					Object val = getValueAt(row, 1);
-					if(getValueAt(row, col) != null){
-						properties.remove(getValueAt(row, col));
-					}
-					properties.put(value, val);
-				}
-			}
-			fireTableCellUpdated(row, col);
-		}
-		
-	}
+                if (col == 1) {
+                    properties.setProperty(
+                            (String)getValueAt(row, 0), (String)value);
+                } else if (col == 0) {
+                    Object val = getValueAt(row, 1);
+                    if (getValueAt(row, col) != null) {
+                        properties.remove(getValueAt(row, col));
+                    }
+                    properties.put(value, val);
+                }
+            }
+            fireTableCellUpdated(row, col);
+        }
 
-	public void update(Properties props) {
-		properties=props;
-		
-	}
-	
-	public Properties getProperties() {
-		return properties;
-	}
+    }
+
+    public void update(Properties props) {
+        properties = props;
+    }
+
+    public Properties getProperties() {
+        return properties;
+    }
 }
