@@ -49,12 +49,13 @@ public class TileSet
     }
 
     /**
-     * Creates a tileset from a tile bitmap. This is a tile-cutter.
+     * Creates a tileset from a tile bitmap file. This is a tile-cutter.
      *
      * @param imgFilename the filename of the image to be used
      * @param tileWidth   the tile width
      * @param tileHeight  the tile height
      * @param spacing     the amount of spacing between the tiles
+     * @see TileSet#importTileBitmap(BufferedImage tilebmp, int tileWidth, int tileHeight, int spacing, boolean createTiles)
      */
     public void importTileBitmap(String imgFilename, int tileWidth,
             int tileHeight, int spacing, boolean createTiles) throws Exception{
@@ -68,39 +69,50 @@ public class TileSet
 
         System.out.println("Importing " + imgFilename + "...");
 
-        BufferedImage tilebmp = null;
-
-        tilebmp = ImageIO.read(new URL(imgFilename));
-
-        if (tilebmp == null) {
-            throw new Exception("Failed to load " + tilebmpFile);
-        }
-
-        int iw = tilebmp.getWidth();
-        int ih = tilebmp.getHeight();
-
-        if (iw > 0 && ih > 0) {
-            for (int y = 0; y <= ih - tileHeight; y += tileHeight + spacing) {
-                for (int x = 0; x <= iw - tileWidth; x += tileWidth + spacing) {
-                    BufferedImage tile = new BufferedImage(
-                            tileWidth, tileHeight,
-                            BufferedImage.TYPE_INT_ARGB);
-                    Graphics2D tg = tile.createGraphics();
-
-                    tg.drawImage(tilebmp, 0, 0,
-                            tileWidth, tileHeight,
-                            x, y, x + tileWidth, y + tileHeight,
-                            null);
-                    int newId = addImage(tile);
-                    if (createTiles) {
-                        Tile newTile = new Tile();
-                        newTile.setImage(newId);
-                        addNewTile(newTile);
-                    }
-                }
-            }
-        }
+        importTileBitmap(ImageIO.read(new URL(imgFilename)), tileWidth, tileHeight, spacing, createTiles);
+        
     }
+
+	/**
+	 * Creates a tileset from a buffered image
+	 *
+	 * @param tilebmp     the image to be used
+	 * @param tileWidth   the tile width
+	 * @param tileHeight  the tile height
+	 * @param spacing     the amount of spacing between the tiles
+	 */
+	public void importTileBitmap(BufferedImage tilebmp, int tileWidth,
+				int tileHeight, int spacing, boolean createTiles) throws Exception{
+					
+		if (tilebmp == null) {
+			throw new Exception("Failed to load " + tilebmpFile);
+		}
+
+		int iw = tilebmp.getWidth();
+		int ih = tilebmp.getHeight();
+
+		if (iw > 0 && ih > 0) {
+			for (int y = 0; y <= ih - tileHeight; y += tileHeight + spacing) {
+				for (int x = 0; x <= iw - tileWidth; x += tileWidth + spacing) {
+					BufferedImage tile = new BufferedImage(
+							tileWidth, tileHeight,
+							BufferedImage.TYPE_INT_ARGB);
+					Graphics2D tg = tile.createGraphics();
+
+					tg.drawImage(tilebmp, 0, 0,
+							tileWidth, tileHeight,
+							x, y, x + tileWidth, y + tileHeight,
+							null);
+					int newId = addImage(tile);
+					if (createTiles) {
+						Tile newTile = new Tile();
+						newTile.setImage(newId);
+						addNewTile(newTile);
+					}
+				}
+			}
+		}			
+	}
 
     /**
      * Sets the standard width of the tiles in this tileset. Tiles in this
@@ -579,5 +591,32 @@ public class TileSet
     public boolean usesSharedImages() {
         // TODO: Currently only uses shared sets...
         return true;
+    }
+    
+    /**
+     * Checks whether each image has a one to one relationship with the tiles.
+     * 
+     * @return true if each image is associated with one and only one tile, false otherwise.
+     */
+    public boolean isOneforOne() {
+    	Enumeration keys = images.keys();
+    	
+    	while(keys.hasMoreElements()) {
+    		int key = Integer.parseInt((String)keys.nextElement());
+    		int relations = 0;
+    		Iterator itr = tiles.iterator();
+    		
+    		while(itr.hasNext()) {
+    			Tile t = (Tile)itr.next();
+    			if(t.getImageId() == key) {
+    				relations++;
+    			}
+    		}
+    		if(relations != 1) {
+    			return false;
+    		}
+    	}
+    	
+    	return true;
     }
 }

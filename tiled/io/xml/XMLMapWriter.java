@@ -167,8 +167,10 @@ public class XMLMapWriter implements MapWriter
                 //w.writeAttribute("spacing", "0");
             }
 
-			w.writeAttribute("basedir", set.getBaseDir());
-
+			if(set.getBaseDir() != null) {
+				w.writeAttribute("basedir", set.getBaseDir());
+			}
+			
             if (source != null) {
                 // External tileset
                 w.writeAttribute("source", source.substring(
@@ -211,17 +213,31 @@ public class XMLMapWriter implements MapWriter
                         //fw.write(data, 0, data.length);
                         fw.close();
                     }
-                } else {
-                    // If not a set bitmap, tiles handle their own images...
-
-                    int totalTiles = set.getTotalTiles();
-
-                    for (int i = 0; i < totalTiles; i++) {
-                        Tile tile = set.getTile(i);
-                        if (tile != null) {
-                            writeTile(tile, w);
-                        }
-                    }
+                }
+                
+                //check to see if there is a need to write tile elements
+                if(set.isOneforOne()) {
+	                int totalTiles = set.getTotalTiles();
+					boolean needWrite = false;
+		
+	
+					for (int i = 0; i < totalTiles; i++) {
+						Tile tile = set.getTile(i);
+						if(tile.getProperties().hasMoreElements()) {
+							needWrite = true;
+							break;				//as long as one has properties, they all need to be written
+						}
+					}
+					
+					if(needWrite) {
+		                for (int i = 0; i < totalTiles; i++) {
+		                    Tile tile = set.getTile(i);
+		                    if (tile != null) {
+		                        writeTile(tile, w);
+		                    }
+		                }
+					}
+	                
                 }
             }
             w.endElement();

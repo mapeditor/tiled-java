@@ -14,6 +14,8 @@ package tiled.mapeditor;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.FilteredImageSource;
 import java.io.File;
 import java.io.IOException;
 
@@ -22,6 +24,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 
 import tiled.core.*;
+import tiled.mapeditor.util.TransparentImageFilter;
 import tiled.mapeditor.widget.*;
 
 public class NewTilesetDialog extends JDialog implements ActionListener,
@@ -75,7 +78,7 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
         tilebmpCheck.addChangeListener(this);
 
         tileAutoCheck = new JCheckBox("Automatically create tiles from images",
-                false);
+                true);
         tileAutoCheck.setEnabled(false);
 
         okButton = new JButton("OK");
@@ -202,9 +205,25 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
                 String file = tilebmpFile.getText();
                 int spacing = tileSpacing.intValue();
                 try {
-                    newTileset.importTileBitmap("file://"+file,
+                	if(colorButton.getText().equals("None")) {
+                    	newTileset.importTileBitmap("file://"+file,
                             map.getTileWidth(), map.getTileHeight(), spacing,
                             tileAutoCheck.isSelected());
+                	} else {
+                        
+                        try {
+	                		Image orig = ImageIO.read(new File(file));
+	                		Image trans = Toolkit.getDefaultToolkit().createImage(new FilteredImageSource(orig.getSource(),new TransparentImageFilter(colorButton.getBackground().getRGB())));
+	                		BufferedImage img = new BufferedImage(trans.getWidth(null), trans.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+	                		
+	                		img.getGraphics().drawImage(trans,0,0,null);
+	                		
+							newTileset.importTileBitmap(img,
+								map.getTileWidth(), map.getTileHeight(), spacing,
+								tileAutoCheck.isSelected());
+                        }catch(Exception e) {
+                        }
+                	}
                 } catch (Exception e) {
                     JOptionPane.showMessageDialog(this,
                         e.getMessage(), "Error while importing tileset",
