@@ -40,16 +40,40 @@ public class ShapeBrush extends AbstractBrush
     	}
     }
     
+    /**
+     * Make a circular brush
+     * 
+     * @param rad the radius of the circular region
+     */
     public void makeCircleBrush(double rad) {
         shape = new Area(new Ellipse2D.Double(0, 0, rad * 2, rad * 2));
         this.resize((int)(rad * 2), (int)(rad * 2), 0, 0);
     }
 
+    /**
+     * Make a rectangular brush
+     * 
+     * @param r a Rectangle to use as the shape of the brush
+     */
     public void makeQuadBrush(Rectangle r) {
         shape = new Area(new Rectangle2D.Double(r.x, r.y, r.width, r.height));
         this.resize(r.width,r.height,0,0);
     }
 
+    public void makePolygonBrush(Polygon p) {
+        
+    }
+    
+    /**
+     * Paints the entire area of the brush with the set tile. This brush can
+     * affect several layers. 
+     * 
+     * @see Brush#commitPaint(MultilayerPlane, int, int, int)
+     * @return a Rectangle of the bounds of the area that was modified
+     * @param mp The multilayer plane that will be modified
+     * @param x  The x-coordinate where the click occurred.
+     * @param y  The y-coordinate where the click occurred.
+     */
     public Rectangle commitPaint(MultilayerPlane mp, int x, int y, int initLayer) {
         Rectangle bounds = shape.getBounds();
         int centerx = (int)(x - (bounds.width / 2));
@@ -60,8 +84,8 @@ public class ShapeBrush extends AbstractBrush
         for(int l=0;l<numLayers;l++) {
         	TileLayer tl = (TileLayer) mp.getLayer(initLayer - l);
         	if(tl != null) {
-		        for (int i = 0; i <= bounds.height; i++) {
-		            for (int j = 0; j <= bounds.width; j++) {
+		        for (int i = 0; i <= bounds.height+1; i++) {
+		            for (int j = 0; j <= bounds.width+1; j++) {
 		                if (shape.contains(j, i)) {
 		                    tl.setTileAt(j + centerx, i + centery, paintTile);
 		                }
@@ -78,6 +102,14 @@ public class ShapeBrush extends AbstractBrush
         paintTile = t;
     }
 
+    public Tile getTile() {
+        return paintTile;
+    }
+    
+    public Rectangle getBounds() {
+        return shape.getBounds();
+    }
+    
 	public void paint(Graphics g, int x, int y) {		
 		if(shape.isRectangular()) {
 			g.fillRect(x,y,shape.getBounds().width,shape.getBounds().height);

@@ -191,10 +191,13 @@ public class XMLMapTransformer implements MapReader
                 Node n = nl.item(i);
                 if (n.getNodeName().equals("data")) {
                     Node cdata = n.getChildNodes().item(0);
-                    String sdata = cdata.getNodeValue();
-                    img = ImageHelper.bytesToImage(
+                    if(cdata == null) {
+                        warnings.push("WARN: image <data> tag enclosed no data. (empty data tag)");
+                    } else {
+                        String sdata = cdata.getNodeValue();
+                        img = ImageHelper.bytesToImage(
                             Base64.decode(sdata.trim().toCharArray()));
-
+                    }
                     break;
                 }
             }
@@ -449,35 +452,39 @@ public class XMLMapTransformer implements MapReader
 
                 if (encoding != null && encoding.equalsIgnoreCase("base64")) {
                     Node cdata = child.getChildNodes().item(0);
-                    char[] enc = cdata.getNodeValue().trim().toCharArray();
-                    byte[] dec = Base64.decode(enc);
-                    ByteArrayInputStream bais = new ByteArrayInputStream(dec);
-                    InputStream is;
-
-                    String comp = getAttributeValue(child, "compression");
-
-                    if (comp != null && comp.equalsIgnoreCase("gzip")) {
-                        is = new GZIPInputStream(bais);
+                    if(cdata == null) {
+                        warnings.push("WARN: layer <data> tag enclosed no data. (empty data tag)");
                     } else {
-                        is = bais;
-                    }
-
-                    for (int y = 0; y < ml.getHeight(); y++) {
-                        for (int x = 0; x < ml.getWidth(); x++) {
-                            int tileId = 0;
-                            tileId |= is.read();
-                            tileId |= is.read() <<  8;
-                            tileId |= is.read() << 16;
-                            tileId |= is.read() << 24;
-
-                            TileSet ts = map.findTileSetForTileGID(tileId);
-                            if (ts != null) {
-                                ml.setTileAt(x, y,
-                                        ts.getTile(tileId - ts.getFirstGid()));
-                            } else {
-                                ml.setTileAt(x, y, map.getNullTile());
-                            }
-                        }
+	                    char[] enc = cdata.getNodeValue().trim().toCharArray();
+	                    byte[] dec = Base64.decode(enc);
+	                    ByteArrayInputStream bais = new ByteArrayInputStream(dec);
+	                    InputStream is;
+	
+	                    String comp = getAttributeValue(child, "compression");
+	
+	                    if (comp != null && comp.equalsIgnoreCase("gzip")) {
+	                        is = new GZIPInputStream(bais);
+	                    } else {
+	                        is = bais;
+	                    }
+	
+	                    for (int y = 0; y < ml.getHeight(); y++) {
+	                        for (int x = 0; x < ml.getWidth(); x++) {
+	                            int tileId = 0;
+	                            tileId |= is.read();
+	                            tileId |= is.read() <<  8;
+	                            tileId |= is.read() << 16;
+	                            tileId |= is.read() << 24;
+	
+	                            TileSet ts = map.findTileSetForTileGID(tileId);
+	                            if (ts != null) {
+	                                ml.setTileAt(x, y,
+	                                        ts.getTile(tileId - ts.getFirstGid()));
+	                            } else {
+	                                ml.setTileAt(x, y, map.getNullTile());
+	                            }
+	                        }
+	                    }
                     }
                 } else {
                     int x = 0, y = 0;

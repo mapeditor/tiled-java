@@ -18,9 +18,11 @@
 * Added support for reading TMX/TSX files from URLs
 * Added the RandomBrush for doing 'spray-paint' painting (suggested
   by Rainer Deyke)
-/ Added the brush dialog, and support for a wide range of brush operations
+* Added the brush dialog, and support for a wide range of brush operations
+  (Nephilim, Rainer Deyke, et al.)
 * Added a message framework for reporting load/save problems to the user
 * Improved GUI in several places
+* Improved TMX loading, it is now much more forgiving
 * Completed the Search/Replace dialog
 * Changed the MultisetListRenderer to show tiles actual-size when selected
 * Generalized the dialogs for properties and added delete capabilities.

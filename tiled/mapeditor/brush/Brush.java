@@ -35,6 +35,8 @@ public abstract class Brush extends MultilayerPlane
     
     public abstract int getAffectedLayers();
     
+    public abstract Rectangle getBounds();
+    
     /**
      * This is the main processing method for a Brush object. Painting starts
      * on initLayer, and if the brush has more than one layer, then the brush  

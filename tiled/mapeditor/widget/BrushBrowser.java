@@ -34,7 +34,7 @@ public class BrushBrowser extends JPanel {
 	}
 	
 	public Dimension getPreferredSize() {
-        return new Dimension(150,150);
+        return new Dimension(maxWidth*5,150);
     }
 	
 	private void init() {
@@ -93,7 +93,7 @@ public class BrushBrowser extends JPanel {
 			Rectangle bb = b.getBounds();
 			b.paint(g, x+((maxWidth/2)-bb.width/2), y+((maxWidth/2)-bb.width/2));
 			x+=maxWidth;
-			if(x>clipRect.width) {
+			if(x+maxWidth>clipRect.width) {
 				x=0;
 				y+=maxWidth;
 			}
@@ -107,7 +107,7 @@ public class BrushBrowser extends JPanel {
 		while(itr.hasNext()) {
 			Brush br = (Brush) itr.next();
 			if(br.equals(b)) {
-				selectedBrush = b;
+				selectedBrush = br;
 				break;
 			}
 		}

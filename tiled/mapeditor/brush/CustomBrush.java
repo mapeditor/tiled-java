@@ -38,6 +38,10 @@ public class CustomBrush extends AbstractBrush
     	return getTotalLayers();
     }
     
+    public Rectangle getBounds() {
+        return getBounds();
+    }
+    
     /**
      * The custom brush will merge its internal layers onto the layers of the 
      * specified MultilayerPlane.

@@ -51,6 +51,10 @@ public class RandomBrush extends ShapeBrush {
     }
     
     /**
+     * Uses the MersenneTwister to fill in a random amount of the area
+     * of the brush. Uses the formula: x % 101 &lt;= 100*ratio where, 'x'
+     * is a random number, to determine if a specific tile should be 
+     * painted or not
      * 
      * @see ShapeBrush#commitPaint
      * @return a Rectangle of the bounds of the area that was modified
