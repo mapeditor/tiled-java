@@ -24,6 +24,9 @@ import java.util.Vector;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import javax.swing.JFrame;
+import javax.swing.ProgressMonitor;
+
 import tiled.io.MapReader;
 import tiled.io.MapWriter;
 import tiled.io.PluggableMapIO;
@@ -49,8 +52,10 @@ public class PluginClassLoader extends URLClassLoader
         writerFormats = new Hashtable();
     }
 
-    public void readPlugins(String base) throws Exception {
+    public void readPlugins(String base, JFrame parent) throws Exception {
         String baseURL = base;
+        ProgressMonitor monitor;
+        
         if (base == null) {
             baseURL = TiledConfiguration.getInstance().getValue(
                     "tiled.plugins.dir");
@@ -63,12 +68,33 @@ public class PluginClassLoader extends URLClassLoader
                     baseURL);
         }
 
+        //Start the progress monitor
+        int total = 0;
         File[] files = dir.listFiles();
         for (int i = 0; i < files.length; i++) {
             String aPath = files[i].getAbsolutePath();
             if (aPath.endsWith(".jar")) {
+            	total++;
+            }
+        }
+        
+        monitor = new ProgressMonitor(parent, "Loading plugins", "", 0, total-1);
+        monitor.setProgress(0);
+        monitor.setMillisToPopup(0);
+        monitor.setMillisToDecideToPopup(0);
+        
+        for (int i = 0, j=0; i < files.length; i++) {
+            String aPath = files[i].getAbsolutePath();
+            if (aPath.endsWith(".jar")) {
+            	j++;
                 try {
                     JarFile jf = new JarFile(files[i]);
+                    
+                    monitor.setProgress(i);
+                    
+                    if(jf.getManifest() == null)
+                    	continue;
+                    
                     String readerClassName =
                         jf.getManifest().getMainAttributes().getValue(
                                 "Reader-Class");
@@ -77,7 +103,7 @@ public class PluginClassLoader extends URLClassLoader
                                 "Writer-Class");
 
                     Class readerClass = null, writerClass = null;
-
+                    
                     // Verify that the jar has the necessary files to be a
                     // plugin
                     if (readerClassName == null && writerClassName == null) {
@@ -106,12 +132,14 @@ public class PluginClassLoader extends URLClassLoader
                     }
 
                     if (bPlugin) {
+                    	monitor.setNote("Loading "+aPath.substring(aPath.lastIndexOf(File.separatorChar)+1)+ "...");
                         //System.out.println(
                         //        "Added " + files[i].getCanonicalPath());
                         super.addURL(new URL("file://" + aPath));
                         _add(readerClass);
                         _add(writerClass);
                     }
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

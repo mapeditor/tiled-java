@@ -1,4 +1,4 @@
-<project name="Tiled" default="dist" basedir="./plugins">
+<project name="Tiled" default="dist" basedir="plugins">
   <description>
     A Java-based Tile Map Editor
   </description>

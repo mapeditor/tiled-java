@@ -159,16 +159,7 @@ public class MapEditor implements ActionListener,
         currentBrush = new ShapeBrush();
         ((ShapeBrush)currentBrush).makeQuadBrush(new Rectangle(0, 0, 1, 1));
 
-        // Load plugins
-        pluginLoader  = new PluginClassLoader();
-        try {
-            pluginLoader.readPlugins(null);
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(appFrame,
-                    e.getMessage(), "Plugin loader",
-                    JOptionPane.WARNING_MESSAGE);
-        }
+        
 
         // Create the actions
         zoomInAction = new ZoomInAction();
@@ -204,6 +195,17 @@ public class MapEditor implements ActionListener,
         updateRecent(null);
 
         appFrame.setVisible(true);
+        
+//      Load plugins
+        pluginLoader  = new PluginClassLoader();
+        try {
+            pluginLoader.readPlugins(null, appFrame);
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(appFrame,
+                    e.toString(), "Plugin loader",
+                    JOptionPane.WARNING_MESSAGE);
+        }
     }
 
     private JPanel createContentPane() {
