@@ -1,3 +1,13 @@
+0.4.2 -	October 13th, 2004
+
+* Added a JNLP for WebStart, contributed by Chris Hazen
+* Added a simple plugin for the Mappy FMAP format maps
+* Added a plugin dialog for information about plugins
+* Added plugin target for building bundled plugins
+* Removed API usage deprecated by Java 5.0
+* Fixed a NullPointerException when loading plugins
+* Fixed Issue #75 (layer naming on undo)
+
 0.4.1 - September 24th, 2004
 
 * Added search/replace functionality
