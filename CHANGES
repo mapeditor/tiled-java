@@ -7,11 +7,20 @@
 * Added a version attribute to the map tag in the DTD (and support)
 * Added a basedir attribute to the tileset tag in the DTD (and support)
   suggested by Radomir Dopieralski
+* Added support for masked bitmaps on tileset image imports (Issue #52)
+* Added support for highlighting tile under cursor
+* Added documentation for the TMX format
 * Merged in Rainer Deyke's shared images code
 * Fixed determining the relative path to tileset images
 * Fixed some old things in the DTD suggested by Radomir Dopieralski
-* New tilesets can have tiles auto-created from images
+* Fixed drawing artifacts in selections
+* Fixed Copy, Cut, and Paste menu options to be disabled when no map is loaded
+* Completed the Search/Replace dialog
+* User can now choose whether to automatically create tiles from tileset images
+  upon import or not.
 * Tiled now supports reading TMX/TSX files from URLs
+* Changed the MultisetListRenderer to show tiles actual-size when selected
+* Generalized the dialogs for properties and added delete capabilities.
 
 0.4.2 - October 14th, 2004
 

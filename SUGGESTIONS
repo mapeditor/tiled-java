@@ -13,7 +13,8 @@ Problems:   Shift even rows or odd rows? Or how to make that an option?
 Suggestor:  Ahmed Mohombe <amohombe@yahoo.com>
 Date:       08/04/04
 Summary:    Show tile coordinates on each tile (analoguous to Show Grid).
-State:      Implementation in progress (task #82)
+State:      Implementation in progress (task #82).
+            This will be included in the 0.5.0 release.
 
 - 03 --------------------------------------------------------------------------
 Suggestor:  Ahmed Mohombe <amohombe@yahoo.com>
@@ -104,7 +105,7 @@ State:      Selections maybe, not the tile images for now.
 Suggestor:  Rainer Deyke <root@rainerdeyke.com>
 Date:       24/09/04
 Summary:    A random brush that randomly picks one of several tiles to draw.
-State:      Will eventually be implemented.
+State:      This will be included in a 0.5.x release.
 
 - 19 --------------------------------------------------------------------------
 Suggestor:  Rainer Deyke <root@rainerdeyke.com>
@@ -112,7 +113,7 @@ Date:       24/09/04
 Summary:    A block tool that lets me draw blocks of tiles with a single mouse
             drag. I can fake this with select-and-pour, but a block tool would
             be much more convenient.
-State:      Interesting.
+State:      This will be included in the 0.5.0 release.
 
 - 20 --------------------------------------------------------------------------
 Suggestor:  Rainer Deyke <root@rainerdeyke.com>
@@ -131,7 +132,7 @@ State:      Flyspray task #62
 Suggestor:  Rainer Deyke <root@rainerdeyke.com>
 Date:       24/09/04
 Summary:    "Deep" brushes that affect more than one layer.
-State:      Something we plan to work on.
+State:      This will be included in the 0.5.0 release.
 
 - 23 --------------------------------------------------------------------------
 Suggestor:  Rainer Deyke <root@rainerdeyke.com>

@@ -64,6 +64,7 @@ public class ImageColorDialog
 		
 		color = new Color(255, 103, 139);  //Evil pink
 		colorPanel = new JPanel();
+		colorPanel.setPreferredSize(new Dimension(25, 25));
 		colorPanel.setBackground(color);
 		
 		bCancel = new JButton("Cancel");
@@ -82,7 +83,9 @@ public class ImageColorDialog
 		c.gridx = 0; c.gridy = 0; c.weightx = 1;
 		c.fill = GridBagConstraints.HORIZONTAL;
     	buttonPanel.add(colorPanel);
-    	c.gridx = 2;
+    	c.gridx = 1;
+    	buttonPanel.add(Box.createRigidArea(new Dimension(25, 5)));
+		c.gridx = 2;
     	buttonPanel.add(bCancel);
     	
     	mainPanel.add(buttonPanel);
@@ -97,6 +100,7 @@ public class ImageColorDialog
     
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == bCancel) {
+        	color = null;
         	dispose();
         }
     }

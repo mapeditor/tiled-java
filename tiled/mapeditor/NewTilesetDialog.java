@@ -244,8 +244,11 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
 			ImageColorDialog icd;
             try {
                 icd = new ImageColorDialog(ImageIO.read(new File(tilebmpFile.getText())));
-				colorButton.setBackground(icd.showDialog());
-				colorButton.setText(Integer.toHexString(colorButton.getBackground().getRGB()).substring(2));
+                Color c = icd.showDialog();
+                if(c != null) {
+					colorButton.setBackground(c);
+					colorButton.setText(Integer.toHexString(colorButton.getBackground().getRGB()).substring(2));
+                }
             } catch (IOException e) {
 				JOptionPane.showMessageDialog(getOwner(),
 						"Error while loading image: " + e.getMessage(),
