@@ -92,7 +92,7 @@ public class MultilayerPlane
      * Removes the layer at the specified index. Layers above this layer
      * will move down to fill the gap.
      *
-     * @param index Index of layer to be removed.
+     * @param index the index of the layer to be removed.
      */
     public MapLayer removeLayer(int index) {
         MapLayer layer = (MapLayer)layers.remove(index);
@@ -114,7 +114,7 @@ public class MultilayerPlane
     /**
      * Moves the layer at <code>index</code> up one in the vector
      * 
-     * @param index
+     * @param index the index of the layer to swap up
      * @throws Exception
      */
     public void swapLayerUp(int index) throws Exception {
@@ -131,13 +131,12 @@ public class MultilayerPlane
     /**
      * Moves the layer at <code>index</code> down one in the vector
      * 
-     * @param index
+     * @param index the index of the layer to swap down
      * @throws Exception
      */
     public void swapLayerDown(int index) throws Exception {
         if (index - 1 < 0) {
-            throw new Exception(
-                    "Can't swap down when already at the bottom.");
+            throw new Exception("Can't swap down when already at the bottom.");
         }
 
         MapLayer hold = (MapLayer)layers.get(index - 1);
@@ -149,13 +148,12 @@ public class MultilayerPlane
      * Merges the layer at <code>index</code> with the layer below it
      * 
      * @see tiled.core.MapLayer#mergeOnto
-     * @param index
+     * @param index the index of the layer to merge down
      * @throws Exception
      */
     public void mergeLayerDown(int index) throws Exception {
         if (index - 1 < 0) {
-            throw new Exception(
-                    "Can't merge down bottom layer.");
+            throw new Exception("Can't merge down bottom layer.");
         }
 
         getLayer(index).mergeOnto(getLayer(index - 1));

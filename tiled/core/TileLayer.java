@@ -5,7 +5,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
@@ -155,7 +155,7 @@ public class TileLayer extends MapLayer
         super.setWidth(w);
         resize(w, bounds.height, 0, 0);
     }
-    
+
     /**
      * Sets the height of the map in tiles
      */
@@ -163,7 +163,7 @@ public class TileLayer extends MapLayer
         super.setHeight(h);
         resize(bounds.width, h, 0, 0);
     }
-    
+
     /**
      * Sets the bounds (in tiles) to the specified Rectangle. <b>Caution:</b>
      * this causes a reallocation of the data array, and all previous data is
@@ -315,7 +315,7 @@ public class TileLayer extends MapLayer
     public void mergeOnto(MapLayer other) {
         if(!other.canEdit())
             return;
-        
+
         for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
             for (int x = bounds.x; x < bounds.x + bounds.width; x++) {
                 Tile tile = getTileAt(x, y);
@@ -369,7 +369,7 @@ public class TileLayer extends MapLayer
     public void copyTo(MapLayer other) {
         if (!canEdit())
             return;
-        
+
         for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
             for (int x = bounds.x; x < bounds.x + bounds.width; x++) {
                 ((TileLayer)other).setTileAt(x, y, getTileAt(x, y));
