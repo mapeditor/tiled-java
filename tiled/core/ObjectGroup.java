@@ -22,6 +22,10 @@ public class ObjectGroup extends MapLayer
     
     private LinkedList boundObjects;
     
+    public ObjectGroup() {
+    	super();
+    	boundObjects = new LinkedList();
+    }
     /**
      * Creates an object group that is part of the given map and has the given
      * origin.
@@ -32,6 +36,7 @@ public class ObjectGroup extends MapLayer
      */
     public ObjectGroup(Map map, int origx, int origy) {
         super(map);
+        boundObjects = new LinkedList();
         setBounds(new Rectangle(origx, origy, 0, 0));
     }
 
@@ -43,6 +48,7 @@ public class ObjectGroup extends MapLayer
      */
     public ObjectGroup(Rectangle area) {
         super(area);
+        boundObjects = new LinkedList();
     }
 
     /**
@@ -51,6 +57,7 @@ public class ObjectGroup extends MapLayer
      * @param group the group to clone
      */
     public ObjectGroup(ObjectGroup group) {
+    	boundObjects = new LinkedList();
     }
     
     /**

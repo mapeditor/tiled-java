@@ -12,6 +12,7 @@
 
 package tiled.view;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -22,6 +23,8 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.geom.Rectangle2D;
 import java.awt.font.FontRenderContext;
+import java.util.Iterator;
+
 import javax.swing.SwingConstants;
 
 import tiled.core.*;
@@ -99,8 +102,18 @@ public class OrthoMapView extends MapView
     }
 
     protected void paintLayer(Graphics g, ObjectGroup layer, double zoom) {
+    	Iterator itr = layer.getObjects();
     	
+    	while(itr.hasNext()) {
+    		MapObject mo = (MapObject) itr.next();
+    		
+    		g.setColor(Color.black);
+    		g.fillRect(mo.getX(), mo.getY(),10,10);
+    		g.setColor(Color.white);
+    		g.drawString(mo.getType(),mo.getX()-12,mo.getY()-5);
+    	}
     }
+    
     protected void paintGrid(Graphics g, double zoom) {
         // Determine tile size
         Dimension tsize = getTileSize(zoom);
