@@ -158,32 +158,13 @@ public abstract class MapLayer implements Cloneable
         }
     }
 
-    public void setXOffset(int xOff) {
-        bounds.x = xOff;
-    }
-
-    public void setYOffset(int yOff) {
-        bounds.y = yOff;
-    }
-
     /**
-     * setWidth() should be used exclusively by the XMLMapTransformer.
-     * 
-     * @param w the new width
+     * Sets the offset of this map layer. The offset is a distance by which to
+     * shift this layer from the origin of the map.
+     *
+     * @param xOff x offset in tiles
+     * @parem yOff y offset in tiles
      */
-    public void setWidth(int w) {
-        bounds.width = w;
-    }
-    
-    /**
-     * setHeight() should be used exclusively by the XMLMapTransformer.
-     * 
-     * @param h the new height
-     */
-    public void setHeight(int h) {
-        bounds.height = h;
-    }
-    
     public void setOffset(int xOff, int yOff) {
         bounds.x = xOff;
         bounds.y = yOff;

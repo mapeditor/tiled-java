@@ -151,19 +151,6 @@ public class TileLayer extends MapLayer
         return false;
     }
 
-    public void setWidth(int w) {
-        super.setWidth(w);
-        resize(w, bounds.height, 0, 0);
-    }
-
-    /**
-     * Sets the height of the map in tiles
-     */
-    public void setHeight(int h) {
-        super.setHeight(h);
-        resize(bounds.width, h, 0, 0);
-    }
-
     /**
      * Sets the bounds (in tiles) to the specified Rectangle. <b>Caution:</b>
      * this causes a reallocation of the data array, and all previous data is
@@ -224,8 +211,10 @@ public class TileLayer extends MapLayer
      * @throws Exception
      */
     public void removeTile(Tile tile) throws Exception{
-        if (getLocked())
-            throw new Exception("Attempted to remove tile when this layer is locked.");
+        if (getLocked()) {
+            throw new Exception(
+                    "Attempted to remove tile when this layer is locked.");
+        }
 
         for (int y = 0; y < bounds.height; y++) {
             for (int x = 0; x < bounds.width; x++) {

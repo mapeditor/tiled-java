@@ -472,8 +472,7 @@ public class XMLMapTransformer implements MapReader
         int offsetY = getAttribute(t, "y", 0);
         String opacity = getAttributeValue(t, "opacity");
 
-        ml.setXOffset(offsetX);
-        ml.setYOffset(offsetY);
+        ml.setOffset(offsetX, offsetY);
         ml.setName(getAttributeValue(t, "name"));
 
         if (opacity != null) {
