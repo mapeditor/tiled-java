@@ -268,7 +268,7 @@ public class MapEditor implements ActionListener,
             }
         } catch (IOException e) {
             JOptionPane.showMessageDialog(appFrame,
-                    e.getMessage(), "Error while loading map",
+                    e.getMessage() + (e.getCause() != null ? "\nCause: "+e.getCause().getMessage() : ""), "Error while loading map",
                     JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         } catch (Exception e) {

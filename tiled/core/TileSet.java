@@ -18,6 +18,7 @@ import java.awt.image.PixelGrabber;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.*;
 import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageInputStream;
@@ -68,7 +69,7 @@ public class TileSet
 
         BufferedImage tilebmp = null;
 
-        tilebmp = ImageIO.read(imgFile);
+        tilebmp = ImageIO.read(new URL(imgFilename));
 
         if (tilebmp == null) {
             throw new Exception("Failed to load " + tilebmpFile);

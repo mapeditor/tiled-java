@@ -17,11 +17,13 @@ import java.awt.Component;
 import java.awt.Image;
 import java.awt.MediaTracker;
 import java.awt.Rectangle;
-import java.awt.Toolkit;
 import java.io.*;
 import java.lang.reflect.*;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.zip.GZIPInputStream;
+
+import javax.imageio.ImageIO;
 import javax.xml.parsers.*;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
@@ -167,13 +169,13 @@ public class XMLMapTransformer implements MapReader
         return o;
     }
 
-    private Image unmarshalImage(Node t) {
+    private Image unmarshalImage(Node t) throws MalformedURLException, IOException {
         Image img = null;
 
         String source = getAttributeValue(t, "source");
         
         if (source != null) {
-            img = Toolkit.getDefaultToolkit().createImage(xmlPath + source);
+        	img = ImageIO.read(new URL(xmlPath + source));
         } else {
             NodeList nl = t.getChildNodes();
 
@@ -191,14 +193,14 @@ public class XMLMapTransformer implements MapReader
         }
 
         // Wait for the image to be ready
-        mediaTracker.addImage(img, 0);
+        /*mediaTracker.addImage(img, 0);
         try {
             mediaTracker.waitForID(0);
         }
         catch (InterruptedException ie) {
             System.err.println(ie);
         }
-        mediaTracker.removeImage(img);
+        mediaTracker.removeImage(img);*/
 
         /*
         if (getAttributeValue(t, "set") != null) {
@@ -266,8 +268,8 @@ public class XMLMapTransformer implements MapReader
         int tileSpacing = getAttribute(t, "spacing", 0);
 
         if (set.getSource() != null) {
-            TileSet ext = unmarshalTilesetFile(new FileInputStream(
-                        xmlPath + set.getSource()), xmlPath + set.getSource());
+            TileSet ext = unmarshalTilesetFile(new URL(xmlPath + set.getSource()).openStream(), 
+            					xmlPath + set.getSource());
             ext.setFirstGid(set.getFirstGid());
             return ext;
         } else {
@@ -296,8 +298,7 @@ public class XMLMapTransformer implements MapReader
                         if (sourceFile.getAbsolutePath().equals(source)) {
                             sourcePath = sourceFile.getCanonicalPath();
                         } else {
-                            sourcePath =
-                                new File(xmlPath + source).getCanonicalPath();
+                            sourcePath = xmlPath + source;
                         }
 
                         set.importTileBitmap(sourcePath, tileWidth, tileHeight,
@@ -584,6 +585,7 @@ public class XMLMapTransformer implements MapReader
                 filename.lastIndexOf(File.separatorChar) + 1);
         if(xmlFile.indexOf("://") == -1) {
         	xmlFile = "file://"+xmlFile;
+			xmlPath = "file://"+xmlPath;
         }
         URL url = new URL(xmlFile);
         Map map =  unmarshal(url.openStream());
@@ -609,6 +611,7 @@ public class XMLMapTransformer implements MapReader
                 filename.lastIndexOf(File.separatorChar) + 1);
         if(xmlFile.indexOf("://") == -1) {
         	xmlFile = "file://"+xmlFile;
+        	xmlPath = "file://"+xmlPath;
         }
         URL url = new URL(xmlFile);
         return unmarshalTilesetFile(url.openStream(), filename);
