@@ -332,6 +332,23 @@ public class MapLayer implements Cloneable
         }
     }
 
+	/**
+	 * Replaces the Tile <code>find</code> with the Tile <code>replace</code> for the entire layer
+	 * 
+	 * @param find
+	 * @param replace
+	 */
+	public void replaceTile(Tile find, Tile replace) {
+		for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
+			for (int x = bounds.x; x < bounds.x + bounds.width; x++) {
+				if(getTileAt(x,y) == find) {
+					setTileAt(x, y, replace);
+				}
+			}
+		}
+		
+	}
+
     /**
      * Returns layer width in tiles.
      */

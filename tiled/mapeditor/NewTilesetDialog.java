@@ -18,7 +18,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 
 import tiled.core.*;
-
+import tiled.mapeditor.widget.*;
 
 public class NewTilesetDialog extends JDialog implements ActionListener,
        ChangeListener

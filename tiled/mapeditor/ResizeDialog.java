@@ -22,8 +22,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import tiled.core.Map;
-import tiled.mapeditor.util.ResizePanel;
-
+import tiled.mapeditor.widget.*;
 
 public class ResizeDialog extends JDialog implements ActionListener,
        PropertyChangeListener, ChangeListener

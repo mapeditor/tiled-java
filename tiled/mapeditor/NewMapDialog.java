@@ -17,7 +17,7 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import tiled.core.*;
-
+import tiled.mapeditor.widget.*;
 
 public class NewMapDialog extends JDialog implements ActionListener
 {

@@ -1,3 +1,8 @@
+0.4.1 - TBD
+
+* Added Search/Replace functionality
+* Added tiled.mapeditor.widget package for custom widgets
+
 0.4.0 - August 4th, 2004
 
 * TiledConfiguration defaults to preset values initially, Tiled should now

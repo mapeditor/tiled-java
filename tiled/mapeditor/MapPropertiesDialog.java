@@ -22,7 +22,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import tiled.core.*;
-
+import tiled.mapeditor.util.*;
+import tiled.mapeditor.widget.*;
 
 public class MapPropertiesDialog extends JDialog implements ActionListener,
        ListSelectionListener

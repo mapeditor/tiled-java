@@ -10,7 +10,7 @@
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
 
-package tiled.mapeditor;
+package tiled.mapeditor.widget;
 
 import java.awt.Dimension;
 import javax.swing.JSpinner;
@@ -22,7 +22,7 @@ import javax.swing.SpinnerNumberModel;
  * for plain integer inputs. It offers some convenience constructors and
  * methods.
  */
-class IntegerSpinner extends JSpinner
+public class IntegerSpinner extends JSpinner
 {
     public IntegerSpinner() {
         super(new SpinnerNumberModel());

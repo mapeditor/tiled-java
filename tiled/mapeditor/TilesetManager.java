@@ -23,7 +23,7 @@ import javax.swing.event.ListSelectionListener;
 
 import tiled.core.*;
 import tiled.io.xml.XMLMapWriter;
-import tiled.mapeditor.util.TiledFileFilter;
+import tiled.mapeditor.util.*;
 
 
 public class TilesetManager extends JDialog implements ActionListener,

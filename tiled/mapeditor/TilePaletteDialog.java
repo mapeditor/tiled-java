@@ -21,7 +21,7 @@ import javax.swing.event.ListSelectionListener;
 
 import tiled.core.*;
 import tiled.mapeditor.util.*;
-
+import tiled.mapeditor.widget.*;
 
 public class TilePaletteDialog extends JDialog implements ActionListener,
     TileSelectionListener, ListSelectionListener

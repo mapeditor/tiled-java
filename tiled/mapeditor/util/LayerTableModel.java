@@ -10,7 +10,7 @@
  *  Bjørn Lindeijer <b.lindeijer@xs4all.nl>
  */
 
-package tiled.mapeditor;
+package tiled.mapeditor.util;
 
 import javax.swing.table.AbstractTableModel;
 

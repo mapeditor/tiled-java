@@ -19,7 +19,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
 
 import tiled.util.TiledConfiguration;
-
+import tiled.mapeditor.widget.*;
 
 public class ConfigurationDialog extends JDialog implements ActionListener,
        ChangeListener

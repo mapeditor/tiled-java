@@ -10,7 +10,7 @@
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
 
-package tiled.mapeditor;
+package tiled.mapeditor.util;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -30,24 +30,30 @@ public class TileDialogListRenderer extends JLabel
     private TileSet myTileSet;
     private ImageIcon[] tileImages;
     private int highestTileId = 0;
+	private double zoom=1;
 
     public TileDialogListRenderer() {
         setOpaque(true);
     }
 
     public TileDialogListRenderer(TileSet s) {
-        setOpaque(true);
+        this();
         myTileSet = s;
         loadTilesList();
     }
+
+	public TileDialogListRenderer(TileSet s, double zoom) {
+		this(s);
+		this.zoom=zoom;
+	}
 
     public Component getListCellRendererComponent(JList list, Object value,
             int index,  boolean isSelected, boolean cellHasFocus) {
 
         Tile tile = (Tile)value;
 
-        if (tile != null) {
-            setIcon(new ImageIcon(tile.getImage()));
+        if (tile != null && index>=0) {
+            setIcon(tileImages[index]);
             if (value != null) {
                 setText("Tile " + tile.getId());
             }
@@ -86,7 +92,7 @@ public class TileDialogListRenderer extends JLabel
         for (int i = 0; i < totalTiles; i++) {
             t = myTileSet.getTile(i);
             if (t != null) {
-                Image img = t.getImage();
+                Image img = t.getScaledImage(zoom);
                 if (img != null) {
                     tileImages[curSlot] = new ImageIcon(img);
                 } else {

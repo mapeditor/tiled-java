@@ -28,6 +28,7 @@ import tiled.core.*;
 import tiled.view.*;
 import tiled.mapeditor.brush.*;
 import tiled.mapeditor.util.*;
+import tiled.mapeditor.widget.*;
 import tiled.mapeditor.undo.*;
 import tiled.util.TiledConfiguration;
 import tiled.io.MapReader;
@@ -278,6 +279,7 @@ public class MapEditor implements ActionListener,
 
         m = new JMenu("Map");
         m.add(createMenuItem("Resize", null, "Modify map dimensions"));
+        m.add(createMenuItem("Search", null, "Search for/Replace tiles"));
         m.addSeparator();
         m.add(createMenuItem("Properties", null, "Map properties"));
         mapEventAdapter.addListener(m);
@@ -944,7 +946,10 @@ public class MapEditor implements ActionListener,
         } else if(command.equals("Resize")) {
             ResizeDialog rd = new ResizeDialog(appFrame, this);
             rd.showDialog();
-        } else if (command.equals("About")) {
+        }  else if(command.equals("Search")) {
+			SearchDialog sd = new SearchDialog(appFrame, currentMap);
+			sd.showDialog();
+		} else if (command.equals("About")) {
             if (aboutDialog == null) {
                 aboutDialog = new AboutDialog(appFrame);
             }

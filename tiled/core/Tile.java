@@ -12,14 +12,9 @@
 
 package tiled.core;
 
-import java.awt.Canvas;
-import java.awt.MediaTracker;
-import java.awt.Graphics;
-import java.awt.Image;
+import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.Enumeration;
-import java.util.Properties;
-
+import java.util.*;
 
 public class Tile
 {
@@ -35,9 +30,9 @@ public class Tile
     	properties = new Properties();
     }
 
-    public Tile(Tile t) {		
+    public Tile(Tile t) {
 		properties = (Properties) t.properties.clone();        
-        tileImage = t.tileImage.getScaledInstance(-1, -1, Image.SCALE_DEFAULT);
+        tileImage = (BufferedImage) t.tileImage.getScaledInstance(-1, -1, Image.SCALE_DEFAULT);
         groundHeight = getHeight();
     }
 
@@ -109,21 +104,21 @@ public class Tile
         if (tileImage != null) {
             if (zoom != 1.0) {
                 int h = (int)(tileImage.getHeight(null) * zoom);
-                if (scaledImage == null || scaledImage.getHeight(null) != h) {
-                    scaledImage = tileImage.getScaledInstance(
-                            (int)(getWidth() * zoom), h,
-                            BufferedImage.SCALE_SMOOTH);
-                    MediaTracker mediaTracker = new MediaTracker(new Canvas());
-                    mediaTracker.addImage(scaledImage, 0);
-                    try {
-                        mediaTracker.waitForID(0);
-                    }
-                    catch (InterruptedException ie) {
-                        System.err.println(ie);
-                        return;
-                    }
-                    mediaTracker.removeImage(scaledImage);
-                }
+				if (scaledImage == null || scaledImage.getHeight(null) != h) {
+					scaledImage = tileImage.getScaledInstance(
+							(int)(getWidth() * zoom), h,
+							BufferedImage.SCALE_SMOOTH);
+					MediaTracker mediaTracker = new MediaTracker(new Canvas());
+					mediaTracker.addImage(scaledImage, 0);
+					try {
+						mediaTracker.waitForID(0);
+					}
+					catch (InterruptedException ie) {
+						System.err.println(ie);
+						return;
+					}
+					mediaTracker.removeImage(scaledImage);
+				}
                 g.drawImage(scaledImage, x, y, null);
             } else {
                 g.drawImage(tileImage, x, y, null);
@@ -167,6 +162,26 @@ public class Tile
     public Image getImage() {
         return tileImage;
     }
+
+	public Image getScaledImage(double zoom) {
+		int h = (int)(tileImage.getHeight(null) * zoom);
+		if (scaledImage == null || scaledImage.getHeight(null) != h) {
+			scaledImage = tileImage.getScaledInstance(
+					(int)(getWidth() * zoom), h,
+					BufferedImage.SCALE_SMOOTH);
+			MediaTracker mediaTracker = new MediaTracker(new Canvas());
+			mediaTracker.addImage(scaledImage, 0);
+			try {
+				mediaTracker.waitForID(0);
+			}
+			catch (InterruptedException ie) {
+				System.err.println(ie);
+				return null;
+			}
+			mediaTracker.removeImage(scaledImage);
+		}
+		return scaledImage;
+	}
 
     public String toString() {
         String out = "";

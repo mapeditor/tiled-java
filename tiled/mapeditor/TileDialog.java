@@ -25,7 +25,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import tiled.core.*;
-
+import tiled.mapeditor.util.*;
+import tiled.mapeditor.widget.*;
 
 public class TileDialog extends JDialog
     implements ActionListener, ListSelectionListener
@@ -153,7 +154,7 @@ public class TileDialog extends JDialog
         File files[];
         JFileChooser ch = new JFileChooser();
         ch.setMultiSelectionEnabled(true);
-        Image image = null;
+        BufferedImage image = null;
 
         if (t == null) {
             int ret = ch.showOpenDialog(this);
