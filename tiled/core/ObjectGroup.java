@@ -14,10 +14,14 @@ package tiled.core;
 
 import java.awt.Rectangle;
 import java.awt.geom.Area;
+import java.util.LinkedList;
 
 
 public class ObjectGroup extends MapLayer
 {
+    
+    private LinkedList boundObjects;
+    
     /**
      * Creates an object group that is part of the given map and has the given
      * origin.
@@ -95,5 +99,17 @@ public class ObjectGroup extends MapLayer
      */
     public MapLayer createDiff(MapLayer ml) {
         return null;
+    }
+    
+    public void bindObject(MapObject o) {
+        boundObjects.add(o);
+    }
+
+    public void unbindObject(MapObject o) {
+        boundObjects.remove(o);
+    }
+
+    public void unbindAll() {
+        boundObjects.clear();
     }
 }

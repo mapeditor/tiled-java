@@ -1676,9 +1676,6 @@ public class MapEditor implements ActionListener,
                 ch = new JFileChooser(filename);
             }
 
-            ch.addChoosableFileFilter(
-                    new TiledFileFilter(TiledFileFilter.FILTER_TMX));
-
             try {
                 MapWriter writers[] = (MapWriter[]) pluginLoader.getWriters();
                 for(int i = 0; i < writers.length; i++) {
@@ -1693,6 +1690,9 @@ public class MapEditor implements ActionListener,
                 e.printStackTrace();
             }
 
+            ch.addChoosableFileFilter(
+                    new TiledFileFilter(TiledFileFilter.FILTER_TMX));
+            
             if (ch.showSaveDialog(appFrame) == JFileChooser.APPROVE_OPTION) {
                 filename = ch.getSelectedFile().getAbsolutePath();
                 configuration.addConfigPair("tmx.save.maplocation",
@@ -1779,8 +1779,6 @@ public class MapEditor implements ActionListener,
         }
 
         JFileChooser ch = new JFileChooser(startLocation);
-        ch.addChoosableFileFilter(
-                new TiledFileFilter(TiledFileFilter.FILTER_TMX));
 
         try {
             MapReader readers[] = (MapReader[]) pluginLoader.getReaders();
@@ -1796,6 +1794,9 @@ public class MapEditor implements ActionListener,
             e.printStackTrace();
         }
 
+        ch.addChoosableFileFilter(
+                new TiledFileFilter(TiledFileFilter.FILTER_TMX));
+        
         int ret = ch.showOpenDialog(appFrame);
         if (ret == JFileChooser.APPROVE_OPTION) {
             loadMap(ch.getSelectedFile().getAbsolutePath());

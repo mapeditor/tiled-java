@@ -29,7 +29,7 @@ public class TiledFileFilter extends FileFilter
     private LinkedList exts;
     
     public TiledFileFilter() {
-        desc = new String("Tiled files (*.tmx & *.tsx)");
+        desc = new String("Tiled files");
         exts = new LinkedList();
         exts.add(new String("tmx"));
         exts.add(new String("tsx"));

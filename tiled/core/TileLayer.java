@@ -15,15 +15,11 @@ package tiled.core;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.Area;
-import java.util.Enumeration;
-import java.util.LinkedList;
-import java.util.Properties;
 
 
 public class TileLayer extends MapLayer
 {
     protected Tile map[][];
-    private LinkedList boundObjects;
 
     public TileLayer() {
     	super();
@@ -408,17 +404,5 @@ public class TileLayer extends MapLayer
         map = newMap;
         bounds.width = width;
         bounds.height = height;
-    }
-
-    public void bindObject(MapObject o) {
-        boundObjects.add(o);
-    }
-
-    public void unbindObject(MapObject o) {
-        boundObjects.remove(o);
-    }
-
-    public void unbindAll() {
-        boundObjects.clear();
     }
 }

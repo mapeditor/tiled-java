@@ -13,7 +13,7 @@
 package tiled.view;
 
 import java.awt.*;
-import java.awt.geom.PathIterator;
+//import java.awt.geom.PathIterator;
 import java.util.Iterator;
 import javax.swing.Scrollable;
 import javax.swing.JPanel;
