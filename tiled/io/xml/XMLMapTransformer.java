@@ -199,12 +199,12 @@ public class XMLMapTransformer implements MapReader
         }
         mediaTracker.removeImage(img);
 
-        if(getAttributeValue(t, "set") != null) {
+        /*if(getAttributeValue(t, "set") != null) {
         	TileSet ts = (TileSet) map.getTilesets().get(Integer.parseInt(getAttributeValue(t, "set")));
         	if(ts != null) {
         		ts.addImage(img);
         	}
-        }
+        }*/
         
         return img;
     }
@@ -271,13 +271,13 @@ public class XMLMapTransformer implements MapReader
                 } else if (child.getNodeName().equalsIgnoreCase("image")) {
                     String source = getAttributeValue(child, "source");
 
-					if(source != null) {
+					if(source != null && getAttributeValue(child, "id") == null) {
+						//Not a shared image, but a entire set in one image file
 	                    File sourceFile = new File(source);
 	                    String sourcePath;
 	                    if (sourceFile.getAbsolutePath().equals(source)) {
 	                        sourcePath = sourceFile.getCanonicalPath();
 	                    } else {
-	                    	set.addImage(unmarshalImage(child));
 	                        sourcePath =
 	                            new File(xmlPath + source).getCanonicalPath();
 	                    }
@@ -285,8 +285,10 @@ public class XMLMapTransformer implements MapReader
 	                    set.importTileBitmap(sourcePath,
 	                            tileWidth, tileHeight, tileSpacing);
 	
-	                    // There can be only one image element
+	                    // There can be only one tileset image
 	                    break;
+					} else {
+						set.addImage(unmarshalImage(child), getAttributeValue(child, "id"));
 					}
                 }
             }

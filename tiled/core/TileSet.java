@@ -428,6 +428,18 @@ public class TileSet
 		}
 	}
 
+	public int addImage(Image image, Object key) {
+		if(key == null) {
+			return addImage(image);
+		} else {
+			String cs = checksumImage(image);
+			System.out.println("Checksum: " + cs);
+			images.put(key, cs);
+			imageCache.put(cs, image);
+			return Integer.parseInt((String)key);
+		}
+	}
+
 	public void removeImage(Object id) {
 		imageCache.remove(images.get(id));
 		images.remove(id);
