@@ -337,7 +337,7 @@ public class XMLMapTransformer implements MapReader
                     if (source != null && getAttributeValue(child, "id") == null) {
                         // Not a shared image, but a entire set in one image
                         // file
-                        File sourceFile = new File(source);
+                        
                         String sourcePath = tilesetBaseDir + source;
                         if (Util.checkRoot(source)) {
                             sourcePath = makeUrl(source);
@@ -345,6 +345,7 @@ public class XMLMapTransformer implements MapReader
 
                         set.importTileBitmap(sourcePath, tileWidth, tileHeight,
                                 tileSpacing, !hasTileTags);
+
                         set.setTilesetImageFilename(source);
 
                     } else {

@@ -171,7 +171,12 @@ public class XMLMapWriter implements MapWriter
                             source.lastIndexOf(File.separatorChar) + 1));
             } else if (tilebmpFile != null) {
                 // Reference to tile bitmap
-
+                if(!Util.checkRoot(tilebmpFile)) {
+                    if(!tilebmpFile.startsWith(".")) {
+                        tilebmpFile = wp.substring(0, wp.lastIndexOf(File.separatorChar) + 1) + tilebmpFile;
+                    }
+                }
+                
                 w.startElement("image");
                 w.writeAttribute("source", getRelativePath(wp, tilebmpFile));
                 w.endElement();
