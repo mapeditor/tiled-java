@@ -137,12 +137,19 @@ public class SearchDialog extends JDialog implements ActionListener
 		String command = e.getActionCommand();
 		
 		if(command.equalsIgnoreCase("cancel")) {
-			myMap.removeLayer(sl.getId());
+			myMap.removeLayerSpecial(sl);
 			this.dispose();
 		} else if(command.equalsIgnoreCase("find")) {
+			if(sl != null) {
+				myMap.removeLayerSpecial(sl);
+			}
 			//TODO: find must trigger a drawing condition to highlight instances of the found tile on the map
 			
 		} else if(command.equalsIgnoreCase("find all")) {
+			if(sl != null) {
+				myMap.removeLayerSpecial(sl);
+			}
+			
 			sl = new SelectionLayer(myMap.getWidth(), myMap.getHeight());
 			ListIterator itr = myMap.getLayers();		
 			while(itr.hasNext()) {

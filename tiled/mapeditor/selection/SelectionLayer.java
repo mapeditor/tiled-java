@@ -13,62 +13,65 @@
 package tiled.mapeditor.selection;
 
 import java.awt.*;
-import java.util.Stack;
 
 import tiled.core.*;
+import tiled.util.TiledConfiguration;
 
 public class SelectionLayer extends MapLayer {
 	
 	private Color highlightColor;
 	private Tile selTile;
+	private Rectangle selRect;
 	
 	public SelectionLayer() {
 		super();
-		highlightColor = Color.blue;
+		
+		TiledConfiguration conf = TiledConfiguration.getInstance();
+		try{
+			highlightColor = Color.decode(conf.getValue("tiled.selection.color"));
+		}catch(Throwable e) {
+			highlightColor = Color.blue;
+		}
+		
 		selTile = new Tile();
 	}
 	
 	public SelectionLayer(int w, int h) {
 		super(w,h);
-		highlightColor = Color.blue;
+		
+		TiledConfiguration conf = TiledConfiguration.getInstance();
+		try{
+			highlightColor = Color.decode(conf.getValue("tiled.selection.color"));
+		}catch(Throwable e) {
+			highlightColor = Color.blue;
+		}
+		
 		selTile = new Tile();
 	}
 	
 	public Rectangle getSelectedArea() {
 		
-		Point first = locationOf(selTile);
-		
-		Rectangle area = new Rectangle(first); 
-		Stack stack = new Stack();
-
-		stack.push(new Point(first.x, first.y));
-		while (!stack.empty()) {
-			// Remove the next tile from the stack
-			Point p = (Point)stack.pop();
-
-			// If the tile it meets the requirements, set it and push its
-			// neighbouring tiles on the stack.
-			if (contains(p.x, p.y) &&
-					getTileAt(p.x, p.y) == selTile)
-			{
-				area.add(p);
-
-				stack.push(new Point(p.x, p.y - 1));
-				stack.push(new Point(p.x, p.y + 1));
-				stack.push(new Point(p.x + 1, p.y));
-				stack.push(new Point(p.x - 1, p.y));
-			}
-		}
-		
-		return area;
+		return selRect;
 	}
 	
 	public boolean isSelected(int tx, int ty) {
 		return (getTileAt(tx,ty) !=null); 
 	}
 	
+	public void selectRegion(Rectangle region) {
+		if(selRect != null)
+			fillRegion(selRect, null);
+		selRect = region;
+		fillRegion(region, selTile);
+	}
+	
 	public void select(int tx, int ty) {
 		setTileAt(tx,ty,selTile);
+		if(selRect == null) {
+			selRect = new Rectangle(tx,ty,1,1);
+		}else{
+			selRect.add(tx,ty);
+		}
 	}
 	
 	public void setHighlightColor(Color c) {
@@ -77,5 +80,13 @@ public class SelectionLayer extends MapLayer {
 	
 	public Color getHighlightColor() {
 		return highlightColor;
+	}
+	
+	private void fillRegion(Rectangle region, Tile fill) {
+		for(int i = region.y;i<region.y+region.height;i++) {
+			for(int j = region.x;j<region.x+region.width;j++) {
+				setTileAt(j,i,fill);
+			}
+		}
 	}
 }

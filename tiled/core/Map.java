@@ -102,12 +102,11 @@ public class Map extends MultilayerPlane implements Cloneable
         fireMapChanged();
     }
 
-    public void addLayerSpecial(MapLayer l) {
-        l.setMap(this);
-        specialLayers.add(l);
-        l.setId(specialLayers.indexOf(l));
-        fireMapChanged();
-    }
+	public void addLayerSpecial(MapLayer l) {
+		l.setMap(this);
+		specialLayers.add(l);
+		fireMapChanged();
+	}
 
     public MapLayer addLayer(MapLayer l) {		
         l.setMap(this);
@@ -203,19 +202,25 @@ public class Map extends MultilayerPlane implements Cloneable
         return layer;
     }
 
-    public MapLayer removeLayerSpecial(int index) {
-        MapLayer layer = null;
-        try {
-            layer = (MapLayer) specialLayers.remove(index);
-            fireMapChanged();
-        } catch (ArrayIndexOutOfBoundsException e) {
-        }
-        return layer;
-    }
+	public MapLayer removeLayerSpecial(MapLayer l) {
+		try {
+			if(specialLayers.remove(l)) {
+				fireMapChanged();
+			}
+		}catch (ArrayIndexOutOfBoundsException e) {
+		}
+		return l;
+	}
 
+	public void removeAllSpecialLayers() {
+		specialLayers.clear();
+		fireMapChanged();
+	}
+	
     /**
      * @see MultilayerPlane#removeAllLayers
      */
+
     public void removeAllLayers() {
         super.removeAllLayers();
         fireMapChanged();

@@ -793,13 +793,18 @@ public class MapEditor implements ActionListener,
                     break;
 				case PS_MARQUEE:
                     if (marqueeSelection != null) {
-                        for (int y = Math.min(mouseInitialPressLocation.y, tile.y); y <= Math.max(mouseInitialPressLocation.y, tile.y); y++) {
-                            for (int x = Math.min(mouseInitialPressLocation.x, tile.x); x <= Math.max(mouseInitialPressLocation.x, tile.x); x++) {
-                                marqueeSelection.select(x, y);
-                            }
-                        }
-                        mapView.repaintRegion(new Rectangle(Math.min(mouseInitialPressLocation.x, tile.x), Math.min(mouseInitialPressLocation.y, tile.y),
-                                    Math.max(mouseInitialPressLocation.x, tile.x), Math.max(mouseInitialPressLocation.y, tile.y)));
+                    	Rectangle oldArea = marqueeSelection.getSelectedArea();
+                    	int minx = Math.min(mouseInitialPressLocation.x, tile.x);
+                    	int miny = Math.min(mouseInitialPressLocation.y, tile.y);
+                    	
+                    	marqueeSelection.selectRegion(new Rectangle(minx,miny,
+                    												Math.max(mouseInitialPressLocation.x, tile.x)-minx,
+																	Math.max(mouseInitialPressLocation.y, tile.y)-miny));
+                        
+                    	if(oldArea != null) {
+	                    	oldArea.add(marqueeSelection.getSelectedArea());
+	                        mapView.repaintRegion(oldArea);
+                    	}
                     }
                     break;
             }
@@ -832,7 +837,7 @@ public class MapEditor implements ActionListener,
         //special logic for seleciton
         if(currentPointerState == PS_MARQUEE) {
         	if(marqueeSelection != null) {
-        		currentMap.removeLayerSpecial(marqueeSelection.getId());
+        		currentMap.removeLayerSpecial(marqueeSelection);
         	}
         	marqueeSelection = new SelectionLayer(currentMap.getWidth(), currentMap.getHeight());
         	currentMap.addLayerSpecial(marqueeSelection);
@@ -849,7 +854,7 @@ public class MapEditor implements ActionListener,
 			Point tile = mapView.screenToTileCoords(event.getX(), event.getY());
 			if( tile.y - mouseInitialPressLocation.y==0 && tile.x - mouseInitialPressLocation.x ==0) {
 				if(marqueeSelection != null) {
-					currentMap.removeLayerSpecial(marqueeSelection.getId());
+					currentMap.removeLayerSpecial(marqueeSelection);
 					marqueeSelection = null;
 				}	 
 			}
