@@ -8,6 +8,7 @@
  *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
+ *  Rainer Deyke <rainerd@eldwood.com>
  */
 
 package tiled.mapeditor;
@@ -22,8 +23,10 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import tiled.core.*;
-import tiled.io.xml.XMLMapWriter;
+import tiled.io.MapHelper;
+import tiled.io.MapWriter;
 import tiled.mapeditor.util.*;
+import tiled.mapeditor.plugin.PluginClassLoader;
 
 
 public class TilesetManager extends JDialog implements ActionListener,
@@ -138,7 +141,22 @@ public class TilesetManager extends JDialog implements ActionListener,
         } else if (command.equals("Export...")) {
             JFileChooser ch = new JFileChooser(map.getFilename());
 
-            ch.setFileFilter(new TiledFileFilter(TiledFileFilter.FILTER_TSX));
+            try {
+                MapWriter writers[]
+                  = (MapWriter[]) PluginClassLoader.getInstance().getWriters();
+                for (int i = 0; i < writers.length; i++) {
+                    ch.addChoosableFileFilter(new TiledFileFilter(
+                                writers[i].getFilter(), writers[i].getName()));
+                }
+            } catch (Throwable e) {
+                JOptionPane.showMessageDialog(editor.getAppFrame(),
+                        "Error while loading plugins: " + e.getMessage(),
+                        "Error while exporting tileset",
+                        JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
+            }
+            ch.addChoosableFileFilter
+              (new TiledFileFilter(TiledFileFilter.FILTER_TSX));
             int ret = ch.showSaveDialog(this);
             if (ret == JFileChooser.APPROVE_OPTION) {
                 String filename = ch.getSelectedFile().getAbsolutePath();
@@ -146,8 +164,7 @@ public class TilesetManager extends JDialog implements ActionListener,
 
                 if ((exist.exists() && JOptionPane.showConfirmDialog(this, "The file already exists. Do you wish to overwrite it?") == JOptionPane.OK_OPTION) || !exist.exists()) {
                     try {
-                        XMLMapWriter mw = new XMLMapWriter();
-                        mw.writeTileset(set,filename);
+                        MapHelper.saveTileset(set, filename);
                         set.setSource(filename);
                         exportButton.setEnabled(false);
                     } catch (Exception e) {
@@ -158,14 +175,28 @@ public class TilesetManager extends JDialog implements ActionListener,
         } else if (command.equals("Save")) {
             JFileChooser ch = new JFileChooser(map.getFilename());
 
-            ch.setFileFilter(new TiledFileFilter(TiledFileFilter.FILTER_TSX));
+            try {
+                MapWriter writers[]
+                  = (MapWriter[]) PluginClassLoader.getInstance().getWriters();
+                for (int i = 0; i < writers.length; i++) {
+                    ch.addChoosableFileFilter(new TiledFileFilter(
+                                writers[i].getFilter(), writers[i].getName()));
+                }
+            } catch (Throwable e) {
+                JOptionPane.showMessageDialog(editor.getAppFrame(),
+                        "Error while loading plugins: " + e.getMessage(),
+                        "Error while exporting tileset",
+                        JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
+            }
+            ch.addChoosableFileFilter
+              (new TiledFileFilter(TiledFileFilter.FILTER_TSX));
             int ret = ch.showSaveDialog(this);
             if (ret == JFileChooser.APPROVE_OPTION) {
                 String filename = ch.getSelectedFile().getAbsolutePath();
 
                 try {
-                    XMLMapWriter mw = new XMLMapWriter();
-                    mw.writeTileset(set,filename);
+                    MapHelper.saveTileset(set, filename);
                     set.setSource(filename);
                     exportButton.setEnabled(false);
                 } catch (Exception e) {

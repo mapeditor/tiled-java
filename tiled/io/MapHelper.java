@@ -19,6 +19,7 @@ import java.util.Stack;
 import javax.swing.JOptionPane;
 
 import tiled.core.Map;
+import tiled.core.TileSet;
 import tiled.io.xml.XMLMapTransformer;
 import tiled.io.xml.XMLMapWriter;
 import tiled.mapeditor.plugin.PluginClassLoader;
@@ -63,6 +64,39 @@ public class MapHelper {
             }
     }
     
+    /**
+     * Saves a tileset.  Use the extension (.xxx) of the filename to determine
+     * the plugin to use when writing the file. Throws an exception when the
+     * extension is not supported by either the TMX writer or a plugin.
+     *
+     * @param filename Filename to save the tileset to.
+     * @see MapWriter#writeTileset(Map, String)
+     * @exception Exception
+     */
+
+    public static void saveTileset(TileSet set, String filename)
+      throws Exception {
+
+            MapWriter mw = null;
+            if (filename.endsWith(".tsx")) {
+                // Override, so people can't overtake our format
+                mw = new XMLMapWriter();
+            } else {
+                mw = (MapWriter)pluginLoader.getWriterFor(
+                        filename.substring(filename.lastIndexOf('.') + 1));
+            }
+
+            if (mw != null) {
+                Stack errors = new Stack();
+                mw.setErrorStack(errors);
+                mw.writeTileset(set, filename);
+                set.setSource(filename);
+                reportPluginMessages(errors);
+            } else {
+               throw new Exception("Unsupported tileset format");
+            }
+    }
+
     /**
      * Loads a map. Use the extension (.xxx) of the filename to determine
      * the plugin to use when reading the file. Throws an exception when the extension
