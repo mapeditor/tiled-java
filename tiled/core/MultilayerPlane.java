@@ -30,7 +30,6 @@ public class MultilayerPlane {
 	}
 	
 	private void init() {
-			
 		layers = new Vector();
 	}
 	
@@ -149,33 +148,29 @@ public class MultilayerPlane {
 	public ListIterator getLayers() {
 		return layers.listIterator();
 	}
-	
-	/**
-	 * Resizes this plane. The (dx, dy) pair determines where the original plane
-	 * should be positioned on the new area. It only affects layers with dimensions 
-	 * equal to that of the MutlilayerPlane.
-	 *
-	 * @see MapLayer#resize
-	 *
-	 * @param width  The new width of the map.
-	 * @param height The new height of the map.
-	 * @param dx     The shift in x direction in tiles.
-	 * @param dy     The shift in y direction in tiles.
-	 */
-	public void resize(int width, int height, int dx, int dy) {
-		
-		
-		
-		ListIterator itr = getLayers();
-		while(itr.hasNext()) {
-			MapLayer l = (MapLayer) itr.next();
-			if(l.getBounds().equals(getBounds())) {
-				l.resize(width, height, dx, dy);
-			}
-		}
-		
-		widthInTiles = width;
-		heightInTiles= height;
-	}
-	
+
+    /**
+     * Resizes this plane. The (dx, dy) pair determines where the original
+     * plane should be positioned on the new area. It only affects layers with
+     * dimensions equal to that of the MutlilayerPlane.
+     *
+     * @see MapLayer#resize
+     *
+     * @param width  The new width of the map.
+     * @param height The new height of the map.
+     * @param dx     The shift in x direction in tiles.
+     * @param dy     The shift in y direction in tiles.
+     */
+    public void resize(int width, int height, int dx, int dy) {
+        ListIterator itr = getLayers();
+        while (itr.hasNext()) {
+            MapLayer l = (MapLayer)itr.next();
+            if (l.getBounds().equals(getBounds())) {
+                l.resize(width, height, dx, dy);
+            }
+        }
+
+        widthInTiles = width;
+        heightInTiles = height;
+    }
 }

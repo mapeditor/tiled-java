@@ -32,7 +32,7 @@ public class ResizeDialog extends JDialog implements ActionListener
     public static final int ANCHOR_LOWERRIGHT = 9;
 
     private Map currentMap;
-    private JTextField width, height, offsetX, offsetY;
+    private JSpinner width, height, offsetX, offsetY;
     private int anchor;
     private JButton bOk, bCancel;
 
@@ -44,75 +44,100 @@ public class ResizeDialog extends JDialog implements ActionListener
     }
 
     private void init() {
+        // Create the primitives
+
         bOk = new JButton("OK");
         bCancel = new JButton("Cancel");
 
-        /* SIZING PANEL */
-        JPanel sizing = new JPanel();
-        JPanel outerSizing = new JPanel();
-        width = new JTextField("" + currentMap.getWidth(), 5);
-        height = new JTextField("" + currentMap.getHeight(), 5);
-        offsetX = new JTextField("0", 5);
-        offsetY = new JTextField("0", 5);
-        outerSizing.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createTitledBorder("New size"),
+        width = new JSpinner(new SpinnerNumberModel(currentMap.getWidth(),
+                    1, Integer.MAX_VALUE, 1));
+        height = new JSpinner(new SpinnerNumberModel(currentMap.getHeight(),
+                    1, Integer.MAX_VALUE, 1));
+        offsetX = new JSpinner(new SpinnerNumberModel());
+        offsetY = new JSpinner(new SpinnerNumberModel());
+
+        // Set a nicer preferred width for these spinners
+        width.setPreferredSize(
+                new Dimension(60, width.getPreferredSize().height));
+        height.setPreferredSize(
+                new Dimension(60, height.getPreferredSize().height));
+        offsetX.setPreferredSize(
+                new Dimension(60, offsetX.getPreferredSize().height));
+        offsetX.setPreferredSize(
+                new Dimension(60, offsetX.getPreferredSize().height));
+
+        ResizePanel orient = new ResizePanel(new Dimension(100, 100), 100);
+
+        // Offset panel
+        JPanel offsetPanel = new VerticalStaticJPanel();
+        offsetPanel.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createTitledBorder("Offset"),
                     BorderFactory.createEmptyBorder(0, 5, 5, 5)));
-        outerSizing.setLayout(new BoxLayout(outerSizing, BoxLayout.PAGE_AXIS));
-        sizing.setLayout(new GridBagLayout());
+        offsetPanel.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
         c.anchor = GridBagConstraints.WEST;
-        c.fill = GridBagConstraints.VERTICAL;
-        //c.insets = new Insets(5, 0, 0, 0);
-        c.weightx = 1;
-        c.weighty = 1;
-        sizing.add(new JLabel("Width: "), c);
+        c.fill = GridBagConstraints.BOTH; c.weighty = 1;
+        c.insets = new Insets(5, 0, 0, 0);
+        offsetPanel.add(new JLabel("X: "), c);
         c.gridy = 1;
-        sizing.add(new JLabel("Height: "), c);
+        offsetPanel.add(new JLabel("Y: "), c);
         c.gridx = 1; c.gridy = 0;
-        c.weightx = 3;
-        sizing.add(width, c);
+        offsetPanel.add(offsetX, c);
         c.gridy = 1;
-        sizing.add(height, c);
-        c.gridx = 0; c.gridy = 3;
-        sizing.add(new JLabel("X: "), c);
-        c.gridy = 4;
-        sizing.add(new JLabel("Y: "), c);
-        c.gridx = 1; c.gridy = 3;
-        c.weightx = 3;
-        sizing.add(offsetX, c);
-        c.gridy = 4;
-        sizing.add(offsetY, c);
-        c.gridx = 0; c.gridy = 5;
-
-        /* ORIENTATION PANEL */
-        ResizePanel orient = new ResizePanel(new Dimension(100,100),100);
-        outerSizing.add(sizing);
-        outerSizing.add(Box.createRigidArea(new Dimension(0,5)));
-        outerSizing.add(orient);
+        offsetPanel.add(offsetY, c);
+        c.gridx = 2; c.gridy = 0; c.gridheight = 2; c.weightx = 1;
+        offsetPanel.add(new JPanel(), c);
+        c.gridx = 0; c.gridy = 2; c.gridwidth = 3; c.gridheight = 1;
+        offsetPanel.add(orient, c);
 
 
-        /* ORIGINAL SIZE PANEL */
-        JPanel origin = new VerticalStaticJPanel();
-        origin.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createTitledBorder("Original size"),
+        // New size panel
+        JPanel newSizePanel = new VerticalStaticJPanel(new GridBagLayout());
+        newSizePanel.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createTitledBorder("New size"),
                     BorderFactory.createEmptyBorder(0, 5, 5, 5)));
-        origin.setLayout(new GridBagLayout());
         c = new GridBagConstraints();
         c.anchor = GridBagConstraints.WEST;
-        c.fill = GridBagConstraints.VERTICAL;
-        //c.insets = new Insets(5, 0, 0, 0);
-        c.weightx = 1;
-        c.weighty = 1;
-        origin.add(new JLabel("Width: "), c);
+        c.fill = GridBagConstraints.BOTH; c.weighty = 1;
+        c.insets = new Insets(5, 0, 0, 0);
+        newSizePanel.add(new JLabel("Width: "), c);
         c.gridy = 1;
-        origin.add(new JLabel("Height: "), c);
-        c.gridx = 1; c.gridy = 0;
-        c.weightx = 3;
-        origin.add(new JLabel("" + currentMap.getWidth()), c);
+        newSizePanel.add(new JLabel("Height: "), c);
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 1; c.gridy = 0; c.weightx = 1;
+        newSizePanel.add(width, c);
         c.gridy = 1;
-        origin.add(new JLabel("" + currentMap.getHeight()), c);
+        newSizePanel.add(height, c);
 
-        /* BUTTONS PANEL */
+        // Original size panel
+        JPanel origSizePanel = new VerticalStaticJPanel(new GridBagLayout());
+        origSizePanel.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createTitledBorder("Current size"),
+                    BorderFactory.createEmptyBorder(0, 5, 5, 5)));
+        c = new GridBagConstraints();
+        c.anchor = GridBagConstraints.EAST;
+        c.fill = GridBagConstraints.BOTH; c.weighty = 1; c.weightx = 1;
+        c.insets = new Insets(5, 0, 0, 0);
+        origSizePanel.add(new JLabel("Width: "), c);
+        c.gridy = 1;
+        origSizePanel.add(new JLabel("Height: "), c);
+        c.anchor = GridBagConstraints.WEST;
+        c.insets = new Insets(5, 10, 0, 0);
+        c.gridx = 1; c.gridy = 0;
+        origSizePanel.add(new JLabel("" + currentMap.getWidth()), c);
+        c.gridy = 1;
+        origSizePanel.add(new JLabel("" + currentMap.getHeight()), c);
+
+        // Putting two size panels next to eachoter
+        JPanel sizePanels = new VerticalStaticJPanel(new GridBagLayout());
+        c = new GridBagConstraints();
+        c.fill = GridBagConstraints.BOTH;
+        c.gridx = 0; c.gridy = 0; c.weighty = 1; c.weightx = 0;
+        sizePanels.add(origSizePanel, c);
+        c.gridx = 1; c.weightx = 1;
+        sizePanels.add(newSizePanel, c);
+
+        // Buttons panel
         bOk.addActionListener(this);
         bCancel.addActionListener(this);
         JPanel buttons = new VerticalStaticJPanel();
@@ -123,13 +148,14 @@ public class ResizeDialog extends JDialog implements ActionListener
         buttons.add(Box.createRigidArea(new Dimension(5, 0)));
         buttons.add(bCancel);
 
+        // Putting the main panel together
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        mainPanel.add(origin);
-        mainPanel.add(outerSizing);
-        //mainPanel.add(orient);
+        mainPanel.add(sizePanels);
+        mainPanel.add(offsetPanel);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        mainPanel.add(Box.createGlue());
         mainPanel.add(buttons);
 
         getContentPane().add(mainPanel);
@@ -145,18 +171,12 @@ public class ResizeDialog extends JDialog implements ActionListener
         Object src = e.getSource();
 
         if (src == bOk) {
-            try {
-                int nwidth = Integer.parseInt(width.getText());
-                int nheight = Integer.parseInt(height.getText());
-                // Math works out in MapLayer#resize
-                int x = -Integer.parseInt(offsetX.getText());
-                int y = -Integer.parseInt(offsetY.getText());
-                currentMap.resize(nwidth, nheight, x, y);
-            } catch (NumberFormatException nfe) {
-                JOptionPane.showMessageDialog(this,
-                        "One of your dimensions is not a number", "Argh!",
-                        JOptionPane.ERROR_MESSAGE, null);
-            }
+            int nwidth = ((Number)width.getValue()).intValue();
+            int nheight = ((Number)height.getValue()).intValue();
+            // Math works out in MapLayer#resize
+            int dx = ((Number)offsetX.getValue()).intValue();
+            int dy = ((Number)offsetY.getValue()).intValue();
+            currentMap.resize(nwidth, nheight, dx, dy);
             dispose();
         } else if (src == bCancel) {
             dispose();

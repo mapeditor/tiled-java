@@ -6,9 +6,8 @@
 * Map resizing
 * Custom properties on tiles and map
 * A file filter on loading and saving for .tmx and .tsx
-* Several UI improvements (usage of JSplitPane)
+* Several UI improvements (usage of JSplitPane and JSpinner for example)
 * Small changes to the map format (updated DTD)
-* Better architecture for Tile palette
 * Implemented a better underlying architecture for Maps and Brushes
 * Fixed several null pointer exceptions
 * An Ant build target for tiled-core.jar, for use in Java engines

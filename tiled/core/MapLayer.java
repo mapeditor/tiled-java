@@ -330,7 +330,7 @@ public class MapLayer implements Cloneable
      */
     public Tile getTileAt(int tx, int ty) {    	
         try {
-            return map[ty-yOffset][tx-xOffset];
+            return map[ty - yOffset][tx - xOffset];
         } catch (ArrayIndexOutOfBoundsException e) {
             return null;
         }
@@ -425,7 +425,6 @@ public class MapLayer implements Cloneable
     }
     
     /**
-     * 
      * @see MultilayerPlane#resize
      * 
      * @param width
@@ -434,15 +433,19 @@ public class MapLayer implements Cloneable
      * @param dy
      */
     public void resize(int width, int height, int dx, int dy) {
-		Tile [][] trans = new Tile[height][width];
-		for (int i = dy; i < Math.min(heightInTiles, height); i++) {
-			for (int j = dx; j < Math.min(widthInTiles, width); j++) {
-				if(i>=0 && j>=0) {
-					trans[i-dy][j-dx] = getTileAt(j,i);
-				}
-			}
-		}
-		
-		map = trans;
+        Tile[][] newMap = new Tile[height][width];
+
+        int maxX = Math.min(width, widthInTiles + dx);
+        int maxY = Math.min(height, heightInTiles + dy);
+
+        for (int x = Math.max(0, dx); x < maxX; x++) {
+            for (int y = Math.max(0, dy); y < maxY; y++) {
+                newMap[y][x] = getTileAt(x - dx, y - dy);
+            }
+        }
+
+        map = newMap;
+        widthInTiles = width;
+        heightInTiles = height;
     }
 }
