@@ -78,7 +78,7 @@ public class OrthoMapView extends MapView
                 y < endY; y++, gy += tsize.height) {
             for (int x = startX, gx = startX * tsize.width + toffset;
                     x < endX; x++, gx += tsize.width) {
-				Polygon gridPoly = createGridPolygon(gx, gy, 1);                
+				Polygon gridPoly = createGridPolygon(gx, gy, 1);
                 Tile t = layer.getTileAt(x, y);
                 
                 if (t != null && t != myMap.getNullTile()) {

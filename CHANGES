@@ -2,6 +2,7 @@
 
 * Added Search/Replace functionality
 * Added tiled.mapeditor.widget package for custom widgets
+* Implementation of HexMapView, making Hex maps possible (Andreas Mross)
 
 0.4.0 - August 4th, 2004
 

@@ -104,7 +104,7 @@ public class NewMapDialog extends JDialog implements ActionListener
         mapTypeChooser.addItem("Isometric");
         // TODO: Re-enable these when their views are implemented
         //mapTypeChooser.addItem("Oblique");
-        //mapTypeChooser.addItem("Hexagonal");
+        mapTypeChooser.addItem("Hexagonal");
 
         mapName = new JTextField("Untitled");
 

@@ -332,6 +332,17 @@ public class MapLayer implements Cloneable
         }
     }
 
+	public Point locationOf(Tile t) {
+		for (int y = bounds.y; y < bounds.height + bounds.y; y++) {
+			for (int x = bounds.x; x < bounds.width + bounds.x; x++) {
+				if (getTileAt(x, y) == t) {
+					return new Point(x,y);
+				}
+			}
+		}
+		return null;
+	}
+
 	/**
 	 * Replaces the Tile <code>find</code> with the Tile <code>replace</code> for the entire layer
 	 * 
@@ -370,6 +381,18 @@ public class MapLayer implements Cloneable
         return bounds;
     }
 
+	/**
+	 * A convenience method to check is a point in tile space is within
+	 * the layer boundaries.
+	 * 
+	 * @param x
+	 * @param y
+	 * @return <code>true</code> if the point (x,y) is within the layer boundaries.
+	 */
+	public boolean contains(int x, int y) {
+		return bounds.contains(x,y);
+	}
+	
     /**
      * Returns layer opacity.
      *
