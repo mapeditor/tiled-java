@@ -2,16 +2,19 @@
 
 * Added a checkerboard background to tileset palette
 + Added the Shifted view, which emulates several tiling configurations
-+ Added "custom" brushes
++ Added "stamp" brushes
 * Added support for layer locking (not editable when locked)
 + Added support for tmx.gz map files
 + Added the ability to merge tile images when layers are merged
 * Added selection addition and substraction via Shift and Ctrl respectively
-* Made current zoom level be used by the save as image feature
+* Made current zoom level be used by the "Save As Image" feature
+* Improved the drawing speed thanks to some thorough testing and suggestions (Jerome Blouin)
 * Fixed drawing on invisible layers
 + Fixed transformation so that it respects selections
 * Fixed selection rectangle to include one more tile
 * Fixed loading of plugins that only do export and no import
+* Fixed removing tilesets in the Tileset Manager
++ Fixed image loading to ensure hardware acceleration is used in Java 1.4 and above (Jerome Blouin)
 
 0.5.0 - December 14th, 2004
 

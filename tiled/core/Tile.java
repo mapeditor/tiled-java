@@ -24,6 +24,7 @@ public class Tile
     private int stdHeight;
     private int groundHeight;          // Height above/below ground
     private int tileImageId = -1, tileOrientation;
+    private double myZoom = 1.0;
     private Properties properties;
     private TileSet tileset;
 
@@ -116,9 +117,9 @@ public class Tile
     }
 
     public void drawRaw(Graphics g, int x, int y, double zoom) {
-            int h = (int)(getHeight() * zoom);
-            if (scaledImage == null || scaledImage.getHeight(null) != h) {
+            if (scaledImage == null || zoom != myZoom) {
                 scaledImage = getScaledImage(zoom);
+                myZoom = zoom;
                 if (scaledImage != null) {
                     MediaTracker mediaTracker = new MediaTracker(new Canvas());
                     mediaTracker.addImage(scaledImage, 0);
@@ -198,11 +199,12 @@ public class Tile
      * Returns a scaled instance of the tile image.
      */
     public Image getScaledImage(double zoom) {
-        if (getImage() != null) {
+        Image i = getImage();
+        if (i != null) {
             if (zoom == 1.0) {
-                return getImage();
+                return i;
             } else {
-                return getImage().getScaledInstance(
+                return i.getScaledInstance(
                         (int)(getWidth() * zoom), (int)(getHeight() * zoom),
                         BufferedImage.SCALE_SMOOTH);
             }
