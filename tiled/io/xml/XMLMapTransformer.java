@@ -19,6 +19,8 @@ import java.awt.MediaTracker;
 import java.awt.Rectangle;
 import java.io.*;
 import java.lang.reflect.*;
+import java.util.Iterator;
+import java.util.Stack;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.zip.GZIPInputStream;
@@ -41,10 +43,12 @@ public class XMLMapTransformer implements MapReader
     private Component mediaComponent;
     private MediaTracker mediaTracker;
     private String xmlPath = null;
-
+    private Stack warnings;
+    
     public XMLMapTransformer() {
         mediaComponent = new Canvas();
         mediaTracker = new MediaTracker(mediaComponent);
+        warnings = new Stack();
     }
 
     private int reflectFindMethodByName(Class c, String methodName) {
@@ -67,18 +71,17 @@ public class XMLMapTransformer implements MapReader
             throw new Exception("Insufficient arguments were supplied");
         }
 
-        //TODO: is there a better way to do this?
         for (int i = 0; i < parameterTypes.length; i++) {
             if (parameterTypes[i].getName().equalsIgnoreCase("int")) {
                 conformingArguments[i] = new Integer(args[i]);
             } else if (parameterTypes[i].getName().equalsIgnoreCase("float")) {
                 conformingArguments[i] = new Float(args[i]);
-            } else if (parameterTypes[i].getName().equalsIgnoreCase("string")) {
+            } else if (parameterTypes[i].getName().endsWith("String")) {
                 conformingArguments[i] = args[i];
             } else if (parameterTypes[i].getName().equalsIgnoreCase("boolean")) {
                 conformingArguments[i] = new Boolean(args[i]);
             } else {
-                //TODO: is it necessary to warn anyone that we're defaulting?
+                warnings.push("INFO: Unsupported argument type "+parameterTypes[i].getName()+", defaulting to java.lang.String");
                 conformingArguments[i] = args[i];
             }
         }
@@ -95,6 +98,8 @@ public class XMLMapTransformer implements MapReader
             map.setOrientation(Map.MDO_HEX);
         } else if (o.equalsIgnoreCase("oblique")) {
             map.setOrientation(Map.MDO_OBLIQUE);
+        } else {
+            warnings.push("WARN: Unknown orientation '"+o+"'");
         }
     }
 
@@ -160,6 +165,8 @@ public class XMLMapTransformer implements MapReader
                     if (j >= 0) {
                         reflectInvokeMethod(o,methods[j],
                                 new String [] {n.getNodeValue()});
+                    } else {
+                        warnings.push("WARN: Unsupported attribute '"+n.getNodeName()+"' on <"+node.getNodeName()+">");
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -226,7 +233,7 @@ public class XMLMapTransformer implements MapReader
             tsDoc = builder.parse(in, ".");
         } catch (FileNotFoundException fnf) {
             // TODO: Have a popup and ask the user to browse to the file...
-            throw new Exception("Where else can I look?");
+            warnings.push("WARN: Could not find external tileset file "+filename);
         }
 
         String xmlPathSave = xmlPath;
@@ -240,8 +247,8 @@ public class XMLMapTransformer implements MapReader
         for (int itr = 0; (tsNode = tsNodeList.item(itr)) != null; itr++) {
             set = unmarshalTileset(tsNode);
             if (set.getSource() != null) {
-                throw new Exception(
-                        "Recursive external Tilesets are not supported.");
+                warnings.push(
+                        "WARN: Recursive external Tilesets are not supported.");
             }
             set.setSource(filename);
             // TODO: This is a deliberate break. multiple tilesets per TSX are
@@ -420,6 +427,7 @@ public class XMLMapTransformer implements MapReader
         Rectangle r = ml.getBounds();
         if(r.height == 0 && r.width == 0) {
             ml.setBounds(map.getBounds());
+            warnings.push("INFO: defaulting layer '"+ml.getName()+"' dimensions to map dimensions");
         }
         
         NodeList children = t.getChildNodes();
@@ -601,7 +609,7 @@ public class XMLMapTransformer implements MapReader
             doc = builder.parse(in, xmlPath);
         } catch (SAXException e) {
             e.printStackTrace();
-            throw new Exception("Error while parsing map file.");
+            throw new Exception("Error while parsing map file: "+e.toString());
         }
 
         buildMap(doc);
@@ -624,6 +632,16 @@ public class XMLMapTransformer implements MapReader
         URL url = new URL(xmlFile);
         Map unmarshalledMap = unmarshal(url.openStream());
         unmarshalledMap.setFilename(filename);
+        
+        //TODO: put this is a popup window, if they have tiled.
+        if(TiledConfiguration.getInstance().keyHasValue("tmx.load.report",1)) {
+	        Iterator itr = warnings.iterator();
+	        while(itr.hasNext()) {
+	            String warn = (String) itr.next();
+	            System.out.println(warn);
+	        }
+        }
+        
         return unmarshalledMap;
     }
 

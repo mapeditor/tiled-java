@@ -71,7 +71,7 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
         rbEmbedInTiles.setEnabled(false);
 		rbEmbedInSet.setActionCommand("tmx.save.tileSetImages");
 		rbEmbedInSet.setEnabled(false);
-        undoDepth.setName("tmx.undo.depth");
+        undoDepth.setName("tiled.undo.depth");
         cbGridAA.setActionCommand("tiled.grid.antialias");
         gridOpacity.setName("tiled.grid.opacity");
         //gridColor.setName("tiled.grid.color");

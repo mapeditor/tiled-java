@@ -1215,7 +1215,7 @@ public class MapEditor implements ActionListener,
         } else if (command.startsWith("_open")) {
             try {
                 loadMap(configuration.getValue(
-                            "tmx.recent." + command.substring(5)));
+                            "tiled.recent." + command.substring(5)));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -1796,8 +1796,8 @@ public class MapEditor implements ActionListener,
         String startLocation = "";
 
         // Start at the location of the most recently loaded map file
-        if (configuration.hasOption("tmx.recent.1")) {
-            startLocation = configuration.getValue("tmx.recent.1");
+        if (configuration.hasOption("tiled.recent.1")) {
+            startLocation = configuration.getValue("tiled.recent.1");
         }
 
         JFileChooser ch = new JFileChooser(startLocation);
@@ -1845,10 +1845,10 @@ public class MapEditor implements ActionListener,
     private void updateRecent(String mapFile) {
         Vector recent = new Vector();
         try {
-            recent.add(configuration.getValue("tmx.recent.1"));
-            recent.add(configuration.getValue("tmx.recent.2"));
-            recent.add(configuration.getValue("tmx.recent.3"));
-            recent.add(configuration.getValue("tmx.recent.4"));
+            recent.add(configuration.getValue("tiled.recent.1"));
+            recent.add(configuration.getValue("tiled.recent.2"));
+            recent.add(configuration.getValue("tiled.recent.3"));
+            recent.add(configuration.getValue("tiled.recent.4"));
         } catch (Exception e) {
         }
 
@@ -1878,7 +1878,7 @@ public class MapEditor implements ActionListener,
                 String name =
                     file.substring(file.lastIndexOf(File.separatorChar) + 1);
 
-                configuration.addConfigPair("tmx.recent." + (i + 1), file);
+                configuration.addConfigPair("tiled.recent." + (i + 1), file);
                 JMenuItem recentOption = createMenuItem(name, null, null);
                 recentOption.setActionCommand("_open" + (i + 1));
                 recentMenu.add(recentOption);

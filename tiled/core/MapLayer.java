@@ -14,7 +14,6 @@ package tiled.core;
 
 import java.awt.Rectangle;
 import java.awt.geom.Area;
-import java.util.Enumeration;
 import java.util.Properties;
 
 

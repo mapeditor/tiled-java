@@ -161,8 +161,12 @@ public class Map extends MultilayerPlane implements Cloneable
 
     public void removeTileset(TileSet s) {
         // Sanity check
-        assert tilesets.indexOf(s) != -1;
-
+        
+        //asserts must be enabled on the commandline (-ea)
+        //assert tilesets.indexOf(s) != -1;
+        if(tilesets.indexOf(s) != -1)
+            return;
+        
         // Go through the map and remove any instances of the tiles in the set
         Iterator tileIterator = s.iterator();
         while (tileIterator.hasNext()) {
