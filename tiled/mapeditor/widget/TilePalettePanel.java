@@ -29,7 +29,6 @@ public class TilePalettePanel extends JPanel implements Scrollable,
 {
     private static final int TILES_PER_ROW = 4;
     private Vector tilesets;
-    private Tile selectedTile;
     private EventListenerList tileSelectionListeners;
 
     public TilePalettePanel() {
@@ -53,7 +52,7 @@ public class TilePalettePanel extends JPanel implements Scrollable,
         tileSelectionListeners.remove(TileSelectionListener.class, l);
     }
 
-    protected void fireTileSelectionEvent() {
+    protected void fireTileSelectionEvent(Tile selectedTile) {
         Object[] listeners = tileSelectionListeners.getListenerList();
         TileSelectionEvent event = null;
 
@@ -200,9 +199,8 @@ public class TilePalettePanel extends JPanel implements Scrollable,
 
     public void mouseClicked(MouseEvent e) {
         Tile clickedTile = getTileAtPoint(e.getX(), e.getY());
-        if (clickedTile != null && clickedTile != selectedTile) {
-            selectedTile = clickedTile;
-            fireTileSelectionEvent();
+        if (clickedTile != null) {
+            fireTileSelectionEvent(clickedTile);
         }
     }
 

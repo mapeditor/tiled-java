@@ -89,10 +89,10 @@ public class TileSet
                             tileWidth, tileHeight,
                             x, y, x + tileWidth, y + tileHeight,
                             null);
-					int id = addImage(tile);
+					int newId = addImage(tile);
 					if(createTiles) {
                     	Tile newTile = new Tile();
-                    	newTile.setImage(id);
+                    	newTile.setImage(newId);
                     	addNewTile(newTile);
                     }
                 }
