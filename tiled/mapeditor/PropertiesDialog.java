@@ -28,7 +28,7 @@ import tiled.mapeditor.widget.*;
 public class PropertiesDialog extends JDialog implements ActionListener,
        ListSelectionListener
 {
-    private JTable mapProperties;
+    private JTable tProperties;
     private JButton bOk, bCancel, bDel;
     private Properties properties;
     private PropertiesTableModel tableModel;
@@ -43,9 +43,9 @@ public class PropertiesDialog extends JDialog implements ActionListener,
 
     private void init() {
         tableModel = new PropertiesTableModel();
-        mapProperties = new JTable(tableModel);
-        mapProperties.getSelectionModel().addListSelectionListener(this);
-        JScrollPane propScrollPane = new JScrollPane(mapProperties);
+        tProperties = new JTable(tableModel);
+        tProperties.getSelectionModel().addListSelectionListener(this);
+        JScrollPane propScrollPane = new JScrollPane(tProperties);
         propScrollPane.setPreferredSize(new Dimension(200, 150));
 
         bOk = new JButton("OK");
@@ -122,7 +122,19 @@ public class PropertiesDialog extends JDialog implements ActionListener,
         } else if (source == bCancel) {
             dispose();
         } else if (source == bDel) {
-            tableModel.remove(mapProperties.getSelectedRow());
+
+            int total = tProperties.getSelectedRowCount();
+            Object [] keys = new Object[total];
+            int [] selRows = tProperties.getSelectedRows();
+            
+            for(int i=0;i<total;i++) {
+                keys[i] = tProperties.getValueAt(selRows[i],0);
+            }
+            
+            for(int i=0;i<total;i++) {
+                tableModel.remove(keys[i]);
+            }
+            
         }
     }
 
