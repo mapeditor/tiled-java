@@ -14,6 +14,7 @@ package tiled.mapeditor;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.Enumeration;
 import java.util.Properties;
@@ -27,7 +28,7 @@ import tiled.core.*;
 
 
 public class TileDialog extends JDialog
-    implements ActionListener, MouseListener, ListSelectionListener
+    implements ActionListener, ListSelectionListener
 {
     private Tile currentTile;
     private TileSet currentTileSet;
@@ -80,7 +81,7 @@ public class TileDialog extends JDialog
 
         // Tile list
 
-        tileList.addMouseListener(this);
+        tileList.addListSelectionListener(this);
         JScrollPane sp = new JScrollPane();
         sp.getViewport().setView(tileList);
 
@@ -129,14 +130,29 @@ public class TileDialog extends JDialog
     }
 
     private void changeImage() {
+        if (currentTile == null) {
+            return;
+        }
+
         JFileChooser ch = new JFileChooser();
         ch.setMultiSelectionEnabled(true);
         int ret = ch.showOpenDialog(this);
 
-        try {
-            currentTile.setImage(ImageIO.read(ch.getSelectedFile()));
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (ret == JFileChooser.APPROVE_OPTION) {
+            File file = ch.getSelectedFile();
+            try {
+                BufferedImage image = ImageIO.read(file);
+                if (image != null) {
+                    currentTile.setImage(image);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Error loading image",
+                            "Error loading image", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, e.getMessage(),
+                        "Error loading image", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 
@@ -251,38 +267,13 @@ public class TileDialog extends JDialog
         repaint();
     }
 
-    public void mouseExited(MouseEvent e) {
-    }
-
-    public void mouseClicked(MouseEvent e) {
-        Component c = e.getComponent();
-        //System.out.println(c.getClass().toString());
-        if (c.getClass().toString().equals("class javax.swing.JList")) {
-            JList j = (JList)c;
-
-            // Update the old current tile's properties
-            if (currentTile != null) {
-                currentTile.setProperties(((PropertiesTableModel)tileProperties.getModel()).getProperties());
-            }
-
-            // Set the new current tile
-            currentTile = (Tile)j.getSelectedValue();
-
-            updateTileInfo();
-        } else {
-        }
-        c.repaint();
-    }
-
-    public void mouseEntered(MouseEvent e) {
-    }
-
-    public void mousePressed(MouseEvent e) {
-    }
-
-    public void mouseReleased(MouseEvent e) {
-    }
-
     public void valueChanged(ListSelectionEvent e) {
+        // Update the old current tile's properties
+        if (currentTile != null) {
+            currentTile.setProperties(((PropertiesTableModel)tileProperties.getModel()).getProperties());
+        }
+
+        currentTile = (Tile)tileList.getSelectedValue();
+        updateTileInfo();
     }
 }

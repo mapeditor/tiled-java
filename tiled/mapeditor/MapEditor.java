@@ -91,8 +91,7 @@ public class MapEditor implements ActionListener,
     JTable      layerTable;
     JList		editHistoryList;
 	
-    //JButton     tilePaletteButton;
-	TileButton  tilePaletteButton;
+    TileButton  tilePaletteButton;
     JFrame      appFrame;
     JSlider     opacitySlider;
     JLabel      zoomLabel, tileCoordsLabel;
@@ -754,10 +753,11 @@ public class MapEditor implements ActionListener,
         Point tile = mapView.screenToTileCoords(event.getX(), event.getY());
         MapLayer layer = currentMap.getLayer(currentLayer);
 
-        if (mouseButton == MouseEvent.BUTTON3) {
+        if (layer == null) {
+            return;
+        } else if (mouseButton == MouseEvent.BUTTON3) {
             Tile newTile = layer.getTileAt(tile.x, tile.y);
-            if (newTile != currentMap.getNullTile() && newTile != currentTile)
-            {
+            if (newTile != currentMap.getNullTile()) {
                 setCurrentTile(newTile);
             }
         } else {
@@ -780,8 +780,7 @@ public class MapEditor implements ActionListener,
                     break;
                 case PS_EYED:
                     Tile newTile = layer.getTileAt(tile.x, tile.y);
-                    if (newTile != currentMap.getNullTile() &&
-                            newTile != currentTile) {
+                    if (newTile != currentMap.getNullTile()) {
                         setCurrentTile(newTile);
                     }
                     break;
@@ -1464,11 +1463,13 @@ public class MapEditor implements ActionListener,
      * @param tile the new tile to be selected
      */
     public void setCurrentTile(Tile tile) {
-        currentTile = tile;
-        if (ShapeBrush.class.isInstance(currentBrush)) {
-        	((ShapeBrush)currentBrush).setTile(tile);
+        if (currentTile != tile) {
+            currentTile = tile;
+            if (ShapeBrush.class.isInstance(currentBrush)) {
+                ((ShapeBrush)currentBrush).setTile(tile);
+            }
+            tilePaletteButton.setTile(currentTile);
         }
-        tilePaletteButton.setTile(currentTile);
     }
 
     private void setCurrentPointerState(int state) {
