@@ -1313,7 +1313,7 @@ public class MapEditor implements ActionListener,
     	public PasteAction() {
             super("Paste");
             putValue(ACCELERATOR_KEY,
-                    KeyStroke.getKeyStroke("control P"));
+                    KeyStroke.getKeyStroke("control V"));
             putValue(SHORT_DESCRIPTION, "Paste");
         }
         public void actionPerformed(ActionEvent evt) {
