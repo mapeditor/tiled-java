@@ -94,6 +94,7 @@ public class MapEditor implements ActionListener,
     JPanel      statusBar;
     JMenuBar    menuBar;
     JMenuItem   undoMenuItem, redoMenuItem;
+    JMenuItem   copyMenuItem, cutMenuItem, pasteMenuItem;
     JCheckBoxMenuItem gridMenuItem, boundaryMenuItem, cursorMenuItem;
     JMenuItem   layerAdd, layerClone, layerDel;
     JMenuItem   layerUp, layerDown;
@@ -333,6 +334,13 @@ public class MapEditor implements ActionListener,
         undoMenuItem.setEnabled(false);
         redoMenuItem.setEnabled(false);
 
+		copyMenuItem = new TMenuItem(copyAction);
+		cutMenuItem = new TMenuItem(cutAction);
+		pasteMenuItem = new TMenuItem(pasteAction);
+		copyMenuItem.setEnabled(false);
+		cutMenuItem.setEnabled(false);
+		pasteMenuItem.setEnabled(false);
+		
         JMenu transformSub = new JMenu("Transform");
         transformSub.add(new TMenuItem(rot90Action, true));
         transformSub.add(new TMenuItem(rot180Action, true));
@@ -346,9 +354,9 @@ public class MapEditor implements ActionListener,
         m.add(undoMenuItem);
         m.add(redoMenuItem);
         m.addSeparator();
-        m.add(new TMenuItem(copyAction, true));
-        m.add(new TMenuItem(cutAction, true));
-        m.add(new TMenuItem(pasteAction, true));
+        m.add(copyMenuItem);
+        m.add(cutMenuItem);
+        m.add(pasteMenuItem);
         m.addSeparator();
         m.add(transformSub);
         m.addSeparator();
@@ -356,6 +364,9 @@ public class MapEditor implements ActionListener,
                     null, "Configure options of the editor", null));
         mapEventAdapter.addListener(undoMenuItem);
         mapEventAdapter.addListener(redoMenuItem);
+		mapEventAdapter.addListener(copyMenuItem);
+		mapEventAdapter.addListener(cutMenuItem);
+		mapEventAdapter.addListener(pasteMenuItem);
         menuBar.add(m);
 
 
@@ -1193,6 +1204,7 @@ public class MapEditor implements ActionListener,
             if (tilePaletteDialog != null) {
                 tilePaletteDialog.setMap(currentMap);
             }
+            mapView.repaint();
         }
     }
 

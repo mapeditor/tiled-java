@@ -168,12 +168,22 @@ public class SearchDialog extends JDialog implements ActionListener
 			if(!(searchCBox.getSelectedItem() instanceof TileSet) && !(replaceCBox.getSelectedItem() instanceof TileSet))
 				replaceAll((Tile) searchCBox.getSelectedItem(),(Tile) replaceCBox.getSelectedItem());
 		} else if(command.equalsIgnoreCase("replace")) {
-			if(!(searchCBox.getSelectedItem() instanceof TileSet) && !(replaceCBox.getSelectedItem() instanceof TileSet)) {
+			if((searchCBox.getSelectedItem() instanceof Tile) && (replaceCBox.getSelectedItem() instanceof Tile)) {
 				if(currentMatch == null) {
 					find((Tile)searchCBox.getSelectedItem());
 				}
 				
-				//TODO: replace tile on correct layer
+				//run through the layers, look for the first instance of the tile we need to replace
+				ListIterator itr = myMap.getLayers();		
+				while(itr.hasNext()) {
+					MapLayer layer = (MapLayer) itr.next();
+					if(layer.getTileAt(currentMatch.x,currentMatch.y) == (Tile) searchCBox.getSelectedItem()) {
+						layer.setTileAt(currentMatch.x,currentMatch.y, (Tile) replaceCBox.getSelectedItem());
+						break;
+					}
+				}
+				//find the next instance, effectively stepping forward in our replace
+				find((Tile)searchCBox.getSelectedItem());
 			}
 		}
 		
@@ -194,12 +204,17 @@ public class SearchDialog extends JDialog implements ActionListener
 				
 		if(sl != null) {
 			myMap.removeLayerSpecial(sl);
-		} else {
-			sl = new SelectionLayer(myMap.getWidth(), myMap.getHeight());
+			myMap.touch();
 		}
+		
+		sl = new SelectionLayer(myMap.getWidth(), myMap.getHeight());
+		
 
-		for (int y = 0; y < myMap.getHeight() && !bFound; y++) {
-			for (int x = 0; x < myMap.getWidth() && !bFound; x++) {
+		int startx = currentMatch == null ? 0 : currentMatch.x;
+		int starty = currentMatch == null ? 0 : currentMatch.y;
+		
+		for (int y = starty; y < myMap.getHeight() && !bFound; y++) {
+			for (int x = startx; x < myMap.getWidth() && !bFound; x++) {
 				ListIterator itr = myMap.getLayers();		
 				while(itr.hasNext()) {
 					MapLayer layer = (MapLayer) itr.next();

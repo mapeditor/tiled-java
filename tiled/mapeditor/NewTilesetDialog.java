@@ -14,6 +14,10 @@ package tiled.mapeditor;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.*;
 
@@ -30,11 +34,11 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
     private JTextField tilesetName;
     private JTextField tilebmpFile;
     private JLabel nameLabel, tileWidthLabel, tileHeightLabel, spacingLabel;
-    private JLabel tilebmpFileLabel;
+    private JLabel tilebmpFileLabel,tileSafeColorLabel;
     private JCheckBox tilebmpCheck, tileAutoCheck;
     private JRadioButton importRadio;
     private JRadioButton referenceRadio;
-    private JButton okButton, cancelButton, browseButton;
+    private JButton okButton, cancelButton, browseButton, colorButton;
 
     public NewTilesetDialog(JFrame parent, Map map) {
         super(parent, "New tileset");
@@ -53,6 +57,7 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
         tileHeightLabel = new JLabel("Tile height: ");
         spacingLabel = new JLabel("Tile spacing: ");
         tilebmpFileLabel = new JLabel("Tile image: ");
+        tileSafeColorLabel = new JLabel("Image-safe (transparent) color: ");
 
         tilesetName = new JTextField("Untitled");
         tileWidth = new JTextField("" + map.getTileWidth(), 3);
@@ -76,10 +81,11 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
         okButton = new JButton("OK");
         cancelButton = new JButton("Cancel");
         browseButton = new JButton("Browse...");
+        colorButton = new JButton("None");
         okButton.addActionListener(this);
         cancelButton.addActionListener(this);
         browseButton.addActionListener(this);
-
+		colorButton.addActionListener(this);
 
         // Combine browse button and tile bitmap path text field
 
@@ -93,7 +99,15 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
         c.insets = new Insets(0, 5, 0, 0);
         tilebmpPathPanel.add(browseButton, c);
 
-
+		//Separate panel for safe color label and button
+		JPanel tileColorPanel = new JPanel(new GridBagLayout());
+		c = new GridBagConstraints();
+		c.gridx = 0; c.gridy = 0; c.weightx = 1;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		tileColorPanel.add(tileSafeColorLabel, c);
+		c.gridx = 1;
+		tileColorPanel.add(colorButton);
+		
         // Create the tile bitmap import setting panel
 
         JPanel tilebmpPanel = new VerticalStaticJPanel();
@@ -113,15 +127,16 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
         c.fill = GridBagConstraints.NONE;
         tilebmpPanel.add(tilebmpFileLabel, c);
         c.gridy = 3;
-        tilebmpPanel.add(spacingLabel, c);
+        tilebmpPanel.add(spacingLabel, c);		
         c.gridx = 1; c.gridy = 2; c.weightx = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
         tilebmpPanel.add(tilebmpPathPanel, c);
         c.gridy = 3;
-        tilebmpPanel.add(tileSpacing, c);
-        c.gridwidth = 1;
-
-
+        tilebmpPanel.add(tileSpacing, c);        
+		c.gridx = 0; c.gridy = 4; c.gridwidth = 2;
+		tilebmpPanel.add(tileColorPanel, c);
+		c.gridx = 1; c.gridwidth = 1;
+		
         // OK and Cancel buttons
 
         JPanel buttons = new VerticalStaticJPanel();
@@ -199,14 +214,27 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
             }
 
             dispose();
-        } if (source == browseButton) {
+        } else if (source == browseButton) {
             JFileChooser ch = new JFileChooser();
 
             int ret = ch.showOpenDialog(this);
             if (ret == JFileChooser.APPROVE_OPTION) {
                 tilebmpFile.setText(ch.getSelectedFile().getAbsolutePath());
             }
-        } else {
+        } else if (source == colorButton) {
+			ImageColorDialog icd;
+            try {
+                icd = new ImageColorDialog(ImageIO.read(new File(tilebmpFile.getText())));
+				colorButton.setBackground(icd.showDialog());
+				colorButton.setText(Integer.toHexString(colorButton.getBackground().getRGB()).substring(2));
+            } catch (IOException e) {
+				JOptionPane.showMessageDialog(getOwner(),
+						"Error while loading image: " + e.getMessage(),
+						"Error while choosing color",
+						JOptionPane.ERROR_MESSAGE);
+            }			
+			
+		} else {
             dispose();
         }
     }
@@ -226,5 +254,7 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
         tileSpacing.setEnabled(value);
         spacingLabel.setEnabled(value);
         tileAutoCheck.setEnabled(value);
+        tileSafeColorLabel.setEnabled(value);
+        colorButton.setEnabled(value);
     }
 }

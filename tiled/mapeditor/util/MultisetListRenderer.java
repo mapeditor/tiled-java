@@ -55,10 +55,10 @@ public class MultisetListRenderer extends DefaultListCellRenderer
 		
 		super.getListCellRendererComponent(
                 list, value, index, isSelected, cellHasFocus);
-		
+		Tile tile = null;
 		if(value != null && index>=0) {
 			if(value.getClass().toString().equals(Tile.class.toString())) {
-				Tile tile = (Tile)value;
+				tile = (Tile)value;
 				if (tile != null) {
 					setIcon(tileImages[index]);
 					setText("Tile " + tile.getId());
@@ -81,6 +81,8 @@ public class MultisetListRenderer extends DefaultListCellRenderer
 			// Draw the correct colors and font
 			if (isSelected) {
 				// Set the color and font for a selected item
+				if(tile != null)
+					setIcon(new ImageIcon(tile.getScaledImage(1.0)));
 				setBackground(Color.blue);
 				setForeground(Color.black);
 				setFont(new Font("Roman", Font.BOLD, 12));
