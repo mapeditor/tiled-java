@@ -213,7 +213,7 @@ public class TileDialog extends JDialog
         if (tileset.usesSharedImages()) {
             TileImageDialog d = new TileImageDialog(this, tileset,
                 currentTile.getImageId(), currentTile.getImageOrientation());
-            d.show();
+            d.setVisible(true);
             if (d.getImageId() >= 0) {
                 currentTile.setImage(d.getImageId());
                 currentTile.setImageOrientation(d.getImageOrientation());
@@ -255,7 +255,7 @@ public class TileDialog extends JDialog
     private void newTile() {
         if (tileset.usesSharedImages()) {
             TileImageDialog d = new TileImageDialog(this, tileset);
-            d.show();
+            d.setVisible(true);
             if (d.getImageId() >= 0) {
                 currentTile = new Tile(tileset);
                 currentTile.setImage(d.getImageId());

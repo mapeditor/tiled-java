@@ -81,7 +81,8 @@ public class TileSet
      * @exception
      */
     public void importTileBitmap(String imgFilename, int tileWidth,
-            int tileHeight, int spacing, boolean createTiles) throws Exception{
+            int tileHeight, int spacing, boolean createTiles) throws Exception
+    {
         File imgFile = null;
         try {
             imgFile = new File(imgFilename);
