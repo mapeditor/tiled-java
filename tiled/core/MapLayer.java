@@ -5,13 +5,14 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
 
 package tiled.core;
 
+import java.awt.Point;
 import java.awt.Rectangle;
 
 
@@ -161,36 +162,36 @@ public class MapLayer implements Cloneable
     /**
      * Creates a diff of the two layers, <code>ml</code> is considered the
      * significant difference.
-     * 
+     *
      * @param ml
      * @return A new FiniteMapLayer the represents the difference between this
      *         layer, and the argument, or null if no difference exists.
-     */	
-    public MapLayer createDiff(MapLayer ml) {		
-        if (ml == null) {
-            return null;
-        }
-        Rectangle r = new Rectangle();
-        boolean start = false;
-        for (int i = bounds.y; i < bounds.height + bounds.y; i++) {
-            for (int j = bounds.x; j < bounds.width + bounds.x; j++) {
-                if (ml.getTileAt(j, i) != getTileAt(j, i)) {
-                    if (start) {
-                        r.width = Math.max(Math.abs(j - r.x), r.width);
-                        r.height = Math.max(Math.abs(i - r.y), r.height);
+     */
+    public MapLayer createDiff(MapLayer ml) {
+        if (ml == null) { return null; }
+
+        Rectangle r = null;
+
+        for (int y = bounds.y; y < bounds.height + bounds.y; y++) {
+            for (int x = bounds.x; x < bounds.width + bounds.x; x++) {
+                if (ml.getTileAt(x, y) != getTileAt(x, y)) {
+                    if (r != null) {
+                        r.add(x, y);
                     } else {
-                        start = true;
-                        r.x = j;
-                        r.y = i;
+                        r = new Rectangle(new Point(x, y));
                     }
                 }
-
             }
         }
 
-        MapLayer diff = new MapLayer(r);
-        diff.copyFrom(ml);		
-        return diff;
+        if (r != null) {
+            MapLayer diff = new MapLayer(
+                    new Rectangle(r.x, r.y, r.width + 1, r.height + 1));
+            diff.copyFrom(ml);
+            return diff;
+        } else {
+            return new MapLayer();
+        }
     }
 
     /**
@@ -241,7 +242,7 @@ public class MapLayer implements Cloneable
      * @param ti the tile object to place
      */
     public void setTileAt(int tx, int ty, Tile ti) {
-        try {        	
+        try {
             map[ty - bounds.y][tx - bounds.x] = ti;
         } catch (ArrayIndexOutOfBoundsException e) {
             // Silently ignore out of bounds exception
@@ -302,7 +303,7 @@ public class MapLayer implements Cloneable
 
     /**
      * Returns the id of this layer.
-     * 
+     *
      * @deprecated
      */
     public int getId() {
@@ -322,7 +323,7 @@ public class MapLayer implements Cloneable
      * @return tile at position (tx, ty) or <code>null</code> when (tx, ty) is
      *         outside this layer
      */
-    public Tile getTileAt(int tx, int ty) {    	
+    public Tile getTileAt(int tx, int ty) {
         try {
             return map[ty - bounds.y][tx - bounds.x];
         } catch (ArrayIndexOutOfBoundsException e) {
@@ -394,7 +395,7 @@ public class MapLayer implements Cloneable
 
     /**
      * Unlike mergeOnto, copyTo includes the null tile when merging
-     * 
+     *
      * @param other the layer to copy this layer to
      */
     public void copyTo(MapLayer other) {
@@ -421,10 +422,10 @@ public class MapLayer implements Cloneable
 
         return clone;
     }
-    
+
     /**
      * @see MultilayerPlane#resize
-     * 
+     *
      * @param width  the new width of the layer
      * @param height the new height of the layer
      * @param dx     the shift in x direction

@@ -718,13 +718,6 @@ public class MapEditor implements ActionListener,
             return;
         }
 
-        //MapLayerEdit mle;
-
-        //Component c = e.getComponent();
-
-        //System.out.println(e.toString());
-        //System.out.println(c.getClass().toString());
-
         Point tile = mapView.screenToTileCoords(event.getX(), event.getY());
         MapLayer layer = currentMap.getLayer(currentLayer);
 
@@ -735,12 +728,14 @@ public class MapEditor implements ActionListener,
             if (newTile != currentMap.getNullTile()) {
                 setCurrentTile(newTile);
             }
-        } else if (mouseButton == MouseEvent.BUTTON1){
+        } else if (mouseButton == MouseEvent.BUTTON1) {
             switch (currentPointerState) {
                 case PS_PAINT:
                     paintEdit.setPresentationName("Paint");
-                    currentBrush.commitPaint(currentMap, tile.x, tile.y, currentLayer);
-                    mapView.repaintRegion(currentBrush.getCenteredBounds(tile.x,tile.y));
+                    currentBrush.commitPaint(
+                            currentMap, tile.x, tile.y, currentLayer);
+                    mapView.repaintRegion(
+                            currentBrush.getCenteredBounds(tile.x, tile.y));
                     break;
                 case PS_ERASE:
                     paintEdit.setPresentationName("Erase");
@@ -783,7 +778,8 @@ public class MapEditor implements ActionListener,
         mouseButton = e.getButton();
         bMouseIsDown = true;
         mousePressLocation = mapView.screenToTileCoords(e.getX(), e.getY());
-        if (currentPointerState != PS_EYED && currentPointerState != PS_POINT && mouseButton == MouseEvent.BUTTON1)
+        if (currentPointerState != PS_EYED && currentPointerState != PS_POINT
+                && mouseButton == MouseEvent.BUTTON1)
         {
             MapLayer layer = currentMap.getLayer(currentLayer);
             paintEdit =
@@ -798,11 +794,9 @@ public class MapEditor implements ActionListener,
         if (paintEdit != null) {
             MapLayer layer = currentMap.getLayer(currentLayer);
             if (layer != null) {
-	            try {
+                try {
                     MapLayer endLayer = paintEdit.getStart().createDiff(layer);
                     endLayer.setId(layer.getId());
-                    endLayer.setOffset(
-                            layer.getBounds().x, layer.getBounds().y);
                     paintEdit.end(endLayer);
                     undoSupport.postEdit(paintEdit);
                 } catch (Exception e) {
@@ -1103,31 +1097,32 @@ public class MapEditor implements ActionListener,
         }
         public void actionPerformed(ActionEvent evt) {
             MapLayer layer = currentMap.getLayer(currentLayer);
-            paintEdit = new MapLayerEdit(currentMap, new MapLayer(layer));
+            MapLayerEdit transEdit;
+            transEdit = new MapLayerEdit(currentMap, new MapLayer(layer));
             switch (transform) {
                 case MapLayer.ROTATE_90:
-                    paintEdit.setPresentationName("Rotate");
+                    transEdit.setPresentationName("Rotate");
                     layer.rotate(MapLayer.ROTATE_90);
                     break;
                 case MapLayer.ROTATE_180:
-                    paintEdit.setPresentationName("Rotate");
+                    transEdit.setPresentationName("Rotate");
                     layer.rotate(MapLayer.ROTATE_180);
                     break;
                 case MapLayer.ROTATE_270:
-                    paintEdit.setPresentationName("Rotate");
+                    transEdit.setPresentationName("Rotate");
                     layer.rotate(MapLayer.ROTATE_270);
                     break;
                 case MapLayer.MIRROR_VERTICAL:
-                    paintEdit.setPresentationName("Vertical Flip");
+                    transEdit.setPresentationName("Vertical Flip");
                     layer.mirror(MapLayer.MIRROR_VERTICAL);
                     break;
                 case MapLayer.MIRROR_HORIZONTAL:
-                    paintEdit.setPresentationName("Horizontal Flip");
+                    transEdit.setPresentationName("Horizontal Flip");
                     layer.mirror(MapLayer.MIRROR_HORIZONTAL);
                     break;
             }
-            paintEdit.end(new MapLayer(layer));
-            undoSupport.postEdit(paintEdit);
+            transEdit.end(new MapLayer(layer));
+            undoSupport.postEdit(transEdit);
             mapView.repaint();
         }
     }
@@ -1200,8 +1195,7 @@ public class MapEditor implements ActionListener,
             Tile newTile, Tile oldTile) {
         if (newTile == oldTile) return;
 
-        int minX = x, minY = y;
-        int maxX = x, maxY = y;
+        Rectangle area = new Rectangle(new Point(x, y));
         Stack stack = new Stack();
         MapLayer before = new MapLayer(layer);
         before.setId(layer.getId());
@@ -1218,11 +1212,7 @@ public class MapEditor implements ActionListener,
                     layer.getTileAt(p.x, p.y) == oldTile)
             {
                 layer.setTileAt(p.x, p.y, newTile);
-
-                if (minX > p.x) { minX = p.x; }
-                if (minY > p.y) { minY = p.y; }
-                if (maxX < p.x) { maxX = p.x; }
-                if (maxY < p.y) { maxY = p.y; }
+                area.add(p);
 
                 stack.push(new Point(p.x, p.y - 1));
                 stack.push(new Point(p.x, p.y + 1));
@@ -1232,7 +1222,7 @@ public class MapEditor implements ActionListener,
         }
 
         Rectangle bounds = new Rectangle(
-                minX, minY, maxX - minX + 1, maxY - minY + 1);
+                area.x, area.y, area.width + 1, area.height + 1);
         after = new MapLayer(bounds);
         after.copyFrom(layer);
         after.setId(layer.getId());
