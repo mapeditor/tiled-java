@@ -312,12 +312,6 @@ public class XMLMapWriter implements MapWriter
 				w.writeAttribute("value", tile.getPropertyValue(key));
 				w.endElement();
 			}
-			
-            if (tile.getLink() != null) {
-                w.startElement("link");
-                w.writeAttribute("target", tile.getLink());
-                w.endElement();
-            }
 
             Image tileImage = tile.getImage();
 

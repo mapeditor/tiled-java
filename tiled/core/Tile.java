@@ -28,7 +28,7 @@ public class Tile
     private int id = -1;
     private int stdHeight;
     private int groundHeight;          // Height above ground
-    private String name, link;    
+    private String name;    
     private Properties properties;
     private TileSet tileset;
 
@@ -45,12 +45,6 @@ public class Tile
     public void setId(int i) {
         if (i >= 0) {
             id = i;
-        }
-    }
-
-    public void setLink(String l) {
-        if (l.indexOf('\0') > 0) {
-            link = l.substring(0, l.indexOf('\0'));
         }
     }
 
@@ -165,10 +159,6 @@ public class Tile
 
     public Image getImage() {
         return tileImage;
-    }
-
-    public String getLink() {
-        return link;
     }
 
     public String toString() {

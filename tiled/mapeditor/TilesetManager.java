@@ -22,6 +22,7 @@ import javax.swing.event.ListSelectionListener;
 
 import tiled.core.*;
 import tiled.io.xml.XMLMapWriter;
+import tiled.mapeditor.util.TiledFileFilter;
 
 
 public class TilesetManager extends JDialog implements ActionListener,
@@ -137,6 +138,7 @@ public class TilesetManager extends JDialog implements ActionListener,
         } else if (command.equals("Export...")) {
             JFileChooser ch = new JFileChooser(map.getFilename());
 
+			ch.setFileFilter(new TiledFileFilter(TiledFileFilter.FILTER_TSX));
             int ret = ch.showSaveDialog(this);
             if (ret == JFileChooser.APPROVE_OPTION) {
                 String filename = ch.getSelectedFile().getAbsolutePath();
@@ -153,6 +155,7 @@ public class TilesetManager extends JDialog implements ActionListener,
 			JFileChooser ch = new JFileChooser(map.getFilename());
 	
 			//TODO: warn vehemently if the set file already exists
+			ch.setFileFilter(new TiledFileFilter(TiledFileFilter.FILTER_TSX));
 			int ret = ch.showSaveDialog(this);
 			if (ret == JFileChooser.APPROVE_OPTION) {
 				String filename = ch.getSelectedFile().getAbsolutePath();

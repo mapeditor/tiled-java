@@ -239,8 +239,7 @@ public class MapEditor implements ActionListener,
         m.add(undoMenuItem);
         m.add(redoMenuItem);
 		m.addSeparator();
-		m.add(transformSub);
-		//mapEventAdapter.addListener(transformSub);
+		m.add(transformSub);		
 		m.addSeparator();
 		m.add(createMenuItem("Preferences...", null, "Configure options of the editor", null));
 	        mapEventAdapter.addListener(undoMenuItem);
@@ -249,7 +248,7 @@ public class MapEditor implements ActionListener,
 
         
         m = new JMenu("Map");
-        //m.add(createMenuItem("Modify Dimensions", null, "Modify map dimensions"));
+        m.add(createMenuItem("Modify Dimensions", null, "Modify map dimensions"));
         m.addSeparator();
         m.add(createMenuItem("Properties", null, "Map properties"));
         mapEventAdapter.addListener(m);
@@ -982,6 +981,9 @@ public class MapEditor implements ActionListener,
             undoStack.redo();
             updateHistory();
             mapView.repaint();
+        } else if(command.equals("Modify Dimensions")) {
+        	ResizeDialog rd = new ResizeDialog(this);
+        	rd.showDialog();
         } else if (command.equals("About")) {
             if (aboutDialog == null) {
                 aboutDialog = new AboutDialog(appFrame);
@@ -1298,6 +1300,8 @@ public class MapEditor implements ActionListener,
                 ch = new JFileChooser(filename);
             }
 
+			ch.setFileFilter(new TiledFileFilter());
+
             if (ch.showSaveDialog(appFrame) == JFileChooser.APPROVE_OPTION) {
                 filename = ch.getSelectedFile().getAbsolutePath();
                 TiledConfiguration.addConfigPair("tmx.save.maplocation",
@@ -1331,6 +1335,8 @@ public class MapEditor implements ActionListener,
         }
 
         JFileChooser ch = new JFileChooser(startLocation);
+
+		ch.setFileFilter(new TiledFileFilter());
 
         int ret = ch.showOpenDialog(appFrame);
         if (ret == JFileChooser.APPROVE_OPTION) {

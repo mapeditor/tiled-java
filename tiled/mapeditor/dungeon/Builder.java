@@ -12,24 +12,42 @@
 
 package tiled.mapeditor.dungeon;
 
+import tiled.core.Map;
+
 
 abstract public class Builder {
 
-    private int movesPerIteration=0;
+	public static final int NORTH=1;
+	public static final int EAST=2;
+	public static final int SOUTH=3;
+	public static final int WEST=4;
+	
+    protected int movesPerIteration=0;
+    protected int direction=NORTH;
     protected int wallTileId=0,
     floorTileId=0,
     doorTileId=0;
+    private int ttl; 
     protected int mapx,mapy;
-
-    Builder() {
+	
+    public Builder() {
     }
 
-    Builder(int x,int y) {
+    public Builder(int x, int y, int dir) {
         mapx=x;
         mapy=y;
+        direction = dir;
     }
 
-    abstract void iterate();
-    abstract Builder spawn();
+	public void decrementTtl() {
+		ttl--;
+	}
 
+	public int getTtl() {
+		return ttl;
+	}
+
+    public abstract void iterate();
+    public abstract Builder spawn();
+	public abstract void store(Map m);
 }

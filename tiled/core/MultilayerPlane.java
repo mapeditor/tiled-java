@@ -127,7 +127,8 @@ public class MultilayerPlane {
 	
 	/**
 	 * Resizes this plane. The (dx, dy) pair determines where the original plane
-	 * should be positioned on the new area.
+	 * should be positioned on the new area. It only affects layers with dimensions 
+	 * equal to that of the MutlilayerPlane.
 	 *
 	 * @param width  The new width of the map.
 	 * @param height The new height of the map.

@@ -11,21 +11,24 @@
  */
 package tiled.mapeditor.dungeon;
 
+import tiled.core.Map;
+
 
 public class CorridorBuilder extends Builder
 {
-    /**
-     * @see mechanae.mapeditor.dungeon.Builder#iterate()
-     */
-    void iterate() {
-        // TODO Auto-generated method stub
+	
+    public void iterate() {
+        
     }
 
-    /* (non-Javadoc)
-     * @see mechanae.mapeditor.dungeon.Builder#spawn()
-     */
-    Builder spawn() {
-        // TODO Auto-generated method stub
+    public Builder spawn() {
+        
         return null;
     }
+
+	
+	public void store(Map m) {
+		
+		
+	}
 }

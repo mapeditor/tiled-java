@@ -299,8 +299,6 @@ public class XMLMapTransformer implements MapReader
 				tile.setImage(unmarshalImage(child));
 			} else if(child.getNodeName().equalsIgnoreCase("property")) {
 				tile.setProperty(getAttributeValue(child,"name"),getAttributeValue(child,"value"));
-			} else if(child.getNodeName().equalsIgnoreCase("link")) {
-				tile.setLink(getAttributeValue(child, "target"));
 			}
 		}
 

@@ -31,7 +31,7 @@ public class PropertiesDialog extends JDialog implements ActionListener, ListSel
 
     public PropertiesDialog(MapEditor m) {
         currentMap = m.getCurrentMap();
-        pack();
+        //pack();
         setLocationRelativeTo(getOwner());
         setTitle("Map Properties");
         setModal(true);
