@@ -855,7 +855,7 @@ public class MapEditor implements ActionListener,
             switch (currentPointerState) {
                 case PS_PAINT:
                     paintEdit.setPresentationName("Paint");
-                    if(!(currentMap.getLayer(currentLayer) instanceof ObjectGroup)) {
+                    if(layer instanceof TileLayer) {
                         Rectangle affectedRegion = currentBrush.commitPaint(
                                 currentMap, tile.x, tile.y, currentLayer);
                         mapView.repaintRegion(affectedRegion);
@@ -871,9 +871,11 @@ public class MapEditor implements ActionListener,
                     break;
                 case PS_POUR:  //POUR only works on TileLayers
                     paintEdit = null;
-                    Tile oldTile = ((TileLayer)layer).getTileAt(tile.x, tile.y);
-                    pour((TileLayer) layer, tile.x, tile.y, currentTile, oldTile);
-                    mapView.repaint();
+                    if (layer instanceof TileLayer) {
+                        Tile oldTile = ((TileLayer)layer).getTileAt(tile.x, tile.y);
+                    	pour((TileLayer) layer, tile.x, tile.y, currentTile, oldTile);
+                    	mapView.repaint();
+                    }
                     break;
                 case PS_EYED:
                     if (layer instanceof TileLayer) {
