@@ -12,10 +12,8 @@
 
 package tiled.mapeditor;
 
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.event.*;
+import java.awt.*;
 import java.util.Vector;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;

@@ -82,7 +82,7 @@ public class MapEditor implements ActionListener,
     JMenuBar    menuBar;
     JMenuItem   zoomOut, zoomIn, zoomNormal;
     JMenuItem   undoMenuItem, redoMenuItem;
-    JCheckBoxMenuItem gridMenuItem;
+    JCheckBoxMenuItem gridMenuItem, boundaryMenuItem;
     JMenuItem   layerAdd, layerClone, layerDel;
     JMenuItem   layerUp, layerDown;
     JMenuItem   layerMerge, layerMergeAll;
@@ -365,13 +365,17 @@ public class MapEditor implements ActionListener,
         gridMenuItem.addActionListener(this);
         gridMenuItem.setToolTipText("Toggle grid");
         gridMenuItem.setAccelerator(KeyStroke.getKeyStroke("control G"));
-
+	boundaryMenuItem = new JCheckBoxMenuItem("Show Boundaries");
+	boundaryMenuItem.addActionListener(this);
+	boundaryMenuItem.setToolTipText("Toggle layer boundaries");
+	boundaryMenuItem.setAccelerator(KeyStroke.getKeyStroke("control E"));
         m = new JMenu("View");
         m.add(zoomIn);
         m.add(zoomOut);
         m.add(zoomNormal);
         m.addSeparator();
         m.add(gridMenuItem);
+		m.add(boundaryMenuItem);
         mapEventAdapter.addListener(m);
         menuBar.add(m);
 
@@ -1016,8 +1020,12 @@ public class MapEditor implements ActionListener,
                 zoomNormal.setEnabled(false);
                 mapView.setZoomLevel(MapView.ZOOM_NORMALSIZE);
             }
-        } else if (command.equals("Show Grid") ||
-                command.equals("Hide Grid")) {
+        } else if (command.equals("Show Boundaries") ||
+		command.equals("Hide Boundaries")) {
+		
+	    mapView.toggleMode(MapView.PF_BOUNDARYMODE);
+	} else if (command.equals("Show Grid") ||
+		command.equals("Hide Grid")) {
             // Toggle grid
             mapView.toggleMode(MapView.PF_GRIDMODE);
         } else if (command.equals("Undo")) {
@@ -1116,6 +1124,9 @@ public class MapEditor implements ActionListener,
         if (e.getMap() == currentMap) {
             mapScrollPane.setViewportView(mapView);
             updateLayerTable();
+	    if (tilePaletteDialog != null) {
+	    tilePaletteDialog.setMap(currentMap);
+	    }
         }
     }
 

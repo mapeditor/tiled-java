@@ -32,7 +32,8 @@ import tiled.core.*;
 public abstract class MapView extends JPanel implements Scrollable
 {
     public static final int PF_GRIDMODE = 0x00000001;
-
+    public static final int PF_BOUNDARYMODE = 0x00000002;
+	
     public static int ZOOM_NORMALSIZE = 3;
 
     protected Map myMap;
@@ -180,7 +181,7 @@ public abstract class MapView extends JPanel implements Scrollable
         if (getMode(PF_GRIDMODE)) {
             g2d.setComposite(AlphaComposite.SrcOver);
             paintGrid(g, currentZoom);
-        }
+        }		
     }
 
     /**
@@ -207,7 +208,6 @@ public abstract class MapView extends JPanel implements Scrollable
      * Draws the map grid.
      */
     protected abstract void paintGrid(Graphics g, double zoom);
-
 
     // Conversion functions
 

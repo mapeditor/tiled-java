@@ -91,7 +91,6 @@ public class ResizeDialog extends JDialog implements ActionListener,
         c.gridx = 0; c.gridy = 2; c.gridwidth = 3; c.gridheight = 1;
         offsetPanel.add(orient, c);
 
-
         // New size panel
         JPanel newSizePanel = new VerticalStaticJPanel(new GridBagLayout());
         newSizePanel.setBorder(BorderFactory.createCompoundBorder(
@@ -192,7 +191,6 @@ public class ResizeDialog extends JDialog implements ActionListener,
         } else if(evt.getPropertyName().equalsIgnoreCase("offsetY")) {
 			offsetY.setValue((Integer)evt.getNewValue());
         }
-        repaint();
     }
     
     public void stateChanged(ChangeEvent e) {
