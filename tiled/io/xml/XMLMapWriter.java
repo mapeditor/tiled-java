@@ -440,10 +440,12 @@ public class XMLMapWriter implements MapWriter
 		return "This is the core Tiled TMX format writer\n\nTiled Map Editor, (c) 2004\nAdam Turk\nBjorn Lindeijer";
 	}
 	
-	public boolean filter(String ext) {
-		if(ext.endsWith("tmx")||ext.endsWith("tsx")){
-			return true;
-		}
+	public boolean accept(File pathname) {
+		try {
+			if(pathname.getCanonicalPath().endsWith("tmx")||pathname.getCanonicalPath().endsWith("tsx")){
+				return true;
+			}
+		} catch (IOException e) {}
 		return false;
 	}
 }

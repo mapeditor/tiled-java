@@ -12,11 +12,13 @@
 
 package tiled.io;
 
+import java.io.FileFilter;
+
 import tiled.core.Map;
 import tiled.core.TileSet;
 
 
-public interface MapReader extends PluggableMapIO
+public interface MapReader extends PluggableMapIO, FileFilter
 {
     /**
      * Loads a map from a file.

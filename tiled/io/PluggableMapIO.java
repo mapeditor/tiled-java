@@ -13,15 +13,6 @@
 package tiled.io;
 
 public interface PluggableMapIO {
-
-	
-	/**
-	 * Check to see if an extension is supported by this I/O plugin
-	 * 
-	 * @param ext
-	 * @return <code>true</code> if it is supported, <code>false</code> otherwise
-	 */
-	public boolean filter(String ext);
 	
 	 /**
      * Lists supported file types

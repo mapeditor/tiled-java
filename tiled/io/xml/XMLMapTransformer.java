@@ -556,4 +556,13 @@ public class XMLMapTransformer implements MapReader
 		}
 		return false;
 	}
+
+	public boolean accept(File pathname) {
+		try {
+			if(pathname.getCanonicalPath().endsWith("tmx")||pathname.getCanonicalPath().endsWith("tsx")){
+				return true;
+			}
+		} catch (IOException e) {}
+		return false;
+	}
 }
