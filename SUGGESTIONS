@@ -34,9 +34,11 @@ State:      To be implemented (offset attributes, task #79)
 
 -------------------------------------------------------------------------------
 Suggestor:  Ahmed Mohombe <amohombe@yahoo.com>
+Suggestor:  Andreas Mross <amross@stagingconnections.com>
 Date:       08/04/04 10:44
 Summary:    File chooser should remember last place where it was opened, for
-            example when picking the tile to load into your tileset.
+            example when picking the tile to load into your tileset. Same goes
+            for opening map files.
 State:      To be implemented (task #81)
 
 -------------------------------------------------------------------------------
@@ -76,3 +78,40 @@ Date:       06/16/04
 Summary:    Ability to drag the map around by holding spacebar a la Photoshop
             and similar.
 State:      Needs research.
+
+-------------------------------------------------------------------------------
+Suggestor:  Andreas Mross <amross@stagingconnections.com>
+Date:       09/09/04
+Summary:    Execute pour in seperate thread, to prevent locking up rest of UI.
+State:      Needs research.
+
+
+-------------------------------------------------------------------------------
+Suggestor:  Andreas Mross <amross@stagingconnections.com>
+Date:       09/09/04
+Summary:    Use AffineTransform for the zooming feature.
+State:      Needs research.
+
+-------------------------------------------------------------------------------
+Suggestor:  Andreas Mross <amross@stagingconnections.com>
+Date:       09/08/04
+Summary:    Hexagonal map view.
+State:      Implemented himself, integration in process.
+
+-------------------------------------------------------------------------------
+Suggestor:  Andreas Mross <amross@stagingconnections.com>
+Date:       09/08/04
+Summary:    Input/output plugins for map loading/saving.
+State:      Implementation in progress (task #89)
+
+-------------------------------------------------------------------------------
+Suggestor:  Andreas Mross <amross@stagingconnections.com>
+Date:       09/08/04
+Summary:    Tooltips on the icons.
+State:      Will look into.
+
+-------------------------------------------------------------------------------
+Suggestor:  Andreas Mross <amross@stagingconnections.com>
+Date:       09/09/04
+Summary:    Additional documentation on the map format.
+State:      To be written.
