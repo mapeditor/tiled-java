@@ -1,0 +1,47 @@
+------------------------
+ TILED MAP EDITOR 0.3.x
+------------------------
+
+This is Tiled, a general purpose tiled map editor. A lot of polish went into
+this release in an attempt to make a good first impression.
+
+Although this first release is pretty capable and flexible, we don't expect it
+to be able to do enough for most people at the moment. This is where we need
+you. Tell us what you are missing or why you can't use this editor at the
+moment.
+
+Website:     http://tiled.rpgdx.net/
+Subversion:  svn://www.biggeruniverse.com/tiled/
+Bugtracker:  http://www.biggeruniverse.com/projects/flyspray/
+
+
+-----------------
+ CURRENT FEATURES
+-----------------
+
+- Multilayer, layers can be changed around dynamically
+- Multiple orientations (orthographic and isometric at the moment)
+- Tiles can be higher than the default tile height
+- Easy to use drawing operations
+- Universal XML-based map and tileset file formats
+- Can embed tiles in the map or tileset file
+- Highly portable and free software
+- Maps may include tiles from multiple tilesets
+
+
+---------
+ AUTHORS
+---------
+
+- Adam Turk       <aturk@biggeruniverse.com>
+- Bjorn Lindeijer <b.lindeijer@xs4all.nl>
+
+
+-----------
+ THANKS TO
+-----------
+
+- Frode Lindeijer for the design of the logo
+- Kevin Kelley for the base64 encoder/decoder we use
+- GNOME and GIMP for their magnificent icons
+- Nephilim for suggesting layer opacity

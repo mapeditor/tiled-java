@@ -1,0 +1,65 @@
+<!DOCTYPE TiledMap [
+
+<!ELEMENT map (dimensions, properties, tileset+, layer+, object+)>
+<!ATTLIST map
+    id          ID     #IMPLIED
+    version     CDATA  #REQUIRED
+    name        CDATA  #REQUIRED
+    orientation (orthogonal | isometric | hexagonal | oblique)  #REQUIRED
+>
+
+<!ELEMENT tileset (tile+)>
+<!ATTLIST tileset
+    name     CDATA #REQUIRED
+    filename CDATA #IMPLIED
+>
+
+<!ELEMENT tile (image, link, properties)>
+<!ATTLIST tile
+    id     ID    #REQUIRED
+    name   CDATA #IMPLIED
+    cost   CDATA #IMPLIED
+    source CDATA #IMPLIED
+>
+
+<!ELEMENT layer  (data)>
+<!ATTLIST layer
+   id      ID    #REQUIRED
+   name    CDATA #REQUIRED
+   visible CDATA #IMPLIED
+   opacity CDATA #IMPLIED
+>
+
+<!ELEMENT object (#PCDATA)>
+
+<!ELEMENT image (data)>
+<!ATTLIST image
+    format   CDATA #REQUIRED
+    source   CDATA #IMPLIED
+>
+
+<!ELEMENT properties(property+)>
+
+<!ELEMENT property>
+<!ATTLIST property
+    name  CDATA #REQUIRED
+    value CDATA #REQUIRED
+>
+
+<!ELEMENT link EMPTY>
+<!ATTLIST link
+    target CDATA #REQUIRED
+>
+
+<!ELEMENT dimensions EMPTY>
+<!ATTLIST dimensions
+    width  CDATA #REQUIRED
+    height CDATA #REQUIRED
+>
+
+<!ELEMENT data (#PCDATA)>
+<!ATTLIST data
+    encoding CDATA #REQUIRED
+>
+
+]>

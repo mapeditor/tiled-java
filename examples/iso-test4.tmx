@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+<map version="0.0" id="0" orientation="isometric" tilewidth="32" tileheight="16">
+ <dimensions width="64" height="64"/>
+ <properties/>
+ <tileset firstgid="1" source="water.tsx"/>
+ <layer id="0" name="Layer 0">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAAO3DQQ0AAAwDoat/05OxDySsmqqqqqqqqqqqqqqqqqqqqvr6AFA+aDAAQAAA
+  </data>
+ </layer>
+ <layer id="1" name="Layer 1">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAAO3SMQqAMAxAUYeiZxC8/znVoeAiFhVKmvcgW4b+0GkCAAAAgPdK7wd0UG5mZHfNGW7Q2j7iHd60j3SDL/3Rb/C1XX9sT23zMVvDXlRPXcsxa8NeVH/8f/2xZe8/Ze+vMrdfZe+vsnYDAAAAAAAA9LAD/njXxQBAAAA=
+  </data>
+ </layer>
+</map>

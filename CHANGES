@@ -1,0 +1,29 @@
+0.3.1 - June 17th, 2004
+
+* Tile palette dialog remembers size and position and doesn't close when a tile
+  is selected
+* Saving unencoded layers is possible through config options
+* The right mouse button now functions as eye dropper (tile grabber)
+* Added "Preferences..." option under "Edit" menu
+* First tile of tileset is selected when map is loaded
+* Added toolbar buttons to zoom in and out
+* Removed select button and print menuitem, will come back when functional
+
+
+0.3.0 - June 15th, 2004
+
+* All the features and polish required to release the Mechanae map editor as
+  a more general tiled map editor, including:
+* Support for isometric maps
+* Zooming in
+* Support for multiple tilesets
+* Support for external tilesets
+* Support for tileset bitmaps (TODO)
+* A lot of stability and user interface enhancements
+* Shortcuts on menu items
+* New, XML-based, universal tiled map and tileset file formats (tmx, tsx)
+* Merging, cloning, deleting and rearranging of layers
+* Translating layers
+* Layer opacity
+* Undo/redo draw operations
+* Configuration file
