@@ -16,7 +16,7 @@ import java.util.*;
 import javax.swing.event.EventListenerList;
 
 import tiled.mapeditor.util.*;
-
+import tiled.view.*;
 
 public class Map extends MultilayerPlane implements Cloneable
 {

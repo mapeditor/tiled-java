@@ -24,6 +24,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 
 import tiled.core.*;
+import tiled.view.*;
 import tiled.mapeditor.util.*;
 import tiled.mapeditor.undo.*;
 import tiled.util.TiledConfiguration;
