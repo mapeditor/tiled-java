@@ -52,7 +52,7 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
         tileWidthLabel = new JLabel("Tile width: ");
         tileHeightLabel = new JLabel("Tile height: ");
         spacingLabel = new JLabel("Tile spacing: ");
-        tilebmpFileLabel = new JLabel("Tile bitmap: ");
+        tilebmpFileLabel = new JLabel("Tile image: ");
 
         tilesetName = new JTextField("Untitled");
         tileWidth = new JTextField("" + map.getTileWidth(), 3);
@@ -66,7 +66,7 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
         tileWidth.setEnabled(false);
         tileHeight.setEnabled(false);
 
-        tilebmpCheck = new JCheckBox("Reference tileset bitmap", false);
+        tilebmpCheck = new JCheckBox("Reference tileset image", false);
         tilebmpCheck.addChangeListener(this);
 
         okButton = new JButton("OK");
@@ -95,7 +95,7 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
         JPanel tilebmpPanel = new VerticalStaticJPanel();
         tilebmpPanel.setLayout(new GridBagLayout());
         tilebmpPanel.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createTitledBorder("From Tileset Bitmap"),
+                    BorderFactory.createTitledBorder("From tileset image"),
                     BorderFactory.createEmptyBorder(0, 5, 5, 5)));
         c.gridx = 0; c.gridy = 0; c.weightx = 0;
         c.insets = new Insets(5, 0, 0, 0);

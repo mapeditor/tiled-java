@@ -1559,10 +1559,12 @@ public class MapEditor implements ActionListener,
             TiledConfiguration.parse(
                     new BufferedReader(new FileReader("tiled.conf")));
         } catch (Exception e) {
+            /*
             JOptionPane.showMessageDialog(null,
                     "Could not load configuration file - " +
                     "some functions may not work correctly.",
                     "Warning", JOptionPane.WARNING_MESSAGE);
+            */
         }
 
         MapEditor editor = new MapEditor();
