@@ -574,6 +574,10 @@ public class MapLayer implements Cloneable
 		properties = p;
 	}
 
+	public Properties getAllProperties() {
+		return properties;
+	}
+	
 	public Enumeration getProperties() {
 		return properties.keys();
 	}

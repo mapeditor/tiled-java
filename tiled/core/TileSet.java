@@ -213,7 +213,13 @@ public class TileSet
      * @return the total size of the internal Vector
      */
     public int getTotalTiles() {
-        return tiles.size();
+    	int total = 0;
+    	for(int i=0;i<tiles.size();i++) {
+    		if(tiles.get(i)!=null) {
+    			total++;
+    		}
+    	}
+        return total;
     }
 
     /**

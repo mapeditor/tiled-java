@@ -20,6 +20,7 @@ import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.io.*;
 import java.lang.reflect.*;
+import java.net.URL;
 import java.util.zip.GZIPInputStream;
 import javax.xml.parsers.*;
 import org.w3c.dom.*;
@@ -556,24 +557,18 @@ public class XMLMapTransformer implements MapReader
         }
     }
 
-    private Map unmarshal(String xmlFile) throws IOException, Exception {
+    private Map unmarshal(InputStream in) throws IOException, Exception {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         try {
             DocumentBuilder builder = factory.newDocumentBuilder();
-            doc = builder.parse(new File(xmlFile));
+            doc = builder.parse(in, xmlPath);
         } catch (SAXException e) {
             e.printStackTrace();
             throw new Exception("Error while parsing map file.");
         }
 
-        // TODO: A problem arrises with xmlPath if the tag sources are absolute
-        // path...
-        xmlPath = xmlFile.substring(0,
-                xmlFile.lastIndexOf(File.separatorChar) + 1);
-
         buildMap(doc);
-
-        map.setFilename(xmlFile);
+        
         return map;
     }
 
@@ -581,32 +576,42 @@ public class XMLMapTransformer implements MapReader
     // MapReader interface
 
     public Map readMap(String filename) throws Exception {
-        return unmarshal(filename);
+    	String xmlFile = filename;
+    	
+    	// TODO: A problem arrises with xmlPath if the tag sources are absolute
+        // path...    	
+        xmlPath = filename.substring(0,
+                filename.lastIndexOf(File.separatorChar) + 1);
+        if(xmlFile.indexOf("://") == -1) {
+        	xmlFile = "file://"+xmlFile;
+        }
+        URL url = new URL(xmlFile);
+        Map map =  unmarshal(url.openStream());
+        map.setFilename(filename);
+        return map;
     }
 
     public Map readMap(InputStream in) throws Exception {
-        // TODO: This and the unmarshal function should be joined
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        try {
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            doc = builder.parse(in, ".");
-        } catch (SAXException e) {
-            e.printStackTrace();
-            throw new Exception("Error while parsing map file.");
-        }
-
-        // TODO: A problem arrises with xmlPath if the tag sources are absolute
-        // path...
-        xmlPath = ".";
-
-        buildMap(doc);
-
+    	xmlPath = ".";
+    	
+    	Map map = unmarshal(in);
+    	
         //map.setFilename(xmlFile);
         return map;
     }
     
     public TileSet readTileset(String filename) throws Exception {
-        return unmarshalTilesetFile(new FileInputStream(filename), filename);
+    	String xmlFile = filename;
+    	
+    	// TODO: A problem arrises with xmlPath if the tag sources are absolute
+        // path...    	
+        xmlPath = filename.substring(0,
+                filename.lastIndexOf(File.separatorChar) + 1);
+        if(xmlFile.indexOf("://") == -1) {
+        	xmlFile = "file://"+xmlFile;
+        }
+        URL url = new URL(xmlFile);
+        return unmarshalTilesetFile(url.openStream(), filename);
     }
 
     public TileSet readTileset(InputStream in) throws Exception {

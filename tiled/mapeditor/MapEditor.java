@@ -1096,8 +1096,9 @@ public class MapEditor implements ActionListener,
             MapPropertiesDialog pd = new MapPropertiesDialog(appFrame, this);
             pd.getProps();
         } else if (command.equals("Layer Properties")) {
-            LayerPropertiesDialog lpd =
-                new LayerPropertiesDialog(appFrame, this);
+            PropertiesDialog lpd =
+                new PropertiesDialog(appFrame,  currentMap.getLayer(this.currentLayer).getAllProperties());
+            lpd.setTitle(currentMap.getLayer(this.currentLayer).getName()+" Properties");
             lpd.getProps();
         } else if (command.equals("Show Boundaries") ||
                 command.equals("Hide Boundaries")) {

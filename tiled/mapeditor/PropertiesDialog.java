@@ -15,27 +15,27 @@ package tiled.mapeditor;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Properties;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import tiled.core.*;
 import tiled.mapeditor.util.*;
 import tiled.mapeditor.widget.*;
 
-public class LayerPropertiesDialog extends JDialog implements ActionListener,
+public class PropertiesDialog extends JDialog implements ActionListener,
 	ListSelectionListener
  {
-	private MapLayer currentLayer;
 	private JTable mapProperties;
 	private JButton bOk, bCancel;
-
-	public LayerPropertiesDialog(JFrame parent, MapEditor m) {
-		super(parent, "Layer Properties", true);
-		currentLayer = m.getCurrentLayer();
-		this.setTitle(currentLayer.getName()+" Properties");
+	private JButton bDel, bAdd;
+	private Properties properties;
+	
+	public PropertiesDialog(JFrame parent, Properties p) {
+		super(parent, "Properties", true);
+		properties = p;
 		init();
 		pack();
 		setLocationRelativeTo(getOwner());
@@ -50,9 +50,19 @@ public class LayerPropertiesDialog extends JDialog implements ActionListener,
 		bOk = new JButton("OK");
 		bCancel = new JButton("Cancel");
 
+		try {
+			bAdd = new JButton(new ImageIcon(MapEditor.loadImageResource("resources/gnome-new.png")));
+			bDel = new JButton(new ImageIcon(MapEditor.loadImageResource("resources/gnome-delete.png")));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		bOk.addActionListener(this);
 		bCancel.addActionListener(this);
-
+		bAdd.addActionListener(this);
+		bDel.addActionListener(this);
+		
 		JPanel buttons = new VerticalStaticJPanel();
 		buttons.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
 		buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
@@ -61,10 +71,19 @@ public class LayerPropertiesDialog extends JDialog implements ActionListener,
 		buttons.add(Box.createRigidArea(new Dimension(5, 0)));
 		buttons.add(bCancel);
 
+		JPanel user = new VerticalStaticJPanel();
+		user.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
+		user.setLayout(new BoxLayout(user, BoxLayout.X_AXIS));
+		user.add(Box.createGlue());
+		user.add(bAdd);
+		user.add(Box.createRigidArea(new Dimension(5, 0)));
+		user.add(bDel);
+		
 		JPanel mainPanel = new JPanel();
 		mainPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 		mainPanel.add(propScrollPane);
+		mainPanel.add(user);
 		mainPanel.add(buttons);
 
 		getContentPane().add(mainPanel);
@@ -75,11 +94,11 @@ public class LayerPropertiesDialog extends JDialog implements ActionListener,
 	private void updateInfo() {
 		mapProperties.removeAll();
 
-		Enumeration keys = currentLayer.getProperties();
+		Enumeration keys = properties.elements();
 		Properties props = new Properties();
 		while (keys.hasMoreElements()) {
 			String key = (String) keys.nextElement(); 
-			props.put(key, currentLayer.getPropertyValue(key));
+			props.put(key, properties.getProperty(key));
 		}
 		((PropertiesTableModel)mapProperties.getModel()).update(props);
 		mapProperties.repaint();
@@ -94,10 +113,22 @@ public class LayerPropertiesDialog extends JDialog implements ActionListener,
 		Object source = event.getSource();
 
 		if (source == bOk) {
-			currentLayer.setProperties(((PropertiesTableModel)mapProperties.getModel()).getProperties());
+			properties.clear();
+
+			Properties newProps = ((PropertiesTableModel)mapProperties.getModel()).getProperties();
+			Enumeration keys = newProps.elements();
+			while (keys.hasMoreElements()) {
+				String key = (String) keys.nextElement(); 
+				properties.put(key, newProps.getProperty(key));
+			}
+
 			dispose();
 		} else if (source == bCancel) {
 			dispose();
+		} else if (source == bDel) {
+			System.out.println("Deleting "+mapProperties.getSelectedRow());
+			((PropertiesTableModel)mapProperties.getModel()).remove(mapProperties.getSelectedRow());
+			repaint();
 		}
 	}
 

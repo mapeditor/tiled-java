@@ -88,7 +88,7 @@ public class MapObject {
 		return properties.getProperty(key);
 	}
 
-    public int getTotalAttributes() {
+    public int getTotalProperties() {
         return properties.size();
     }
 

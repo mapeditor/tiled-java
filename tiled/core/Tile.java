@@ -21,7 +21,7 @@ public class Tile
     private Image internalImage, scaledImage;
     private int id = -1;
     private int stdHeight;
-    private int groundHeight;          // Height above ground
+    private int groundHeight;          // Height above/below ground
     private int tileImageId=-1, tileOrientation;
     private Properties properties;
     private TileSet tileset;
@@ -122,7 +122,6 @@ public class Tile
     }
 
     public void drawRaw(Graphics g, int x, int y, double zoom) {
-        //if (zoom != 1.0) {
             int h = (int)(getHeight() * zoom);
             if (scaledImage == null || scaledImage.getHeight(null) != h) {
                 scaledImage = getScaledImage(zoom);
@@ -145,9 +144,6 @@ public class Tile
             } else {
                 g.drawImage(scaledImage, x, y, null);
             }
-        //} else {
-        //    g.drawImage(getImage(), x, y, null);
-        //}
     }
 
     public void draw(Graphics g, int x, int y, double zoom) {
@@ -208,12 +204,16 @@ public class Tile
      * Returns a scaled instance of the tile image.
      */
     public Image getScaledImage(double zoom) {
-        if (getImage() != null) {
-            return getImage().getScaledInstance(
-                    (int)(getWidth() * zoom), (int)(getHeight() * zoom),
-                    BufferedImage.SCALE_SMOOTH);
-        }
-        return null;
+    	if(getImage()!=null) {
+    		if(zoom==1.0) {
+    			return getImage();
+    		}else{
+    			return getImage().getScaledInstance(
+    				(int)(getWidth() * zoom), (int)(getHeight() * zoom),
+					BufferedImage.SCALE_SMOOTH);
+    		}
+    	}
+    	return null;
     }
 
     public String toString() {

@@ -3,10 +3,11 @@
 * Added width and height attributes to layer element (can be different from map
   width and height)
 * Added layer properties, analoguous to tile and map properties
-* Added Rainer's shared images code
 * Added support for object placement
+* Merged Rainer's shared images code
 * Fixed determining the relative path to tileset images
 * New tilesets can have tiles auto-created from images
+* Tiled now supports reading TMX/TSX files from URLs
 
 0.4.2 - October 14th, 2004
 

@@ -14,8 +14,8 @@ package tiled.mapeditor.brush;
 
 import java.awt.Rectangle;
 
+import tiled.core.Map;
 import tiled.core.MultilayerPlane;
-
 
 public class CustomBrush extends Brush
 {
@@ -23,6 +23,11 @@ public class CustomBrush extends Brush
         super();
     }
 
+    public CustomBrush(Map m) {
+    	this();
+    	this.addAllLayers(m.getLayerVector());
+    }
+    
     public Rectangle commitPaint(MultilayerPlane mp, int x, int y, int start) {
         return null;
     }
