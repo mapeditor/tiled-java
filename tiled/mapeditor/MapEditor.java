@@ -59,7 +59,7 @@ public class MapEditor implements ActionListener,
     private Cursor curEyed    = null;
     private Cursor curMarquee = null;
 
-    public static final String version = "0.4.0";
+    public static final String version = "0.4.1 WIP";
 
     // Basic stuff for the Applet
     Map currentMap;
