@@ -30,7 +30,7 @@ public class TileDialogListRenderer extends JLabel
     private TileSet myTileSet;
     private ImageIcon[] tileImages;
     private int highestTileId = 0;
-	private double zoom=1;
+    private double zoom = 1;
 
     public TileDialogListRenderer() {
         setOpaque(true);
@@ -42,17 +42,16 @@ public class TileDialogListRenderer extends JLabel
         loadTilesList();
     }
 
-	public TileDialogListRenderer(TileSet s, double zoom) {
-		this(s);
-		this.zoom=zoom;
-	}
+    public TileDialogListRenderer(TileSet s, double zoom) {
+        this(s);
+        this.zoom = zoom;
+    }
 
     public Component getListCellRendererComponent(JList list, Object value,
             int index,  boolean isSelected, boolean cellHasFocus) {
-
         Tile tile = (Tile)value;
 
-        if (tile != null && index>=0) {
+        if (tile != null && index >= 0) {
             setIcon(tileImages[index]);
             if (value != null) {
                 setText("Tile " + tile.getId());

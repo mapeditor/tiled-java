@@ -212,39 +212,43 @@ public class MapEditor implements ActionListener,
     /**
      * Loads a map.
      *
-     * @param file Filename of map to load.
+     * @param file filename of map to load
+     * @return <code>true</code> if the file was loaded, <code>false</code> if
+     *         an error occured
      */
-    public void loadMap(String file) {
+    public boolean loadMap(String file) {
         try {
-        	MapReader mr = null;
-        	if (file.endsWith("tmx")) {
+            MapReader mr = null;
+            if (file.endsWith(".tmx")) {
                 // Override, so people can't overtake our format
-        		mr = new XMLMapTransformer();
-        	} else {
-        		mr = (MapReader)pluginLoader.getReaderFor(file.substring(file.lastIndexOf('.') + 1));
-        	}
-        	
-        	if (mr != null) {
+                mr = new XMLMapTransformer();
+            } else {
+                mr = (MapReader)pluginLoader.getReaderFor(
+                        file.substring(file.lastIndexOf('.') + 1));
+            }
+
+            if (mr != null) {
                 setCurrentMap(mr.readMap(file));
                 updateRecent(file);
+                return true;
             } else {
                 JOptionPane.showMessageDialog(appFrame,
                         "Unsupported map format", "Error while loading map",
                         JOptionPane.ERROR_MESSAGE);
-        	}
+            }
         } catch (IOException e) {
             JOptionPane.showMessageDialog(appFrame,
                     e.getMessage(), "Error while loading map",
                     JOptionPane.ERROR_MESSAGE);
-            return;
         } catch (Exception e) {
             //e.printStackTrace();
             JOptionPane.showMessageDialog(appFrame,
                     "Error while loading " + file + ": " +
                     e.getMessage(), "Error while loading map",
                     JOptionPane.ERROR_MESSAGE);
-            return;
         }
+
+        return false;
     }
 
     /**
@@ -1405,8 +1409,9 @@ public class MapEditor implements ActionListener,
     private void openMap() {
         String startLocation = "";
 
-        if (currentMap != null) {
-            startLocation = currentMap.getFilename();
+        // Start at the location of the most recently loaded map file
+        if (configuration.hasOption("tmx.recent.1")) {
+            startLocation = configuration.getValue("tmx.recent.1");
         }
 
         JFileChooser ch = new JFileChooser(startLocation);

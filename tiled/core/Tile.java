@@ -31,26 +31,29 @@ public class Tile
     }
 
     public Tile(Tile t) {
-		properties = (Properties) t.properties.clone();        
-        tileImage = (BufferedImage) t.tileImage.getScaledInstance(-1, -1, Image.SCALE_DEFAULT);
+        properties = (Properties)t.properties.clone();        
+        if (t.tileImage != null) {
+            tileImage = t.tileImage.getScaledInstance(
+                    -1, -1, Image.SCALE_DEFAULT);
+        }
         groundHeight = getHeight();
     }
 
+    /**
+     * Sets the id of the tile as long as it is at least 0.
+     */
     public void setId(int i) {
         if (i >= 0) {
             id = i;
         }
     }
 
-    public void setImage(Image i) throws Exception {
-        if (i != null) {
-            tileImage = i;
-            groundHeight = getHeight();
-            if (getWidth() == -1 || getHeight() == -1) {
-                throw new Exception(
-                        "There was a problem getting info from the image!");
-            }
-        }
+    /**
+     * Changes the image of the tile as long as it is not null.
+     */
+    public void setImage(Image i) {
+        tileImage = i;
+        groundHeight = getHeight();
     }
 
     public void setStandardHeight(int i) {

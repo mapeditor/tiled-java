@@ -28,20 +28,23 @@ import tiled.core.*;
 import tiled.mapeditor.util.*;
 import tiled.mapeditor.widget.*;
 
+
 public class TileDialog extends JDialog
     implements ActionListener, ListSelectionListener
 {
     private Tile currentTile;
-    private TileSet currentTileSet;
+    private TileSet tileset;
     private JList tileList;
     private JTable tileProperties;
     private JComboBox tLinkList;
     private JButton bOk, bNew, bDelete, bChangeI, bDuplicate;
+    private String location;
 
     public TileDialog(Dialog parent, TileSet s) {
         super(parent, "Edit Tileset '" + s.getName() + "'", true);
+        location = "";
         init();
-        setTileSet(s);
+        setTileset(s);
         setCurrentTile(null);
         pack();
         setLocationRelativeTo(getOwner());
@@ -128,8 +131,7 @@ public class TileDialog extends JDialog
             return;
         }
 
-        JFileChooser ch = new JFileChooser();
-        ch.setMultiSelectionEnabled(true);
+        JFileChooser ch = new JFileChooser(location);
         int ret = ch.showOpenDialog(this);
 
         if (ret == JFileChooser.APPROVE_OPTION) {
@@ -138,6 +140,7 @@ public class TileDialog extends JDialog
                 BufferedImage image = ImageIO.read(file);
                 if (image != null) {
                     currentTile.setImage(image);
+                    location = file.getAbsolutePath();
                 } else {
                     JOptionPane.showMessageDialog(this, "Error loading image",
                             "Error loading image", JOptionPane.ERROR_MESSAGE);
@@ -150,46 +153,45 @@ public class TileDialog extends JDialog
         }
     }
 
-    private void newTile(Tile t) {
+    private void newTile() {
         File files[];
-        JFileChooser ch = new JFileChooser();
+        JFileChooser ch = new JFileChooser(location);
         ch.setMultiSelectionEnabled(true);
         BufferedImage image = null;
 
-        if (t == null) {
-            int ret = ch.showOpenDialog(this);
-            files = ch.getSelectedFiles();
+        int ret = ch.showOpenDialog(this);
+        files = ch.getSelectedFiles();
 
-            for (int i = 0; i < files.length; i++) {
-                try {
-                    image = ImageIO.read(files[i]);
-                    // TODO: Support for a transparent color
-                } catch (Exception e) {
-                    JOptionPane.showMessageDialog(this, e.getMessage(),
-                            "Error!", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-                try {
-                    Tile newTile = new Tile();
-                    newTile.setImage(image);
-                    currentTileSet.addNewTile(newTile);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    JOptionPane.showMessageDialog(this, e.getMessage(),
-                            "Error while loading tiles!",
-                            JOptionPane.ERROR_MESSAGE);
-                }
+        for (int i = 0; i < files.length; i++) {
+            try {
+                image = ImageIO.read(files[i]);
+                // TODO: Support for a transparent color
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, e.getMessage(),
+                        "Error!", JOptionPane.ERROR_MESSAGE);
+                return;
             }
-        } else {
-            Tile n = new Tile(t);
-            currentTileSet.addNewTile(n);
+
+            Tile newTile = new Tile();
+            newTile.setImage(image);
+            tileset.addNewTile(newTile);
         }
+
+        if (files.length > 0) {
+            location = files[0].getAbsolutePath();
+        }
+
         queryTiles();
     }
 
-    public void setTileSet(TileSet s) {
-        currentTileSet = s;
+    public void setTileset(TileSet s) {
+        tileset = s;
+
+        // Find new tile images at the location of the tileset
+        if (tileset != null && tileset.getSource() != null) {
+            location = tileset.getSource();
+        }
+
         queryTiles();
     }
 
@@ -197,11 +199,11 @@ public class TileDialog extends JDialog
         Tile[] listData;
         int curSlot = 0;
 
-        if (currentTileSet != null && currentTileSet.getTotalTiles() > 0) {
-            int totalTiles = currentTileSet.getTotalTiles();
-            listData = new Tile [totalTiles];
+        if (tileset != null && tileset.getTotalTiles() > 0) {
+            int totalTiles = tileset.getTotalTiles();
+            listData = new Tile[totalTiles];
             for (int i = 0; i < totalTiles; i++) {
-                listData[curSlot++] = currentTileSet.getTile(i);
+                listData[curSlot++] = tileset.getTile(i);
             }
 
             tileList.setListData(listData);
@@ -210,7 +212,7 @@ public class TileDialog extends JDialog
             tileList.setSelectedIndex(currentTile.getGid() - 1);
             tileList.ensureIndexIsVisible(currentTile.getGid() - 1);
         }
-        tileList.setCellRenderer(new TileDialogListRenderer(currentTileSet));
+        tileList.setCellRenderer(new TileDialogListRenderer(tileset));
         tileList.repaint();
     }
 
@@ -225,8 +227,8 @@ public class TileDialog extends JDialog
         currentTile = tile;
         updateTileInfo();
 
-        boolean internal = (currentTileSet.getSource() == null);
-        boolean tilebmp = (currentTileSet.getTilebmpFile() != null);
+        boolean internal = (tileset.getSource() == null);
+        boolean tilebmp = (tileset.getTilebmpFile() != null);
         boolean tileSelected = (currentTile != null);
 
         bNew.setEnabled(internal && !tilebmp);
@@ -265,16 +267,18 @@ public class TileDialog extends JDialog
             if (answer == JOptionPane.YES_OPTION) {
                 Tile tile = (Tile)tileList.getSelectedValue();
                 if (tile != null) {
-                    currentTileSet.removeTile(tile.getId());
+                    tileset.removeTile(tile.getId());
                 }
                 queryTiles();
             }
         } else if (source == bChangeI) {
             changeImage();
         } else if (source == bNew) {
-            newTile(null);
+            newTile();
         } else if (source == bDuplicate) {
-            newTile(currentTile);
+            Tile n = new Tile(currentTile);
+            tileset.addNewTile(n);
+            queryTiles();
         }
 
         repaint();

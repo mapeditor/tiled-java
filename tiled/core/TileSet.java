@@ -205,7 +205,8 @@ public class TileSet
      * Returns the standard height of tiles in this tileset. Not all tiles in
      * a tileset are required to have the same height.
      * 
-     * @return the standard height as previously set with a call to TileSet#setStandardHeight 
+     * @return the standard height as previously set with a call to
+     *         TileSet#setStandardHeight 
      */
     public int getStandardHeight() {
         return standardHeight;
@@ -221,7 +222,7 @@ public class TileSet
         Iterator itr = tiles.iterator();
         while (itr.hasNext()) {
             Tile t = (Tile)itr.next();
-            if(t != null && t.getHeight() > maxHeight) {
+            if (t != null && t.getHeight() > maxHeight) {
                 maxHeight = t.getHeight();
             }
         }
