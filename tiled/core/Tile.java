@@ -30,10 +30,10 @@ public class Tile
         properties = new Properties();
     }
 
-	public Tile(TileSet set) {
-		this();
-		setTileSet(set);
-	}
+    public Tile(TileSet set) {
+        this();
+        setTileSet(set);
+    }
 
     public Tile(Tile t) {
         properties = (Properties)t.properties.clone();
@@ -85,9 +85,9 @@ public class Tile
         tileset = set;
         if (internalImage != null) {
             tileImageId = set.addImage(internalImage);
-			internalImage = null;
+            internalImage = null;
         }
-		groundHeight = getHeight();
+        groundHeight = getHeight();
     }
 
     public void setProperty(String key, String value) {
@@ -126,21 +126,22 @@ public class Tile
             int h = (int)(getHeight() * zoom);
             if (scaledImage == null || scaledImage.getHeight(null) != h) {
                 scaledImage = getScaledImage(zoom);
-                if(scaledImage != null) {
-	                MediaTracker mediaTracker = new MediaTracker(new Canvas());
-	                mediaTracker.addImage(scaledImage, 0);
-	                try {
-	                    mediaTracker.waitForID(0);
-	                }
-	                catch (InterruptedException ie) {
-	                    System.err.println(ie);
-	                    return;
-	                }
-	                mediaTracker.removeImage(scaledImage);
-	                g.drawImage(scaledImage, x, y, null);
-				} else {
-					//TODO: allow drawing IDs when no image data exists as a config option
-				}
+                if (scaledImage != null) {
+                    MediaTracker mediaTracker = new MediaTracker(new Canvas());
+                    mediaTracker.addImage(scaledImage, 0);
+                    try {
+                        mediaTracker.waitForID(0);
+                    }
+                    catch (InterruptedException ie) {
+                        System.err.println(ie);
+                        return;
+                    }
+                    mediaTracker.removeImage(scaledImage);
+                    g.drawImage(scaledImage, x, y, null);
+                } else {
+                    // TODO: Allow drawing IDs when no image data exists as a
+                    // config option
+                }
             } else {
                 g.drawImage(scaledImage, x, y, null);
             }
@@ -207,12 +208,12 @@ public class Tile
      * Returns a scaled instance of the tile image.
      */
     public Image getScaledImage(double zoom) {
-    	if(getImage()!=null) {
-    		return getImage().getScaledInstance(
-    				(int)(getWidth() * zoom), (int)(getHeight() * zoom),
-					BufferedImage.SCALE_SMOOTH);
-    	}
-    	return null;
+        if (getImage() != null) {
+            return getImage().getScaledInstance(
+                    (int)(getWidth() * zoom), (int)(getHeight() * zoom),
+                    BufferedImage.SCALE_SMOOTH);
+        }
+        return null;
     }
 
     public String toString() {

@@ -5,7 +5,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
@@ -74,8 +74,8 @@ public class XMLMapWriter implements MapWriter
         writer.flush();
     }
 
-	public void writeTileset(TileSet set, OutputStream out) throws Exception {
-		Writer writer = new OutputStreamWriter(out);
+    public void writeTileset(TileSet set, OutputStream out) throws Exception {
+        Writer writer = new OutputStreamWriter(out);
         XMLWriter xmlWriter = new XMLWriter(writer);
 
         xmlWriter.startDocument();
@@ -83,8 +83,8 @@ public class XMLMapWriter implements MapWriter
         xmlWriter.endDocument();
 
         writer.flush();
-	}
-    
+    }
+
     private void writeMap(Map map, XMLWriter w, String wp) throws IOException {
         try {
             w.startElement("map");
@@ -131,11 +131,11 @@ public class XMLMapWriter implements MapWriter
                 writeMapLayer(layer, w);
             }
 
-			Iterator obj = map.getObjects();
-			while(obj.hasNext()) {
-				MapObject o = (MapObject)obj.next();
-				writeObject(o, w);
-			}
+            Iterator obj = map.getObjects();
+            while (obj.hasNext()) {
+                MapObject o = (MapObject)obj.next();
+                writeObject(o, w);
+            }
 
             w.endElement();
         } catch (XMLWriterException e) {
@@ -147,15 +147,17 @@ public class XMLMapWriter implements MapWriter
         throws IOException {
 
         try {
-            w.startElement("tileset");
-            w.writeAttribute("firstgid", "" + set.getFirstGid());
-
             String source = set.getSource();
             String tilebmpFile = set.getTilebmpFile();
+            String name = set.getName();
 
-            if (set.getName() != null && source == null) {
-                w.writeAttribute("name", set.getName());
+            w.startElement("tileset");
+
+            if (name != null && source == null) {
+                w.writeAttribute("name", name);
             }
+
+            w.writeAttribute("firstgid", "" + set.getFirstGid());
 
             if (tilebmpFile != null) {
                 w.writeAttribute("tilewidth", "" + set.getStandardWidth());
@@ -175,48 +177,47 @@ public class XMLMapWriter implements MapWriter
                 w.endElement();
             } else {
                 // Embedded tileset
-                
-                
+
                 TiledConfiguration conf = TiledConfiguration.getInstance();
-                if(conf.keyHasValue("tmx.save.tileSetImages", "1")) {
-                	Enumeration ids = set.getImageIds();
-                	while(ids.hasMoreElements()) {
-                		String id = (String)ids.nextElement();
-						w.startElement("image");
-						w.writeAttribute("format", "png");
-						w.writeAttribute("id", id);
-						w.startElement("data");
-						w.writeAttribute("encoding", "base64");
-						w.writeCDATA(new String(Base64.encode(
-										ImageHelper.imageToPNG(set.getImageById(id)))));
-						w.endElement();
-						w.endElement();
-                	}
-                } else if(conf.keyHasValue("tmx.save.embedImages","0")) {
-                	if(source == null) {
-						String imgSource =	conf.getValue(
-								"tmx.save.tileImagePrefix") + "set.png";
-						w.writeAttribute("source", imgSource);
-						FileOutputStream fw = new FileOutputStream(new File(
-									conf.getValue(
-										"tmx.save.maplocation") + source));
-						//TODO: external sets are broken!
-						//byte[] data = ImageHelper.imageToPNG(setImage);
-						//fw.write(data, 0, data.length);
-						fw.close();
-                	}
-                } else{
-                
-	                // If not a set bitmap, tiles handle their own images...
-	
-	                int totalTiles = set.getTotalTiles();
-	
-	                for (int i = 0; i < totalTiles; i++) {
-	                    Tile tile = set.getTile(i);
-	                    if (tile != null) {
-	                        writeTile(tile, w);
-	                    }
-	                }
+                if (conf.keyHasValue("tmx.save.tileSetImages", "1")) {
+                    Enumeration ids = set.getImageIds();
+                    while (ids.hasMoreElements()) {
+                        String id = (String)ids.nextElement();
+                        w.startElement("image");
+                        w.writeAttribute("format", "png");
+                        w.writeAttribute("id", id);
+                        w.startElement("data");
+                        w.writeAttribute("encoding", "base64");
+                        w.writeCDATA(new String(Base64.encode(
+                                        ImageHelper.imageToPNG(
+                                            set.getImageById(id)))));
+                        w.endElement();
+                        w.endElement();
+                    }
+                } else if (conf.keyHasValue("tmx.save.embedImages","0")) {
+                    if (source == null) {
+                        String imgSource = conf.getValue(
+                                "tmx.save.tileImagePrefix") + "set.png";
+                        w.writeAttribute("source", imgSource);
+                        FileOutputStream fw = new FileOutputStream(new File(
+                                    conf.getValue(
+                                        "tmx.save.maplocation") + source));
+                        // TODO: external sets are broken!
+                        //byte[] data = ImageHelper.imageToPNG(setImage);
+                        //fw.write(data, 0, data.length);
+                        fw.close();
+                    }
+                } else {
+                    // If not a set bitmap, tiles handle their own images...
+
+                    int totalTiles = set.getTotalTiles();
+
+                    for (int i = 0; i < totalTiles; i++) {
+                        Tile tile = set.getTile(i);
+                        if (tile != null) {
+                            writeTile(tile, w);
+                        }
+                    }
                 }
             }
             w.endElement();
@@ -321,9 +322,9 @@ public class XMLMapWriter implements MapWriter
                         w.writeAttribute("gid", ""+gid);
                         w.endElement();
                     }
-                }                
+                }
             }
-			w.endElement();
+            w.endElement();
             w.endElement();
         } catch (XMLWriterException e) {
             e.printStackTrace();
@@ -358,8 +359,8 @@ public class XMLMapWriter implements MapWriter
             // Write encoded data
             if (tileImage != null && !conf.keyHasValue(
                         "tmx.save.tileSetImages", "1")) {
-                if (conf.keyHasValue("tmx.save.embedImages", "1") 
-                		&& conf.keyHasValue("tmx.save.tileSetImages", "0")) {
+                if (conf.keyHasValue("tmx.save.embedImages", "1")
+                        && conf.keyHasValue("tmx.save.tileSetImages", "0")) {
                     w.startElement("image");
                     w.writeAttribute("format", "png");
                     w.startElement("data");
@@ -367,21 +368,22 @@ public class XMLMapWriter implements MapWriter
                     w.writeCDATA(new String(Base64.encode(
                                     ImageHelper.imageToPNG(tileImage))));
                     w.endElement();
-                    w.endElement();	
+                    w.endElement();
                 } else if(conf.keyHasValue("tmx.save.tileSetImages", "1")) {
                     w.startElement("image");
                     w.writeAttribute("id", "" + tile.getImageId());
                     int orientation = tile.getImageOrientation();
                     int rotation = 0;
-					boolean flipped
-					  = (orientation & 1) == ((orientation & 2) >> 1);
-					if ((orientation & 4) == 4) {
-						rotation = ((orientation & 1) == 1) ? 270 : 90;
-					} else {
-						rotation = ((orientation & 2) == 2) ? 180 : 0;
-					}
-					if (rotation != 0) w.writeAttribute("rotation", "" + rotation);
-					if (flipped) w.writeAttribute("flipped", "true");
+                    boolean flipped =
+                        (orientation & 1) == ((orientation & 2) >> 1);
+                    if ((orientation & 4) == 4) {
+                        rotation = ((orientation & 1) == 1) ? 270 : 90;
+                    } else {
+                        rotation = ((orientation & 2) == 2) ? 180 : 0;
+                    }
+                    if (rotation != 0) w.writeAttribute("rotation",
+                            "" + rotation);
+                    if (flipped) w.writeAttribute("flipped", "true");
                     w.endElement();
                 } else {
                     String prefix = conf.getValue("tmx.save.tileImagePrefix");
@@ -395,7 +397,7 @@ public class XMLMapWriter implements MapWriter
                     fw.write(data, 0, data.length);
                     fw.close();
                     w.endElement();
-                }        
+                }
             }
 
             w.endElement();
@@ -406,10 +408,10 @@ public class XMLMapWriter implements MapWriter
 
     private void writeObject(MapObject m, XMLWriter w) throws IOException {
         try {
-            w.startElement("object");            
+            w.startElement("object");
             w.writeAttribute("x", "" + m.getX());
             w.writeAttribute("y", "" + m.getY());
-			w.writeAttribute("type", m.getType());
+            w.writeAttribute("type", m.getType());
             if (m.getSource() != null) {
                 w.writeAttribute("source", m.getSource());
             }
@@ -486,16 +488,16 @@ public class XMLMapWriter implements MapWriter
     }
 
     public String getPluginPackage() {
-    	return "Tiled internal TMX reader/writer";
+        return "Tiled internal TMX reader/writer";
     }
-    
+
     public String getDescription() {
-    	return
-        			"The core Tiled TMX format writer\n" +
-					"\n" +
-					"Tiled Map Editor, (c) 2004\n" +
-					"Adam Turk\n" +
-					"Bjorn Lindeijer";
+        return
+            "The core Tiled TMX format writer\n" +
+            "\n" +
+            "Tiled Map Editor, (c) 2004\n" +
+            "Adam Turk\n" +
+            "Bjorn Lindeijer";
     }
 
     public String getName() {

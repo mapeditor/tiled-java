@@ -96,12 +96,12 @@ public class MapEditor implements ActionListener,
     JMenuItem   layerAdd, layerClone, layerDel;
     JMenuItem   layerUp, layerDown;
     JMenuItem   layerMerge, layerMergeAll;
-    JMenuItem	layerProperties;
+    JMenuItem   layerProperties;
     JMenu       recentMenu;
     JScrollPane mapScrollPane;
     JTable      layerTable;
     JList       editHistoryList;
-	MiniMapViewer miniMap;
+    MiniMapViewer miniMap;
 
     TileButton  tilePaletteButton;
     JFrame      appFrame;
@@ -198,7 +198,7 @@ public class MapEditor implements ActionListener,
 
         appFrame.setVisible(true);
         
-//      Load plugins
+        // Load plugins
         pluginLoader  = new PluginClassLoader();
         try {
             pluginLoader.readPlugins(null, appFrame);
@@ -211,10 +211,9 @@ public class MapEditor implements ActionListener,
     }
 
     private JPanel createContentPane() {
-
-		mapScrollPane = new JScrollPane(
-						JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-						JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        mapScrollPane = new JScrollPane(
+                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
         createToolbox();
         createData();
@@ -271,14 +270,14 @@ public class MapEditor implements ActionListener,
             JOptionPane.showMessageDialog(appFrame,
                     e.getMessage(), "Error while loading map",
                     JOptionPane.ERROR_MESSAGE);
-            		e.printStackTrace();
+            e.printStackTrace();
         } catch (Exception e) {
             //e.printStackTrace();
             JOptionPane.showMessageDialog(appFrame,
                     "Error while loading " + file + ": " +
                     e.getMessage(), "Error while loading map",
                     JOptionPane.ERROR_MESSAGE);
-            		e.printStackTrace();
+            e.printStackTrace();
         }
 
         return false;
@@ -375,8 +374,9 @@ public class MapEditor implements ActionListener,
         layerMerge = createMenuItem("Merge Down", null,
                 "Merge current layer onto next lower", "shift control M");
         layerMergeAll = createMenuItem("Merge All", null, "Merge all layers");
-		layerProperties = createMenuItem("Layer Properties", null, "Current layer properties");
-		
+        layerProperties = createMenuItem("Layer Properties", null,
+                "Current layer properties");
+
         mapEventAdapter.addListener(layerAdd);
 
         m = new JMenu("Layer");
@@ -447,7 +447,7 @@ public class MapEditor implements ActionListener,
         menuBar.add(m);
 
         m = new JMenu("Help");
-		m.add(createMenuItem("About Plug-ins", null, "Show plugin window"));
+        m.add(createMenuItem("About Plug-ins", null, "Show plugin window"));
         m.add(createMenuItem("About Tiled", null, "Show about window"));
         menuBar.add(m);
     }
@@ -505,7 +505,7 @@ public class MapEditor implements ActionListener,
         JButton b;
         JToolBar tabsPanel = new JToolBar();
         JTabbedPane paintPanel = new JTabbedPane();
-		JTabbedPane navOpts = new JTabbedPane();
+        JTabbedPane navOpts = new JTabbedPane();
         dataPanel = new JPanel(new BorderLayout());
 
         // Try to load the icons
@@ -515,12 +515,12 @@ public class MapEditor implements ActionListener,
         Icon imgUp = loadIcon("resources/gnome-up.png");
         Icon imgDown = loadIcon("resources/gnome-down.png");
 
-		//navigation and tool options
-		miniMap = new MiniMapViewer();
-		miniMap.setMainPanel(mapScrollPane);
-		navOpts.addTab("Navigation", miniMap);
-		navOpts.addTab("Tool Options", new JPanel());
-		
+        //navigation and tool options
+        miniMap = new MiniMapViewer();
+        miniMap.setMainPanel(mapScrollPane);
+        navOpts.addTab("Navigation", miniMap);
+        navOpts.addTab("Tool Options", new JPanel());
+
         // Layer table
         layerTable = new JTable(new LayerTableModel(currentMap));
         layerTable.getColumnModel().getColumn(0).setPreferredWidth(32);
@@ -579,9 +579,9 @@ public class MapEditor implements ActionListener,
         c.insets = new Insets(3, 0, 0, 0); c.weightx = 1; c.weighty = 0;
         c.fill = GridBagConstraints.BOTH;
         c.gridx = 0; c.gridy = 0;
-		c.weighty = 1;
+        c.weighty = 1;
         layerPanel.add(navOpts);
-		c.weighty = 0; c.gridy += 1;
+        c.weighty = 0; c.gridy += 1;
         layerPanel.add(sliderPanel, c);
         c.weighty = 1; c.gridy += 1;
         layerPanel.add(new JScrollPane(layerTable), c);
@@ -723,9 +723,12 @@ public class MapEditor implements ActionListener,
         return currentMap;
     }
 
-	public MapLayer getCurrentLayer() {
-		return currentMap.getLayer(currentLayer);
-	}
+    /**
+     * Returns the currently selected layer.
+     */
+    public MapLayer getCurrentLayer() {
+        return currentMap.getLayer(currentLayer);
+    }
 
     /**
      * Returns the main application frame.
@@ -862,16 +865,19 @@ public class MapEditor implements ActionListener,
                     break;
                 case PS_MARQUEE:
                     if (marqueeSelection != null) {
-                        Rectangle oldArea = marqueeSelection.getSelectedAreaBounds();
-                        int minx = Math.min(mouseInitialPressLocation.x, tile.x);
-                        int miny = Math.min(mouseInitialPressLocation.y, tile.y);
+                        Point limp = mouseInitialPressLocation;
+                        Rectangle oldArea =
+                            marqueeSelection.getSelectedAreaBounds();
+                        int minx = Math.min(limp.x, tile.x);
+                        int miny = Math.min(limp.y, tile.y);
 
                         marqueeSelection.selectRegion(new Rectangle(minx, miny,
-                                Math.max(mouseInitialPressLocation.x, tile.x)-minx,
-                                Math.max(mouseInitialPressLocation.y, tile.y)-miny));
+                                Math.max(limp.x, tile.x) - minx,
+                                Math.max(limp.y, tile.y) - miny));
 
                         if (oldArea != null) {
-                            oldArea.add(marqueeSelection.getSelectedAreaBounds());
+                            oldArea.add(
+                                    marqueeSelection.getSelectedAreaBounds());
                             mapView.repaintRegion(oldArea);
                         }
                     }
@@ -929,10 +935,11 @@ public class MapEditor implements ActionListener,
         mouseButton = MouseEvent.NOBUTTON;
         bMouseIsDown = false;
         MapLayer layer = currentMap.getLayer(currentLayer);
+        Point limp = mouseInitialPressLocation;
 
        if (currentPointerState == PS_MARQUEE) {
            Point tile = mapView.screenToTileCoords(event.getX(), event.getY());
-           if (tile.y - mouseInitialPressLocation.y == 0 && tile.x - mouseInitialPressLocation.x == 0) {
+           if (tile.y - limp.y == 0 && tile.x - limp.x == 0) {
                if (marqueeSelection != null) {
                    currentMap.removeLayerSpecial(marqueeSelection);
                    marqueeSelection = null;
@@ -1099,10 +1106,10 @@ public class MapEditor implements ActionListener,
                 command.equals("Hide Grid")) {
             // Toggle grid
             mapView.toggleMode(MapView.PF_GRIDMODE);
-        } else if(command.equals("Resize")) {
+        } else if (command.equals("Resize")) {
             ResizeDialog rd = new ResizeDialog(appFrame, this);
             rd.showDialog();
-        }  else if(command.equals("Search")) {
+        }  else if (command.equals("Search")) {
             SearchDialog sd = new SearchDialog(appFrame, currentMap);
             sd.showDialog();
         } else if (command.equals("About Tiled")) {
@@ -1284,54 +1291,55 @@ public class MapEditor implements ActionListener,
     }
 
     private class CancelSelectionAction extends AbstractAction {
-    	public CancelSelectionAction() {
-    		super("Deselect");
-    		putValue(SHORT_DESCRIPTION, "Cancel selection");
-    	}
-    	
-    	public void actionPerformed(ActionEvent e) {
-    		if(currentMap != null) {
-				if(marqueeSelection != null) {
-					currentMap.removeLayerSpecial(marqueeSelection);
-				}
-				
-				marqueeSelection = null;
-    		}
-    	}
+        public CancelSelectionAction() {
+            super("Deselect");
+            putValue(SHORT_DESCRIPTION, "Cancel selection");
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            if (currentMap != null) {
+                if (marqueeSelection != null) {
+                    currentMap.removeLayerSpecial(marqueeSelection);
+                }
+
+                marqueeSelection = null;
+            }
+        }
     }
-    
+
     private class SelectAllAction extends AbstractAction {
-    	public SelectAllAction() {
-    		super("Select All");
-    		putValue(SHORT_DESCRIPTION, "Select entire map");
-    	}
+        public SelectAllAction() {
+            super("Select All");
+            putValue(SHORT_DESCRIPTION, "Select entire map");
+        }
 
-		public void actionPerformed(ActionEvent e) {
-			if(currentMap != null) {
-				if(marqueeSelection != null) {
-					currentMap.removeLayerSpecial(marqueeSelection);
-				}
-				marqueeSelection = new SelectionLayer(currentMap.getWidth(), currentMap.getHeight());
-				marqueeSelection.selectRegion(marqueeSelection.getBounds());
-				currentMap.addLayerSpecial(marqueeSelection);
-			}
-		}
+        public void actionPerformed(ActionEvent e) {
+            if (currentMap != null) {
+                if (marqueeSelection != null) {
+                    currentMap.removeLayerSpecial(marqueeSelection);
+                }
+                marqueeSelection = new SelectionLayer(
+                        currentMap.getWidth(), currentMap.getHeight());
+                marqueeSelection.selectRegion(marqueeSelection.getBounds());
+                currentMap.addLayerSpecial(marqueeSelection);
+            }
+        }
     }
-    
+
     private class InverseSelectionAction extends AbstractAction {
-    	public InverseSelectionAction() {
-    		super("Invert Selection");
-    		putValue(SHORT_DESCRIPTION, "Inverse of the current selection");
-    	}
+        public InverseSelectionAction() {
+            super("Invert Selection");
+            putValue(SHORT_DESCRIPTION, "Inverse of the current selection");
+        }
 
-		public void actionPerformed(ActionEvent e) {
-			if(marqueeSelection != null) {
-				marqueeSelection.invert();
-				mapView.repaint();
-			}
-		}
+        public void actionPerformed(ActionEvent e) {
+            if (marqueeSelection != null) {
+                marqueeSelection.invert();
+                mapView.repaint();
+            }
+        }
     }
-    
+
     private class ZoomInAction extends AbstractAction {
         public ZoomInAction() {
             super("Zoom In");
@@ -1390,7 +1398,7 @@ public class MapEditor implements ActionListener,
     }
 
     private class CopyAction extends AbstractAction {
-    	public CopyAction() {
+        public CopyAction() {
             super("Copy");
             putValue(ACCELERATOR_KEY,
                     KeyStroke.getKeyStroke("control C"));
@@ -1398,14 +1406,17 @@ public class MapEditor implements ActionListener,
         }
         public void actionPerformed(ActionEvent evt) {
             if (currentMap != null && marqueeSelection != null) {
-                clipboardLayer = new MapLayer(marqueeSelection.getSelectedAreaBounds());
-                clipboardLayer.maskedCopyFrom(currentMap.getLayer(currentLayer), marqueeSelection.getSelectedArea());
+                clipboardLayer = new MapLayer(
+                        marqueeSelection.getSelectedAreaBounds());
+                clipboardLayer.maskedCopyFrom(
+                        currentMap.getLayer(currentLayer),
+                        marqueeSelection.getSelectedArea());
             }
         }
     }
     
     private class CutAction extends AbstractAction {
-    	public CutAction() {
+        public CutAction() {
             super("Cut");
             putValue(ACCELERATOR_KEY,
                     KeyStroke.getKeyStroke("control X"));
@@ -1413,17 +1424,20 @@ public class MapEditor implements ActionListener,
         }
         public void actionPerformed(ActionEvent evt) {
             if (currentMap != null && marqueeSelection != null) {
-            	clipboardLayer = new MapLayer(marqueeSelection.getSelectedAreaBounds());
-                clipboardLayer.maskedCopyFrom(currentMap.getLayer(currentLayer), marqueeSelection.getSelectedArea());
-                
+                clipboardLayer = new MapLayer(
+                        marqueeSelection.getSelectedAreaBounds());
+                clipboardLayer.maskedCopyFrom(
+                        currentMap.getLayer(currentLayer),
+                        marqueeSelection.getSelectedArea());
+
                 MapLayer ml = currentMap.getLayer(currentLayer);
                 Rectangle area = marqueeSelection.getSelectedAreaBounds();
                 Area mask = marqueeSelection.getSelectedArea();
-                for(int i = area.y; i < area.height+area.y; i++) {
-                    for(int j = area.x;j<area.width+area.x;j++){
-                    	if(mask.contains(j,i)) {
-                    		ml.setTileAt(j, i, currentMap.getNullTile());
-                    	}
+                for (int i = area.y; i < area.height+area.y; i++) {
+                    for (int j = area.x;j<area.width+area.x;j++){
+                        if (mask.contains(j,i)) {
+                            ml.setTileAt(j, i, currentMap.getNullTile());
+                        }
                     }
                 }
                 mapView.repaintRegion(area);
@@ -1432,7 +1446,7 @@ public class MapEditor implements ActionListener,
     }
     
     private class PasteAction extends AbstractAction {
-    	public PasteAction() {
+        public PasteAction() {
             super("Paste");
             putValue(ACCELERATOR_KEY,
                     KeyStroke.getKeyStroke("control V"));
@@ -1440,12 +1454,14 @@ public class MapEditor implements ActionListener,
         }
         public void actionPerformed(ActionEvent evt) {
             if (currentMap != null && clipboardLayer != null) {
-            	Vector layersBefore = currentMap.getLayerVector();
-            	MapLayer ml = new MapLayer(clipboardLayer);
-            	ml.setName("Layer " + currentMap.getTotalLayers());
+                Vector layersBefore = currentMap.getLayerVector();
+                MapLayer ml = new MapLayer(clipboardLayer);
+                ml.setName("Layer " + currentMap.getTotalLayers());
                 currentMap.addLayer(ml);
-                undoSupport.postEdit(new MapLayerStateEdit(currentMap, layersBefore,
-                        new Vector(currentMap.getLayerVector()), "Paste Selection"));
+                undoSupport.postEdit(
+                        new MapLayerStateEdit(currentMap, layersBefore,
+                            new Vector(currentMap.getLayerVector()),
+                            "Paste Selection"));
             }
         }
     }
@@ -1491,11 +1507,11 @@ public class MapEditor implements ActionListener,
         } else {
             if (marqueeSelection.getSelectedArea().contains(x, y)) {
                 area = marqueeSelection.getSelectedAreaBounds();
-                for(int i = area.y; i < area.height+area.y; i++) {
-                    for(int j = area.x;j<area.width+area.x;j++){
-                    	if(marqueeSelection.getSelectedArea().contains(j, i)){
-                    		layer.setTileAt(j, i, newTile);
-                    	}
+                for (int i = area.y; i < area.height+area.y; i++) {
+                    for (int j = area.x;j<area.width+area.x;j++){
+                        if (marqueeSelection.getSelectedArea().contains(j, i)){
+                            layer.setTileAt(j, i, newTile);
+                        }
                     }
                 }
             } else {
@@ -1572,21 +1588,23 @@ public class MapEditor implements ActionListener,
                 ch = new JFileChooser(filename);
             }
 
-            ch.addChoosableFileFilter(new TiledFileFilter(TiledFileFilter.FILTER_TMX));
+            ch.addChoosableFileFilter(
+                    new TiledFileFilter(TiledFileFilter.FILTER_TMX));
 
             try {
-    			MapWriter writers[] = (MapWriter[]) pluginLoader.getWriters();
-    			for(int i=0;i<writers.length;i++) {
-    	        	ch.addChoosableFileFilter(new TiledFileFilter(writers[i].getFilter(),writers[i].getName()));
-    	        }
-    		} catch (Throwable e) {
-    			JOptionPane.showMessageDialog(appFrame,
+                MapWriter writers[] = (MapWriter[]) pluginLoader.getWriters();
+                for(int i = 0; i < writers.length; i++) {
+                    ch.addChoosableFileFilter(new TiledFileFilter(
+                                writers[i].getFilter(), writers[i].getName()));
+                }
+            } catch (Throwable e) {
+                JOptionPane.showMessageDialog(appFrame,
                         "Error while loading plugins: " + e.getMessage(),
                         "Error while saving map",
                         JOptionPane.ERROR_MESSAGE);
-    			e.printStackTrace();
-    		}
-            
+                e.printStackTrace();
+            }
+
             if (ch.showSaveDialog(appFrame) == JFileChooser.APPROVE_OPTION) {
                 filename = ch.getSelectedFile().getAbsolutePath();
                 configuration.addConfigPair("tmx.save.maplocation",
@@ -1596,15 +1614,16 @@ public class MapEditor implements ActionListener,
         }
 
         try {
-        	MapWriter mw = null;
-        	if (filename.endsWith("tmx")) {
+            MapWriter mw = null;
+            if (filename.endsWith("tmx")) {
                 // Override, so people can't overtake our format
-        		mw = new XMLMapWriter();
-        	} else {
-        		mw = (MapWriter)pluginLoader.getWriterFor(filename.substring(filename.lastIndexOf('.') + 1));
-        	}
-        	
-        	if (mw != null) {
+                mw = new XMLMapWriter();
+            } else {
+                mw = (MapWriter)pluginLoader.getWriterFor(
+                        filename.substring(filename.lastIndexOf('.') + 1));
+            }
+
+            if (mw != null) {
                 mw.writeMap(currentMap, filename);
                 currentMap.setFilename(filename);
                 updateRecent(filename);
@@ -1614,7 +1633,7 @@ public class MapEditor implements ActionListener,
                 JOptionPane.showMessageDialog(appFrame,
                         "Unsupported map format", "Error while saving map",
                         JOptionPane.ERROR_MESSAGE);
-        	}
+            }
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(appFrame,
@@ -1634,20 +1653,22 @@ public class MapEditor implements ActionListener,
         }
 
         JFileChooser ch = new JFileChooser(startLocation);
-        ch.addChoosableFileFilter(new TiledFileFilter(TiledFileFilter.FILTER_TMX));
+        ch.addChoosableFileFilter(
+                new TiledFileFilter(TiledFileFilter.FILTER_TMX));
         
-	try {
-		MapReader readers[] = (MapReader[]) pluginLoader.getReaders();
-		for(int i=0;i<readers.length;i++) {
-			ch.addChoosableFileFilter(new TiledFileFilter(readers[i].getFilter(),readers[i].getName()));
-		}
-	} catch (Throwable e) {
-		JOptionPane.showMessageDialog(appFrame,
-				"Error while loading plugins: " + e.getMessage(),
-				"Error while loading map",
-				JOptionPane.ERROR_MESSAGE);
-			e.printStackTrace();
-		}
+        try {
+            MapReader readers[] = (MapReader[]) pluginLoader.getReaders();
+            for(int i = 0; i < readers.length; i++) {
+                ch.addChoosableFileFilter(new TiledFileFilter(
+                            readers[i].getFilter(), readers[i].getName()));
+            }
+        } catch (Throwable e) {
+            JOptionPane.showMessageDialog(appFrame,
+                    "Error while loading plugins: " + e.getMessage(),
+                    "Error while loading map",
+                    JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
 
         int ret = ch.showOpenDialog(appFrame);
         if (ret == JFileChooser.APPROVE_OPTION) {
@@ -1766,8 +1787,8 @@ public class MapEditor implements ActionListener,
             tilePaletteDialog.setMap(currentMap);
         }
         
-        if(miniMap != null && currentMap != null) {
-        	miniMap.setView(currentMap.createView());
+        if (miniMap != null && currentMap != null) {
+            miniMap.setView(currentMap.createView());
         }
         
         undoStack.discardAllEdits();

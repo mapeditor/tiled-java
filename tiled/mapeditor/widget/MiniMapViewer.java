@@ -22,43 +22,46 @@ import tiled.view.MapView;
 
 
 public class MiniMapViewer extends JPanel {
-	
-	public static final int MAX_HEIGHT=150;
-	
-	private MapView myView;
-	private JScrollPane mainPanel;
-	private double scale=1.0;
-	
-	public MiniMapViewer() {
-		setSize(MAX_HEIGHT,MAX_HEIGHT);
-	}
-	
-	public MiniMapViewer(MapView view) {
-		this();
-		setView(view);
-	}
-	
-	public void setView(MapView view) {
-		myView = view;
-		Dimension d = myView.getPreferredSize();
-		scale = MAX_HEIGHT/(double)d.height;
-		myView.setZoom(scale);
-	}
-	
-	public void setMainPanel(JScrollPane main) {
-		mainPanel = main;
-	}
-	
-	public void paint(Graphics g) {
-		//if(myView != null)
-		//	myView.paint(g);
-		if(mainPanel!=null) {
-			g.setColor(Color.red);
-			Rectangle viewArea = mainPanel.getGraphics().getClipBounds();
-			if(viewArea != null) {
-				g.drawRect((int)(viewArea.x*scale),(int)(viewArea.y*scale),
-							(int)(viewArea.width*scale),(int)(viewArea.height*scale));
-			}
-		}
-	}
+
+    public static final int MAX_HEIGHT = 150;
+
+    private MapView myView;
+    private JScrollPane mainPanel;
+    private double scale = 1.0;
+
+    public MiniMapViewer() {
+        setSize(MAX_HEIGHT,MAX_HEIGHT);
+    }
+
+    public MiniMapViewer(MapView view) {
+        this();
+        setView(view);
+    }
+
+    public void setView(MapView view) {
+        myView = view;
+        Dimension d = myView.getPreferredSize();
+        scale = MAX_HEIGHT / (double)d.height;
+        myView.setZoom(scale);
+    }
+
+    public void setMainPanel(JScrollPane main) {
+        mainPanel = main;
+    }
+
+    public void paint(Graphics g) {
+        //if(myView != null)
+        //	myView.paint(g);
+        if (mainPanel!=null) {
+            g.setColor(Color.red);
+            Rectangle viewArea = mainPanel.getGraphics().getClipBounds();
+            if (viewArea != null) {
+                g.drawRect(
+                        (int)(viewArea.x * scale),
+                        (int)(viewArea.y * scale),
+                        (int)(viewArea.width * scale),
+                        (int)(viewArea.height * scale));
+            }
+        }
+    }
 }

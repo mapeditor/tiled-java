@@ -55,7 +55,7 @@ public class XMLWriter
     }
     
     public void startDocument(String version) throws IOException {
-        w.write("<?xml version=\"" + version + "\" ?>" + newLine);
+        w.write("<?xml version=\"" + version + "\"?>" + newLine);
         bDocumentOpen = true;
     }
 

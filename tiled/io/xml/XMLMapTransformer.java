@@ -118,7 +118,7 @@ public class XMLMapTransformer implements MapReader
 
     private Node getChildNode(Node n, String name) {
         NodeList children = n.getChildNodes();
-		Node child = null;
+        Node child = null;
         for (int i = 0; i < children.getLength(); i++) {
              child = children.item(i);
             if (child.getNodeName().equalsIgnoreCase(name)) {
@@ -133,14 +133,14 @@ public class XMLMapTransformer implements MapReader
         throws InstantiationException, IllegalAccessException,
                InvocationTargetException {
         Constructor cons = null;
-		try {
-			cons = reflector.getConstructor(null);
-		} catch (SecurityException e1) {
-			e1.printStackTrace();
-		} catch (NoSuchMethodException e1) {
-			e1.printStackTrace();
-			return null;
-		}
+        try {
+            cons = reflector.getConstructor(null);
+        } catch (SecurityException e1) {
+            e1.printStackTrace();
+        } catch (NoSuchMethodException e1) {
+            e1.printStackTrace();
+            return null;
+        }
         Object o = cons.newInstance(null);
         Node n;
 
@@ -199,12 +199,15 @@ public class XMLMapTransformer implements MapReader
         }
         mediaTracker.removeImage(img);
 
-        /*if(getAttributeValue(t, "set") != null) {
-        	TileSet ts = (TileSet) map.getTilesets().get(Integer.parseInt(getAttributeValue(t, "set")));
-        	if(ts != null) {
-        		ts.addImage(img);
-        	}
-        }*/
+        /*
+        if (getAttributeValue(t, "set") != null) {
+            TileSet ts = (TileSet)map.getTilesets().get(
+                    Integer.parseInt(getAttributeValue(t, "set")));
+            if (ts != null) {
+                ts.addImage(img);
+            }
+        }
+        */
         
         return img;
     }
@@ -224,10 +227,10 @@ public class XMLMapTransformer implements MapReader
         }
 
         String xmlPathSave = xmlPath;
-		if (filename.indexOf(File.separatorChar) >= 0) {
-			xmlPath = filename.substring(0,
-					filename.lastIndexOf(File.separatorChar) + 1);
-		}
+        if (filename.indexOf(File.separatorChar) >= 0) {
+            xmlPath = filename.substring(0,
+                    filename.lastIndexOf(File.separatorChar) + 1);
+        }
 
         NodeList tsNodeList = tsDoc.getElementsByTagName("tileset");
 
@@ -249,8 +252,8 @@ public class XMLMapTransformer implements MapReader
 
     private TileSet unmarshalTileset(Node t) throws Exception {
         TileSet set = null;
-		boolean hasTileTags=false;
-		
+        boolean hasTileTags = false;
+
         try {
             set = (TileSet)unmarshalClass(TileSet.class, t);
         } catch (Exception e) {
@@ -262,20 +265,21 @@ public class XMLMapTransformer implements MapReader
         int tileSpacing = getAttribute(t, "spacing", 0);
 
         if (set.getSource() != null) {
-            TileSet ext = unmarshalTilesetFile(new FileInputStream(xmlPath + set.getSource()), xmlPath + set.getSource());
+            TileSet ext = unmarshalTilesetFile(new FileInputStream(
+                        xmlPath + set.getSource()), xmlPath + set.getSource());
             ext.setFirstGid(set.getFirstGid());
             return ext;
         } else {
             NodeList children = t.getChildNodes();
-			
-			//do an initial pass to see if any tile tags are specified
-			for (int i = 0; i < children.getLength(); i++) {
-				Node child = children.item(i);
-				if (child.getNodeName().equalsIgnoreCase("tile")) {
-					hasTileTags = true;
-				}
-			}
-			
+
+            // Do an initial pass to see if any tile tags are specified
+            for (int i = 0; i < children.getLength(); i++) {
+                Node child = children.item(i);
+                if (child.getNodeName().equalsIgnoreCase("tile")) {
+                    hasTileTags = true;
+                }
+            }
+
             for (int i = 0; i < children.getLength(); i++) {
                 Node child = children.item(i);
                 if (child.getNodeName().equalsIgnoreCase("tile")) {
@@ -283,25 +287,27 @@ public class XMLMapTransformer implements MapReader
                 } else if (child.getNodeName().equalsIgnoreCase("image")) {
                     String source = getAttributeValue(child, "source");
 
-					if(source != null && getAttributeValue(child, "id") == null) {
-						//Not a shared image, but a entire set in one image file
-	                    File sourceFile = new File(source);
-	                    String sourcePath;
-	                    if (sourceFile.getAbsolutePath().equals(source)) {
-	                        sourcePath = sourceFile.getCanonicalPath();
-	                    } else {
-	                        sourcePath =
-	                            new File(xmlPath + source).getCanonicalPath();
-	                    }
-	
-	                    set.importTileBitmap(sourcePath,
-	                            tileWidth, tileHeight, tileSpacing, !hasTileTags);
-	
-	                    // There can be only one tileset image
-	                    //break;
-					} else {
-						set.addImage(unmarshalImage(child), getAttributeValue(child, "id"));
-					}
+                    if (source != null && getAttributeValue(child, "id") == null) {
+                        // Not a shared image, but a entire set in one image
+                        // file
+                        File sourceFile = new File(source);
+                        String sourcePath;
+                        if (sourceFile.getAbsolutePath().equals(source)) {
+                            sourcePath = sourceFile.getCanonicalPath();
+                        } else {
+                            sourcePath =
+                                new File(xmlPath + source).getCanonicalPath();
+                        }
+
+                        set.importTileBitmap(sourcePath, tileWidth, tileHeight,
+                                tileSpacing, !hasTileTags);
+
+                        // There can be only one tileset image
+                        //break;
+                    } else {
+                        set.addImage(unmarshalImage(child),
+                                getAttributeValue(child, "id"));
+                    }
                 }
             }
         }
@@ -316,9 +322,9 @@ public class XMLMapTransformer implements MapReader
             e.printStackTrace();
         }
 
-		obj.setX(getAttribute(t, "x", 0));
-		obj.setY(getAttribute(t, "y", 0));
-		
+        obj.setX(getAttribute(t, "x", 0));
+        obj.setY(getAttribute(t, "y", 0));
+
         NodeList children = t.getChildNodes();
 
         for (int i = 0; i < children.getLength(); i++) {
@@ -345,13 +351,13 @@ public class XMLMapTransformer implements MapReader
         for (int i = 0; i < children.getLength(); i++) {
             Node child = children.item(i);
             if (child.getNodeName().equalsIgnoreCase("image")) {
-            	int id = getAttribute(child, "id", -1);
-            	if(id < 0) {
-                	tile.setImage(unmarshalImage(child));
-            	} else {
-            		tile.setImage(id);
-            		int rotation = getAttribute(child, "rotation", 0);
-					String flipped_s = getAttributeValue(child, "flipped");
+                int id = getAttribute(child, "id", -1);
+                if (id < 0) {
+                    tile.setImage(unmarshalImage(child));
+                } else {
+                    tile.setImage(id);
+                    int rotation = getAttribute(child, "rotation", 0);
+                    String flipped_s = getAttributeValue(child, "flipped");
                     boolean flipped = (flipped_s != null
                         && flipped_s.equalsIgnoreCase("true"));
                     int orientation;
@@ -365,7 +371,7 @@ public class XMLMapTransformer implements MapReader
                         orientation = (flipped ? 1 : 0);
                     }
                     tile.setImageOrientation(orientation);
-            	}
+                }
             } else if (child.getNodeName().equalsIgnoreCase("property")) {
                 tile.setProperty(getAttributeValue(child,"name"),
                         getAttributeValue(child, "value"));
@@ -420,7 +426,7 @@ public class XMLMapTransformer implements MapReader
 
                             TileSet ts = map.findTileSetForTileGID(tileId);
                             if (ts != null) {
-                            	ml.setTileAt(x, y,
+                                ml.setTileAt(x, y,
                                         ts.getTile(tileId - ts.getFirstGid()));
                             } else {
                                 ml.setTileAt(x, y, map.getNullTile());
@@ -452,9 +458,9 @@ public class XMLMapTransformer implements MapReader
 
 
             } else if (child.getNodeName().equalsIgnoreCase("property")) {
-				ml.setProperty(getAttributeValue(child,"name"),
-				getAttributeValue(child, "value"));
-			}
+                ml.setProperty(getAttributeValue(child,"name"),
+                        getAttributeValue(child, "value"));
+            }
         }
 
         return ml;
@@ -578,8 +584,9 @@ public class XMLMapTransformer implements MapReader
         return unmarshal(filename);
     }
 
-    public Map readMap(InputStream in) throws Exception {            //TODO: this and the unmarshal function should be joined
-    	DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    public Map readMap(InputStream in) throws Exception {
+        // TODO: This and the unmarshal function should be joined
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         try {
             DocumentBuilder builder = factory.newDocumentBuilder();
             doc = builder.parse(in, ".");
@@ -603,8 +610,8 @@ public class XMLMapTransformer implements MapReader
     }
 
     public TileSet readTileset(InputStream in) throws Exception {
-    	//TODO: the MapReader interface should be changed...
-    	return unmarshalTilesetFile(in, ".");
+        // TODO: The MapReader interface should be changed...
+        return unmarshalTilesetFile(in, ".");
     }
     
     /**
@@ -615,19 +622,19 @@ public class XMLMapTransformer implements MapReader
     }
 
     public String getPluginPackage() {
-    	return "Tiled internal TMX reader/writer";
+        return "Tiled internal TMX reader/writer";
     }
     
     public String getDescription() {
         return "This is the core Tiled TMX format reader\n" +
-        			"\n" +
-					"Tiled Map Editor, (c) 2004\n" +
-					"Adam Turk\n" +
-					"Bjorn Lindeijer";
+            "\n" +
+            "Tiled Map Editor, (c) 2004\n" +
+            "Adam Turk\n" +
+            "Bjorn Lindeijer";
     }
 
     public String getName() {
-    	return "Default Tiled XML map reader";
+        return "Default Tiled XML map reader";
     }
 
     public boolean accept(File pathname) {

@@ -54,8 +54,8 @@ public class TileSet
      * @param tileHeight  the tile height
      * @param spacing     the amount of spacing between the tiles
      */
-    public void importTileBitmap(String imgFilename,
-            int tileWidth, int tileHeight, int spacing, boolean createTiles) throws Exception{
+    public void importTileBitmap(String imgFilename, int tileWidth,
+            int tileHeight, int spacing, boolean createTiles) throws Exception{
         File imgFile = null;
         try {
             imgFile = new File(imgFilename);
@@ -64,10 +64,10 @@ public class TileSet
             tilebmpFile = imgFilename;
         }
 
-		System.out.println("Importing " + imgFilename + "...");
+        System.out.println("Importing " + imgFilename + "...");
 
         BufferedImage tilebmp = null;
-		
+
         tilebmp = ImageIO.read(imgFile);
 
         if (tilebmp == null) {
@@ -89,11 +89,11 @@ public class TileSet
                             tileWidth, tileHeight,
                             x, y, x + tileWidth, y + tileHeight,
                             null);
-					int newId = addImage(tile);
-					if(createTiles) {
-                    	Tile newTile = new Tile();
-                    	newTile.setImage(newId);
-                    	addNewTile(newTile);
+                    int newId = addImage(tile);
+                    if (createTiles) {
+                        Tile newTile = new Tile();
+                        newTile.setImage(newId);
+                        addNewTile(newTile);
                     }
                 }
             }
@@ -138,9 +138,13 @@ public class TileSet
         externalSource = source;
     }
 
-	public void setTilesetImageFilename(String name) {
-		tilebmpFile = name;
-	}
+    /**
+     * Sets the filename of the tileset image. Doesn't change the tileset in
+     * any other way.
+     */
+    public void setTilesetImageFilename(String name) {
+        tilebmpFile = name;
+    }
 
     /**
      * Sets the first global id used by this tileset.
@@ -317,13 +321,14 @@ public class TileSet
     }
 
     public String toString() {
-    	return name + " ["+getTotalTiles()+"]";
+        return name + " [" + getTotalTiles() + "]";
     }
+
 
     // TILE IMAGE CODE
 
     private String checksumImage(Image i) {
-        PixelGrabber pg = new PixelGrabber(i,0,0,-1,-1,false);
+        PixelGrabber pg = new PixelGrabber(i, 0, 0, -1, -1, false);
         Checksum sum = new CRC32();
 
         try {
@@ -331,7 +336,8 @@ public class TileSet
             ImageInputStream is;
 
             try {
-                ByteArrayInputStream bais = new ByteArrayInputStream(Util.convertIntegersToBytes((int[])pg.getPixels()));
+                ByteArrayInputStream bais = new ByteArrayInputStream(
+                        Util.convertIntegersToBytes((int[])pg.getPixels()));
                 byte[] bytes = new byte[1024];
                 int len = 0;
 
@@ -350,11 +356,11 @@ public class TileSet
     }
 
     public int getTotalImages() {
-    	return images.size();
+        return images.size();
     }
     
     public Enumeration getImageIds() {
-		return images.keys();
+        return images.keys();
     }
     
     public int getIdByImage(Image i) {
@@ -373,16 +379,16 @@ public class TileSet
     }
 
     public Image getImageById(Object key) {
-    	if(images.get(key) == null) {
-    		return null;
-    	}
+        if (images.get(key) == null) {
+            return null;
+        }
         return (Image)imageCache.get(images.get(key));
     }
 
     public void overlayImage(Object key, Image i) {
-    	String hash = checksumImage(i);
-    	imageCache.put(hash, i);
-    	images.put(key, hash);
+        String hash = checksumImage(i);
+        imageCache.put(hash, i);
+        images.put(key, hash);
     }
 
     /**
@@ -390,13 +396,12 @@ public class TileSet
      * @return dimensions of image with given key
      */
     public Dimension getImageDimensions(Object key) {
-    	if(images.get(key) != null) {
-	        Image i = (Image)imageCache.get(images.get(key));
-	
-	        return new Dimension(i.getWidth(null), i.getHeight(null));
-    	} else {
-    		return new Dimension(0, 0);
-    	}
+        if (images.get(key) != null) {
+            Image i = (Image)imageCache.get(images.get(key));
+            return new Dimension(i.getWidth(null), i.getHeight(null));
+        } else {
+            return new Dimension(0, 0);
+        }
     }
 
     /**
@@ -411,112 +416,112 @@ public class TileSet
         return (Image)imageCache.get(hash);
     }
 
-	public Object queryImageId(Image image) {
-		String hash = checksumImage(image);
-		if(imageCache.get(hash) != null) {
-			Iterator itr = images.keySet().iterator();
-			while(itr.hasNext()) {
-				Object key = itr.next();
-				if(images.get(key).equals(hash)) {
-					//System.out.println("Success: " + key);
-					return key;
-				}
-			}
-		}
-		return Integer.toString(-1);
-	}
+    public Object queryImageId(Image image) {
+        String hash = checksumImage(image);
+        if (imageCache.get(hash) != null) {
+            Iterator itr = images.keySet().iterator();
+            while (itr.hasNext()) {
+                Object key = itr.next();
+                if (images.get(key).equals(hash)) {
+                    //System.out.println("Success: " + key);
+                    return key;
+                }
+            }
+        }
+        return Integer.toString(-1);
+    }
 
-	/**
-	 * @param internalImage
-	 * @return
-	 */
-	public int addImage(Image image) {
-		int t;		
-		if((t = Integer.parseInt((String)queryImageId(image)))>=0) {
-			return t;
-		} else {
-			t = images.size();
-			String cs = checksumImage(image);
-			//System.out.print("addImage(Image): " + t + " ");
-			//System.out.println("Checksum: " + cs);
-			images.put(Integer.toString(t), cs);
-			imageCache.put(cs, image);
-			return t;
-		}
-	}
+    /**
+     * @param internalImage
+     * @return
+     */
+    public int addImage(Image image) {
+        int t;
+        if ((t = Integer.parseInt((String)queryImageId(image))) >= 0) {
+            return t;
+        } else {
+            t = images.size();
+            String cs = checksumImage(image);
+            //System.out.print("addImage(Image): " + t + " ");
+            //System.out.println("Checksum: " + cs);
+            images.put(Integer.toString(t), cs);
+            imageCache.put(cs, image);
+            return t;
+        }
+    }
 
-	public int addImage(Image image, Object key) {
-		if(key == null) {
-			return addImage(image);
-		} else {
-			String cs = checksumImage(image);
-			//System.out.print("addImage(Image, Object): " + key + " ");
-			//System.out.println("Checksum: " + cs);
-			images.put(key, cs);
-			imageCache.put(cs, image);
-			return Integer.parseInt((String)key);
-		}
-	}
+    public int addImage(Image image, Object key) {
+        if (key == null) {
+            return addImage(image);
+        } else {
+            String cs = checksumImage(image);
+            //System.out.print("addImage(Image, Object): " + key + " ");
+            //System.out.println("Checksum: " + cs);
+            images.put(key, cs);
+            imageCache.put(cs, image);
+            return Integer.parseInt((String)key);
+        }
+    }
 
-	public void removeImage(Object id) {
-		imageCache.remove(images.get(id));
-		images.remove(id);
-	}
+    public void removeImage(Object id) {
+        imageCache.remove(images.get(id));
+        images.remove(id);
+    }
 
-	private boolean isUsed(String hash) {
-		Iterator itr = tiles.iterator();
-		while(itr.hasNext()) {
-			Tile t = (Tile) itr.next();
-			if(hash.equals(images.get(""+t.getImageId()))) {
-				return true;
-			}
-		}
-		return false;
-	}
+    private boolean isUsed(String hash) {
+        Iterator itr = tiles.iterator();
+        while (itr.hasNext()) {
+            Tile t = (Tile) itr.next();
+            if (hash.equals(images.get(""+t.getImageId()))) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-	public Object generateImageWithOrientation(Image src,
-		int orientation) {
-		if (orientation == 0) {
-			return queryImageId(src);
-		} else {
-			int w = src.getWidth(null), h = src.getHeight(null);
-			int[] old_pixels = new int[w * h];
-			PixelGrabber p = new PixelGrabber(src, 0, 0, w, h,
-				old_pixels, 0, w);
-			try {
-				p.grabPixels();
-			} catch (InterruptedException e) {
-			}
-			int[] new_pixels = new int[w * h];
-			int dest_w = ((orientation & 4) != 0) ? h : w;
-			int dest_h = ((orientation & 4) != 0) ? w : h;
-			for (int dest_y = 0; dest_y < dest_h; ++dest_y) {
-				for (int dest_x = 0; dest_x < dest_w; ++dest_x) {
-					int src_x = dest_x, src_y = dest_y;
-					if ((orientation & 4) != 0) {
-						src_y = dest_w - dest_x - 1;
-						src_x = dest_y;
-					}
-					if ((orientation & 1) != 0) {
-						src_x = w - src_x - 1;
-					}
-					if ((orientation & 2) != 0) {
-						src_y = h - src_y - 1;
-					}
-					new_pixels[dest_x + dest_y * dest_w]
-					  = old_pixels[src_x + src_y * w];
-				}
-			}
-			old_pixels = null;
-			BufferedImage new_img = new BufferedImage(dest_w, dest_h,
-				BufferedImage.TYPE_INT_ARGB);
-			new_img.setRGB(0, 0, dest_w, dest_h, new_pixels, 0, dest_w);
-			return Integer.toString(addImage(new_img));
-		}
-	}
-	
-	public boolean usesSharedImages() {
-		//TODO: currently only uses shared sets...
-		return true;
-	}
+    public Object generateImageWithOrientation(Image src,
+            int orientation) {
+        if (orientation == 0) {
+            return queryImageId(src);
+        } else {
+            int w = src.getWidth(null), h = src.getHeight(null);
+            int[] old_pixels = new int[w * h];
+            PixelGrabber p = new PixelGrabber(src, 0, 0, w, h,
+                    old_pixels, 0, w);
+            try {
+                p.grabPixels();
+            } catch (InterruptedException e) {
+            }
+            int[] new_pixels = new int[w * h];
+            int dest_w = ((orientation & 4) != 0) ? h : w;
+            int dest_h = ((orientation & 4) != 0) ? w : h;
+            for (int dest_y = 0; dest_y < dest_h; ++dest_y) {
+                for (int dest_x = 0; dest_x < dest_w; ++dest_x) {
+                    int src_x = dest_x, src_y = dest_y;
+                    if ((orientation & 4) != 0) {
+                        src_y = dest_w - dest_x - 1;
+                        src_x = dest_y;
+                    }
+                    if ((orientation & 1) != 0) {
+                        src_x = w - src_x - 1;
+                    }
+                    if ((orientation & 2) != 0) {
+                        src_y = h - src_y - 1;
+                    }
+                    new_pixels[dest_x + dest_y * dest_w]
+                        = old_pixels[src_x + src_y * w];
+                }
+            }
+            old_pixels = null;
+            BufferedImage new_img = new BufferedImage(dest_w, dest_h,
+                    BufferedImage.TYPE_INT_ARGB);
+            new_img.setRGB(0, 0, dest_w, dest_h, new_pixels, 0, dest_w);
+            return Integer.toString(addImage(new_img));
+        }
+    }
+
+    public boolean usesSharedImages() {
+        // TODO: Currently only uses shared sets...
+        return true;
+    }
 }
