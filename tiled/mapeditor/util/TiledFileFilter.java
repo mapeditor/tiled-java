@@ -18,65 +18,65 @@ import java.util.LinkedList;
 
 import javax.swing.filechooser.FileFilter;
 
-public class TiledFileFilter extends FileFilter {
 
-	public static final int FILTER_TMX=1;
-	public static final int FILTER_TSX=2;
-	public static final int FILTER_BOTH=3;
-	
-	private String desc;
-	private LinkedList exts;
+public class TiledFileFilter extends FileFilter
+{
+    public static final int FILTER_TMX  = 1;
+    public static final int FILTER_TSX  = 2;
+    public static final int FILTER_BOTH = 3;
 
-	public TiledFileFilter() {
-		desc = new String("Tiled (*.tmx & *.tsx) files");
-		exts = new LinkedList();
-		exts.add(new String("tmx"));
-		exts.add(new String("tsx"));
-	}
+    private String desc;
+    private LinkedList exts;
 
-	public TiledFileFilter(int filter) {		
-		exts = new LinkedList();
-		desc="";
-		if((filter & FILTER_TMX) != 0) {
-			desc = new String("Tiled Maps (*.tmx) files ");
-			exts.add(new String("tmx"));
-		}
-		if((filter & FILTER_TSX) != 0) {
-			desc = desc + "Tiled Tileset (*.tsx) files";
-			exts.add(new String("tsx"));
-		}
-	}
+    public TiledFileFilter() {
+        desc = new String("Tiled (*.tmx & *.tsx) files");
+        exts = new LinkedList();
+        exts.add(new String("tmx"));
+        exts.add(new String("tsx"));
+    }
 
-	public void setDescription(String d) {
-		desc = d;
-	}
+    public TiledFileFilter(int filter) {		
+        exts = new LinkedList();
+        desc = "";
+        if ((filter & FILTER_TMX) != 0) {
+            desc = new String("Tiled Maps (*.tmx) files ");
+            exts.add(new String("tmx"));
+        }
+        if ((filter & FILTER_TSX) != 0) {
+            desc = desc + "Tiled Tileset (*.tsx) files";
+            exts.add(new String("tsx"));
+        }
+    }
 
-	public void addExtention(String e) {
-		exts.add(e);
-	}
+    public void setDescription(String d) {
+        desc = d;
+    }
 
-	public boolean accept(File f) {
-		
-		if(f.isFile()) {
-			if(f.getAbsolutePath().lastIndexOf('.') == -1) {
-				return false;
-			}
-			
-			String ext = f.getAbsolutePath().substring(f.getAbsolutePath().lastIndexOf('.')+1);
-			
-			Iterator itr = exts.iterator();
-			while(itr.hasNext()) {
-				if(ext.equalsIgnoreCase((String)itr.next())) {
-					return true;
-				}
-			}
-			return false;
-		}
-		return true;
-	}
+    public void addExtention(String e) {
+        exts.add(e);
+    }
 
-	public String getDescription() {
-		return desc;
-	}
+    public boolean accept(File f) {
+        if (f.isFile()) {
+            if (f.getAbsolutePath().lastIndexOf('.') == -1) {
+                return false;
+            }
 
+            String ext = f.getAbsolutePath().substring(
+                    f.getAbsolutePath().lastIndexOf('.') + 1);
+
+            Iterator itr = exts.iterator();
+            while (itr.hasNext()) {
+                if (ext.equalsIgnoreCase((String)itr.next())) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        return true;
+    }
+
+    public String getDescription() {
+        return desc;
+    }
 }

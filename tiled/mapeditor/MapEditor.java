@@ -59,7 +59,7 @@ public class MapEditor implements ActionListener,
     private Cursor curEyed    = null;
     private Cursor curMarquee = null;
 
-    public static final String version = "0.4.0 WIP";
+    public static final String version = "0.4.0";
 
     // Basic stuff for the Applet
     Map currentMap;
@@ -357,7 +357,8 @@ public class MapEditor implements ActionListener,
         m.add(new TMenuItem(zoomNormalAction));
         m.addSeparator();
         m.add(gridMenuItem);
-        m.add(boundaryMenuItem);
+        // TODO: Enable when boudary drawing code finished.
+        //m.add(boundaryMenuItem);
         mapEventAdapter.addListener(m);
         menuBar.add(m);
 
@@ -1278,7 +1279,7 @@ public class MapEditor implements ActionListener,
                 ch = new JFileChooser(filename);
             }
 
-			ch.setFileFilter(new TiledFileFilter());
+            ch.setFileFilter(new TiledFileFilter(TiledFileFilter.FILTER_TMX));
 
             if (ch.showSaveDialog(appFrame) == JFileChooser.APPROVE_OPTION) {
                 filename = ch.getSelectedFile().getAbsolutePath();
