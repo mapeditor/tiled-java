@@ -41,14 +41,7 @@ public class TileDialog extends JDialog
         super(parent, "Edit Tileset '" + s.getName() + "'", true);
         init();
         setTileSet(s);
-        if (currentTileSet.getSource() != null) {
-            bDelete.setEnabled(false);
-            bChangeI.setEnabled(false);
-            bDuplicate.setEnabled(false);
-            bNew.setEnabled(false);
-        }
-        currentTile = s.getFirstTile();
-        updateTileInfo();
+        setCurrentTile(null);
         pack();
         setLocationRelativeTo(getOwner());
     }
@@ -170,7 +163,7 @@ public class TileDialog extends JDialog
 
                 try {
                     image = ImageIO.read(files[i]);
-                    //n.setImage(Toolkit.getDefaultToolkit().createImage(new FilteredImageSource(image.getSource(),new TransImageFilter(cm.getRGB(64305)))));
+                    // TODO: Support for a transparent color
                 } catch (Exception e) {
                     JOptionPane.showMessageDialog(this, e.getMessage(),
                             "Error!", JOptionPane.ERROR_MESSAGE);
@@ -223,6 +216,28 @@ public class TileDialog extends JDialog
         tileList.repaint();
     }
 
+    private void setCurrentTile(Tile tile) {
+        // Update the old current tile's properties
+        if (currentTile != null) {
+            PropertiesTableModel model =
+                (PropertiesTableModel)tileProperties.getModel();
+            currentTile.setProperties(model.getProperties());
+        }
+
+        currentTile = tile;
+        updateTileInfo();
+
+        boolean internal = (currentTileSet.getSource() == null);
+        boolean tilebmp = (currentTileSet.getTilebmpFile() != null);
+        boolean tileSelected = (currentTile != null);
+
+        bNew.setEnabled(internal && !tilebmp);
+        bDelete.setEnabled(internal && !tilebmp && tileSelected);
+        bChangeI.setEnabled(internal && !tilebmp && tileSelected);
+        bDuplicate.setEnabled(internal && !tilebmp && tileSelected);
+        tileProperties.setEnabled(!tilebmp && tileSelected);
+    }
+
     public void updateTileInfo() {
         if (currentTile == null) {
             return;
@@ -268,12 +283,6 @@ public class TileDialog extends JDialog
     }
 
     public void valueChanged(ListSelectionEvent e) {
-        // Update the old current tile's properties
-        if (currentTile != null) {
-            currentTile.setProperties(((PropertiesTableModel)tileProperties.getModel()).getProperties());
-        }
-
-        currentTile = (Tile)tileList.getSelectedValue();
-        updateTileInfo();
+        setCurrentTile((Tile)tileList.getSelectedValue());
     }
 }

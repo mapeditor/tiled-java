@@ -311,7 +311,7 @@ public class MapEditor implements ActionListener,
 
         mapEventAdapter.addListener(layerAdd);
 
-        m = new JMenu("Layers");
+        m = new JMenu("Layer");
         m.add(layerAdd);
         m.add(layerClone);
         m.add(layerDel);
@@ -1029,7 +1029,7 @@ public class MapEditor implements ActionListener,
             updateHistory();
             mapView.repaint();
         } else if(command.equals("Resize")) {
-            ResizeDialog rd = new ResizeDialog(this);
+            ResizeDialog rd = new ResizeDialog(appFrame, this);
             rd.showDialog();
         } else if (command.equals("About")) {
             if (aboutDialog == null) {

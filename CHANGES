@@ -1,15 +1,18 @@
 0.4.0 - Pending
 
-* TiledConfiguration defaults to preset values initially
+* TiledConfiguration defaults to preset values initially, Tiled should now
+  work fine if there is no initial configuration file
 * Layer rotation and flipping
-* Generic properties method of setting values on tiles and the map
+* Map resizing
+* Custom properties on tiles and map
 * A file filter on loading and saving for .tmx and .tsx
-* Improved UI
-* Fixed a bug in TiledConfiguration when there was no previous .conf file
-* Map resizing dialog
-* Updated DTD
+* Several UI improvements (usage of JSplitPane)
+* Small changes to the map format (updated DTD)
 * Better architecture for Tile palette
-* Implemented a better underlying architecture for Maps and Brushes.
+* Implemented a better underlying architecture for Maps and Brushes
+* Fixed several null pointer exceptions
+* An Ant build target for tiled-core.jar, for use in Java engines
+
 
 0.3.1 - June 17th, 2004
 

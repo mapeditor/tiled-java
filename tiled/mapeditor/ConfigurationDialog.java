@@ -29,6 +29,12 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
     private JTextField tUndoDepth;
     private JCheckBox cbBinaryEncode, cbCompressLayerData, cbEmbedImages;
 
+    public ConfigurationDialog(JFrame parent) {
+        super(parent, "Preferences", true);
+        init();
+        setLocationRelativeTo(parent);
+    }
+
     private void init() {
         // Create primitives
 
@@ -134,13 +140,6 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
         getContentPane().add(mainPanel);
         getRootPane().setDefaultButton(bOk);
         pack();
-    }
-
-    public ConfigurationDialog(JFrame parent) {
-        super(parent, "Preferences");
-        init();
-        setLocationRelativeTo(parent);
-        setModal(true);
     }
 
     public void configure() {
