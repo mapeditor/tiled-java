@@ -23,15 +23,19 @@ public interface MapWriter  extends PluggableMapIO, FileFilter
 {
     /**
      * Saves a map to a file.
-     *
+     * 
+     * @param map
      * @param filename the filename of the map file
+     * @throws Exception
      */
     public void writeMap(Map map, String filename) throws Exception;
 
     /**
      * Saves a tileset to a file.
-     *
+     * 
+     * @param set
      * @param filename the filename of the tileset file
+     * @throws Exception
      */
     public void writeTileset(TileSet set, String filename) throws Exception;
     

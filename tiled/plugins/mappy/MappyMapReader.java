@@ -266,7 +266,12 @@ public class MappyMapReader implements MapReader
     }
 
     /**
-     * BGFX blocks are synonymous with Tiles
+     * BGFX blocks are synonymous with {@link tiled.core.Tile}s
+     * 
+     * @param m The Map to add Tiles to
+     * @param in
+     * @param num Number of Tiles to read
+     * @throws IOException
      */
     private void readBGFXChunk(Map m, InputStream in, int num) throws IOException {
         TileSet set = (TileSet)m.getTilesets().get(0);

@@ -47,6 +47,11 @@ public interface PluggableMapIO
      */
     public String getDescription();
     
+    /**
+     * Returns the base Java package string for the plugin
+     * 
+     * @return String the base package of the plugin
+     */
     public String getPluginPackage();
     
     /**

@@ -913,10 +913,20 @@ public class MapEditor implements ActionListener,
                         int minx = Math.min(limp.x, tile.x);
                         int miny = Math.min(limp.y, tile.y);
 
-                        marqueeSelection.selectRegion(new Rectangle(minx, miny,
-                                Math.max(limp.x, tile.x) - minx,
-                                Math.max(limp.y, tile.y) - miny));
+                        if(event.isShiftDown()) {
+                            marqueeSelection.add(new Area(new Rectangle(minx, miny,
+                                    (Math.max(limp.x, tile.x) - minx)+1,
+                                    (Math.max(limp.y, tile.y) - miny)+1)));
+                        } else if(event.isControlDown()) {
+                            marqueeSelection.subtract(new Area(new Rectangle(minx, miny,
+                                    (Math.max(limp.x, tile.x) - minx)+1,
+                                    (Math.max(limp.y, tile.y) - miny)+1)));
+                        } else {
+                            marqueeSelection.selectRegion(new Rectangle(minx, miny,
+                                    (Math.max(limp.x, tile.x) - minx)+1,
+                                    (Math.max(limp.y, tile.y) - miny)+1));
 
+                        }
                         if (oldArea != null) {
                             oldArea.add(
                                     marqueeSelection.getSelectedAreaBounds());
@@ -958,13 +968,12 @@ public class MapEditor implements ActionListener,
         }
 
         if (currentPointerState == PS_MARQUEE) {
-            // Special logic for selection
-            if (marqueeSelection != null) {
-                currentMap.removeLayerSpecial(marqueeSelection);
+            
+            if (marqueeSelection == null) {
+		        marqueeSelection = new SelectionLayer(
+		                currentMap.getWidth(), currentMap.getHeight());
+		        currentMap.addLayerSpecial(marqueeSelection);
             }
-            marqueeSelection = new SelectionLayer(
-                    currentMap.getWidth(), currentMap.getHeight());
-            currentMap.addLayerSpecial(marqueeSelection);
         } else if (currentPointerState == PS_MOVE) {
             // Initialize move distance to (0, 0)
             moveDist = new Point(0, 0);
@@ -2043,6 +2052,15 @@ public class MapEditor implements ActionListener,
     }
 
     private void setCurrentPointerState(int state) {
+        
+        /*if(currentPointerState == PS_MARQUEE && state != PS_MARQUEE) {
+            // Special logic for selection
+            if (marqueeSelection != null) {
+                currentMap.removeLayerSpecial(marqueeSelection);
+                marqueeSelection = null;
+            }
+        }*/
+        
         currentPointerState = state;
 
         // Select the matching button

@@ -54,6 +54,8 @@ public class SelectionLayer extends TileLayer
 
     /**
      * Returns the selected area.
+     * 
+     * @return
      */
     public Area getSelectedArea() {
         return selection;
@@ -61,16 +63,30 @@ public class SelectionLayer extends TileLayer
 
     /**
      * Returns the bounds of the selected area.
+     * 
+     * @return A Rectangle instance
+     * @see Area#getBounds()
      */
     public Rectangle getSelectedAreaBounds() {
         return selection.getBounds();
     }
 
     /**
+     * Adds the given area via a union
+     * 
+     * @param area The Area to union with the current selection
+     * @see Area#add(java.awt.geom.Area)
+     */
+    public void add(Area area) {
+        selection.add(area);
+        fillRegion(selection, selTile);
+    }
+    
+    /**
      * Deselects the given area. This substracts the given area from the
      * existing selected area.
      *
-     * @param area the area to deselect
+     * @param area the Area to deselect
      */
     public void subtract(Area area) {
         clearRegion(area);
@@ -105,6 +121,8 @@ public class SelectionLayer extends TileLayer
 
     /**
      * Returns the highlight color.
+     * 
+     * @return A Color instance of the highlight color
      */
     public Color getHighlightColor() {
         return highlightColor;
@@ -116,6 +134,8 @@ public class SelectionLayer extends TileLayer
             for (int j = bounded.x; j < bounded.x + bounded.width; j++) {
                 if (region.contains(j, i)) {
                     setTileAt(j, i, fill);
+                } else {
+                    setTileAt(j, i, null);
                 }
             }
         }

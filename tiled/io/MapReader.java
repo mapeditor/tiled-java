@@ -19,13 +19,19 @@ import tiled.core.Map;
 import tiled.core.TileSet;
 
 
+/**
+ * Used by Tiled to denote a plugin for reading maps. The map file
+ * can have any format, as long as the MapReader implementor returns
+ * instances of tiled.core.Map and tiled.core.TileSet.
+ */
 public interface MapReader extends PluggableMapIO, FileFilter
 {
     /**
-     * Loads a map from a file.
+     * Loads a map from a file. 
      *
      * @param filename the filename of the map file
-     * @return a tiled.core.Map object with the relevant data
+     * @return A {@link tiled.core.Map} instance with the relevant data
+     * @throws Exception
      */
     public Map readMap(String filename) throws Exception;
 
@@ -33,19 +39,27 @@ public interface MapReader extends PluggableMapIO, FileFilter
      * Loads a tileset from a file.
      *
      * @param filename the filename of the tileset file
-     * @return a tiled.core.Map object with the relevant data
+     * @return A {@link tiled.core.TileSet} instance with the relevant data
+     * @throws Exception
      */
     public TileSet readTileset(String filename) throws Exception;
     
     /**
-     * Loads a map from an already opened stream. Useful
+     * Overload this to load a map from an already opened stream. Useful
      * for maps which are part of a larger binary dataset
      * 
      * @param in
-     * @return a tiled.core.Map object with the relevant data
+     * @return A {@link tiled.core.Map} object with the relevant data
      * @throws Exception
      */
     public Map readMap(InputStream in) throws Exception;
     
+    /**
+     * Overload this to load a tileset from an open stream.
+     * 
+     * @param in
+     * @return A (@link tiled.core.TileSet} instance
+     * @throws Exception
+     */
     public TileSet readTileset(InputStream in) throws Exception;
 }

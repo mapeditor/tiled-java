@@ -713,6 +713,9 @@ public class XMLMapTransformer implements MapReader
         return "Tiled internal TMX reader/writer";
     }
     
+    /**
+     * @see tiled.io.PluggableMapIO#getDescription()
+     */
     public String getDescription() {
         return "This is the core Tiled TMX format reader\n" +
             "\n" +

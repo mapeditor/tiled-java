@@ -26,7 +26,8 @@ public class ImageHelper
 {
     /**
      * Converts an image to a PNG stored in a byte array.
-     *
+     * 
+     * @param image
      * @return a byte array with the PNG data
      */
     static public byte[] imageToPNG(Image image) {
@@ -48,9 +49,12 @@ public class ImageHelper
     }
 
     /**
-     * Converts a byte array into an image.
-     *
-     * @return the image
+     * Converts a byte array into an image. The byte array must include the image
+     * header, so that a decision about format can be made.
+     * 
+     * @param imageData The byte array of the data to convert.
+     * @return Image The image instance created from the byte array
+     * @see java.awt.Toolkit.createImage(byte[] imagedata)
      */
     static public Image bytesToImage(byte[] imageData) {
         return Toolkit.getDefaultToolkit().createImage(imageData);

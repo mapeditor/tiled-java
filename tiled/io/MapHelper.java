@@ -25,10 +25,20 @@ import tiled.io.xml.XMLMapWriter;
 import tiled.mapeditor.plugin.PluginClassLoader;
 import tiled.util.TiledConfiguration;
 
+/**
+ * A handler for saving and loading maps.
+ * 
+ */
 public class MapHelper {
     
     private static PluginClassLoader pluginLoader;
     
+    /**
+     * Called to tell the MapHelper which {@link tiled.mapeditor.plugin.PluginClassLoader}
+     * to use when finding a suitable plugin for a filename
+     * 
+     * @param p The PluginClassLoader instance to use
+     */
     public static void init(PluginClassLoader p) {
         pluginLoader = p;
     }
@@ -39,6 +49,7 @@ public class MapHelper {
      * is not supported by either the TMX writer or a plugin.
      *
      * @param filename Filename to save the current map to.
+     * @param currentMap The {@link tiled.core.Map} instance to save to the file
      * @see MapWriter#writeMap(Map, String)
      * @exception Exception
      */
@@ -70,7 +81,8 @@ public class MapHelper {
      * extension is not supported by either the TMX writer or a plugin.
      *
      * @param filename Filename to save the tileset to.
-     * @see MapWriter#writeTileset(Map, String)
+     * @param set The TileSet instance to save to the file
+     * @see MapWriter#writeTileset(TileSet, String)
      * @exception Exception
      */
 
@@ -104,6 +116,7 @@ public class MapHelper {
      *
      * @param file filename of map to load
      * @return A new Map instance, loaded from the specified file by a plugin
+     * @throws Exception
      * @see MapReader#readMap(String)
      */
     public static Map loadMap(String file) throws Exception {
@@ -153,8 +166,8 @@ public class MapHelper {
      * extension is not supported by either the TMX writer or a plugin.
      *
      * @param file filename of map to load
-     * @return A new TileSet instance, loaded from the specified file by a
-     *    plugin
+     * @return A new TileSet instance, loaded from the specified file by a plugin
+     * @throws Exception
      * @see MapReader#readTileset(String)
      */
     public static TileSet loadTileset(String file) throws Exception {

@@ -244,7 +244,9 @@ public class TileLayer extends MapLayer
 
     /**
      * Returns the tile at the specified position.
-     *
+     * 
+     * @param tx Tile-space x coordinate
+     * @param ty Tile-space y coordinate
      * @return tile at position (tx, ty) or <code>null</code> when (tx, ty) is
      *         outside this layer
      */
@@ -260,7 +262,8 @@ public class TileLayer extends MapLayer
      * Returns the first occurance (using top down, left to right search) of
      * the given tile.
      *
-     * @param t the tile to look for`
+     * @param t the {@link tiled.core.Tile} to look for
+     * @return A java.awt.Point instance of the first instance of t, or <code>null</code> if it is not found
      */
     public Point locationOf(Tile t) {
         for (int y = bounds.y; y < bounds.height + bounds.y; y++) {
