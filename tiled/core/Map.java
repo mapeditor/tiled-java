@@ -18,7 +18,7 @@ import javax.swing.event.EventListenerList;
 import tiled.mapeditor.util.*;
 
 
-public class Map extends TiledEntity implements Cloneable
+public class Map extends MultilayerPlane implements Cloneable
 {
     public static final int MDO_ORTHO   = 1;
     public static final int MDO_ISO     = 2;
@@ -27,9 +27,8 @@ public class Map extends TiledEntity implements Cloneable
 
     private Vector tilesets;
     private LinkedList objects;
-    private Vector layers;
     int major_rev, minor_rev, id;
-    int widthInTiles = 0, heightInTiles = 0;
+    
     int defaultTileWidth, defaultTileHeight;
     int totalObjects = 0;
     int lit = 1;
@@ -44,14 +43,12 @@ public class Map extends TiledEntity implements Cloneable
      * @param height The map height in tiles.
      */
     public Map(int width, int height) {
-        init();
-        widthInTiles = width;
-        heightInTiles = height;
+		super(width, height);
+        init();        
     }
 
     private void init() {
         mapChangeListeners = new EventListenerList();
-        layers = new Vector();
         properties = new Properties();
         tilesets = new Vector();
     }
@@ -89,33 +86,19 @@ public class Map extends TiledEntity implements Cloneable
         }
     }
 
-    /**
-     * Adds a layer to the map.
-     */
-    public MapLayer addLayer(MapLayer l) {
-        layers.add(l);
-        l.setMap(this);
-        fireMapChanged();
-        return l;
-    }
-
-	public void addLayerAfter(MapLayer l) {
-		//TODO: Implement Map#addLayerAfter
-	}
-
-	public void addAllLayers(Collection c) {
-		layers.addAll(c);
+	public MapLayer addLayer(MapLayer l) {		
+		l.setMap(this);
+		super.addLayer(l);
 		fireMapChanged();
+		return l;
 	}
 
-    /**
-     * Adds a new layer to the map.
-     */
-    public MapLayer addLayer() {
-        MapLayer layer = new MapLayer(this, widthInTiles, heightInTiles);
-        layer.setId(layers.size());
-        return addLayer(layer);
-    }
+	public MapLayer addLayer() {
+		MapLayer layer = new MapLayer(this, widthInTiles, heightInTiles);		
+		super.addLayer(layer);
+		fireMapChanged();
+		return layer;
+	}
 
     /**
      * Adds a Tileset to this Map. If the set is already attached to this map,
@@ -188,54 +171,44 @@ public class Map extends TiledEntity implements Cloneable
 	}
 
     /**
-     * Removes the map layer at the specified index. Layers above this layer
-     * will move down to fill the gap.
-     *
-     * @param index Index of layer to be removed.
+     * @see MultilayerPlane#removeLayer
      */
     public MapLayer removeLayer(int index) {
-        MapLayer layer = (MapLayer)layers.remove(index);
+        MapLayer layer = super.removeLayer(index);
         fireMapChanged();
         return layer;
     }
 
+	/**
+	 * @see MultilayerPlane#removeAllLayers
+	 */
     public void removeAllLayers() {
-	layers.removeAllElements();
-	fireMapChanged();
+		super.removeAllLayers();
+		fireMapChanged();
     }
 
+
+	/**
+	 * @see MultilayerPlane#swapLayerUp
+	 */
     public void swapLayerUp(int index) throws Exception {
-        if (index + 1 == layers.size()) {
-            throw new Exception(
-                    "Can't swap up when already at the top.");
-        }
-
-        MapLayer hold = (MapLayer)layers.get(index + 1);
-        layers.set(index + 1, getLayer(index));
-        layers.set(index, hold);
+        super.swapLayerUp(index);
         fireMapChanged();
     }
 
+	/**
+	 * @see MultilayerPlane#swapLayerDown
+	 */
     public void swapLayerDown(int index) throws Exception {
-        if (index - 1 < 0) {
-            throw new Exception(
-                    "Can't swap down when already at the bottom.");
-        }
-
-        MapLayer hold = (MapLayer)layers.get(index - 1);
-        layers.set(index - 1, getLayer(index));
-        layers.set(index, hold);
+        super.swapLayerDown(index);
         fireMapChanged();
     }
 
+	/**
+	 * @see MultilayerPlane#mergeLayerDown
+	 */
     public void mergeLayerDown(int index) throws Exception {
-        if (index - 1 < 0) {
-            throw new Exception(
-                    "Can't merge down bottom layer.");
-        }
-
-        getLayer(index).mergeOnto(getLayer(index - 1));
-        removeLayer(index);
+        super.mergeLayerDown(index);
         fireMapChanged();
     }
 
@@ -256,22 +229,17 @@ public class Map extends TiledEntity implements Cloneable
     }
 
     public void setTotalLayers(int nr) {
-        while (layers.size() < nr) {
+        while (getTotalLayers() < nr) {
             addLayer();
         }
     }
 
-    /**
-     * Resizes this map. The (dx, dy) pair determines where the original map
-     * should be positioned on the new area.
-     *
-     * @param width  The new width of the map.
-     * @param height The new height of the map.
-     * @param dx     The shift in x direction in tiles.
-     * @param dy     The shift in y direction in tiles.
-     */
+	/**
+	 * @see MultilayerPlane#resize
+	 */
     public void resize(int width, int height, int dx, int dy) {
-        // TODO: Implement Map#resize
+    	super.resize(width, height, dx, dy);
+    	fireMapChanged();
     }
 
     public void setOrientation(int orientation) {
@@ -317,31 +285,6 @@ public class Map extends TiledEntity implements Cloneable
             }
         }
         return has;
-    }
-
-    public MapLayer getLayerById(int i) {
-        MapLayer temp = null;
-        Iterator li = layers.iterator();
-
-        while (li.hasNext()) {
-            temp = (MapLayer)li.next();
-            if (temp.getId() == i) {
-                break;
-            }
-        }
-        return temp;
-    }
-
-    public MapLayer getLayer(int i) {
-    	try {
-        	return (MapLayer)layers.get(i);
-    	} catch (ArrayIndexOutOfBoundsException e) {
-    	}
-    	return null;
-    }
-
-    public ListIterator getLayers() {
-        return layers.listIterator();
     }
 
     /**
@@ -405,13 +348,6 @@ public class Map extends TiledEntity implements Cloneable
     }
 
     /**
-     * Returns the amount of layers on the map.
-     */
-    public int getTotalLayers() {
-        return layers.size();
-    }
-
-    /**
      * Returns the amount of objects on the map.
      */
     public int getTotalObjects() {
@@ -450,7 +386,7 @@ public class Map extends TiledEntity implements Cloneable
     public String toString() {
         String sout = new String();
         sout += "Current data: map is v"+major_rev+"."+minor_rev+"\n id: "+id;
-        sout += "\ntotal layers: " + layers.size();
+        sout += "\ntotal layers: " + getTotalLayers();
         sout += "\nobjects in map: " + totalObjects;
         sout += "\ntile dimensions: " + defaultTileWidth + "x" +
             defaultTileHeight;

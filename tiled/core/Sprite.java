@@ -16,7 +16,7 @@ import java.awt.*;
 import java.util.Iterator;
 import java.util.Vector;
 
-public class Sprite extends TiledEntity{
+public class Sprite {
 
     private Vector keys;
     KeyFrame currentKey=null;

@@ -15,7 +15,7 @@ package tiled.core;
 import java.awt.Rectangle;
 import java.util.HashMap;
 
-public class MapObject extends TiledEntity{
+public class MapObject {
 
     protected Sprite sprite;
     protected HashMap attributeList;

@@ -10,25 +10,14 @@
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
 
-package tiled.core;
+package tiled.mapeditor.brush;
 
-import java.util.*;
+import tiled.core.MultilayerPlane;
 
-public abstract class TiledEntity
-{
-    protected String catalogName = null;
+public class CustomBrush extends MultilayerPlane {
 
-    public String getCatalogName() {
-        return catalogName;
-    }
+	public CustomBrush() {
+		super();
+	}
 
-    public void setCatalogName(String name) {
-        catalogName = name;
-    }
-
-    public Iterator getAttributes() {
-        return null;
-    }
-
-    public abstract String toString();
 }
