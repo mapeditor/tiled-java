@@ -22,6 +22,7 @@ import java.util.Vector;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.*;
+import javax.swing.undo.UndoableEditSupport;
 
 import tiled.core.*;
 import tiled.view.*;
@@ -64,6 +65,7 @@ public class MapEditor implements ActionListener,
     Map currentMap;
     MapView mapView;
     UndoStack undoStack;
+    UndoableEditSupport undoSupport;
     private MapEventAdapter mapEventAdapter;
 
     int currentPointerState;
@@ -72,15 +74,14 @@ public class MapEditor implements ActionListener,
     boolean bMouseIsDown = false;
     Point mousePressLocation;
     int mouseButton;
-	Brush currentBrush;
-	
+    Brush currentBrush;
+
     // GUI components
     JPanel      mainPanel;
     JPanel      toolPanel;
     JPanel      dataPanel;
     JPanel      statusBar;
     JMenuBar    menuBar;
-    JMenuItem   zoomOut, zoomIn, zoomNormal;
     JMenuItem   undoMenuItem, redoMenuItem;
     JCheckBoxMenuItem gridMenuItem, boundaryMenuItem;
     JMenuItem   layerAdd, layerClone, layerDel;
@@ -91,7 +92,7 @@ public class MapEditor implements ActionListener,
     JScrollPane mapScrollPane;
     JTable      layerTable;
     JList		editHistoryList;
-	
+
     TileButton  tilePaletteButton;
     JFrame      appFrame;
     JSlider     opacitySlider;
@@ -101,12 +102,15 @@ public class MapEditor implements ActionListener,
     AbstractButton layerUpButton, layerDownButton;
     AbstractButton paintButton, eraseButton, pourButton;
     AbstractButton eyedButton, marqueeButton, moveButton;
-    AbstractButton zoomInButton, zoomOutButton;
 
     TilePalettePanel tilePalettePanel;
     TilePaletteDialog tilePaletteDialog;
     AboutDialog aboutDialog;
     MapLayerEdit paintEdit;
+
+    // Actions
+    Action zoomInAction, zoomOutAction, zoomNormalAction;
+    Action undoAction, redoAction;
 
 
     public MapEditor() {
@@ -127,16 +131,25 @@ public class MapEditor implements ActionListener,
         curDefault = new Cursor(Cursor.DEFAULT_CURSOR);
 
         undoStack = new UndoStack();
+        undoSupport = new UndoableEditSupport();
+        undoSupport.addUndoableEditListener(new UndoAdapter());
+
         mapEventAdapter = new MapEventAdapter();
         currentBrush = new ShapeBrush();
         ((ShapeBrush)currentBrush).makeQuadBrush(new Rectangle(0, 0, 1, 1));
+
+        // Create the actions
+        zoomInAction = new ZoomInAction();
+        zoomOutAction = new ZoomOutAction();
+        zoomNormalAction = new ZoomNormalAction();
+        undoAction = new UndoAction();
+        redoAction = new RedoAction();
 
         // Create our frame
         appFrame = new JFrame("Tiled");
         appFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         appFrame.setContentPane(createContentPane());
         createMenuBar();
-        updateMenus();
         appFrame.setJMenuBar(menuBar);
         appFrame.setSize(600, 400);
 
@@ -197,24 +210,13 @@ public class MapEditor implements ActionListener,
 	 *
 	 */
     private void createMenuBar() {
-        ImageIcon iconRot90 = null, iconRot180 = null, iconRot270 = null;
-        ImageIcon iconFlipHor = null, iconFlipVer = null;
         JMenu m;
 
-        try {
-            iconRot90 = new ImageIcon(loadImageResource(
-                        "resources/gimp-rotate-90-16.png"));
-            iconRot180 = new ImageIcon(loadImageResource(
-                        "resources/gimp-rotate-180-16.png"));
-            iconRot270 = new ImageIcon(loadImageResource(
-                        "resources/gimp-rotate-270-16.png"));
-            iconFlipHor = new ImageIcon(loadImageResource(
-                        "resources/gimp-flip-horizontal-16.png"));
-            iconFlipVer = new ImageIcon(loadImageResource(
-                        "resources/gimp-flip-vertical-16.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Icon iconRot90 = loadIcon("resources/gimp-rotate-90-16.png");
+        Icon iconRot180 = loadIcon("resources/gimp-rotate-180-16.png");
+        Icon iconRot270 = loadIcon("resources/gimp-rotate-270-16.png");
+        Icon iconFlipHor = loadIcon("resources/gimp-flip-horizontal-16.png");
+        Icon iconFlipVer = loadIcon("resources/gimp-flip-vertical-16.png");
 
         menuBar = new JMenuBar();
 
@@ -242,17 +244,15 @@ public class MapEditor implements ActionListener,
         // TODO: Re-add print menuitem when printing is functional
         //m.addSeparator();
         //m.add(print);
-		//mapEventAdapter.addListener(print);
+        //mapEventAdapter.addListener(print);
         m.addSeparator();
         m.add(close);
         m.add(createMenuItem("Exit", null, "Exit the map editor", "control Q"));
         menuBar.add(m);
 
-        undoMenuItem = createMenuItem("Undo", null, "Undo one action",
-                "control Z");
+        undoMenuItem = new TMenuItem(undoAction);
+        redoMenuItem = new TMenuItem(redoAction);
         undoMenuItem.setEnabled(false);
-        redoMenuItem = createMenuItem("Redo", null, "Redo one action",
-                "control Y");
         redoMenuItem.setEnabled(false);
 
         mRot90 = createMenuItem("Rotate 90 degrees CW",
@@ -355,27 +355,22 @@ public class MapEditor implements ActionListener,
         menuBar.add(m);
         */
 
-        zoomIn = createMenuItem("Zoom In", null, "Zoom in one level",
-                "control EQUALS");
-        zoomOut = createMenuItem("Zoom Out", null, "Zoom out one level",
-                "control MINUS");
-        zoomNormal = createMenuItem("Zoom Normalsize", null, "Zoom 100%",
-                "control 1");
+
         gridMenuItem = new JCheckBoxMenuItem("Show Grid");
         gridMenuItem.addActionListener(this);
         gridMenuItem.setToolTipText("Toggle grid");
         gridMenuItem.setAccelerator(KeyStroke.getKeyStroke("control G"));
-	boundaryMenuItem = new JCheckBoxMenuItem("Show Boundaries");
-	boundaryMenuItem.addActionListener(this);
-	boundaryMenuItem.setToolTipText("Toggle layer boundaries");
-	boundaryMenuItem.setAccelerator(KeyStroke.getKeyStroke("control E"));
+        boundaryMenuItem = new JCheckBoxMenuItem("Show Boundaries");
+        boundaryMenuItem.addActionListener(this);
+        boundaryMenuItem.setToolTipText("Toggle layer boundaries");
+        boundaryMenuItem.setAccelerator(KeyStroke.getKeyStroke("control E"));
         m = new JMenu("View");
-        m.add(zoomIn);
-        m.add(zoomOut);
-        m.add(zoomNormal);
+        m.add(new TMenuItem(zoomInAction));
+        m.add(new TMenuItem(zoomOutAction));
+        m.add(new TMenuItem(zoomNormalAction));
         m.addSeparator();
         m.add(gridMenuItem);
-		m.add(boundaryMenuItem);
+        m.add(boundaryMenuItem);
         mapEventAdapter.addListener(m);
         menuBar.add(m);
 
@@ -389,30 +384,12 @@ public class MapEditor implements ActionListener,
      *
      */
     private void createToolbox() {
-        ImageIcon iconPaint = null, iconErase = null, iconPour = null;
-        ImageIcon iconEyed = null, iconMarquee = null, iconMove = null;
-        ImageIcon iconZoomIn = null, iconZoomOut = null;
-
-        try {
-            iconMove = new ImageIcon(loadImageResource(
-                        "resources/gimp-tool-move-22.png"));
-            iconPaint = new ImageIcon(loadImageResource(
-                        "resources/gimp-tool-pencil-22.png"));
-            iconErase = new ImageIcon(loadImageResource(
-                        "resources/gimp-tool-eraser-22.png"));
-            iconPour = new ImageIcon(loadImageResource(
-                        "resources/gimp-tool-bucket-fill-22.png"));
-            iconEyed = new ImageIcon(loadImageResource(
-                        "resources/gimp-tool-color-picker-22.png"));
-            iconMarquee = new ImageIcon(loadImageResource(
-                        "resources/gimp-tool-rect-select-22.png"));
-            iconZoomIn = new ImageIcon(loadImageResource(
-                        "resources/gnome-zoom-in.png"));
-            iconZoomOut = new ImageIcon(loadImageResource(
-                        "resources/gnome-zoom-out.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Icon iconMove = loadIcon("resources/gimp-tool-move-22.png");
+        Icon iconPaint = loadIcon("resources/gimp-tool-pencil-22.png");
+        Icon iconErase = loadIcon("resources/gimp-tool-eraser-22.png");
+        Icon iconPour = loadIcon("resources/gimp-tool-bucket-fill-22.png");
+        Icon iconEyed = loadIcon("resources/gimp-tool-color-picker-22.png");
+        Icon iconMarquee = loadIcon("resources/gimp-tool-rect-select-22.png");
 
         paintButton = createToggleButton(iconPaint, "paint");
         eraseButton = createToggleButton(iconErase, "erase");
@@ -420,8 +397,6 @@ public class MapEditor implements ActionListener,
         eyedButton = createToggleButton(iconEyed, "eyed");
         marqueeButton = createToggleButton(iconMarquee, "marquee");
         moveButton = createToggleButton(iconMove, "move");
-        zoomInButton = createButton(iconZoomIn, "zoom-in");
-        zoomOutButton = createButton(iconZoomOut, "zoom-out");
 
         mapEventAdapter.addListener(moveButton);
         mapEventAdapter.addListener(paintButton);
@@ -429,8 +404,6 @@ public class MapEditor implements ActionListener,
         mapEventAdapter.addListener(pourButton);
         mapEventAdapter.addListener(eyedButton);
         mapEventAdapter.addListener(marqueeButton);
-        mapEventAdapter.addListener(zoomInButton);
-        mapEventAdapter.addListener(zoomOutButton);
 
         JToolBar toolBar = new JToolBar(JToolBar.VERTICAL);
         toolBar.setFloatable(false);
@@ -442,8 +415,8 @@ public class MapEditor implements ActionListener,
         // TODO: Re-add marquee button when it can select stuff
         //toolBar.add(marqueeButton);
         toolBar.add(Box.createRigidArea(new Dimension(0, 5)));
-        toolBar.add(zoomInButton);
-        toolBar.add(zoomOutButton);
+        toolBar.add(new TButton(zoomInAction));
+        toolBar.add(new TButton(zoomOutAction));
 
         tilePaletteButton = new TileButton(new Dimension(24, 24));
         tilePaletteButton.setActionCommand("palette");
@@ -462,25 +435,12 @@ public class MapEditor implements ActionListener,
         JTabbedPane paintPanel = new JTabbedPane();
         dataPanel = new JPanel(new BorderLayout());
 
-        // Create layer panel
-        ImageIcon imgAdd = null, imgDel = null, imgDup = null;
-        ImageIcon imgUp = null, imgDown = null;
-
         // Try to load the icons
-        try {
-            imgAdd = new ImageIcon(
-                    loadImageResource("resources/gnome-new.png"));
-            imgDel = new ImageIcon(
-                    loadImageResource("resources/gnome-delete.png"));
-            imgDup = new ImageIcon(
-                    loadImageResource("resources/gimp-duplicate-16.png"));
-            imgUp = new ImageIcon(
-                    loadImageResource("resources/gnome-up.png"));
-            imgDown = new ImageIcon(
-                    loadImageResource("resources/gnome-down.png"));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Icon imgAdd = loadIcon("resources/gnome-new.png");
+        Icon imgDel = loadIcon("resources/gnome-delete.png");
+        Icon imgDup = loadIcon("resources/gimp-duplicate-16.png");
+        Icon imgUp = loadIcon("resources/gnome-up.png");
+        Icon imgDown = loadIcon("resources/gnome-down.png");
 
         // Layer table
         layerTable = new JTable(new LayerTableModel(currentMap));
@@ -616,7 +576,7 @@ public class MapEditor implements ActionListener,
         opacitySlider.setEnabled(validSelection);
     }
 
-    private JMenuItem createMenuItem(String name, ImageIcon icon, String tt) {
+    private JMenuItem createMenuItem(String name, Icon icon, String tt) {
         JMenuItem menuItem = new JMenuItem(name);
         menuItem.addActionListener(this);
         if (icon != null) {
@@ -628,22 +588,22 @@ public class MapEditor implements ActionListener,
         return menuItem;
     }
 
-    private JMenuItem createMenuItem(String name, ImageIcon icon, String tt,
+    private JMenuItem createMenuItem(String name, Icon icon, String tt,
             String keyStroke) {
         JMenuItem menuItem = createMenuItem(name, icon, tt);
         menuItem.setAccelerator(KeyStroke.getKeyStroke(keyStroke));
         return menuItem;
     }
 
-    private AbstractButton createToggleButton(ImageIcon icon, String command) {
+    private AbstractButton createToggleButton(Icon icon, String command) {
         return createButton(icon, command, true);
     }
 
-    private AbstractButton createButton(ImageIcon icon, String command) {
+    private AbstractButton createButton(Icon icon, String command) {
         return createButton(icon, command, false);
     }
 
-    private AbstractButton createButton(ImageIcon icon, String command,
+    private AbstractButton createButton(Icon icon, String command,
             boolean toggleButton) {
         AbstractButton button;
         if (toggleButton) {
@@ -654,6 +614,12 @@ public class MapEditor implements ActionListener,
         button.setMargin(new Insets(0, 0, 0, 0));
         button.setActionCommand(command);
         button.addActionListener(this);
+        return button;
+    }
+
+    private AbstractButton createButton(Action action) {
+        AbstractButton button = new JButton(action);
+        button.setMargin(new Insets(0, 0, 0, 0));
         return button;
     }
 
@@ -680,6 +646,8 @@ public class MapEditor implements ActionListener,
 
     private void updateHistory() {
         //editHistoryList.setListData(undoStack.getEdits());
+        undoMenuItem.setText(undoStack.getUndoPresentationName());
+        redoMenuItem.setText(undoStack.getRedoPresentationName());
         undoMenuItem.setEnabled(undoStack.canUndo());
         redoMenuItem.setEnabled(undoStack.canRedo());
         updateTitle();
@@ -758,8 +726,7 @@ public class MapEditor implements ActionListener,
 
         try {
             mlse.end(currentMap.getLayers());
-            undoStack.addEdit(mlse);
-            updateHistory();
+            undoSupport.postEdit(mlse);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -790,12 +757,12 @@ public class MapEditor implements ActionListener,
         } else if (mouseButton == MouseEvent.BUTTON1){
             switch (currentPointerState) {
                 case PS_PAINT:
-                    paintEdit.setPresentationName("Paint Tool");
+                    paintEdit.setPresentationName("Paint");
                     currentBrush.commitPaint(currentMap, tile.x, tile.y, currentLayer);
                     mapView.repaintRegion(currentBrush.getCenteredBounds(tile.x,tile.y));
                     break;
                 case PS_ERASE:
-                    paintEdit.setPresentationName("Erase Tool");
+                    paintEdit.setPresentationName("Erase");
                     layer.setTileAt(tile.x, tile.y, currentMap.getNullTile());
                     mapView.repaintRegion(new Rectangle(tile.x, tile.y, 1, 1));
                     break;
@@ -818,7 +785,6 @@ public class MapEditor implements ActionListener,
                     mapView.repaint();
                     break;
             }
-            updateHistory();
         }
     }
 
@@ -841,7 +807,6 @@ public class MapEditor implements ActionListener,
             MapLayer layer = currentMap.getLayer(currentLayer);
             paintEdit =
                 new MapLayerEdit(currentMap, new MapLayer(layer), null);
-            updateHistory();
         }
         doMouse(e);
     }
@@ -858,8 +823,7 @@ public class MapEditor implements ActionListener,
                     endLayer.setOffset(
                             layer.getBounds().x, layer.getBounds().y);
                     paintEdit.end(endLayer);
-                    undoStack.addEdit(paintEdit);
-                    updateHistory();
+                    undoSupport.postEdit(paintEdit);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -909,10 +873,6 @@ public class MapEditor implements ActionListener,
             setCurrentPointerState(PS_MARQUEE);
         } else if (command.equals("move")) {
 			setCurrentPointerState(PS_MOVE);
-        } else if (command.equals("zoom-in")) {
-            zoomIn();
-        } else if (command.equals("zoom-out")) {
-            zoomOut();
         } else if (command.equals("palette")) {
             if (currentMap != null) {
                 if (tilePaletteDialog == null) {
@@ -1009,33 +969,13 @@ public class MapEditor implements ActionListener,
         } else if (command.equals("Properties")) {
             MapPropertiesDialog pd = new MapPropertiesDialog(appFrame, this);
             pd.getProps();
-        } else if (command.equals("Zoom In")) {
-            zoomIn();
-        } else if (command.equals("Zoom Out")) {
-            zoomOut();
-        } else if (command.equals("Zoom Normalsize")) {
-            if (currentMap != null) {
-                zoomIn.setEnabled(true);
-                zoomOut.setEnabled(true);
-                zoomNormal.setEnabled(false);
-                mapView.setZoomLevel(MapView.ZOOM_NORMALSIZE);
-            }
         } else if (command.equals("Show Boundaries") ||
-		command.equals("Hide Boundaries")) {
-		
-	    mapView.toggleMode(MapView.PF_BOUNDARYMODE);
-	} else if (command.equals("Show Grid") ||
-		command.equals("Hide Grid")) {
+                command.equals("Hide Boundaries")) {
+            mapView.toggleMode(MapView.PF_BOUNDARYMODE);
+        } else if (command.equals("Show Grid") ||
+                command.equals("Hide Grid")) {
             // Toggle grid
             mapView.toggleMode(MapView.PF_GRIDMODE);
-        } else if (command.equals("Undo")) {
-            undoStack.undo();
-            updateHistory();
-            mapView.repaint();
-        }  else if (command.equals("Redo")) {
-            undoStack.redo();
-            updateHistory();
-            mapView.repaint();
         } else if(command.equals("Resize")) {
             ResizeDialog rd = new ResizeDialog(appFrame, this);
             rd.showDialog();
@@ -1062,8 +1002,7 @@ public class MapEditor implements ActionListener,
             layer = new MapLayer(currentMap.getLayer(currentLayer));
             paintEdit.end(layer);
             paintEdit.setPresentationName("Flip Horizontal");
-            undoStack.addEdit(paintEdit);
-            updateHistory();
+            undoSupport.postEdit(paintEdit);
             mapView.repaint();
         } else if (src == mFlipVer) {
             MapLayer layer = currentMap.getLayer(currentLayer);
@@ -1071,8 +1010,7 @@ public class MapEditor implements ActionListener,
             paintEdit.setPresentationName("Flip Vertical");
             layer.mirror(MapLayer.MIRROR_VERTICAL);
             paintEdit.end(new MapLayer(layer));
-            undoStack.addEdit(paintEdit);
-            updateHistory();
+            undoSupport.postEdit(paintEdit);
             mapView.repaint();
         } else if (src == mRot90) {
             MapLayer layer = currentMap.getLayer(currentLayer);
@@ -1080,8 +1018,7 @@ public class MapEditor implements ActionListener,
             paintEdit.setPresentationName("Rotate 90");
             layer.rotate(MapLayer.ROTATE_90);
             paintEdit.end(new MapLayer(layer));
-            undoStack.addEdit(paintEdit);
-            updateHistory();
+            undoSupport.postEdit(paintEdit);
             mapView.repaint();
         } else if (src == mRot180) {
             MapLayer layer = currentMap.getLayer(currentLayer);
@@ -1089,8 +1026,7 @@ public class MapEditor implements ActionListener,
             paintEdit.setPresentationName("Rotate 180");
             layer.rotate(MapLayer.ROTATE_180);
             paintEdit.end(new MapLayer(layer));
-            undoStack.addEdit(paintEdit);
-            updateHistory();
+            undoSupport.postEdit(paintEdit);
             mapView.repaint();
         } else if (src == mRot270) {
             MapLayer layer = currentMap.getLayer(currentLayer);
@@ -1098,8 +1034,7 @@ public class MapEditor implements ActionListener,
             paintEdit.setPresentationName("Rotate 270");
             layer.rotate(MapLayer.ROTATE_270);
             paintEdit.end(new MapLayer(layer));
-            undoStack.addEdit(paintEdit);
-            updateHistory();
+            undoSupport.postEdit(paintEdit);
             mapView.repaint();
         } else {
             System.out.println(event);
@@ -1155,34 +1090,99 @@ public class MapEditor implements ActionListener,
 
             /*MapLayerStateEdit mlse = new MapLayerStateEdit(currentMap);
             mlse.setPresentationName("Opacity Change");
-            undoStack.addEdit(mlse);
-            updateHistory();*/
+            undoSupport.postEdit(mlse);*/
         }
     }
 
-    private void zoomIn() {
-        if (currentMap != null) {
-            zoomOut.setEnabled(true);
-            zoomOutButton.setEnabled(true);
-            if (!mapView.zoomIn()) {
-                zoomIn.setEnabled(false);
-                zoomInButton.setEnabled(false);
-            }
-            zoomNormal.setEnabled(mapView.getZoomLevel() !=
-                    MapView.ZOOM_NORMALSIZE);
+    private class UndoAction extends AbstractAction {
+        public UndoAction() {
+            super("Undo");
+            putValue(SHORT_DESCRIPTION, "Undo one action");
+            putValue(ACCELERATOR_KEY,
+                    KeyStroke.getKeyStroke("control Z"));
+        }
+        public void actionPerformed(ActionEvent evt) {
+            undoStack.undo();
+            updateHistory();
+            mapView.repaint();
         }
     }
 
-    private void zoomOut() {
-        if (currentMap != null) {
-            zoomIn.setEnabled(true);
-            zoomInButton.setEnabled(true);
-            if (!mapView.zoomOut()) {
-                zoomOut.setEnabled(false);
-                zoomOutButton.setEnabled(false);
+    private class RedoAction extends AbstractAction {
+        public RedoAction() {
+            super("Redo");
+            putValue(SHORT_DESCRIPTION, "Redo one action");
+            putValue(ACCELERATOR_KEY,
+                    KeyStroke.getKeyStroke("control Y"));
+        }
+        public void actionPerformed(ActionEvent evt) {
+            undoStack.redo();
+            updateHistory();
+            mapView.repaint();
+        }
+    }
+
+    private class ZoomInAction extends AbstractAction {
+        public ZoomInAction() {
+            super("Zoom In");
+            putValue(ACCELERATOR_KEY,
+                    KeyStroke.getKeyStroke("control EQUALS"));
+            putValue(SHORT_DESCRIPTION, "Zoom in one level");
+            putValue(SMALL_ICON, loadIcon("resources/gnome-zoom-in.png"));
+        }
+        public void actionPerformed(ActionEvent evt) {
+            if (currentMap != null) {
+                zoomOutAction.setEnabled(true);
+                if (!mapView.zoomIn()) {
+                    setEnabled(false);
+                }
+                zoomNormalAction.setEnabled(mapView.getZoomLevel() !=
+                        MapView.ZOOM_NORMALSIZE);
             }
-            zoomNormal.setEnabled(mapView.getZoomLevel() !=
-                    MapView.ZOOM_NORMALSIZE);
+        }
+    }
+
+    private class ZoomOutAction extends AbstractAction {
+        public ZoomOutAction() {
+            super("Zoom Out");
+            putValue(ACCELERATOR_KEY,
+                    KeyStroke.getKeyStroke("control MINUS"));
+            putValue(SHORT_DESCRIPTION, "Zoom out one level");
+            putValue(SMALL_ICON, loadIcon("resources/gnome-zoom-out.png"));
+        }
+        public void actionPerformed(ActionEvent evt) {
+            if (currentMap != null) {
+                zoomInAction.setEnabled(true);
+                if (!mapView.zoomOut()) {
+                    setEnabled(false);
+                }
+                zoomNormalAction.setEnabled(mapView.getZoomLevel() !=
+                        MapView.ZOOM_NORMALSIZE);
+            }
+        }
+    }
+
+    private class ZoomNormalAction extends AbstractAction {
+        public ZoomNormalAction() {
+            super("Zoom Normalsize");
+            putValue(ACCELERATOR_KEY,
+                    KeyStroke.getKeyStroke("control 1"));
+            putValue(SHORT_DESCRIPTION, "Zoom 100%");
+        }
+        public void actionPerformed(ActionEvent evt) {
+            if (currentMap != null) {
+                zoomInAction.setEnabled(true);
+                zoomOutAction.setEnabled(true);
+                setEnabled(false);
+                mapView.setZoomLevel(MapView.ZOOM_NORMALSIZE);
+            }
+        }
+    }
+
+    private class UndoAdapter implements UndoableEditListener {
+        public void undoableEditHappened(UndoableEditEvent evt) {
+            undoStack.addEdit(evt.getEdit());
+            updateHistory();
         }
     }
 
@@ -1236,17 +1236,8 @@ public class MapEditor implements ActionListener,
         after.setId(layer.getId());
 
         MapLayerEdit mle = new MapLayerEdit(currentMap, before, after);
-        mle.setPresentationName("Fill Tool");
-        undoStack.addEdit(mle);
-        updateHistory();
-    }
-
-    private void updateMenus() {
-        if (currentMap != null) {
-            mapEventAdapter.fireEvent(MapEventAdapter.ME_MAPACTIVE);
-        } else {
-            mapEventAdapter.fireEvent(MapEventAdapter.ME_MAPINACTIVE);
-        }
+        mle.setPresentationName("Fill");
+        undoSupport.postEdit(mle);
     }
 
     private void updateTitle() {
@@ -1343,8 +1334,7 @@ public class MapEditor implements ActionListener,
         }
 
         JFileChooser ch = new JFileChooser(startLocation);
-
-		ch.setFileFilter(new TiledFileFilter(TiledFileFilter.FILTER_TMX));
+        ch.setFileFilter(new TiledFileFilter(TiledFileFilter.FILTER_TMX));
 
         int ret = ch.showOpenDialog(appFrame);
         if (ret == JFileChooser.APPROVE_OPTION) {
@@ -1406,8 +1396,10 @@ public class MapEditor implements ActionListener,
 
     private void setCurrentMap(Map newMap) {
         currentMap = newMap;
+        boolean mapLoaded = (currentMap != null);
 
-        if (currentMap == null) {
+        if (!mapLoaded) {
+            mapEventAdapter.fireEvent(MapEventAdapter.ME_MAPINACTIVE);
             mapView = null;
             mapScrollPane.setViewportView(Box.createRigidArea(
                         new Dimension(0,0)));
@@ -1418,6 +1410,7 @@ public class MapEditor implements ActionListener,
             tilePalettePanel.setTileset(null);
             setCurrentTile(null);
         } else {
+            mapEventAdapter.fireEvent(MapEventAdapter.ME_MAPACTIVE);
             mapView = currentMap.createView();
             mapView.addMouseListener(this);
             mapView.addMouseMotionListener(this);
@@ -1428,11 +1421,6 @@ public class MapEditor implements ActionListener,
             setCurrentPointerState(PS_PAINT);
 
             currentMap.addMapChangeListener(this);
-
-            zoomIn.setEnabled(true);
-            zoomOut.setEnabled(true);
-            zoomNormal.setEnabled(mapView.getZoomLevel() !=
-                    MapView.ZOOM_NORMALSIZE);
 
             gridMenuItem.setState(mapView.getMode(MapView.PF_GRIDMODE));
 
@@ -1456,12 +1444,16 @@ public class MapEditor implements ActionListener,
             zoomLabel.setText("" + (int)(mapView.getZoom() * 100) + "%");
         }
 
+        zoomInAction.setEnabled(mapLoaded);
+        zoomOutAction.setEnabled(mapLoaded);
+        zoomNormalAction.setEnabled(mapLoaded && mapView.getZoomLevel() !=
+                MapView.ZOOM_NORMALSIZE);
+
         if (tilePaletteDialog != null) {
             tilePaletteDialog.setMap(currentMap);
         }
         undoStack.discardAllEdits();
         updateLayerTable();
-        updateMenus();
         updateTitle();
         updateHistory();
     }
@@ -1480,8 +1472,7 @@ public class MapEditor implements ActionListener,
 							endLayer.setOffset(layer.getBounds().x,layer.getBounds().y);
 						}
 						paintEdit.end(endLayer);
-						undoStack.addEdit(paintEdit);
-						updateHistory();
+						undoSupport.postEdit(paintEdit);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -1546,6 +1537,15 @@ public class MapEditor implements ActionListener,
 
     private BufferedImage loadImageResource(String fname) throws IOException {
         return ImageIO.read(getClass().getResourceAsStream(fname));
+    }
+
+    private ImageIcon loadIcon(String fname) {
+        try {
+            return new ImageIcon(loadImageResource(fname));
+        } catch (IOException e) {
+            System.out.println("Failed to load icon: " + fname);
+            return null;
+        }
     }
 
     /**

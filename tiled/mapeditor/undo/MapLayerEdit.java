@@ -15,10 +15,11 @@ package tiled.mapeditor.undo;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoableEdit;
+import javax.swing.undo.AbstractUndoableEdit;
 
 import tiled.core.*;
 
-public class MapLayerEdit implements UndoableEdit
+public class MapLayerEdit extends AbstractUndoableEdit
 {
     protected Map myMap;
     MapLayer layerUndo = null, layerRedo = null;
@@ -106,29 +107,11 @@ public class MapLayerEdit implements UndoableEdit
         return false;
     }
 
-    public boolean replaceEdit(UndoableEdit anEdit) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    public boolean isSignificant() {
-        // TODO: perhaps a bSignificant var?
-        return true;
-    }
-
     public void setPresentationName(String s) {
         name = s;
     }
 
     public String getPresentationName() {
         return name;
-    }
-
-    public String getUndoPresentationName() {
-        return getPresentationName();
-    }
-
-    public String getRedoPresentationName() {
-        return getPresentationName();
     }
 }

@@ -16,10 +16,10 @@ import java.awt.Component;
 import java.util.*;
 
 
-public class MapEventAdapter {
-
-    public static final int  ME_MAPACTIVE = 1;
-    public static final int  ME_MAPINACTIVE = 2;
+public class MapEventAdapter
+{
+    public static final int ME_MAPACTIVE   = 1;
+    public static final int ME_MAPINACTIVE = 2;
 
     private LinkedList listeners = null;
 
@@ -30,7 +30,7 @@ public class MapEventAdapter {
     /**
      * Adds a Component to the list of listeners of map events. Checks that
      * the component is not already in the list.
-     * @since 0.2.26
+     * 
      * @param obj the listener to add
      */
     public void addListener(Component obj) {
@@ -39,14 +39,14 @@ public class MapEventAdapter {
          * LinkedList.remove() only removes the first instance of a given
          * object.
          */
-        if (listeners.indexOf(obj)==-1) {		
+        if (listeners.indexOf(obj) == -1) {
             listeners.add(obj);
         }
     }
 
     /**
      * Removes a component from the list of listeners.
-     * @since 0.2.26
+     * 
      * @param obj	the Component to remove
      */
     public void removeListener(Component obj) {
@@ -55,8 +55,8 @@ public class MapEventAdapter {
 
     /**
      * Fires an event to notify all listeners.
+     * 
      * @param type 	the event type
-     * @since 0.2.26
      */
     public void fireEvent(int type) {
         //TODO: the idea is to extend this to allow for a multitude of

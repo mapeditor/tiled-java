@@ -22,14 +22,13 @@ import java.awt.Rectangle;
  */
 public class MapLayer implements Cloneable
 {
-	
-	public static final int MIRROR_HORIZONTAL=1;
-	public static final int MIRROR_VERTICAL=2;
-	
-	public static final int ROTATE_90  = 90;
-	public static final int ROTATE_180 = 180;
-	public static final int ROTATE_270 = 270;
-	
+    public static final int MIRROR_HORIZONTAL = 1;
+    public static final int MIRROR_VERTICAL   = 2;
+
+    public static final int ROTATE_90  = 90;
+    public static final int ROTATE_180 = 180;
+    public static final int ROTATE_270 = 270;
+
     protected int id, heightInTiles, widthInTiles;
     protected Tile map[][];
     private String name;
