@@ -198,23 +198,23 @@ public class TilePalettePanel extends JPanel implements Scrollable,
     }
 
     public void mouseClicked(MouseEvent e) {
-        Tile clickedTile = getTileAtPoint(e.getX(), e.getY());
-        if (clickedTile != null) {
-            fireTileSelectionEvent(clickedTile);
-        }
     }
 
     public void mouseEntered(MouseEvent e) {
     }
 
     public void mousePressed(MouseEvent e) {
+        Tile clickedTile = getTileAtPoint(e.getX(), e.getY());
+        if (clickedTile != null) {
+            fireTileSelectionEvent(clickedTile);
+        }
     }
 
     public void mouseReleased(MouseEvent e) {
     }
 
     public void mouseDragged(MouseEvent e) {
-        mouseClicked(e);
+        mousePressed(e);
     }
 
     public void mouseMoved(MouseEvent e) {
