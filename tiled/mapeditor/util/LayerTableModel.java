@@ -69,12 +69,11 @@ public class LayerTableModel extends AbstractTableModel
     }
 
     public Object getValueAt(int row, int col) {
-    	MapLayer layer = null;
-        layer = map.getLayer(getRowCount() - row - 1);
+    	MapLayer layer = map.getLayer(getRowCount() - row - 1);
         
         if (layer != null) {
             if (col == 0) {
-                return new Boolean(layer.getLocked());
+                return new Boolean(layer.getLocked() || !layer.isVisible());
             } else if (col == 1) {
                 return new Boolean(layer.isVisible());
             } else if (col == 2) {
@@ -88,7 +87,9 @@ public class LayerTableModel extends AbstractTableModel
     }
 
     public boolean isCellEditable(int row, int col) {
-        return true;
+    	MapLayer layer = map.getLayer(getRowCount() - row - 1);
+
+        return (!(col == 0 && layer != null && !layer.isVisible()));
     }
 
     public void setValueAt(Object value, int row, int col) {
