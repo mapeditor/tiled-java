@@ -5,7 +5,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
@@ -54,7 +54,7 @@ public class OrthoMapView extends MapView
             return tsize.width;
         }
     }
-    
+
     public Dimension getPreferredSize() {
         Dimension tsize = getTileSize(zoom);
         int border = ((modeFlags & PF_GRIDMODE) != 0) ? 1 : 0;
@@ -67,14 +67,15 @@ public class OrthoMapView extends MapView
     protected void paint(Graphics g, MapLayer layer, double zoom) {
         // Determine tile size and offset
         Dimension tsize = getTileSize(zoom);
+        if (tsize.width <= 0 || tsize.height <= 0) return;
         int toffset = (((modeFlags & PF_GRIDMODE) != 0) ? 1 : 0);
 
         // Determine area to draw from clipping rectangle
         Rectangle clipRect = g.getClipBounds();
-        int startX = clipRect.x / (tsize.width > 0 ? tsize.width : 1);
-        int startY = clipRect.y / (tsize.height > 0 ? tsize.height : 1);
-        int endX = (clipRect.x + clipRect.width) / (tsize.width > 0 ? tsize.width : 1) + 1;
-        int endY = (clipRect.y + clipRect.height) / (tsize.height > 0 ? tsize.height : 1) + 3;
+        int startX = clipRect.x / tsize.width;
+        int startY = clipRect.y / tsize.height;
+        int endX = (clipRect.x + clipRect.width) / tsize.width + 1;
+        int endY = (clipRect.y + clipRect.height) / tsize.height + 3;
         // (endY +2 for high tiles, could be done more properly)
 
         // Draw this map layer
@@ -83,7 +84,7 @@ public class OrthoMapView extends MapView
             for (int x = startX, gx = startX * tsize.width + toffset;
                     x < endX; x++, gx += tsize.width) {
                 Tile t = layer.getTileAt(x, y);
-                
+
                 if (t != null && t != myMap.getNullTile()) {
                     if (SelectionLayer.class.isInstance(layer)) {
                         Polygon gridPoly = createGridPolygon(gx, gy, 1);
@@ -92,14 +93,15 @@ public class OrthoMapView extends MapView
                     } else {
                         t.draw(g, gx, gy, zoom);
                     }
-                }                
+                }
             }
         }
     }
-    
+
     protected void paintGrid(Graphics g, double zoom) {
         // Determine tile size
         Dimension tsize = getTileSize(zoom);
+        if (tsize.width <= 0 || tsize.height <= 0) return;
 
         // Determine lines to draw from clipping rectangle
         Rectangle clipRect = g.getClipBounds();
@@ -121,11 +123,12 @@ public class OrthoMapView extends MapView
     }
 
     protected void paintCoordinates(Graphics g, double zoom) {
+        Dimension tsize = getTileSize(zoom);
+        if (tsize.width <= 0 || tsize.height <= 0) return;
         Graphics2D g2d = (Graphics2D)g;
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         // Determine tile size and offset
-        Dimension tsize = getTileSize(zoom);
         int toffset = (((modeFlags & PF_GRIDMODE) != 0) ? 1 : 0);
         Font font = new Font("SansSerif", Font.PLAIN, tsize.height / 4);
         g2d.setFont(font);
@@ -149,7 +152,7 @@ public class OrthoMapView extends MapView
 
                 int fx = gx + (int)((tsize.width - textSize.getWidth()) / 2);
                 int fy = gy - (int)((tsize.height - textSize.getHeight()) / 2);
-                
+
                 g2d.drawString(coords, fx, fy);
                 gx += tsize.width;
             }
@@ -159,6 +162,7 @@ public class OrthoMapView extends MapView
 
     public void repaintRegion(Rectangle region) {
         Dimension tsize = getTileSize(zoom);
+        if (tsize.width <= 0 || tsize.height <= 0) return;
         int toffset = (((modeFlags & PF_GRIDMODE) != 0) ? 1 : 0);
         int maxExtraHeight =
             (int)((myMap.getTileHeightMax() * zoom + toffset) - tsize.height);
@@ -188,20 +192,20 @@ public class OrthoMapView extends MapView
                 (int)(myMap.getTileHeight() * zoom) + grid);
     }
 
-	protected Polygon createGridPolygon(int tx, int ty, int border) {
-		Dimension tsize = getTileSize(zoom);
-		
-		Polygon poly = new Polygon();
-		poly.addPoint(tx - border, ty - border);
-		poly.addPoint(tx + tsize.width + border, ty - border);		
-		poly.addPoint(tx + tsize.width + border, ty + tsize.height + border);
-		poly.addPoint(tx - border, ty + tsize.height + border);
-		
-		return poly;
-	}
-	
-	public Point tileToScreenCoords(double x, double y) {
-		Dimension tsize = getTileSize(zoom);
-		return new Point((int)x*tsize.width, (int)y*tsize.height);
-	}
+    protected Polygon createGridPolygon(int tx, int ty, int border) {
+        Dimension tsize = getTileSize(zoom);
+
+        Polygon poly = new Polygon();
+        poly.addPoint(tx - border, ty - border);
+        poly.addPoint(tx + tsize.width + border, ty - border);
+        poly.addPoint(tx + tsize.width + border, ty + tsize.height + border);
+        poly.addPoint(tx - border, ty + tsize.height + border);
+
+        return poly;
+    }
+
+    public Point tileToScreenCoords(double x, double y) {
+        Dimension tsize = getTileSize(zoom);
+        return new Point((int)x*tsize.width, (int)y*tsize.height);
+    }
 }
