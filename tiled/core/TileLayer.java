@@ -151,12 +151,26 @@ public class TileLayer extends MapLayer
         return false;
     }
 
+    public void setWidth(int w) {
+    	super.setWidth(w);
+    	resize(w, bounds.height, 0, 0);
+    }
+    
+    /**
+     * Sets the height of the map in tiles
+     */
+    public void setHeight(int h) {
+    	super.setHeight(h);
+    	resize(bounds.width, h, 0, 0);
+    }
+    
     /**
      * Sets the bounds (in tiles) to the specified Rectangle. <b>Caution:</b>
      * this causes a reallocation of the data array, and all previous data is
      * lost.
      *
      * @param bounds
+     * @see MapLayer#setBounds
      */
     public void setBounds(Rectangle bounds) {
         super.setBounds(bounds);
