@@ -23,8 +23,8 @@ import tiled.mapeditor.widget.*;
 import tiled.core.*;
 import tiled.core.Map;
 
-public class SearchDialog extends JDialog implements ActionListener {
-
+public class SearchDialog extends JDialog implements ActionListener
+{
 	private Map myMap;
 	private JComboBox searchCBox, replaceCBox;
 	private JButton bReplace, bReplaceAll;
@@ -44,7 +44,6 @@ public class SearchDialog extends JDialog implements ActionListener {
 	}
 
 	private void init() {
-		
 		JPanel buttonPanel = new JPanel();
 		JPanel closePanel = new JPanel();
 		closePanel.setLayout(new BorderLayout());
@@ -120,7 +119,6 @@ public class SearchDialog extends JDialog implements ActionListener {
 	}
 	
 	private void queryTiles(JComboBox b) {
-		
 		Vector sets = myMap.getTilesets();
 		int curSlot = 0;
 		Iterator itr = sets.iterator();
@@ -167,7 +165,6 @@ public class SearchDialog extends JDialog implements ActionListener {
 	}
 	
 	private void replaceAll(Tile f, Tile r) {
-		
 		//TODO: allow for "scopes" of one or more layers, rather than all layers
 		ListIterator itr = myMap.getLayers();		
 		while(itr.hasNext()) {

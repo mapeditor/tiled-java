@@ -222,6 +222,11 @@ public class MapEditor implements ActionListener,
                         "Unsupported map format", "Error while loading map",
                         JOptionPane.ERROR_MESSAGE);
         	}
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(appFrame,
+                    e.getMessage(), "Error while loading map",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
         } catch (Exception e) {
             //e.printStackTrace();
             JOptionPane.showMessageDialog(appFrame,
@@ -774,16 +779,16 @@ public class MapEditor implements ActionListener,
                     mapView.repaint();
                     break;
 				case PS_MARQUEE:
-					if(marqueeSelection != null) {
-						for (int y = Math.min(mouseInitialPressLocation.y,tile.y); y <= Math.max(mouseInitialPressLocation.y,tile.y); y++) {
-								for (int x = Math.min(mouseInitialPressLocation.x,tile.x); x <= Math.max(mouseInitialPressLocation.x,tile.x); x++) {
-										marqueeSelection.select(x,y);
-								}
-						}
-						mapView.repaintRegion(new Rectangle(Math.min(mouseInitialPressLocation.x,tile.x), Math.min(mouseInitialPressLocation.y,tile.y), 
-													Math.max(mouseInitialPressLocation.x,tile.x), Math.max(mouseInitialPressLocation.y,tile.y)));
-					}
-					break;
+                    if (marqueeSelection != null) {
+                        for (int y = Math.min(mouseInitialPressLocation.y, tile.y); y <= Math.max(mouseInitialPressLocation.y, tile.y); y++) {
+                            for (int x = Math.min(mouseInitialPressLocation.x, tile.x); x <= Math.max(mouseInitialPressLocation.x, tile.x); x++) {
+                                marqueeSelection.select(x, y);
+                            }
+                        }
+                        mapView.repaintRegion(new Rectangle(Math.min(mouseInitialPressLocation.x, tile.x), Math.min(mouseInitialPressLocation.y, tile.y),
+                                    Math.max(mouseInitialPressLocation.x, tile.x), Math.max(mouseInitialPressLocation.y, tile.y)));
+                    }
+                    break;
             }
         }
     }
@@ -1244,45 +1249,45 @@ public class MapEditor implements ActionListener,
         if (newTile == oldTile) return;
 
         Rectangle area = null;
-		MapLayer before = new MapLayer(layer);
-		MapLayer after;
+        MapLayer before = new MapLayer(layer);
+        MapLayer after;
 
-        if(marqueeSelection == null) {
-	        area = new Rectangle(new Point(x, y)); 
-	        Stack stack = new Stack();	        
-	
-	        stack.push(new Point(x, y));
-	        while (!stack.empty()) {
-	            // Remove the next tile from the stack
-	            Point p = (Point)stack.pop();
-	
-	            // If the tile it meets the requirements, set it and push its
-	            // neighbouring tiles on the stack.
-	            if (currentMap.inBounds(p.x, p.y) &&
-	                    layer.getTileAt(p.x, p.y) == oldTile)
-	            {
-	                layer.setTileAt(p.x, p.y, newTile);
-	                area.add(p);
-	
-	                stack.push(new Point(p.x, p.y - 1));
-	                stack.push(new Point(p.x, p.y + 1));
-	                stack.push(new Point(p.x + 1, p.y));
-	                stack.push(new Point(p.x - 1, p.y));
-	            }
-	        }
+        if (marqueeSelection == null) {
+            area = new Rectangle(new Point(x, y)); 
+            Stack stack = new Stack();	        
+
+            stack.push(new Point(x, y));
+            while (!stack.empty()) {
+                // Remove the next tile from the stack
+                Point p = (Point)stack.pop();
+
+                // If the tile it meets the requirements, set it and push its
+                // neighbouring tiles on the stack.
+                if (currentMap.inBounds(p.x, p.y) &&
+                        layer.getTileAt(p.x, p.y) == oldTile)
+                {
+                    layer.setTileAt(p.x, p.y, newTile);
+                    area.add(p);
+
+                    stack.push(new Point(p.x, p.y - 1));
+                    stack.push(new Point(p.x, p.y + 1));
+                    stack.push(new Point(p.x + 1, p.y));
+                    stack.push(new Point(p.x - 1, p.y));
+                }
+            }
         } else {
-        	if(marqueeSelection.getSelectedArea().contains(x,y)) {
-        		area = marqueeSelection.getSelectedArea();
-        		for(int i = area.y;i<area.height+area.y;i++) {
-	        		for(int j = area.x;j<area.width+area.x;j++){
-						layer.setTileAt(j, i, newTile);
-	        		}
-        		}
-        	} else {
-        		return;
-        	}
+            if (marqueeSelection.getSelectedArea().contains(x, y)) {
+                area = marqueeSelection.getSelectedArea();
+                for(int i = area.y; i < area.height+area.y; i++) {
+                    for(int j = area.x;j<area.width+area.x;j++){
+                        layer.setTileAt(j, i, newTile);
+                    }
+                }
+            } else {
+                return;
+            }
         }
-        
+
         Rectangle bounds = new Rectangle(
                 area.x, area.y, area.width + 1, area.height + 1);
         after = new MapLayer(bounds);

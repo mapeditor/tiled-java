@@ -48,30 +48,30 @@ import tiled.mapeditor.selection.SelectionLayer;
  */
 public class HexMapView extends MapView
 {
-	
-	private static double HEX_SLOPE = Math.tan(Math.toRadians(60));
-	
+
+    private static double HEX_SLOPE = Math.tan(Math.toRadians(60));
+
     public HexMapView(Map m) {
         super(m);
     }
 
     public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
-		Dimension tsize = getTileSize(zoom);
+        Dimension tsize = getTileSize(zoom);
 
-		if (orientation == SwingConstants.VERTICAL) {
-			return (visibleRect.height / tsize.height) * tsize.height;
-		} else {
-			return (visibleRect.width / tsize.width) * tsize.width;
-		}
+        if (orientation == SwingConstants.VERTICAL) {
+            return (visibleRect.height / tsize.height) * tsize.height;
+        } else {
+            return (visibleRect.width / tsize.width) * tsize.width;
+        }
     }
 
     public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
-		Dimension tsize = getTileSize(zoom);
-		if (orientation == SwingConstants.VERTICAL) {
-			return tsize.height;
-		} else {
-			return tsize.width;
-		}
+        Dimension tsize = getTileSize(zoom);
+        if (orientation == SwingConstants.VERTICAL) {
+            return tsize.height;
+        } else {
+            return tsize.width;
+        }
     }
 
     public Dimension getPreferredSize() {
@@ -84,9 +84,9 @@ public class HexMapView extends MapView
 
     protected void paint(Graphics g, MapLayer layer, double zoom) {
         // Determine area to draw from clipping rectangle
-		Dimension tsize = getTileSize(zoom);
-		int toffset = (((modeFlags & PF_GRIDMODE) != 0) ? 1 : 0);
-        
+        Dimension tsize = getTileSize(zoom);
+        int toffset = (((modeFlags & PF_GRIDMODE) != 0) ? 1 : 0);
+
         Rectangle clipRect = g.getClipBounds();
         Point topLeft = screenToTileCoords((int) clipRect.getMinX(), (int) clipRect.getMinY());
         Point bottomRight = screenToTileCoords((int) (clipRect.getMaxX() - clipRect.getMinX()), (int) (clipRect.getMaxY() - clipRect.getMinY()));
@@ -97,19 +97,18 @@ public class HexMapView extends MapView
 
         for (int y = startY, gy = (int)(startY * tsize.height + toffset); y < endY; y++,gy += tsize.getHeight()) {
             for (int x = startX, gx = (int)((startX * tsize.width + toffset)); 
-            				x < endX; x++, gx+=(tsize.getWidth()*.75)) {
+                    x < endX; x++, gx+=(tsize.getWidth()*.75)) {
                 Tile t = layer.getTileAt(x, y);
 
                 if (t != null && t != myMap.getNullTile()) {
-					if(layer.getClass() == SelectionLayer.class) {
-						//g.fillPolygon(createGridPolygon(x, y, 1));
-					}else{
-	                    t.draw(g, gx, (int)(gy + (tsize.getHeight()/2) * (1-x%2)), zoom);
-					}
+                    if(layer.getClass() == SelectionLayer.class) {
+                        //g.fillPolygon(createGridPolygon(x, y, 1));
+                    }else{
+                        t.draw(g, gx, (int)(gy + (tsize.getHeight()/2) * (1-x%2)), zoom);
+                    }
                 }
             }
         }
-
     }
 
     /**
@@ -126,9 +125,8 @@ public class HexMapView extends MapView
     }
 
     protected void paintGrid(Graphics g, double zoom) {
-
-		g.setColor(Color.black);
-		Dimension tileSize = getTileSize(zoom);
+        g.setColor(Color.black);
+        Dimension tileSize = getTileSize(zoom);
         // Determine area to draw from clipping rectangle
         Rectangle clipRect = g.getClipBounds();
         Point topLeft = screenToTileCoords((int) clipRect.getMinX(), (int) clipRect.getMinY());
@@ -137,17 +135,17 @@ public class HexMapView extends MapView
         int startY = (int) topLeft.getY();
         int endX = (int) (bottomRight.getX()*1.5)+1;
         int endY = (int) bottomRight.getY()*2+1;
-		int dy = 0;
-		Polygon grid;
+        int dy = 0;
+        Polygon grid;
 
         for (int y = startY; y < endY; y++, dy += tileSize.getHeight()) {
-			grid = createGridPolygon(0, 0, 1);
-			grid.translate(0,dy);
+            grid = createGridPolygon(0, 0, 1);
+            grid.translate(0,dy);
             for (int x = startX; x < endX; x++) {
-				grid.translate(0,(int)((tileSize.getHeight()/2) * (1-x%2)));                
+                grid.translate(0,(int)((tileSize.getHeight()/2) * (1-x%2)));                
                 g.drawPolygon(grid);
-				grid.translate((int)(tileSize.getWidth()*.75),0);
-				grid.translate(0,(int)-((tileSize.getHeight()/2) * (1-x%2)));
+                grid.translate((int)(tileSize.getWidth()*.75),0);
+                grid.translate(0,(int)-((tileSize.getHeight()/2) * (1-x%2)));
             }            
         }
     }
@@ -166,11 +164,11 @@ public class HexMapView extends MapView
         int adjustyhexes = 10;
 
 
-// Note: We adjust my & mx so they are always positive.
-// The algorithm returns incorrect values for negative my
-// The value adjustyhexes is arbitrary.
-// my is only ever negative for offboard hexes at the top of the map
-// We adjust it back further down
+        // Note: We adjust my & mx so they are always positive.
+        // The algorithm returns incorrect values for negative my
+        // The value adjustyhexes is arbitrary.
+        // my is only ever negative for offboard hexes at the top of the map
+        // We adjust it back further down
         int my = (int) (y + hexHeight * adjustyhexes);
         int mx = (int) (x + cw + hexWidth * adjustyhexes);
         int tx = (int) (mx / hexWidth);
@@ -200,7 +198,7 @@ public class HexMapView extends MapView
             }
         }
 
-// Adjust back (see above)
+        // Adjust back (see above)
         ty -= adjustyhexes;
         tx -= adjustyhexes;
 
@@ -230,36 +228,36 @@ public class HexMapView extends MapView
 
     public void repaintRegion(Rectangle region) {
         super.repaintRegion(region);
-// This code should work. I've disabled it because of general problems with the view refresh.
-//        Point2D topLeft=getTopLeftCornerOfHex((int) region.getMinX(),(int) region.getMinY(),zoom);
-//        Point2D bottomRight=getTopLeftCornerOfHex((int) region.getMaxX(),(int) region.getMaxY(),zoom);
-//
-//        Dimension tileSize=getTileSize(zoom);
-//        int width=(int) (bottomRight.getX()-topLeft.getX()+tileSize.getWidth());
-//        int height=(int) (bottomRight.getY()-topLeft.getY()+tileSize.getHeight());
-//
-//        Rectangle dirty=new Rectangle((int) topLeft.getX(),(int) topLeft.getY(),width,height);
-//
-//        repaint(dirty);
+        // This code should work. I've disabled it because of general problems with the view refresh.
+        //        Point2D topLeft=getTopLeftCornerOfHex((int) region.getMinX(),(int) region.getMinY(),zoom);
+        //        Point2D bottomRight=getTopLeftCornerOfHex((int) region.getMaxX(),(int) region.getMaxY(),zoom);
+        //
+        //        Dimension tileSize=getTileSize(zoom);
+        //        int width=(int) (bottomRight.getX()-topLeft.getX()+tileSize.getWidth());
+        //        int height=(int) (bottomRight.getY()-topLeft.getY()+tileSize.getHeight());
+        //
+        //        Rectangle dirty=new Rectangle((int) topLeft.getX(),(int) topLeft.getY(),width,height);
+        //
+        //        repaint(dirty);
     }
 
 
     protected Polygon createGridPolygon(int tx, int ty, int border) {
-		double centrex, centrey;
-		Dimension tileSize = getTileSize(zoom);
-		Polygon poly = new Polygon();
-		
-		centrex = tx*tileSize.getWidth() + tileSize.getWidth() / 2;
-		centrey = ty*tileSize.getHeight() + tileSize.getHeight() / 2;
-		
-		//Go round the sides clockwise
-		poly.addPoint((int) (centrex - tileSize.getWidth()/2), (int) centrey);
-		poly.addPoint((int) (centrex - tileSize.getWidth() / 4), (int) (centrey - tileSize.getHeight() / 2));
-		poly.addPoint((int) (centrex + tileSize.getWidth() / 4), (int) (centrey - tileSize.getHeight() / 2));
-		poly.addPoint((int) (centrex + tileSize.getWidth() / 2), (int) centrey);
-		poly.addPoint((int) (centrex + tileSize.getWidth() / 4), (int) (centrey + tileSize.getHeight() / 2));
-		poly.addPoint((int) (centrex - tileSize.getWidth() / 4), (int) (centrey + tileSize.getHeight() / 2));
-		
+        double centrex, centrey;
+        Dimension tileSize = getTileSize(zoom);
+        Polygon poly = new Polygon();
+
+        centrex = tx*tileSize.getWidth() + tileSize.getWidth() / 2;
+        centrey = ty*tileSize.getHeight() + tileSize.getHeight() / 2;
+
+        //Go round the sides clockwise
+        poly.addPoint((int) (centrex - tileSize.getWidth()/2), (int) centrey);
+        poly.addPoint((int) (centrex - tileSize.getWidth() / 4), (int) (centrey - tileSize.getHeight() / 2));
+        poly.addPoint((int) (centrex + tileSize.getWidth() / 4), (int) (centrey - tileSize.getHeight() / 2));
+        poly.addPoint((int) (centrex + tileSize.getWidth() / 2), (int) centrey);
+        poly.addPoint((int) (centrex + tileSize.getWidth() / 4), (int) (centrey + tileSize.getHeight() / 2));
+        poly.addPoint((int) (centrex - tileSize.getWidth() / 4), (int) (centrey + tileSize.getHeight() / 2));
+
         return poly;
     }
 
@@ -271,11 +269,11 @@ public class HexMapView extends MapView
      * @return The point at the centre of the Hex.
      */
     public Point tileToScreenCoords(double x, double y) {
-		double xx = getWidthBetweenHexCentres() * x;
-		double yy = getTileHeight() * y;
-		if (x % 2 == 0) {
-			yy += getTileHeight() / 2;
-		}
-		return new Point((int)(xx * zoom), (int)(yy * zoom));
+        double xx = getWidthBetweenHexCentres() * x;
+        double yy = getTileHeight() * y;
+        if (x % 2 == 0) {
+            yy += getTileHeight() / 2;
+        }
+        return new Point((int)(xx * zoom), (int)(yy * zoom));
     }
 }

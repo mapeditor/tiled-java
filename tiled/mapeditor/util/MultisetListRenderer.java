@@ -21,8 +21,8 @@ import tiled.core.*;
 import tiled.mapeditor.MapEditor;
 import tiled.core.Map;
 
-public class MultisetListRenderer extends JLabel implements ListCellRenderer {
-
+public class MultisetListRenderer extends JLabel implements ListCellRenderer
+{
 	private Map myMap;
 	private ImageIcon[] tileImages;
 	private Image setImage = null;

@@ -23,6 +23,7 @@ import java.lang.reflect.*;
 import java.util.zip.GZIPInputStream;
 import javax.xml.parsers.*;
 import org.w3c.dom.*;
+import org.xml.sax.SAXException;
 
 import tiled.core.*;
 import tiled.io.ImageHelper;
@@ -502,13 +503,14 @@ public class XMLMapTransformer implements MapReader
         }
     }
 
-    private Map unmarshal(String xmlFile) throws Exception {
+    private Map unmarshal(String xmlFile) throws IOException, Exception {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         try {
             DocumentBuilder builder = factory.newDocumentBuilder();
             doc = builder.parse(new File(xmlFile));
-        } catch (Throwable t) {
-            t.printStackTrace();
+        } catch (SAXException e) {
+            e.printStackTrace();
+            throw new Exception("Error while parsing map file.");
         }
 
         // TODO: A problem arrises with xmlPath if the tag sources are absolute

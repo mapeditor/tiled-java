@@ -161,7 +161,6 @@ public class TileDialog extends JDialog
             files = ch.getSelectedFiles();
 
             for (int i = 0; i < files.length; i++) {
-
                 try {
                     image = ImageIO.read(files[i]);
                     // TODO: Support for a transparent color
@@ -170,7 +169,6 @@ public class TileDialog extends JDialog
                             "Error!", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-
 
                 try {
                     Tile newTile = new Tile();
@@ -182,7 +180,6 @@ public class TileDialog extends JDialog
                             "Error while loading tiles!",
                             JOptionPane.ERROR_MESSAGE);
                 }
-
             }
         } else {
             Tile n = new Tile(t);

@@ -332,33 +332,39 @@ public class MapLayer implements Cloneable
         }
     }
 
-	public Point locationOf(Tile t) {
-		for (int y = bounds.y; y < bounds.height + bounds.y; y++) {
-			for (int x = bounds.x; x < bounds.width + bounds.x; x++) {
-				if (getTileAt(x, y) == t) {
-					return new Point(x,y);
-				}
-			}
-		}
-		return null;
-	}
+    /**
+     * Returns the first occurance (using top down, left to right search) of
+     * the given tile.
+     *
+     * @param t the tile to look for
+     */
+    public Point locationOf(Tile t) {
+        for (int y = bounds.y; y < bounds.height + bounds.y; y++) {
+            for (int x = bounds.x; x < bounds.width + bounds.x; x++) {
+                if (getTileAt(x, y) == t) {
+                    return new Point(x,y);
+                }
+            }
+        }
+        return null;
+    }
 
-	/**
-	 * Replaces the Tile <code>find</code> with the Tile <code>replace</code> for the entire layer
-	 * 
-	 * @param find
-	 * @param replace
-	 */
-	public void replaceTile(Tile find, Tile replace) {
-		for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
-			for (int x = bounds.x; x < bounds.x + bounds.width; x++) {
-				if(getTileAt(x,y) == find) {
-					setTileAt(x, y, replace);
-				}
-			}
-		}
-		
-	}
+    /**
+     * Replaces all occurances of the Tile <code>find</code> with the Tile
+     * <code>replace</code> in the entire layer
+     * 
+     * @param find    the tile to replace
+     * @param replace the replacement tile
+     */
+    public void replaceTile(Tile find, Tile replace) {
+        for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
+            for (int x = bounds.x; x < bounds.x + bounds.width; x++) {
+                if(getTileAt(x,y) == find) {
+                    setTileAt(x, y, replace);
+                }
+            }
+        }
+    }
 
     /**
      * Returns layer width in tiles.
@@ -381,18 +387,18 @@ public class MapLayer implements Cloneable
         return bounds;
     }
 
-	/**
-	 * A convenience method to check is a point in tile space is within
-	 * the layer boundaries.
-	 * 
-	 * @param x
-	 * @param y
-	 * @return <code>true</code> if the point (x,y) is within the layer boundaries.
-	 */
-	public boolean contains(int x, int y) {
-		return bounds.contains(x,y);
-	}
-	
+    /**
+     * A convenience method to check if a point in tile space is within
+     * the layer boundaries.
+     * 
+     * @param x
+     * @param y
+     * @return <code>true</code> if the point (x,y) is within the layer boundaries.
+     */
+    public boolean contains(int x, int y) {
+        return bounds.contains(x,y);
+    }
+
     /**
      * Returns layer opacity.
      *
