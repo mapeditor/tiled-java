@@ -47,7 +47,7 @@ public class MapLayer implements Cloneable
      * @param h height in tiles
      */
     public MapLayer(int w, int h) {
-        map = new Tile[h+1][w+1];
+        map = new Tile[h][w];
         heightInTiles = h;
         widthInTiles = w;
     }
@@ -63,9 +63,9 @@ public class MapLayer implements Cloneable
 		widthInTiles = ml.widthInTiles;
 		heightInTiles = ml.heightInTiles;
 
-		map = new Tile[heightInTiles+1][];
+		map = new Tile[heightInTiles][];
 		for(int i =0; i<heightInTiles;i++){
-				map[i] = new Tile[widthInTiles+1];
+				map[i] = new Tile[widthInTiles];
 				System.arraycopy(ml.map[i],0,map[i],0,widthInTiles);
 
 		}
@@ -83,7 +83,7 @@ public class MapLayer implements Cloneable
      * @param h height in tiles
      */
     MapLayer(Map m, int w, int h) {
-        map = new Tile[h+1][w+1];
+        map = new Tile[h][w];
         setMap(m);
         heightInTiles = h;
         widthInTiles = w;
@@ -98,9 +98,9 @@ public class MapLayer implements Cloneable
 		Tile [][] trans;
 		
 		if(angle == ROTATE_90 || angle == ROTATE_270) {
-			trans = new Tile[widthInTiles+1][heightInTiles+1];
+			trans = new Tile[widthInTiles][heightInTiles];
 		} else {
-			trans = new Tile[heightInTiles+1][widthInTiles+1];
+			trans = new Tile[heightInTiles][widthInTiles];
 		}
 		
 		double cos_angle = Math.round(Math.cos(Math.toRadians(angle))), sin_angle = Math.round(Math.sin(Math.toRadians(angle)));
@@ -108,15 +108,15 @@ public class MapLayer implements Cloneable
 		for(int y=0;y<heightInTiles;y++){		
 			for(int x=0;x<widthInTiles;x++) {
 				int trans_x = x - widthInTiles/2;
-				int trans_y = y - heightInTiles/2; 
-				trans[y][x] = map[(int)(trans_x*sin_angle+trans_y*cos_angle)+heightInTiles/2][(int)(trans_x*cos_angle - trans_y * sin_angle)+widthInTiles/2];
+				int trans_y = y - heightInTiles/2;
+				trans[y][x] = getTileAt((int)(trans_x*cos_angle - trans_y * sin_angle)+widthInTiles/2,(int)(trans_x*sin_angle+trans_y*cos_angle)+heightInTiles/2);
 			}
 		}
 		map = trans;
 	}
 
 	public void mirror(int dir) {
-		Tile [][] mirror = new Tile[heightInTiles+1][widthInTiles+1];
+		Tile [][] mirror = new Tile[heightInTiles][widthInTiles];
 		for(int y=0;y<heightInTiles;y++){		
 			for(int x=0;x<widthInTiles;x++) {
 				if(dir == MIRROR_VERTICAL) {
@@ -145,7 +145,7 @@ public class MapLayer implements Cloneable
 		yOffset = bounds.y;
 		widthInTiles = bounds.width;
 		heightInTiles = bounds.height;
-		map = new Tile[heightInTiles+1][widthInTiles+1];
+		map = new Tile[heightInTiles][widthInTiles];
 	}
 
 	/**
