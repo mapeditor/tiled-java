@@ -15,6 +15,7 @@ package tiled.view;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.Polygon;
 import java.awt.Rectangle;
 
 import tiled.core.*;
@@ -56,6 +57,11 @@ public class ObliqueMapView extends MapView
     }
 
 	public Point screenToTileCoords(int x, int y) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	protected Polygon createGridPolygon(int tx, int ty, int border) {
 		// TODO Auto-generated method stub
 		return null;
 	}

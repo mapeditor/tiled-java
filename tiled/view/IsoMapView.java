@@ -12,17 +12,12 @@
 
 package tiled.view;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Polygon;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
+import java.awt.*;
+
 import javax.swing.SwingConstants;
 
 import tiled.core.*;
+import tiled.mapeditor.selection.SelectionLayer;
 
 
 public class IsoMapView extends MapView
@@ -68,8 +63,8 @@ public class IsoMapView extends MapView
         Rectangle clipRect = g.getClipBounds();
         clipRect.height += myMap.getTileHeightMax()*zoom - tileSize.height;
         int logical_row_max=(clipRect.y+clipRect.height)/(tsize_height_delta)+1;
-        int originx = (myMap.getHeight() - 1) * (tileSize.width / 2);
-
+        int originx = (myMap.getHeight() - 1) * (tileSize.width / 2);		
+		
         // Draw this map layer
         for(int logical_row = Math.max(clipRect.y/tsize_height_delta-1,0); logical_row<logical_row_max;logical_row++) {
             int x = Math.max(logical_row-(myMap.getHeight()-1),0);
@@ -83,13 +78,11 @@ public class IsoMapView extends MapView
 
                 Tile t = layer.getTileAt(x, y);
                 if (t != null && t != myMap.getNullTile()) {
-                    t.draw(g, gx, gy, zoom);
-                    if (showGrid) {
-                        //TODO: create a system that the user can use to highlight tiles with certain properties (search)
-                        /*if ((t.getFlags() & Tile.T_IMPASSABLE) != 0) {
-                          g.setColor(Color.red);
-                          g.drawPolygon(gridPoly);
-                          }*/
+                    if(layer.getClass() == SelectionLayer.class) {
+                    	g.fillPolygon(gridPoly);
+                    	paintEdge(layer,gx,gy,g);
+                    } else {
+						t.draw(g, gx, gy, zoom);
                     }
                 }
 
@@ -97,9 +90,9 @@ public class IsoMapView extends MapView
                 y--;
                 gx += tileSize.width;
                 gridPoly.translate(tileSize.width, 0);
-                    }
+			}
         }
-    }
+    }	
 
     protected void paintGrid(Graphics g, double zoom) {
         Dimension tileSize = getTileSize(zoom);
@@ -180,16 +173,16 @@ public class IsoMapView extends MapView
                 ((my < 0) ? my - tileSize.height : my) / tileSize.height);
     }
 
-    private Polygon createGridPolygon(int tx, int ty, int border) {
+    protected Polygon createGridPolygon(int tx, int ty, int border) {
         Dimension tileSize = getTileSize(zoom);
         tileSize.width -= border * 2;
         tileSize.height -= border * 2;
 
         Polygon poly = new Polygon();
-        poly.addPoint(tx + tileSize.width / 2 + border, ty + border);
-        poly.addPoint(tx + tileSize.width, ty + tileSize.height / 2 + border);
-        poly.addPoint(tx + tileSize.width / 2 + border, ty + tileSize.height + border);
-        poly.addPoint(tx + border, ty + tileSize.height / 2 + border);
+        poly.addPoint((tx + tileSize.width / 2 + border), ty + border);
+        poly.addPoint((tx + tileSize.width), ty + tileSize.height / 2 + border);
+        poly.addPoint((tx + tileSize.width / 2 + border), ty + tileSize.height + border);
+        poly.addPoint((tx + border), ty + tileSize.height / 2 + border);
         return poly;
     }
 

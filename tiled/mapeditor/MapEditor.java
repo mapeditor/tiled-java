@@ -402,8 +402,7 @@ public class MapEditor implements ActionListener,
         toolBar.add(eraseButton);
         toolBar.add(pourButton);
         toolBar.add(eyedButton);
-        // TODO: Re-add marquee button when it can select stuff
-        //toolBar.add(marqueeButton);
+        toolBar.add(marqueeButton);
         toolBar.add(Box.createRigidArea(new Dimension(0, 5)));
         toolBar.add(new TButton(zoomInAction));
         toolBar.add(new TButton(zoomOutAction));

@@ -165,21 +165,19 @@ public class Tile
 
 	public Image getScaledImage(double zoom) {
 		int h = (int)(tileImage.getHeight(null) * zoom);
-		if (scaledImage == null || scaledImage.getHeight(null) != h) {
-			scaledImage = tileImage.getScaledInstance(
-					(int)(getWidth() * zoom), h,
-					BufferedImage.SCALE_SMOOTH);
-			MediaTracker mediaTracker = new MediaTracker(new Canvas());
-			mediaTracker.addImage(scaledImage, 0);
-			try {
-				mediaTracker.waitForID(0);
-			}
-			catch (InterruptedException ie) {
-				System.err.println(ie);
-				return null;
-			}
-			mediaTracker.removeImage(scaledImage);
+		scaledImage = tileImage.getScaledInstance(
+				(int)(getWidth() * zoom), h,
+				BufferedImage.SCALE_SMOOTH);
+		MediaTracker mediaTracker = new MediaTracker(new Canvas());
+		mediaTracker.addImage(scaledImage, 0);
+		try {
+			mediaTracker.waitForID(0);
 		}
+		catch (InterruptedException ie) {
+			System.err.println(ie);
+			return null;
+		}
+		mediaTracker.removeImage(scaledImage);
 		return scaledImage;
 	}
 

@@ -16,7 +16,8 @@ import javax.swing.table.AbstractTableModel;
 
 import tiled.core.Map;
 import tiled.core.MapLayer;
-
+import tiled.mapeditor.selection.SelectionLayer;
+import tiled.util.TiledConfiguration;
 
 public class LayerTableModel extends AbstractTableModel
 {
@@ -38,7 +39,17 @@ public class LayerTableModel extends AbstractTableModel
 
     public int getRowCount() {
         if (map != null) {
-            return map.getTotalLayers();
+            int totalLayers=0;
+            for(int j=0;j<map.getTotalLayers();j++) {
+            	if(map.getLayer(j).getClass() == SelectionLayer.class) {
+            		if(TiledConfiguration.keyHasValue("tiled.layer.showselection","1")) {
+            			totalLayers++;
+            		}
+            	} else {
+            		totalLayers++;
+            	}
+            }
+            return totalLayers;
         } else {
             return 0;
         }
@@ -57,7 +68,23 @@ public class LayerTableModel extends AbstractTableModel
     }
 
     public Object getValueAt(int row, int col) {
-        MapLayer layer = map.getLayer(getRowCount() - row - 1);
+    	MapLayer layer = null;
+    	int okLayer=0;
+		for(int j=0;j<map.getTotalLayers();j++) {
+			if(row == okLayer) {
+				break;
+			}			
+			if(map.getLayer(j).getClass() == SelectionLayer.class) {
+				if(TiledConfiguration.keyHasValue("tiled.layer.showselection","1")) {
+					okLayer++;
+				}
+			} else {
+				okLayer++;
+			}			
+		}
+        
+        layer = map.getLayer(getRowCount() - okLayer - 1);
+        
         if (layer != null) {
             if (col == 0) {
                 return new Boolean(layer.isVisible());

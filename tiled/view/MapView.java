@@ -12,18 +12,14 @@
 
 package tiled.view;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Dimension;
-import java.awt.Rectangle;
-import java.awt.Point;
-import java.awt.Graphics2D;
-import java.awt.AlphaComposite;
+import java.awt.*;
 import java.util.Iterator;
 import javax.swing.Scrollable;
 import javax.swing.JPanel;
+import java.awt.geom.PathIterator;
 
 import tiled.core.*;
+import tiled.mapeditor.selection.SelectionLayer;
 
 
 /**
@@ -160,6 +156,8 @@ public abstract class MapView extends JPanel implements Scrollable
         double currentZoom = zoom;
         Rectangle clip = g.getClipBounds();
 
+		g2d.setStroke(new BasicStroke(2.0f));		
+
         // Do an initial fill
         g.setColor(new Color(64, 64, 64));
         g.fillRect(clip.x, clip.y, clip.width, clip.height);
@@ -171,6 +169,10 @@ public abstract class MapView extends JPanel implements Scrollable
                 if (opacity < 1.0f) {
                     g2d.setComposite(AlphaComposite.getInstance(
                                 AlphaComposite.SRC_ATOP, opacity));
+                } else if (layer.getClass() == SelectionLayer.class) {
+					((Graphics2D)g).setComposite(AlphaComposite.getInstance(
+															   AlphaComposite.SRC_ATOP, 0.3f));
+					g.setColor(((SelectionLayer)layer).getHighlightColor());
                 } else {
                     g2d.setComposite(AlphaComposite.SrcOver);
                 }
@@ -179,10 +181,55 @@ public abstract class MapView extends JPanel implements Scrollable
         }
 
         if (getMode(PF_GRIDMODE)) {
+			g2d.setStroke(new BasicStroke());
             g2d.setComposite(AlphaComposite.SrcOver);
             paintGrid(g, currentZoom);
         }		
     }
+
+	protected void paintEdge(MapLayer layer, int x, int y, Graphics g) {
+		Polygon grid = createGridPolygon(x,y,0);
+		PathIterator itr = grid.getPathIterator(null);
+		double nextPoint[] = new double[6], prevPoint[],firstPoint[];
+	
+		Point p = screenToTileCoords(x, y);
+		int tx = p.x;
+		int ty = p.y;
+		
+		itr.currentSegment(nextPoint);
+		firstPoint = prevPoint=nextPoint;
+		
+		//NORTH
+		if(layer.getTileAt(tx,ty-1)==null) {
+			itr.next();			
+			nextPoint = new double[6];
+			itr.currentSegment(nextPoint);
+			g.drawLine((int)prevPoint[0],(int)prevPoint[1],(int)nextPoint[0],(int)nextPoint[1]);
+		}
+		
+		//EAST
+		if(layer.getTileAt(tx+1,ty)==null) {
+			itr.next();
+			prevPoint = nextPoint;
+			nextPoint = new double[6];
+			itr.currentSegment(nextPoint);
+			g.drawLine((int)prevPoint[0],(int)prevPoint[1],(int)nextPoint[0],(int)nextPoint[1]);
+		}
+		
+		// SOUTH
+		if(layer.getTileAt(tx,ty+1)==null) {
+			itr.next();
+			prevPoint = nextPoint;
+			nextPoint = new double[6];
+			itr.currentSegment(nextPoint);
+			g.drawLine((int)prevPoint[0],(int)prevPoint[1],(int)nextPoint[0],(int)nextPoint[1]);
+		}
+		
+		// WEST
+		if(layer.getTileAt(tx-1,ty)==null) {
+			g.drawLine((int)nextPoint[0],(int)nextPoint[1],(int)firstPoint[0],(int)firstPoint[1]);
+		}
+	}
 
     /**
      * Tells this view a certain region of the map needs to be repainted.
@@ -208,7 +255,17 @@ public abstract class MapView extends JPanel implements Scrollable
      * Draws the map grid.
      */
     protected abstract void paintGrid(Graphics g, double zoom);
-
+    
+    /**
+     * Returns a Polygon that matches the grid around the specified <b>Map</b>
+     * 
+     * @param tx
+     * @param ty
+     * @param border
+     * @return
+     */
+	protected abstract Polygon createGridPolygon(int tx, int ty, int border);
+    
     // Conversion functions
 
     public abstract Point screenToTileCoords(int x, int y);

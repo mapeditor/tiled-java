@@ -16,10 +16,12 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.Polygon;
 import java.awt.Rectangle;
 import javax.swing.SwingConstants;
 
 import tiled.core.*;
+import tiled.mapeditor.selection.SelectionLayer;
 
 
 public class OrthoMapView extends MapView
@@ -75,17 +77,17 @@ public class OrthoMapView extends MapView
         for (int y = startY, gy = startY * tsize.height + toffset;
                 y < endY; y++, gy += tsize.height) {
             for (int x = startX, gx = startX * tsize.width + toffset;
-                    x < endX; x++, gx += tsize.width) {                
+                    x < endX; x++, gx += tsize.width) {
+				Polygon gridPoly = createGridPolygon(gx, gy, 1);                
                 Tile t = layer.getTileAt(x, y);
+                
                 if (t != null && t != myMap.getNullTile()) {
-                    t.draw(g, gx, gy, zoom);
-                    if (toffset > 0) {
-                        /*if ((t.getFlags() & Tile.T_IMPASSABLE) != 0) {
-                            g.setColor(Color.red);
-                            g.drawRect(gx, gy,
-                                    tsize.width - 2, tsize.height - 2);
-                        }*/
-                    }
+					if(layer.getClass() == SelectionLayer.class) {
+						g.fillPolygon(gridPoly);
+						paintEdge(layer,gx,gy,g);
+					} else {
+						t.draw(g, gx, gy, zoom);
+					}
                 }                
             }
         }
@@ -145,4 +147,16 @@ public class OrthoMapView extends MapView
                 (int)(myMap.getTileWidth() * zoom) + grid,
                 (int)(myMap.getTileHeight() * zoom) + grid);
     }
+
+	protected Polygon createGridPolygon(int tx, int ty, int border) {
+		Dimension tsize = getTileSize(zoom);
+		
+		Polygon poly = new Polygon();
+		poly.addPoint(tx - border, ty - border);
+		poly.addPoint(tx + tsize.width + border, ty - border);		
+		poly.addPoint(tx + tsize.width + border, ty + tsize.height + border);
+		poly.addPoint(tx - border, ty + tsize.height + border);
+		
+		return poly;
+	}
 }

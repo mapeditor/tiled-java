@@ -22,6 +22,7 @@ import java.util.zip.GZIPOutputStream;
 
 import tiled.core.*;
 import tiled.io.*;
+import tiled.mapeditor.selection.SelectionLayer;
 import tiled.util.*;
 
 
@@ -214,7 +215,11 @@ public class XMLMapWriter implements MapWriter
 
             Rectangle bounds = l.getBounds();
 
-            w.startElement("layer");
+			if(l.getClass() == SelectionLayer.class) {
+				w.startElement("selection");
+			} else {
+            	w.startElement("layer");
+			}
             //w.writeAttribute("id", "" + l.getId());
             w.writeAttribute("name", l.getName());
             if (bounds.x != 0) {
@@ -229,10 +234,10 @@ public class XMLMapWriter implements MapWriter
             }
             if (l.getOpacity() < 1.0f) {
                 w.writeAttribute("opacity", "" + l.getOpacity());
-            }            
+            }
 
+			w.startElement("data");
             if (encodeLayerData) {
-                w.startElement("data");
                 w.writeAttribute("encoding", "base64");
 
                 if (compressLayerData) {
@@ -263,9 +268,7 @@ public class XMLMapWriter implements MapWriter
                 }
 
                 w.writeCDATA(new String(Base64.encode(baos.toByteArray())));
-                w.endElement();
             } else {
-                w.startElement("data");
                 for (int y = 0; y < l.getHeight(); y++) {
                     for (int x = 0; x < l.getWidth(); x++) {
                         Tile tile = l.getTileAt(x, y);
@@ -279,9 +282,9 @@ public class XMLMapWriter implements MapWriter
                         w.writeAttribute("gid", ""+gid);
                         w.endElement();
                     }
-                }
-                w.endElement();
+                }                
             }
+			w.endElement();
             w.endElement();
         } catch (XMLWriterException e) {
             e.printStackTrace();

@@ -17,6 +17,7 @@ import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
 
+import tiled.mapeditor.selection.SelectionLayer;
 import tiled.mapeditor.util.MultisetListRenderer;
 import tiled.mapeditor.widget.*;
 import tiled.core.*;
@@ -53,7 +54,7 @@ public class SearchDialog extends JDialog implements ActionListener {
 		
 		JButton bFind = new JButton("Find");
 		bFind.addActionListener(this);
-		JButton bFindNext = new JButton("Find Next");
+		JButton bFindNext = new JButton("Find All");
 		bFindNext.addActionListener(this);
 		bReplace = new JButton("Replace");
 		bReplace.addActionListener(this);
@@ -142,7 +143,21 @@ public class SearchDialog extends JDialog implements ActionListener {
 			//TODO: find must trigger a drawing condition to highlight instances of the found tile on the map
 			
 		} else if(command.equalsIgnoreCase("find all")) {
-			
+			SelectionLayer sl = new SelectionLayer(myMap.getWidth(), myMap.getHeight());
+			ListIterator itr = myMap.getLayers();		
+			while(itr.hasNext()) {
+				MapLayer layer = (MapLayer) itr.next();
+				Rectangle bounds = layer.getBounds();
+				for (int y = 0; y < bounds.height; y++) {
+						for (int x = 0; x < bounds.width; x++) {
+							if(layer.getTileAt(x,y) == (Tile) searchCBox.getSelectedItem()) {
+								sl.select(x,y);
+							}
+						}
+				}
+			}
+			myMap.addLayer(sl);
+			myMap.touch();
 			
 		} else if(command.equalsIgnoreCase("replace all")) {
 			replaceAll((Tile) searchCBox.getSelectedItem(),(Tile) replaceCBox.getSelectedItem());
@@ -153,12 +168,11 @@ public class SearchDialog extends JDialog implements ActionListener {
 	private void replaceAll(Tile f, Tile r) {
 		
 		//TODO: allow for "scopes" of one or more layers, rather than all layers
-		ListIterator itr = myMap.getLayers();
-		myMap.touch();
+		ListIterator itr = myMap.getLayers();		
 		while(itr.hasNext()) {
 			MapLayer layer = (MapLayer) itr.next();
 			layer.replaceTile(f,r);
 		}
-		
+		myMap.touch();
 	}
 }
