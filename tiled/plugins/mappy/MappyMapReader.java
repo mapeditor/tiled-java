@@ -219,6 +219,14 @@ public class MappyMapReader implements MapReader {
 		}
     }
 
+    /**
+     *  Read a BODY chunk from a Mappy map. BODY chunks contain data for 
+     * the 4 main layers of the map.
+     * 
+     * @param m
+     * @param in
+     * @throws IOException
+     */
     private void readBODYChunk(Map m, InputStream in) throws IOException {
 		TileSet set = (TileSet)m.getTilesets().get(0);
 		MapLayer bg = m.getLayer(0),

@@ -207,9 +207,12 @@ public class Tile
      * Returns a scaled instance of the tile image.
      */
     public Image getScaledImage(double zoom) {
-        return getImage().getScaledInstance(
-                (int)(getWidth() * zoom), (int)(getHeight() * zoom),
-                BufferedImage.SCALE_SMOOTH);
+    	if(getImage()!=null) {
+    		return getImage().getScaledInstance(
+    				(int)(getWidth() * zoom), (int)(getHeight() * zoom),
+					BufferedImage.SCALE_SMOOTH);
+    	}
+    	return null;
     }
 
     public String toString() {

@@ -388,9 +388,13 @@ public class TileSet
      * @return dimensions of image with given key
      */
     public Dimension getImageDimensions(Object key) {
-        Image i = (Image)imageCache.get(images.get(key));
-
-        return new Dimension(i.getWidth(null), i.getHeight(null));
+    	if(images.get(key) != null) {
+	        Image i = (Image)imageCache.get(images.get(key));
+	
+	        return new Dimension(i.getWidth(null), i.getHeight(null));
+    	} else {
+    		return new Dimension(0, 0);
+    	}
     }
 
     /**
