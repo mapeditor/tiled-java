@@ -91,25 +91,26 @@ public class TilePalettePanel extends JPanel implements Scrollable,
 
     public void paint(Graphics g) {
         Rectangle clip = g.getClipBounds();
-
+        
         // Draw checkerboard background
+        int side=10;
         int alt=1;
-        for(int k=clip.y;k<=clip.height;k+=10,alt++) {
-            for(int l=clip.x;l<=clip.width;l+=10, alt++) {
+        for(int k=clip.y-clip.y%side;k<=Math.max(10, (clip.y+clip.height/10)*10);k+=side,alt++) {
+            for(int l=1;l<=Math.max(10, (getWidth()/10)*10)+10;l+=side, alt++) {
                 if(alt%2 == 1) g.setColor(Color.LIGHT_GRAY);
                 else g.setColor(Color.WHITE);
-                g.fillRect(l,k,10,10);
+                g.fillRect(l,k,side,side);
             }
-            if(clip.width%2!=0) alt++;
+            if(clip.width%2!=0 || clip.width == 0) alt++;
         }
 
         if (tilesets.size() <= 0) {
             return;
         }
 
-        // TODO: In its current form this code doesn't take into account gabs
+        // TODO: In its current form this code doesn't take into account gaps
         // in the tileset (tile ids without associated tiles), causing it to
-        // draw the gabs and leave out tiles at the end.
+        // draw the gaps and leave out tiles at the end.
         for (int i = 0; i < tilesets.size(); i++) {
             TileSet tileset = (TileSet)tilesets.get(i);
             if (tileset != null) {					

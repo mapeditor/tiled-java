@@ -100,7 +100,7 @@ public class LayerTableModel extends AbstractTableModel
             } else if (col == 1) {
                 Boolean bool = (Boolean)value;
                 layer.setVisible(bool.booleanValue());
-            } else if (col == 1) {
+            } else if (col == 2) {
                 layer.setName(value.toString());
             }
             fireTableCellUpdated(row, col);

@@ -117,7 +117,7 @@ public class TileLayer extends MapLayer
      * @param dir the axial orientation to mirror around
      */
     public void mirror(int dir) {
-        if (canEdit())
+        if (!canEdit())
             return;
 
         Tile[][] mirror = new Tile[bounds.height][bounds.width];
@@ -292,7 +292,7 @@ public class TileLayer extends MapLayer
      * @param replace the replacement tile
      */
     public void replaceTile(Tile find, Tile replace) {
-        if (canEdit())
+        if (!canEdit())
             return;
 
         for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
@@ -313,7 +313,7 @@ public class TileLayer extends MapLayer
      * @param other the insignificant layer to merge with
      */
     public void mergeOnto(MapLayer other) {
-        if(other.canEdit())
+        if(!other.canEdit())
             return;
         
         for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
@@ -334,7 +334,7 @@ public class TileLayer extends MapLayer
      * @param other
      */
     public void copyFrom(MapLayer other) {
-        if (canEdit())
+        if (!canEdit())
             return;
 
         for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
@@ -345,7 +345,7 @@ public class TileLayer extends MapLayer
     }
 
     public void maskedCopyFrom(MapLayer other, Area mask) {
-        if (canEdit())
+        if (!canEdit())
             return;
 
         Rectangle boundBox = mask.getBounds();
@@ -367,7 +367,7 @@ public class TileLayer extends MapLayer
      * @param other the layer to copy this layer to
      */
     public void copyTo(MapLayer other) {
-        if (canEdit())
+        if (!canEdit())
             return;
         
         for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
@@ -407,7 +407,7 @@ public class TileLayer extends MapLayer
      * @param dy     the shift in y direction
      */
     public void resize(int width, int height, int dx, int dy) {
-        if (canEdit())
+        if (!canEdit())
             return;
 
         Tile[][] newMap = new Tile[height][width];
