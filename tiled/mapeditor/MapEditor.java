@@ -1042,6 +1042,36 @@ public class MapEditor implements ActionListener,
 			undoStack.addEdit(paintEdit);
 			updateHistory();
 			mapView.repaint();
+		} else if (command.equals("Rotate 180")) {
+			MapLayer layer = currentMap.getLayer(currentLayer);
+			paintEdit =
+					new MapLayerEdit(currentMap, new MapLayer(layer), null);
+			currentMap.getLayer(currentLayer).rotate(MapLayer.ROTATE_180);
+			layer = new MapLayer(currentMap.getLayer(currentLayer));
+			try {
+				paintEdit.end(layer);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			paintEdit.setPresentationName("Rotate 180");
+			undoStack.addEdit(paintEdit);
+			updateHistory();
+			mapView.repaint();
+		} else if (command.equals("Rotate 270")) {
+			MapLayer layer = currentMap.getLayer(currentLayer);
+			paintEdit =
+					new MapLayerEdit(currentMap, new MapLayer(layer), null);
+			currentMap.getLayer(currentLayer).rotate(MapLayer.ROTATE_270);
+			layer = new MapLayer(currentMap.getLayer(currentLayer));
+			try {
+				paintEdit.end(layer);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			paintEdit.setPresentationName("Rotate 270");
+			undoStack.addEdit(paintEdit);
+			updateHistory();
+			mapView.repaint();
 		} else {
             System.out.println(event);
         }
