@@ -13,6 +13,7 @@
 package tiled.mapeditor;
 
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -27,6 +28,7 @@ public class PluginDialog extends JFrame implements ActionListener {
 
 	private JFrame parent;
 	private PluginClassLoader pluginLoader;
+	private JList pluginList = null;
 	
 	public PluginDialog(JFrame parent, PluginClassLoader pluginLoader) {
 		super("Available Plugins");
@@ -37,8 +39,7 @@ public class PluginDialog extends JFrame implements ActionListener {
 		VerticalStaticJPanel mainPanel = new VerticalStaticJPanel();
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 		
-		/* LIST PANEL */
-		JList pluginList = null;
+		/* LIST PANEL */		
 		MapReader readers[];
 		
         try {
@@ -98,7 +99,23 @@ public class PluginDialog extends JFrame implements ActionListener {
         }else if(command.equalsIgnoreCase("remove")) {
         	
         }else if(command.equalsIgnoreCase("info")) {
+        	JDialog info = new JDialog(this);
+        	JTextArea ta = new JTextArea(25,30);
+        	int index = pluginList.getSelectedIndex();
         	
+        	MapReader[] readers;
+        	try{
+				readers = (MapReader[]) pluginLoader.getReaders();
+				ta.setText(readers[index].getDescription());
+        	}catch (Throwable t) {
+        		t.printStackTrace();
+        	}
+        	ta.setEditable(false);
+        	ta.setFont(new Font("SanSerif", Font.PLAIN, 11));
+        	info.getContentPane().add(ta);
+        	info.setLocationRelativeTo(this);
+        	info.pack();
+        	info.setVisible(true);
 		}
     }
 }

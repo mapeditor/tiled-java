@@ -94,7 +94,9 @@ public class MappyMapReader implements MapReader {
     }
 
     public String getDescription() {
-        return "+---------------------------------------------+\n| An experimental reader for Mappy FMAP (v0.36) |\n|      (c) Adam Turk 2004               |\n|         aturk@biggeruniverse.com               |\n+-------------------------------------------+";
+        return "+---------------------------------------------+\n" +        	   "|      An experimental reader for Mappy       |\n" +        	   "|                 FMAP v0.36                  |\n" +        	   "|            (c) Adam Turk 2004               |\n" +        	   "|          aturk@biggeruniverse.com           |\n" +
+        	   "|                                             |\n" +        	   "| Currently unsupported:                      |\n" +        	   "|  * Animated tiles                           |\n" +        	   "|  * The ATHR block                           |\n" +        	   "|  * Collision bits on BLKSTR structures      |\n" +        	   "|  * bitdepths other than 16bit               |\n" +
+        	   "|  * object layers                            |\n" +        	   "+---------------------------------------------+";
 		
     }
                                                                                 
