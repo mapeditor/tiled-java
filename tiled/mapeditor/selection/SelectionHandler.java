@@ -12,8 +12,6 @@
 
 package tiled.mapeditor.selection;
 
-import javax.swing.*;
-
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;

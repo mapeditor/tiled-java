@@ -34,7 +34,7 @@
 
 <!ELEMENT object (property+)>
 <!ATTLIST object
-  name     CDATA #REQUIRED
+  name     CDATA #IMPLIED
   x        CDATA #REQUIRED
   y        CDATA #REQUIRED
   source   CDATA #REQUIRED

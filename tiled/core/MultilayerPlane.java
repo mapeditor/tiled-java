@@ -12,6 +12,7 @@
 
 package tiled.core;
 
+import java.awt.Rectangle;
 import java.util.*;
 
 public class MultilayerPlane {
@@ -42,6 +43,10 @@ public class MultilayerPlane {
 			}
 		}
 		return totalLayers;
+	}
+	
+	public Rectangle getBounds() {
+		return new Rectangle(0,0,widthInTiles,heightInTiles);
 	}
 	
 	/**
@@ -150,13 +155,24 @@ public class MultilayerPlane {
 	 * should be positioned on the new area. It only affects layers with dimensions 
 	 * equal to that of the MutlilayerPlane.
 	 *
+	 * @see MapLayer#resize
+	 *
 	 * @param width  The new width of the map.
 	 * @param height The new height of the map.
 	 * @param dx     The shift in x direction in tiles.
 	 * @param dy     The shift in y direction in tiles.
 	 */
 	public void resize(int width, int height, int dx, int dy) {
-		// TODO: Implement Map#resize
+		
+		
+		
+		ListIterator itr = getLayers();
+		while(itr.hasNext()) {
+			MapLayer l = (MapLayer) itr.next();
+			if(l.getBounds().equals(getBounds())) {
+				l.resize(width, height, dx, dy);
+			}
+		}
 		
 		widthInTiles = width;
 		heightInTiles= height;

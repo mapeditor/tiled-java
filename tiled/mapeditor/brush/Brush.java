@@ -12,15 +12,13 @@
 
 package tiled.mapeditor.brush;
 
-public class CustomBrush extends Brush {
+import tiled.core.MultilayerPlane;
 
-	public CustomBrush() {
+public abstract class Brush extends MultilayerPlane {
+
+	public Brush() {
 		super();
 	}
-
-    public void commitPaint(int x, int y) {
-        // TODO Auto-generated method stub
-        
-    }
-
+	
+	public abstract void commitPaint(int x, int y);
 }

@@ -12,25 +12,25 @@
 
 package tiled.mapeditor.selection;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Polygon;
+import java.awt.*;
+import java.awt.geom.Area;
 
 public class PolygonSelection extends SelectionHandler
 {
-    Polygon sel;
-
+    private Area selection;
+	private Polygon drawnPoly;
+	
     PolygonSelection() {
         super();
-        sel = new Polygon();
+        selection = new Area();
     }
 
-    public void or(Polygon r) {
+    public void or(Area r) {
 
     }
 
 
-    public void and(Polygon r) {
+    public void and(Area r) {
 		
     }
 
@@ -42,8 +42,14 @@ public class PolygonSelection extends SelectionHandler
 		
     }
 
+	private void createDrawn() {
+		drawnPoly = new Polygon();
+		
+		drawnPoly.invalidate();
+	}
+
     public void draw(Graphics g) {
         g.setColor(new Color(0,0,0));
-        g.drawPolygon(sel);
+        g.drawPolygon(drawnPoly);
     }
 }

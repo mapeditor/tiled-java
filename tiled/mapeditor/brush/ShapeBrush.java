@@ -12,9 +12,9 @@
 
 package tiled.mapeditor.brush;
 
-public class CustomBrush extends Brush {
 
-	public CustomBrush() {
+public class ShapeBrush extends Brush {
+	public ShapeBrush() {
 		super();
 	}
 
@@ -22,5 +22,6 @@ public class CustomBrush extends Brush {
         // TODO Auto-generated method stub
         
     }
-
+	
+	
 }

@@ -383,7 +383,6 @@ public class MapLayer implements Cloneable
 	 * @param other
 	 */
 	public void copyTo(MapLayer other) {
-//			TODO: the values are not clipped!
 		for (int i = 0; i < heightInTiles; i++) {
 			for (int j = 0; j < widthInTiles; j++) {				
 				other.setTileAt(j+xOffset, i+yOffset, map[i][j]);				
@@ -406,5 +405,27 @@ public class MapLayer implements Cloneable
         }
 
         return clone;
+    }
+    
+    /**
+     * 
+     * @see MultilayerPlane#resize
+     * 
+     * @param width
+     * @param height
+     * @param dx
+     * @param dy
+     */
+    public void resize(int width, int height, int dx, int dy) {
+		Tile [][] trans = new Tile[height][width];
+		for (int i = dy; i < Math.min(heightInTiles, height); i++) {
+			for (int j = dx; j < Math.min(widthInTiles, width); j++) {
+				if(i>=0 && j>=0) {
+					trans[i-dy][j-dx] = getTileAt(j,i);
+				}
+			}
+		}
+		
+		map = trans;
     }
 }
