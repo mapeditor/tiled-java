@@ -86,12 +86,12 @@ public class PluginClassLoader extends URLClassLoader
         for (int i = 0, j=0; i < files.length; i++) {
             String aPath = files[i].getAbsolutePath();
             if (aPath.endsWith(".jar")) {
-            	j++;
                 try {
+                	monitor.setNote("Reading "+aPath.substring(aPath.lastIndexOf(File.separatorChar)+1)+ "...");
                     JarFile jf = new JarFile(files[i]);
                     
                     monitor.setProgress(i);
-                    
+
                     if(jf.getManifest() == null)
                     	continue;
                     

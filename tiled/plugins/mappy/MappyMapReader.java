@@ -153,6 +153,7 @@ public class MappyMapReader implements MapReader {
 		minor = in.read();
 		in.skip(2);	//skip lsb and reserved bytes - always msb
 		ret = new Map(readShort(in), readShort(in));
+		ret.setOrientation(Map.MDO_ORTHO);        //be sure to set the orientation!
 		ret.addProperty("(s)fmap reader","Don't modify properties marked (s) unless you really know what you're doing.");
 		ret.addProperty("version",""+major+"."+minor);
 		in.skip(4);	//reserved
