@@ -47,7 +47,7 @@ public class MapEditor implements ActionListener,
     protected static final int PS_POUR    = 3;
     protected static final int PS_EYED    = 4;
     protected static final int PS_MARQUEE = 5;
-    protected static final int PS_MOVE = 6;
+    protected static final int PS_MOVE    = 6;
 
     private Cursor curDefault = null;
     private Cursor curPaint   = null;
