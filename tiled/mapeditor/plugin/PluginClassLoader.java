@@ -36,12 +36,15 @@ import tiled.util.TiledConfiguration;
 public final class PluginClassLoader extends URLClassLoader
 {
     private Vector plugins;
+    private Vector readers, writers;
     private Hashtable readerFormats, writerFormats;
     private static PluginClassLoader instance;
     
     public PluginClassLoader() {
         super(new URL[0]);
         plugins = new Vector();
+        readers = new Vector();
+        writers = new Vector();
         readerFormats = new Hashtable();
         writerFormats = new Hashtable();
     }
@@ -49,6 +52,8 @@ public final class PluginClassLoader extends URLClassLoader
     public PluginClassLoader(URL[] urls) {
         super(urls);
         plugins = new Vector();
+        readers = new Vector();
+        writers = new Vector();
         readerFormats = new Hashtable();
         writerFormats = new Hashtable();
     }
@@ -85,6 +90,8 @@ public final class PluginClassLoader extends URLClassLoader
             if (aPath.endsWith(".jar")) {
                 total++;
             }
+        readers = new Vector();
+        writers = new Vector();
         }
 
         // Start the progress monitor
@@ -149,8 +156,8 @@ public final class PluginClassLoader extends URLClassLoader
                     }
 
                     if (bPlugin) {
-                        _add(readerClass);
-                        _add(writerClass);
+                        if (readerClass != null) _add(readerClass);
+                        if (writerClass != null) _add(writerClass);
                         //System.out.println(
                         //        "Added " + files[i].getCanonicalPath());
                     }
@@ -163,29 +170,19 @@ public final class PluginClassLoader extends URLClassLoader
     }
 
     public MapReader[] getReaders() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-        MapReader[] readers = new MapReader[readerFormats.size()];
-        Iterator itr = readerFormats.keySet().iterator();
-        int i = 0;
-        while (itr.hasNext()) {
-            Object key = itr.next();
-            readers[i++] = (MapReader)loadClass(
-                    (String)readerFormats.get(key)).newInstance();
+        MapReader[] result = new MapReader[readers.size()];
+        for (int i = 0; i < readers.size(); ++i) {
+          result[i] = (MapReader)(readers.elementAt(i));
         }
-
-        return readers;
+        return result;
     }
 
     public MapWriter[] getWriters() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-        MapWriter[] writers = new MapWriter[writerFormats.size()];
-        Iterator itr = writerFormats.keySet().iterator();
-        int i = 0;
-        while (itr.hasNext()) {
-            Object key = itr.next();
-            writers[i++] = (MapWriter)loadClass(
-                    (String)writerFormats.get(key)).newInstance();
+        MapWriter[] result = new MapWriter[writers.size()];
+        for (int i = 0; i < writers.size(); ++i) {
+          result[i] = (MapWriter)(writers.elementAt(i));
         }
-
-        return writers;
+        return result;
     }
 
     public Object getReaderFor(String ext) throws Exception {
@@ -264,10 +261,12 @@ public final class PluginClassLoader extends URLClassLoader
                 for (int i = 0; i < ext.length; i++) {
                     readerFormats.put(ext[i], clname);
                 }
+                readers.add(p);
             } else {
                 for (int i = 0; i < ext.length; i++){
                     writerFormats.put(ext[i], clname);
                 }
+                writers.add(p);
             }
         } catch (NoClassDefFoundError e) {
             System.err.println("**Failed loading plugin: " + e.toString());
