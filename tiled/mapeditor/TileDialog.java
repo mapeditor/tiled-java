@@ -176,7 +176,9 @@ public class TileDialog extends JDialog
         buttons.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
         buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
         buttons.add(bAddImage);
+        buttons.add(Box.createRigidArea(new Dimension(5, 0)));
         buttons.add(bDeleteImage);
+        buttons.add(Box.createRigidArea(new Dimension(5, 0)));
         buttons.add(bDeleteAllUnusedImages);
 
         JPanel mainPanel = new JPanel();
@@ -197,12 +199,21 @@ public class TileDialog extends JDialog
         tabs.addTab("Tiles", createTilePanel());
         tabs.addTab("Images", createImagePanel());
 
-        JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-        mainPanel.add(tabs);
         bOk = new JButton("OK");
         bOk.addActionListener(this);
-        mainPanel.add(bOk);
+
+        JPanel buttons = new VerticalStaticJPanel();
+        buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
+        buttons.add(Box.createGlue());
+        buttons.add(bOk);
+
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        mainPanel.add(tabs);
+        mainPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        mainPanel.add(buttons);
+
         getContentPane().add(mainPanel);
         getRootPane().setDefaultButton(bOk);
     }

@@ -233,10 +233,13 @@ public class MapEditor implements ActionListener,
         createData();
         createStatusBar();
 
+        JSplitPane mainSplit = new JSplitPane(
+                JSplitPane.HORIZONTAL_SPLIT, false, mapScrollPane, dataPanel);
+        mainSplit.setResizeWeight(1.0);
+
         mainPanel = new JPanel(new BorderLayout());
         mainPanel.add(toolPanel, BorderLayout.WEST);
-        mainPanel.add(mapScrollPane);
-        mainPanel.add(dataPanel, BorderLayout.EAST);
+        mainPanel.add(mainSplit);
         mainPanel.add(statusBar, BorderLayout.SOUTH);
 
         return mainPanel;
@@ -268,8 +271,6 @@ public class MapEditor implements ActionListener,
                 "control W");
         JMenuItem print =
             createMenuItem("Print...", null, "Print the map", "control P");
-        JMenuItem brushop =
-            createMenuItem("Brushes...", null, "Options for brushes", "control B");
         
         recentMenu = new JMenu("Open Recent");
 
@@ -288,8 +289,6 @@ public class MapEditor implements ActionListener,
         fileMenu.add(save);
         fileMenu.add(saveAs);
         fileMenu.add(saveAsImage);
-        fileMenu.addSeparator();
-        fileMenu.add(brushop);
         // TODO: Re-add print menuitem when printing is functional
         //fileMenu.addSeparator();
         //fileMenu.add(print);
@@ -332,6 +331,8 @@ public class MapEditor implements ActionListener,
         editMenu.addSeparator();
         editMenu.add(createMenuItem("Preferences...",
                     null, "Configure options of the editor", null));
+        editMenu.add(createMenuItem("Brush...", null, "Configure the brush",
+                    "control B"));
 
         mapEventAdapter.addListener(undoMenuItem);
         mapEventAdapter.addListener(redoMenuItem);
@@ -1089,7 +1090,7 @@ public class MapEditor implements ActionListener,
             } catch (PrinterException e) {
                 e.printStackTrace();
             }
-        } else if (command.equals("Brushes...")) {
+        } else if (command.equals("Brush...")) {
                 BrushDialog bd = new BrushDialog(this, appFrame, currentBrush);
                 bd.setVisible(true);
         } else if (command.equals("Add Layer") ||

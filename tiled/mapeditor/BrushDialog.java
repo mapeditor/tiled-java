@@ -30,6 +30,7 @@ import tiled.core.Tile;
 import tiled.mapeditor.brush.*;
 import tiled.mapeditor.widget.BrushBrowser;
 import tiled.mapeditor.widget.IntegerSpinner;
+import tiled.mapeditor.widget.VerticalStaticJPanel;
 
 
 public class BrushDialog extends JFrame implements ActionListener,
@@ -37,21 +38,21 @@ public class BrushDialog extends JFrame implements ActionListener,
 {
     private JFrame parent;
     private AbstractBrush myBrush;
-    private MapEditor me;
+    private MapEditor editor;
 
     private JCheckBox cbRandomBrush;
     private IntegerSpinner affectLayers, brushSize;
     private JSlider sRandomAmount;
-    private JButton bApply;
+    private JButton bOk, bApply, bCancel;
     private BrushBrowser brushes;
 
-    public BrushDialog(MapEditor me, JFrame parent,
+    public BrushDialog(MapEditor editor, JFrame parent,
             AbstractBrush currentBrush)
     {
         super("Brush Options");
         this.parent = parent;
         myBrush = currentBrush;
-        this.me = me;
+        this.editor = editor;
 
         init();
         update();
@@ -123,10 +124,7 @@ public class BrushDialog extends JFrame implements ActionListener,
     }
 
     private JPanel createCustomPanel() {
-        JPanel customPanel = new JPanel();
-        
-        
-        
+        JPanel customPanel = new JPanel();        
         return customPanel;
     }
 
@@ -136,26 +134,33 @@ public class BrushDialog extends JFrame implements ActionListener,
         tabs.add("Options", createOptionsPanel());
         tabs.add("Custom", createCustomPanel());
 
+        bOk = new JButton("OK");
+        bApply = new JButton("Apply");
+        bCancel = new JButton("Cancel");
+        bOk.addActionListener(this);
+        bApply.addActionListener(this);
+        bCancel.addActionListener(this);
+        bApply.setEnabled(false);
+
+        /* BUTTONS PANEL */
+        JPanel buttons = new VerticalStaticJPanel();
+        buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
+        buttons.add(Box.createGlue());
+        buttons.add(bOk);        
+        buttons.add(Box.createRigidArea(new Dimension(5, 0)));
+        buttons.add(bApply);
+        buttons.add(Box.createRigidArea(new Dimension(5, 0)));
+        buttons.add(bCancel);
+
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         mainPanel.add(tabs);
-
-        JPanel buttonPanel = new JPanel(new GridBagLayout());
-        GridBagConstraints c = new GridBagConstraints();
-        c.gridx = 0; c.gridy = 0; c.weightx = 1;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        bApply = new JButton("Apply");
-        bApply.addActionListener(this);
-        bApply.setEnabled(false);
-        buttonPanel.add(bApply);
-        JButton bClose = new JButton("Close");
-        bClose.addActionListener(this);
-        c.gridx = 1;
-        buttonPanel.add(bClose);
-        mainPanel.add(buttonPanel);
+        mainPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        mainPanel.add(buttons);
 
         getContentPane().add(mainPanel);
-        getRootPane().setDefaultButton(bClose);
+        getRootPane().setDefaultButton(bOk);
     }
 
     public void setVisible(boolean visible) {
@@ -204,13 +209,20 @@ public class BrushDialog extends JFrame implements ActionListener,
     public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
 
-        if (source == bApply) {
-            bApply.setEnabled(false);
+        if (source == bOk) {
             createFromOptions();
-            me.setBrush(myBrush);
-        } else if (e.getActionCommand().equals("Close")) {
+            editor.setBrush(myBrush);
             dispose();
-        } else if (source == cbRandomBrush) {
+        }
+        else if (source == bApply) {
+            createFromOptions();
+            editor.setBrush(myBrush);
+            bApply.setEnabled(false);
+        }
+        else if (source == bCancel) {
+            dispose();
+        }
+        else if (source == cbRandomBrush) {
             sRandomAmount.setEnabled(cbRandomBrush.isSelected());
         }
     }
