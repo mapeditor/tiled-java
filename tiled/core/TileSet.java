@@ -5,7 +5,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
@@ -106,7 +106,7 @@ public class TileSet
 
 	/**
 	 * Sets the standard height of the tiles in this tileset. This is used
-	 * to calculate the drawing position of tiles with a height above the 
+	 * to calculate the drawing position of tiles with a height above the
 	 * standard height.
 	 */
     public void setStandardHeight(int s) {
@@ -126,9 +126,9 @@ public class TileSet
 
 	/**
 	 * Sets the URI path of the external source of this tile set.
-	 * By setting this, the set is implied to be external in all 
+	 * By setting this, the set is implied to be external in all
 	 * other operations.
-	 * 
+	 *
 	 * @param source
 	 */
     public void setSource(String source) {
@@ -137,7 +137,7 @@ public class TileSet
 
     /**
      * Sets the first global id used by this tileset.
-     * 
+     *
      * @param f first global id
      */
     public void setFirstGid(int f) {
@@ -154,9 +154,9 @@ public class TileSet
     }
 
 	/**
-	 * Adds the tile to the setting the id of the tile only if the 
+	 * Adds the tile to the setting the id of the tile only if the
 	 * current value of id is -1.
-	 * 
+	 *
 	 * @param t the tile to add
 	 */
     public void addTile(Tile t) {
@@ -166,7 +166,7 @@ public class TileSet
 
         if (t.getId() >= tiles.size()) {
             tiles.setSize(t.getId() + 1);
-        }        
+        }
 
         tiles.set(t.getId(), t);
         t.setTileSet(this);
@@ -177,9 +177,9 @@ public class TileSet
     }
 
     /**
-     * This method takes a new Tile object as argument, and in addition to 
-     * the functionality of <code>addTile()</code>, sets the id of the tile. 
-     * 
+     * This method takes a new Tile object as argument, and in addition to
+     * the functionality of <code>addTile()</code>, sets the id of the tile.
+     *
      * @see TileSet#addTile(Tile)
      * @param t the new tile to add.
      */
@@ -215,9 +215,9 @@ public class TileSet
     /**
      * Returns the standard height of tiles in this tileset. Not all tiles in
      * a tileset are required to have the same height.
-     * 
+     *
      * @return the standard height as previously set with a call to
-     *         TileSet#setStandardHeight 
+     *         TileSet#setStandardHeight
      */
     public int getStandardHeight() {
         return standardHeight;
@@ -225,7 +225,7 @@ public class TileSet
 
 	/**
 	 * Iterates through the set an retrieves the larges height value.
-	 * 
+	 *
 	 * @return the maximum hieght of any tile
 	 */
     public int getTileHeightMax() {
@@ -294,7 +294,7 @@ public class TileSet
 
     /**
      * Returns the first global id connected to this tileset.
-     * 
+     *
      * @return first global id
      */
     public int getFirstGid() {
@@ -307,21 +307,21 @@ public class TileSet
     public String getName() {
         return name;
     }
-    
+
     public String toString() {
     	return name + " ["+getTotalTiles()+"]";
     }
-    
+
     //TILE IMAGE CODE
-    
+
     private String checksumImage(Image i) {
     	PixelGrabber pg = new PixelGrabber(i,0,0,-1,-1,false);
     	Checksum sum = new CRC32();
-		
+
 		try {
 			pg.grabPixels();
 			ImageInputStream is;
-			
+
 			try {
 				ByteArrayInputStream bais = new ByteArrayInputStream(Util.convertIntegersToBytes((int[])pg.getPixels()));
 				byte[] bytes = new byte[1024];
@@ -337,29 +337,29 @@ public class TileSet
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		
+
     	return Long.toHexString(sum.getValue());
     }
-    
+
     public int getIdByImage(Image i) {
-    	Iterator itr = imageCache.keySet().iterator();
-    	int id= -1;
-    	if(i != null) {
-	    	while(itr.hasNext()) {
-	    		Image img = (Image) imageCache.get(itr.next());
-	    		id++;
-	    		if(img.equals(i)) {
-	    			break;
-	    		}
-	    	}
-    	}
-    	return id;
+        Iterator itr = imageCache.keySet().iterator();
+        int searchId = -1;
+        if (i != null) {
+            while (itr.hasNext()) {
+                Image img = (Image)imageCache.get(itr.next());
+                searchId++;
+                if (img.equals(i)) {
+                    break;
+                }
+            }
+        }
+        return searchId;
     }
-    
+
     public Image getImageById(Object key) {
-    	return (Image) imageCache.get(images.get(key));
+        return (Image)imageCache.get(images.get(key));
     }
-    
+
     public void overlayImage(Object key, Image i) {
     	String hash = checksumImage(i);
     	imageCache.put(hash, i);
@@ -372,7 +372,7 @@ public class TileSet
 	 */
 	public Dimension getImageDimensions(Object key) {
 		Image i = (Image) imageCache.get(images.get(key));
-		
+
 		return new Dimension(i.getWidth(null), i.getHeight(null));
 	}
 
@@ -385,7 +385,7 @@ public class TileSet
 		if(imageCache.get(hash) != null) {
 			System.out.println("Success");
 		}
-		return (Image) imageCache.get(hash); 
+		return (Image) imageCache.get(hash);
 	}
 
 	/**
@@ -400,7 +400,7 @@ public class TileSet
 		imageCache.put(cs, image);
 		return t;
 	}
-	
+
 	private boolean isUsed(String hash) {
 		Iterator itr = tiles.iterator();
 		while(itr.hasNext()) {

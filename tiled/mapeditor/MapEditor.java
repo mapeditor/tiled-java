@@ -63,7 +63,7 @@ public class MapEditor implements ActionListener,
     private Cursor curEyed    = null;
     private Cursor curMarquee = null;
 
-    public static final String version = "0.4.2";
+    public static final String version = "0.5.0 WIP";
 
     private Map currentMap;
     private MapView mapView;
@@ -417,7 +417,7 @@ public class MapEditor implements ActionListener,
         m.add(new TMenuItem(selectAllAction, true));
         m.add(new TMenuItem(cancelSelectionAction, true));
         m.add(new TMenuItem(inverseAction, true));
-        m.addSeparator();
+        //m.addSeparator();
         //m.add(modifySub);
         mapEventAdapter.addListener(m);
         menuBar.add(m);
@@ -439,12 +439,14 @@ public class MapEditor implements ActionListener,
         m.add(gridMenuItem);
         // TODO: Enable when boudary drawing code finished.
         //m.add(boundaryMenuItem);
+        // TODO: Hook this up to coordinates drawing on tiles.
+        //m.add(coordinatesMenuItem);
         mapEventAdapter.addListener(m);
         menuBar.add(m);
 
         m = new JMenu("Help");
-        m.add(createMenuItem("About", null, "Show about window"));
-		m.add(createMenuItem("About Plugins", null, "Show plugin window"));
+		m.add(createMenuItem("About Plug-ins", null, "Show plugin window"));
+        m.add(createMenuItem("About Tiled", null, "Show about window"));
         menuBar.add(m);
     }
 
@@ -1075,9 +1077,10 @@ public class MapEditor implements ActionListener,
             MapPropertiesDialog pd = new MapPropertiesDialog(appFrame, this);
             pd.getProps();
         } else if (command.equals("Layer Properties")) {
-			LayerPropertiesDialog lpd = new LayerPropertiesDialog(appFrame, this);
-			lpd.getProps();
-		} else if (command.equals("Show Boundaries") ||
+            LayerPropertiesDialog lpd =
+                new LayerPropertiesDialog(appFrame, this);
+            lpd.getProps();
+        } else if (command.equals("Show Boundaries") ||
                 command.equals("Hide Boundaries")) {
             mapView.toggleMode(MapView.PF_BOUNDARYMODE);
         } else if (command.equals("Show Grid") ||
@@ -1090,17 +1093,17 @@ public class MapEditor implements ActionListener,
         }  else if(command.equals("Search")) {
             SearchDialog sd = new SearchDialog(appFrame, currentMap);
             sd.showDialog();
-        } else if (command.equals("About")) {
+        } else if (command.equals("About Tiled")) {
             if (aboutDialog == null) {
                 aboutDialog = new AboutDialog(appFrame);
             }
             aboutDialog.setVisible(true);
-        } else if (command.equals("About Plugins")) {
-			if (pluginDialog == null) {
-				pluginDialog = new PluginDialog(appFrame, pluginLoader);
-			}
-			pluginDialog.setVisible(true);
-		} else if (command.substring(0, command.length() < 5 ? command.length() : 5).equals("_open")) {
+        } else if (command.equals("About Plug-ins")) {
+            if (pluginDialog == null) {
+                pluginDialog = new PluginDialog(appFrame, pluginLoader);
+            }
+            pluginDialog.setVisible(true);
+        } else if (command.substring(0, command.length() < 5 ? command.length() : 5).equals("_open")) {
             try {
                 loadMap(configuration.getValue(
                             "tmx.recent." + command.substring(5)));

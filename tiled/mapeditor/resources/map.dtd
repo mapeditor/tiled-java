@@ -27,7 +27,10 @@
 
 <!ELEMENT layer  (data)>
 <!ATTLIST layer
-    id      ID    #REQUIRED
+    x       CDATA #IMPLIED
+    y       CDATA #IMPLIED
+    width   CDATA #IMPLIED
+    height  CDATA #IMPLIED
     name    CDATA #IMPLIED
     visible CDATA #IMPLIED
     opacity CDATA #IMPLIED

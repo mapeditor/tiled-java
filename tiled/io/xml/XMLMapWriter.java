@@ -35,7 +35,14 @@ public class XMLMapWriter implements MapWriter
      */
     public void writeMap(Map map, String filename) throws Exception {
         FileOutputStream os = new FileOutputStream(filename);
-        writeMap(map, os);
+        Writer writer = new OutputStreamWriter(os);
+        XMLWriter xmlWriter = new XMLWriter(writer);
+
+        xmlWriter.startDocument();
+        writeMap(map, xmlWriter, filename);
+        xmlWriter.endDocument();
+
+        writer.flush();
     }
 
     /**
@@ -45,12 +52,19 @@ public class XMLMapWriter implements MapWriter
      */
     public void writeTileset(TileSet set, String filename) throws Exception {
         FileOutputStream os = new FileOutputStream(filename);
-        writeTileset(set, os);
+        Writer writer = new OutputStreamWriter(os);
+        XMLWriter xmlWriter = new XMLWriter(writer);
+
+        xmlWriter.startDocument();
+        writeTileset(set, xmlWriter, filename);
+        xmlWriter.endDocument();
+
+        writer.flush();
     }
 
 
-	public void writeMap(Map map, OutputStream out) throws Exception {
-		Writer writer = new OutputStreamWriter(out);
+    public void writeMap(Map map, OutputStream out) throws Exception {
+        Writer writer = new OutputStreamWriter(out);
         XMLWriter xmlWriter = new XMLWriter(writer);
 
         xmlWriter.startDocument();
@@ -58,8 +72,7 @@ public class XMLMapWriter implements MapWriter
         xmlWriter.endDocument();
 
         writer.flush();
-		
-	}
+    }
 
 	public void writeTileset(TileSet set, OutputStream out) throws Exception {
 		Writer writer = new OutputStreamWriter(out);
@@ -229,14 +242,15 @@ public class XMLMapWriter implements MapWriter
 
             Rectangle bounds = l.getBounds();
 
-			if(l.getClass() == SelectionLayer.class) {
-				w.startElement("selection");
-			} else {
-            	w.startElement("layer");
-			}
-            //w.writeAttribute("id", "" + l.getId());			
-			
+            if (l.getClass() == SelectionLayer.class) {
+                w.startElement("selection");
+            } else {
+                w.startElement("layer");
+            }
+
             w.writeAttribute("name", l.getName());
+            w.writeAttribute("width", "" + bounds.width);
+            w.writeAttribute("height", "" + bounds.height);
             if (bounds.x != 0) {
                 w.writeAttribute("xoffset", "" + bounds.x);
             }
@@ -251,16 +265,16 @@ public class XMLMapWriter implements MapWriter
                 w.writeAttribute("opacity", "" + l.getOpacity());
             }
 
-			Enumeration keys = l.getProperties();
-			while(keys.hasMoreElements()) {
-				String key = (String) keys.nextElement();
-				w.startElement("property");
-				w.writeAttribute("name", key);
-				w.writeAttribute("value", l.getPropertyValue(key));
-				w.endElement();
-			}
+            Enumeration keys = l.getProperties();
+            while (keys.hasMoreElements()) {
+                String key = (String) keys.nextElement();
+                w.startElement("property");
+                w.writeAttribute("name", key);
+                w.writeAttribute("value", l.getPropertyValue(key));
+                w.endElement();
+            }
 
-			w.startElement("data");
+            w.startElement("data");
             if (encodeLayerData) {
                 w.writeAttribute("encoding", "base64");
 
@@ -383,7 +397,9 @@ public class XMLMapWriter implements MapWriter
             w.writeAttribute("x", "" + m.getX());
             w.writeAttribute("y", "" + m.getY());
 			w.writeAttribute("type", m.getType());
-            w.writeAttribute("source", m.getSource());
+            if (m.getSource() != null) {
+                w.writeAttribute("source", m.getSource());
+            }
 
             Enumeration keys = m.getProperties();
             while (keys.hasMoreElements()) {
@@ -432,7 +448,6 @@ public class XMLMapWriter implements MapWriter
             if (!fromParent.equals(toParent)) {
                 break;
             }
-            shared++;
         }
 
         // Append .. for each remaining parent in fromParents

@@ -7,7 +7,7 @@
  *  (at your option) any later version.
  * 
  *  Adam Turk <aturk@biggeruniverse.com>
- *  Bjørn Lindeijer <b.lindeijer@xs4all.nl>
+ *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
 
 package tiled.mapeditor.util;
