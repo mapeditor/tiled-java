@@ -226,20 +226,20 @@ public class MapEditor implements ActionListener,
         redoMenuItem.setEnabled(false);
 
 
-		/*transformSub = new JMenu("Transform");
+		transformSub = new JMenu("Transform");
 		transformSub.add(createMenuItem("Rotate 90", null, "Rotate 90 degrees counterclockwise"));
 		transformSub.add(createMenuItem("Rotate 180", null, "Rotate 180 degrees counterclockwise"));
 		transformSub.add(createMenuItem("Rotate 270", null, "Rotate 270 degrees counterclockwise"));
 		transformSub.addSeparator();
 		transformSub.add(createMenuItem("Flip Horizontal", null, "Flip the map horizontally"));
 		transformSub.add(createMenuItem("Flip Vertical", null, "Flip the map vertically"));
-		mapEventAdapter.addListener(transformSub);*/
+		mapEventAdapter.addListener(transformSub);
 
         m = new JMenu("Edit");
         m.add(undoMenuItem);
         m.add(redoMenuItem);
-		//m.addSeparator();
-		//m.add(transformSub);
+		m.addSeparator();
+		m.add(transformSub);
 		//mapEventAdapter.addListener(transformSub);
 		m.addSeparator();
 		m.add(createMenuItem("Preferences...", null, "Configure options of the editor", null));
@@ -997,7 +997,52 @@ public class MapEditor implements ActionListener,
         } else if (command.equals("Preferences...")) {
             ConfigurationDialog d = new ConfigurationDialog(appFrame);
             d.configure();
-        } else {
+        } else if (command.equals("Flip Horizontal")) {
+			MapLayer layer = currentMap.getLayer(currentLayer);			
+			paintEdit =
+					new MapLayerEdit(currentMap, new MapLayer(layer), null);
+			currentMap.getLayer(currentLayer).mirror(MapLayer.MIRROR_HORIZONTAL);
+			layer = new MapLayer(currentMap.getLayer(currentLayer));
+			try {
+                paintEdit.end(layer);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            paintEdit.setPresentationName("Flip Horizontal");
+			undoStack.addEdit(paintEdit);
+			updateHistory();
+			mapView.repaint();
+		} else if (command.equals("Flip Vertical")) {
+			MapLayer layer = currentMap.getLayer(currentLayer);
+			paintEdit =
+					new MapLayerEdit(currentMap, new MapLayer(layer), null);
+			currentMap.getLayer(currentLayer).mirror(MapLayer.MIRROR_VERTICAL);
+			layer = new MapLayer(currentMap.getLayer(currentLayer));
+			try {
+				paintEdit.end(layer);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			paintEdit.setPresentationName("Flip Vertical");
+			undoStack.addEdit(paintEdit);
+			updateHistory();
+			mapView.repaint();
+		} else if (command.equals("Rotate 90")) {
+			MapLayer layer = currentMap.getLayer(currentLayer);
+			paintEdit =
+					new MapLayerEdit(currentMap, new MapLayer(layer), null);
+			currentMap.getLayer(currentLayer).rotate(MapLayer.ROTATE_90);
+			layer = new MapLayer(currentMap.getLayer(currentLayer));
+			try {
+				paintEdit.end(layer);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			paintEdit.setPresentationName("Rotate 90");
+			undoStack.addEdit(paintEdit);
+			updateHistory();
+			mapView.repaint();
+		} else {
             System.out.println(event);
         }
     }

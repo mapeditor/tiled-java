@@ -26,7 +26,7 @@ public class Map extends TiledEntity implements Cloneable
     public static final int MDO_HEX     = 4;
 
     private Vector tilesets;
-    private MapObject objs;
+    private LinkedList objects;
     private Vector layers;
     int major_rev, minor_rev, id;
     int widthInTiles = 0, heightInTiles = 0;
@@ -168,17 +168,7 @@ public class Map extends TiledEntity implements Cloneable
     }
 
     public void addObject(MapObject o) {
-        MapObject temp = objs;
-
-        if (objs == null) {
-            o.setId(getTotalObjects() + 1);
-            objs = o;
-        } else {
-            while (temp.next() != null) {
-                temp = temp.next();
-            }
-            temp.setNext(o);
-        }
+		objects.add(o);
     }
 
     public void addProperty(String key, String value) {

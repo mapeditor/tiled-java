@@ -13,16 +13,13 @@
 package tiled.core;
 
 import java.awt.*;
-
-/**
- * @author Adam Turk
- *
- */
+import java.util.Iterator;
+import java.util.Vector;
 
 public class Sprite extends TiledEntity{
 
-    private KeyFrame keys=null,
-    currentKey=null;
+    private Vector keys;
+    KeyFrame currentKey=null;
     private int totalFrames=0,
     borderWidth=0,
     fpl=0,
@@ -36,6 +33,7 @@ public class Sprite extends TiledEntity{
 
     public Sprite() {
         frameSize = new Rectangle();
+        keys = new Vector();
     }
 
     public Sprite(Image image,int fpl, int border,int totalFrames) {
@@ -48,7 +46,7 @@ public class Sprite extends TiledEntity{
         frameSize=new Rectangle(0,0,0,0);
         frameSize.width=image.getWidth(null)/(fpl+borderWidth*fpl);
         frameSize.height=(int) (image.getHeight(null)/(Math.ceil(totalFrames/fpl)+Math.ceil(totalFrames/fpl)*borderWidth));
-
+		keys = new Vector();
     }
 
     public void setImage(Image i) {
@@ -117,75 +115,27 @@ public class Sprite extends TiledEntity{
     }
 
     public int getTotalKeys() {
-        KeyFrame temp=keys;
-        totalKeys=0;
-        while (temp!=null) {
-            totalKeys++;
-            temp=temp.next();
-        }
-        return totalKeys;
+        return keys.size();
     }
 
     public void setKeyFrameTo(String name) {
-        KeyFrame temp=keys;
-        while (temp!=null) {
-            if (temp.equalsIgnoreCase(name)) {
-                setCurrentFrame(temp.getStartFrame());
-                currentKey=temp;
-                break;
-            }
-            temp=temp.next();
+        Iterator itr = keys.iterator();
+        while(itr.hasNext()) {
+        	KeyFrame k = (KeyFrame) itr.next();
+        	if(k.equalsIgnoreCase(name)) {
+        		currentKey=k;
+        		break;
+        	}
         }
     }
 
-    private void addKeyInternal(KeyFrame k) {
-        KeyFrame temp=keys;
-        if (keys==null) {
-            keys=k;
-            currentKey=k;
-            return;
-        }
-        while (temp.next()!=null) {
-            temp=temp.next();
-        }
-
-        temp.setNext(k);
-    }
 
     public void addKey(KeyFrame k) {
-        KeyFrame temp=keys;
-        totalKeys++;
-        if (keys==null) {
-            keys=k;
-            currentKey=k;
-            k.setId(0);
-            return;
-        }
-        while (temp.next()!=null) {
-            temp=temp.next();
-        }
-
-        temp.setNext(k);
-        k.setId(temp.getId()+1);
+        keys.add(k);
     }
 
     public void removeKey(String name) {
-        KeyFrame temp=keys,prev=keys;
-        if (keys!=null&&keys.equalsIgnoreCase(name)) {
-            keys=keys.next();
-            return;
-        }
-        if (temp!=null) {
-            temp=temp.next();
-        }
-        while (temp!=null) {
-            if (temp.equalsIgnoreCase(name)) {
-                prev.setNext(temp.next());
-                break;
-            }
-            prev=temp;
-            temp=temp.next();
-        }
+        //TODO: this function
     }
 
     public void createKey(String name, int start, int end, long flags) {
@@ -209,7 +159,7 @@ public class Sprite extends TiledEntity{
                 }else if ((currentKey.getFlags()&KeyFrame.KEY_REVERSE)==KeyFrame.KEY_REVERSE) {
                     currentKey.setFrameRate(-currentKey.getFrameRate());
                 }else if ((currentKey.getFlags()&KeyFrame.KEY_AUTO)==KeyFrame.KEY_AUTO) {
-                    currentKey=currentKey.next();
+                	//TODO: need to iterate to the next key
                     if (currentKey!=null) {
                         currentFrame = currentKey.getStartFrame();
                     }
@@ -259,37 +209,42 @@ public class Sprite extends TiledEntity{
     }
 
     public KeyFrame getKey(String keyName) {
-        KeyFrame temp=keys;
-        while (temp!=null) {
-            if (temp.equalsIgnoreCase(keyName)) {
-                break;
-            }
-            temp=temp.next();
+        Iterator itr = keys.iterator();
+        while(itr.hasNext()) {
+        	KeyFrame k = (KeyFrame) itr.next();
+        	if(k.equalsIgnoreCase(keyName)) {
+        		return k;
+        	}
         }
-        return temp;
+        return null;
     }
 
+	public KeyFrame getKey(int i) {
+		return (KeyFrame)keys.get(i);
+	}
+
     public String[] getKeys() throws Exception{
-        KeyFrame temp=keys;
-        if (temp==null) {
-            throw new Exception("No Keys!");
-        }
-        String [] s = new String [totalKeys+1];
+        Iterator itr = keys.iterator();
+        
+        String [] s = new String [getTotalKeys()+1];
         int i=0;
-        while (temp!=null) {
-            s[i++] = temp.getName();
-            temp=temp.next();
+        while (itr.hasNext()) {
+        	KeyFrame k = (KeyFrame) itr.next();
+            s[i++] = k.getName();
         }
         return s;
     }
 
     public void draw(Graphics g) {
         int x=0, y=0;
-        y=(((int)currentFrame)/fpl)*(frameSize.height+borderWidth);
-        x=(((int)currentFrame)%fpl)*(frameSize.width+borderWidth);
-
-        //System.out.println(""+currentFrame+": ("+x+"x"+y+")->("+frameSize.width+"x"+frameSize.height+")");
-        g.drawImage(sprite,0,0,frameSize.width,frameSize.height,x,y,frameSize.width+x,frameSize.height+y,null);
+        
+        if(frameSize.height>0 && frameSize.width>0) {
+	        y=(((int)currentFrame)/fpl)*(frameSize.height+borderWidth);
+	        x=(((int)currentFrame)%fpl)*(frameSize.width+borderWidth);
+	
+	        //System.out.println(""+currentFrame+": ("+x+"x"+y+")->("+frameSize.width+"x"+frameSize.height+")");
+	        g.drawImage(sprite,0,0,frameSize.width,frameSize.height,x,y,frameSize.width+x,frameSize.height+y,null);
+        }
     }
 
     public void drawAll(Graphics g) {

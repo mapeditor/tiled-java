@@ -22,6 +22,14 @@ import java.awt.Rectangle;
  */
 public class MapLayer implements Cloneable
 {
+	
+	public static final int MIRROR_HORIZONTAL=1;
+	public static final int MIRROR_VERTICAL=2;
+	
+	public static final int ROTATE_90  = 90;
+	public static final int ROTATE_180 = 180;
+	public static final int ROTATE_270 = 270;
+	
     protected int id, heightInTiles, widthInTiles;
     protected Tile map[][];
     private String name;
@@ -86,8 +94,31 @@ public class MapLayer implements Cloneable
 		yOffset += deltaY;
 	}
 
-	public void mirror(int dx, int dy) {
-	
+	public void rotate(int angle) {
+		Tile [][] trans;
+		
+		if(angle == ROTATE_90 || angle == ROTATE_270) {
+			trans = new Tile[widthInTiles][heightInTiles];
+		} else {
+			trans = new Tile[heightInTiles][widthInTiles];
+		}
+		
+		
+		//TODO: write the rest of this
+	}
+
+	public void mirror(int dir) {
+		Tile [][] mirror = new Tile[heightInTiles][widthInTiles];
+		for(int y=0;y<heightInTiles;y++){		
+			for(int x=0;x<widthInTiles;x++) {
+				if(dir == MIRROR_VERTICAL) {
+					mirror[y][x] = map[(heightInTiles-1)-y][x];
+				} else {
+					mirror[y][x] = map[y][(widthInTiles-1)-x];
+				}
+			}
+		}
+		map=mirror;
 	}
 
 	public boolean isUsed(Tile t) {

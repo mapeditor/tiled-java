@@ -23,7 +23,6 @@ public class KeyFrame
 
     private String name=null;
     private int firstFrame=0,lastFrame=0,id=-1;
-    private KeyFrame _next=null;
     private long flags=KEY_LOOP;
     private float frameRate=0;
 
@@ -46,10 +45,6 @@ public class KeyFrame
         this.name=name;
     }
 
-    public void setNext(KeyFrame n) {
-        _next=n;
-    }
-
     public void setFrameRate(float r) {
         frameRate=r;
     }
@@ -64,10 +59,6 @@ public class KeyFrame
 
     public void setFlags(long f) {
         flags=f;
-    }
-
-    public KeyFrame next() {
-        return(_next);
     }
 
     public int getStartFrame() {
