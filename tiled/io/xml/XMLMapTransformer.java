@@ -594,18 +594,18 @@ public class XMLMapTransformer implements MapReader
 			xmlPath = "file://"+xmlPath;
         }
         URL url = new URL(xmlFile);
-        Map map =  unmarshal(url.openStream());
-        map.setFilename(filename);
-        return map;
+        Map unmarshalledMap = unmarshal(url.openStream());
+        unmarshalledMap.setFilename(filename);
+        return unmarshalledMap;
     }
 
     public Map readMap(InputStream in) throws Exception {
     	xmlPath = ".";
     	
-    	Map map = unmarshal(in);
+    	Map unmarshalledMap = unmarshal(in);
     	
-        //map.setFilename(xmlFile);
-        return map;
+        //unmarshalledMap.setFilename(xmlFile);
+        return unmarshalledMap;
     }
     
     public TileSet readTileset(String filename) throws Exception {
