@@ -111,7 +111,7 @@ public class PluginDialog extends JFrame implements ActionListener {
         		t.printStackTrace();
         	}
         	ta.setEditable(false);
-        	ta.setFont(new Font("SanSerif", Font.PLAIN, 11));
+        	ta.setFont(new Font("Courier", Font.PLAIN, 12));
         	info.getContentPane().add(ta);
         	info.setLocationRelativeTo(this);
         	info.pack();
