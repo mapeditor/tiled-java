@@ -64,8 +64,10 @@ public class TileSet
             tilebmpFile = imgFilename;
         }
 
-        BufferedImage tilebmp = null;
+		System.out.println("Importing " + imgFilename + "...");
 
+        BufferedImage tilebmp = null;
+		
         tilebmp = ImageIO.read(imgFile);
 
         if (tilebmp == null) {
