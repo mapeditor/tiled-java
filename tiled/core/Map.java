@@ -369,10 +369,11 @@ public class Map extends MultilayerPlane implements Cloneable
     }
 
     /**
-     * Returns the height of the highest tile in all tilesets.
+     * Returns the maximum tile height. This is the height of the highest tile
+     * in all tilesets or the tile height used by this map if it's smaller.
      */
     public int getTileHeightMax() {
-        int maxHeight = 0;
+        int maxHeight = tileHeight;
         Iterator itr = tilesets.iterator();
 
         while (itr.hasNext()) {

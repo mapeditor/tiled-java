@@ -31,6 +31,7 @@
 * Fixed drawing artifacts in selections
 * Fixed Copy, Cut, and Paste menu options to be disabled when no map is loaded
 * Fixed cancelling Save As operation still saving the map
+* Fixed inverting selections
 
 0.4.2 - October 14th, 2004
 
