@@ -16,15 +16,16 @@ import java.io.File;
 import java.io.IOException;
 
 
-public class Util {
-    
+public class Util
+{
     /**
-     * This function converts an <code>int</code> integer array to a <code>byte</code>
-     * array. Each integer element is broken into 4 bytes and stored in the byte array 
-     * in litte endian byte order.
+     * This function converts an <code>int</code> integer array to a
+     * <code>byte</code> array. Each integer element is broken into 4 bytes and
+     * stored in the byte array in litte endian byte order.
      * 
      * @param integers an integer array
-     * @return a byte array containing the values of the int array. The byte array is 4x the length of the integer array. 
+     * @return a byte array containing the values of the int array. The byte
+     *         array is 4x the length of the integer array. 
      */
     public static byte[] convertIntegersToBytes (int[] integers) {
         if (integers != null) {
@@ -43,11 +44,13 @@ public class Util {
     }
 
     /**
-     * This utility function will check the specified string to see if it starts with one
-     * of the OS root designations. (Ex.: '/' on Unix, 'C:' on Windows)
+     * This utility function will check the specified string to see if it
+     * starts with one of the OS root designations. (Ex.: '/' on Unix, 'C:' on
+     * Windows)
      * 
      * @param filename a filename to check for absolute or relative path
-     * @return <code>true</code> if the specified filename starts with a filesystem root, <code>false</code> otherwise.
+     * @return <code>true</code> if the specified filename starts with a
+     *         filesystem root, <code>false</code> otherwise.
      */
     public static boolean checkRoot(String filename) {
         File[] roots = File.listRoots();

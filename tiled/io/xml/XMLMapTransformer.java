@@ -241,7 +241,9 @@ public class XMLMapTransformer implements MapReader
         return img;
     }
 
-    private TileSet unmarshalTilesetFile(InputStream in, String filename) throws Exception {
+    private TileSet unmarshalTilesetFile(InputStream in, String filename)
+        throws Exception
+    {
         TileSet set = null;
         Node tsNode;
         Document tsDoc = null;
@@ -252,7 +254,8 @@ public class XMLMapTransformer implements MapReader
             tsDoc = builder.parse(in, ".");
         } catch (FileNotFoundException fnf) {
             // TODO: Have a popup and ask the user to browse to the file...
-            warnings.push("ERROR: Could not find external tileset file "+filename);
+            warnings.push("ERROR: Could not find external tileset file " +
+                    filename);
         }
 
         String xmlPathSave = xmlPath;
@@ -300,18 +303,18 @@ public class XMLMapTransformer implements MapReader
         }
 
         if (set.getSource() != null) {
-            
             String filename = tilesetBaseDir + set.getSource();
-            if(Util.checkRoot(set.getSource())) {
+            if (Util.checkRoot(set.getSource())) {
                 filename = makeUrl(set.getSource());
             }
             
             TileSet ext = null;
-            try{
+            try {
                 InputStream in = new URL(filename).openStream();
                 ext = unmarshalTilesetFile(in, filename);
-            }catch(FileNotFoundException fnf) {
-                warnings.push("ERROR: Could not find external tileset file "+filename);
+            } catch (FileNotFoundException fnf) {
+                warnings.push("ERROR: Could not find external tileset file " +
+                        filename);
                 ext = new TileSet();
             }
             ext.setFirstGid(set.getFirstGid());

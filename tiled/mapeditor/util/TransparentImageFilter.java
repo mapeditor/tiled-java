@@ -14,20 +14,33 @@ package tiled.mapeditor.util;
 
 import java.awt.image.RGBImageFilter;
 
-public class TransparentImageFilter extends RGBImageFilter{
-	int trans=0;
+/**
+ * This filter is used for filtering out a given "transparent" color from an
+ * image. Sometimes known as magic pink.
+ */
+public class TransparentImageFilter extends RGBImageFilter
+{
+    int trans;
 
-	public TransparentImageFilter(int col){
-		trans=col;
-		//System.out.println(trans);
-	}
+    /**
+     * @param col the color to make transparent
+     */
+    public TransparentImageFilter(int col) {
+        trans = col;
 
-	public int filterRGB(int x,int y,int rgb){
-		//System.out.println("does "+rgb+"("+Integer.toBinaryString(rgb)+")=="+trans+"("+Integer.toBinaryString(trans)+")? "+(rgb&trans));		
-		if(rgb==trans){
-			return 0;
-		} else {
-			return rgb;			
-		}
-	}	
+        // The filter doesn't depend on pixel location
+        canFilterIndexColorModel = true;
+    }
+
+    /**
+     * Filters the given pixel. It returns a transparent pixel for pixels that
+     * match the transparency color, or the existing pixel for anything else.
+     */
+    public int filterRGB(int x, int y, int rgb) {
+        if (rgb == trans) {
+            return 0;
+        } else {
+            return rgb;			
+        }
+    }	
 }
