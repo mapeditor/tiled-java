@@ -27,6 +27,7 @@ import javax.swing.undo.UndoableEditSupport;
 import tiled.core.*;
 import tiled.view.*;
 import tiled.mapeditor.brush.*;
+import tiled.mapeditor.selection.SelectionLayer;
 import tiled.mapeditor.util.*;
 import tiled.mapeditor.widget.*;
 import tiled.mapeditor.undo.*;
@@ -76,6 +77,7 @@ public class MapEditor implements ActionListener,
     Point mousePressLocation;
     int mouseButton;
     Brush currentBrush;
+	SelectionLayer marqueeSelection=null;
 
     // GUI components
     JPanel      mainPanel;
@@ -752,6 +754,16 @@ public class MapEditor implements ActionListener,
                             tile.y - mousePressLocation.y);
                     mapView.repaint();
                     break;
+				case PS_MARQUEE:
+					if(marqueeSelection != null) {
+						for (int y = Math.min(mousePressLocation.y,tile.y); y < Math.max(mousePressLocation.y,tile.y); y++) {
+								for (int x = Math.min(mousePressLocation.x,tile.x); x < Math.max(mousePressLocation.x,tile.x); x++) {
+										marqueeSelection.select(x,y);
+								}
+						}
+						mapView.repaintRegion(new Rectangle(mousePressLocation.x, mousePressLocation.y, tile.x, tile.y));
+					}
+					break;
             }
         }
     }
@@ -770,19 +782,40 @@ public class MapEditor implements ActionListener,
         mouseButton = e.getButton();
         bMouseIsDown = true;
         mousePressLocation = mapView.screenToTileCoords(e.getX(), e.getY());
-        if (currentPointerState != PS_EYED && currentPointerState != PS_POINT
+        if ((currentPointerState != PS_EYED && currentPointerState != PS_POINT && currentPointerState != PS_MARQUEE)
                 && mouseButton == MouseEvent.BUTTON1)
         {
             MapLayer layer = currentMap.getLayer(currentLayer);
             paintEdit =
                 new MapLayerEdit(layer, new MapLayer(layer), null);
         }
+        
+        //special logic for seleciton
+        if(currentPointerState == PS_MARQUEE) {
+        	if(marqueeSelection != null) {
+        		currentMap.removeLayer(marqueeSelection.getId());
+        	}
+        	marqueeSelection = new SelectionLayer(currentMap.getWidth(), currentMap.getHeight());
+        	currentMap.addLayer(marqueeSelection);
+        }
+        
         doMouse(e);
     }
 
     public void mouseReleased(MouseEvent event) {
         mouseButton = MouseEvent.NOBUTTON;
         bMouseIsDown = false;
+        
+		if(currentPointerState == PS_MARQUEE) {
+			Point tile = mapView.screenToTileCoords(event.getX(), event.getY());
+			if( tile.y - mousePressLocation.y==0 && tile.x - mousePressLocation.x ==0) {
+				if(marqueeSelection != null) {
+					currentMap.removeLayer(marqueeSelection.getId());
+					marqueeSelection = null;
+				}	 
+			}
+		}
+        
         if (paintEdit != null) {
             MapLayer layer = currentMap.getLayer(currentLayer);
             if (layer != null) {

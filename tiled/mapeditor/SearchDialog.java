@@ -86,6 +86,7 @@ public class SearchDialog extends JDialog implements ActionListener {
 		replaceCBox.setEditable(false);
 		searchPanel.add(replaceCBox,c);
 		queryTiles(searchCBox);
+		replaceCBox.addItem(null);
 		queryTiles(replaceCBox);
 		mainPanel.add(searchPanel, BorderLayout.NORTH);
 		

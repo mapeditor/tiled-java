@@ -163,21 +163,22 @@ public abstract class MapView extends JPanel implements Scrollable
         g.fillRect(clip.x, clip.y, clip.width, clip.height);
 
         while (li.hasNext()) {
-        	layer = (MapLayer)li.next();
-            float opacity = layer.getOpacity();
-            if (layer.isVisible() && opacity > 0.0f) {
-                if (opacity < 1.0f) {
-                    g2d.setComposite(AlphaComposite.getInstance(
-                                AlphaComposite.SRC_ATOP, opacity));
-                } else if (layer.getClass() == SelectionLayer.class) {
-					((Graphics2D)g).setComposite(AlphaComposite.getInstance(
-															   AlphaComposite.SRC_ATOP, 0.3f));
-					g.setColor(((SelectionLayer)layer).getHighlightColor());
-                } else {
-                    g2d.setComposite(AlphaComposite.SrcOver);
-                }
-                paint(g, layer, currentZoom);
-            }
+        	if((layer = (MapLayer)li.next()) != null) {
+	            float opacity = layer.getOpacity();
+	            if (layer.isVisible() && opacity > 0.0f) {
+	                if (opacity < 1.0f) {
+	                    g2d.setComposite(AlphaComposite.getInstance(
+	                                AlphaComposite.SRC_ATOP, opacity));
+	                } else if (layer.getClass() == SelectionLayer.class) {
+						((Graphics2D)g).setComposite(AlphaComposite.getInstance(
+																   AlphaComposite.SRC_ATOP, 0.3f));
+						g.setColor(((SelectionLayer)layer).getHighlightColor());
+	                } else {
+	                    g2d.setComposite(AlphaComposite.SrcOver);
+	                }
+	                paint(g, layer, currentZoom);
+	            }
+        	}
         }
 
         if (getMode(PF_GRIDMODE)) {
