@@ -1,19 +1,17 @@
-0.5.0 - TBD
+0.5.0 - December 14th, 2004
 
 * Added width and height attributes to layer element
 * Added layer properties, analoguous to tile and map properties
-/ Added support for object placement
 * Added a version attribute to the map tag
 * Added a basedir attribute to the tileset tag (suggested by Radomir
   Dopieralski)
 * Added support for shared images (merged in Rainer Deyke's shared images code)
-* Added support for masked bitmaps on tileset image imports
+* Added support for masked tileset images
 * Added support for highlighting tile under cursor
 * Added support for creating an image snapshot of the map
 * Added additional zoom levels (by Marc Ilgen)
 * Added background color option (by Marc Ilgen)
 * Added option to show coordinates on each tile (suggested by Ahmed Mohombe)
-/ Added documentation for the TMX format
 * Added an option whether to automatically create tiles from tileset images
   upon import or not.
 * Added support for reading TMX/TSX files from URLs
