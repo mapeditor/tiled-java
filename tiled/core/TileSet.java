@@ -104,11 +104,11 @@ public class TileSet
         standardWidth = width;
     }
 
-	/**
-	 * Sets the standard height of the tiles in this tileset. This is used
-	 * to calculate the drawing position of tiles with a height above the
-	 * standard height.
-	 */
+    /**
+     * Sets the standard height of the tiles in this tileset. This is used to
+     * calculate the drawing position of tiles with a height above the standard
+     * height.
+     */
     public void setStandardHeight(int s) {
         standardHeight = s;
         Iterator itr = tiles.iterator();
@@ -124,13 +124,12 @@ public class TileSet
         setImage = i;
     }
 
-	/**
-	 * Sets the URI path of the external source of this tile set.
-	 * By setting this, the set is implied to be external in all
-	 * other operations.
-	 *
-	 * @param source
-	 */
+    /**
+     * Sets the URI path of the external source of this tile set. By setting
+     * this, the set is implied to be external in all other operations.
+     *
+     * @param source
+     */
     public void setSource(String source) {
         externalSource = source;
     }
@@ -153,12 +152,12 @@ public class TileSet
         this.name = name;
     }
 
-	/**
-	 * Adds the tile to the setting the id of the tile only if the
-	 * current value of id is -1.
-	 *
-	 * @param t the tile to add
-	 */
+    /**
+     * Adds the tile to the setting the id of the tile only if the current
+     * value of id is -1.
+     *
+     * @param t the tile to add
+     */
     public void addTile(Tile t) {
         if (t.getId() < 0) {
             t.setId(this.getTotalTiles());
@@ -223,11 +222,11 @@ public class TileSet
         return standardHeight;
     }
 
-	/**
-	 * Iterates through the set an retrieves the larges height value.
-	 *
-	 * @return the maximum hieght of any tile
-	 */
+    /**
+     * Iterates through the set an retrieves the largest height value.
+     *
+     * @return the maximum hieght of any tile
+     */
     public int getTileHeightMax() {
         int maxHeight = 0;
         Iterator itr = tiles.iterator();
@@ -312,33 +311,33 @@ public class TileSet
     	return name + " ["+getTotalTiles()+"]";
     }
 
-    //TILE IMAGE CODE
+    // TILE IMAGE CODE
 
     private String checksumImage(Image i) {
-    	PixelGrabber pg = new PixelGrabber(i,0,0,-1,-1,false);
-    	Checksum sum = new CRC32();
+        PixelGrabber pg = new PixelGrabber(i,0,0,-1,-1,false);
+        Checksum sum = new CRC32();
 
-		try {
-			pg.grabPixels();
-			ImageInputStream is;
+        try {
+            pg.grabPixels();
+            ImageInputStream is;
 
-			try {
-				ByteArrayInputStream bais = new ByteArrayInputStream(Util.convertIntegersToBytes((int[])pg.getPixels()));
-				byte[] bytes = new byte[1024];
-		        int len = 0;
+            try {
+                ByteArrayInputStream bais = new ByteArrayInputStream(Util.convertIntegersToBytes((int[])pg.getPixels()));
+                byte[] bytes = new byte[1024];
+                int len = 0;
 
-		        while ((len = bais.read(bytes)) >= 0) {
-		            sum.update(bytes, 0, len);
-		        }
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+                while ((len = bais.read(bytes)) >= 0) {
+                    sum.update(bytes, 0, len);
+                }
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
-    	return Long.toHexString(sum.getValue());
+        return Long.toHexString(sum.getValue());
     }
 
     public int getIdByImage(Image i) {
@@ -366,50 +365,49 @@ public class TileSet
     	images.put(key, hash);
     }
 
-	/**
-	 * @param string
-	 * @return
-	 */
-	public Dimension getImageDimensions(Object key) {
-		Image i = (Image) imageCache.get(images.get(key));
+    /**
+     * @param key
+     * @return dimensions of image with given key
+     */
+    public Dimension getImageDimensions(Object key) {
+        Image i = (Image)imageCache.get(images.get(key));
 
-		return new Dimension(i.getWidth(null), i.getHeight(null));
-	}
+        return new Dimension(i.getWidth(null), i.getHeight(null));
+    }
 
-	/**
-	 * @param internalImage
-	 * @return
-	 */
-	public Image queryImage(Image image) {
-		String hash = checksumImage(image);
-		if(imageCache.get(hash) != null) {
-			System.out.println("Success");
-		}
-		return (Image) imageCache.get(hash);
-	}
+    /**
+     * @param image
+     * @return
+     */
+    public Image queryImage(Image image) {
+        String hash = checksumImage(image);
+        if (imageCache.get(hash) != null) {
+            System.out.println("Success");
+        }
+        return (Image)imageCache.get(hash);
+    }
 
-	/**
-	 * @param internalImage
-	 * @return
-	 */
-	public int addImage(Image image) {
-		int t = images.size();
-		String cs = checksumImage(image);
-		System.out.println("Checksum: " + cs);
-		images.put(""+t, cs);
-		imageCache.put(cs, image);
-		return t;
-	}
+    /**
+     * @param image image to add
+     * @return
+     */
+    public int addImage(Image image) {
+        int t = images.size();
+        String cs = checksumImage(image);
+        System.out.println("Checksum: " + cs);
+        images.put(""+t, cs);
+        imageCache.put(cs, image);
+        return t;
+    }
 
-	private boolean isUsed(String hash) {
-		Iterator itr = tiles.iterator();
-		while(itr.hasNext()) {
-			Tile t = (Tile) itr.next();
-			if(hash.equals(images.get(""+t.getImageId()))) {
-				return true;
-			}
-		}
-		return false;
-	}
-
+    private boolean isUsed(String hash) {
+        Iterator itr = tiles.iterator();
+        while (itr.hasNext()) {
+            Tile t = (Tile)itr.next();
+            if (hash.equals(images.get(""+t.getImageId()))) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
