@@ -3,13 +3,14 @@
 * Added width and height attributes to layer element (can be different from map
   width and height)
 * Added layer properties, analoguous to tile and map properties
-* Added support for object placement
+** Added support for object placement
 * Added a version attribute to the map tag in the DTD (and support)
-* Added a basedir attribute to the tileset tag in the DTD (and support)
+* Added a basedir attribute to the tileset tag in the DTD (and support),
   suggested by Radomir Dopieralski
 * Added support for masked bitmaps on tileset image imports (Issue #52)
 * Added support for highlighting tile under cursor
-* Added documentation for the TMX format
+* Added support for creating an image snapshot of the map
+** Added documentation for the TMX format
 * Merged in Rainer Deyke's shared images code
 * Fixed determining the relative path to tileset images
 * Fixed some old things in the DTD suggested by Radomir Dopieralski

@@ -183,12 +183,14 @@ public abstract class MapView extends JPanel implements Scrollable
 
         while (li.hasNext()) {
             layer = (MapLayer) li.next();
-            if (layer.getClass() == SelectionLayer.class) {
-                ((Graphics2D)g).setComposite(AlphaComposite.getInstance(
-                                    AlphaComposite.SRC_ATOP, 0.3f));
-                g.setColor(((SelectionLayer)layer).getHighlightColor());
+            if(layer.isVisible()) {
+            	if (layer.getClass() == SelectionLayer.class) {
+                	((Graphics2D)g).setComposite(AlphaComposite.getInstance(
+                    	                AlphaComposite.SRC_ATOP, 0.3f));
+                	g.setColor(((SelectionLayer)layer).getHighlightColor());
+            	}
+            	paint(g, layer, currentZoom);
             }
-            paint(g, layer, currentZoom);
         }
 
         if (getMode(PF_GRIDMODE)) {

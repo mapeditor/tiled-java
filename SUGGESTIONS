@@ -153,3 +153,10 @@ Date:	    29/10/04
 Summary:    Tilesets should allow a designated default tile image.
 State:      Interesting.
 
+- 26 --------------------------------------------------------------------------
+Suggestor:  Marc <public@adaran.net>
+Date:	    13/11/04
+Summary:    Should be able to save the map as an image, for printing or use
+            elsewhere.
+State:      This will be included in the 0.5.0 release
+

@@ -162,6 +162,7 @@ public class MapEditor implements ActionListener,
 
 		cursorHighlight = new SelectionLayer(1,1);
 		cursorHighlight.select(0,0);
+		cursorHighlight.setVisible(TiledConfiguration.getInstance().keyHasValue("tiled.cursorhighlight",1));
 		
         mapEventAdapter = new MapEventAdapter();
         currentBrush = new ShapeBrush();
@@ -303,6 +304,8 @@ public class MapEditor implements ActionListener,
                 "control S");
         JMenuItem saveAs = createMenuItem("Save as...", null,
                 "Save current map as new file", "control shift S");
+		JMenuItem saveAsImage = createMenuItem("Snapshot...", null,
+						"Save current map as an image", "control shift I");
         JMenuItem close = createMenuItem("Close", null, "Close this map",
                 "control W");
         JMenuItem print =
@@ -311,6 +314,7 @@ public class MapEditor implements ActionListener,
 
         mapEventAdapter.addListener(save);
         mapEventAdapter.addListener(saveAs);
+		mapEventAdapter.addListener(saveAsImage);
         mapEventAdapter.addListener(close);
         mapEventAdapter.addListener(print);
 
@@ -320,6 +324,7 @@ public class MapEditor implements ActionListener,
         m.add(recentMenu);
         m.add(save);
         m.add(saveAs);
+		m.add(saveAsImage);
         // TODO: Re-add print menuitem when printing is functional
         //m.addSeparator();
         //m.add(print);
@@ -1134,7 +1139,11 @@ public class MapEditor implements ActionListener,
             if (currentMap != null) {
                 saveMap(currentMap.getFilename(), true);
             }
-        } else if (command.equals("Properties")) {
+        } else if (command.equals("Snapshot...")) {
+			if (currentMap != null) {
+				saveMapImage(null);
+			}
+		} else if (command.equals("Properties")) {
             PropertiesDialog pd = new PropertiesDialog(appFrame, currentMap.getAllProperties());
             pd.setTitle("Map Properties");
             pd.getProps();
@@ -1152,6 +1161,7 @@ public class MapEditor implements ActionListener,
             mapView.toggleMode(MapView.PF_GRIDMODE);
         } else if (command.equals("Highlight Cursor")) {        	
         	TiledConfiguration.getInstance().addConfigPair("tiled.cursorhighlight", Integer.toString(cursorMenuItem.isSelected() ? 1 : 0));
+        	cursorHighlight.setVisible(cursorMenuItem.isSelected());
 		} else if (command.equals("Resize")) {
             ResizeDialog rd = new ResizeDialog(appFrame, this);
             rd.showDialog();
@@ -1621,12 +1631,12 @@ public class MapEditor implements ActionListener,
      * <code>filename</code> is <code>null</code> or <code>saveAs</code> is
      * passed <code>true</code>, a "Save As" dialog is opened.
      *
-     * @param filename Filename to safe the current map to.
+     * @param filename Filename to save the current map to.
      * @param saveAs   Pass <code>true</code> to ask for a new filename using
      *                 a "Save As" dialog.
      */
-    public void saveMap(String filename, boolean saveAs) {
-        if (saveAs || filename == null) {
+    public void saveMap(String filename, boolean bSaveAs) {
+        if (bSaveAs || filename == null) {
             JFileChooser ch;
 
             if (filename == null) {
@@ -1684,12 +1694,40 @@ public class MapEditor implements ActionListener,
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(appFrame,
-                    "Error while saving " + filename + ": " + e.getMessage(),
+                    "Error while saving " + filename + ": " + e.toString(),
                     "Error while saving map",
                     JOptionPane.ERROR_MESSAGE);
         }
         configuration.remove("tmx.save.maplocation");
     }
+
+	public void saveMapImage(String filename) {
+		if (filename == null) {
+			JFileChooser ch = new JFileChooser();
+
+			if (ch.showSaveDialog(appFrame) == JFileChooser.APPROVE_OPTION) {
+				filename = ch.getSelectedFile().getAbsolutePath();
+			}
+		}
+		
+		if(filename != null) {
+			int gridMod = mapView.getMode(MapView.PF_GRIDMODE) ? 1 : 0;
+			BufferedImage i = new BufferedImage(currentMap.getWidth()*(currentMap.getTileWidth()+gridMod),currentMap.getHeight()*(currentMap.getTileHeight()+gridMod),BufferedImage.TYPE_INT_ARGB);
+			//BufferedImage i = (BufferedImage) mapView.createImage(currentMap.getWidth()*(currentMap.getTileWidth()+gridMod),currentMap.getHeight()*(currentMap.getTileHeight()+gridMod));
+			Graphics2D g = i.createGraphics();
+			g.setClip(0,0,currentMap.getWidth()*(currentMap.getTileWidth()+gridMod),currentMap.getHeight()*(currentMap.getTileHeight()+gridMod));
+			mapView.paint(g);
+			try {
+				ImageIO.write(i, filename.substring(filename.lastIndexOf('.')+1).toUpperCase(),new File(filename));
+            } catch (IOException e) {
+                e.printStackTrace();
+				JOptionPane.showMessageDialog(appFrame,
+									"Error while saving " + filename + ": " + e.toString(),
+									"Error while saving map image",
+									JOptionPane.ERROR_MESSAGE);
+            }
+		}
+	}
 
     private void openMap() {
         String startLocation = "";
