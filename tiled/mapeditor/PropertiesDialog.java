@@ -15,6 +15,8 @@ package tiled.mapeditor;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Enumeration;
+import java.util.Properties;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -37,14 +39,44 @@ public class PropertiesDialog extends JDialog implements ActionListener, ListSel
     }
 
     private void init() {
+    	JPanel buttonPanel = new JPanel();
 		mapProperties = new JTable(new PropertiesTableModel());
 		mapProperties.getSelectionModel().addListSelectionListener(this);
 		JScrollPane propScrollPane = new JScrollPane(mapProperties);
 		propScrollPane.setPreferredSize(new Dimension(150, 150));
 		
+		JButton bOk = new JButton("OK");
+		bOk.addActionListener(this);
+		
+		JButton bCancel = new JButton("Cancel");
+		bCancel.addActionListener(this);
+		
+		buttonPanel.setLayout(new BoxLayout(buttonPanel,BoxLayout.X_AXIS));
+		buttonPanel.add(bOk);
+		buttonPanel.add(bCancel);
+		
+		getContentPane().setLayout(new BoxLayout(getContentPane(),BoxLayout.Y_AXIS));
+		
+		getContentPane().add(propScrollPane);
+		getContentPane().add(buttonPanel);
+		
+		updateInfo();
+		
 		pack();
     }
 
+	private void updateInfo() {
+		mapProperties.removeAll();
+
+		Enumeration keys = currentMap.getProperties();
+		Properties props = new Properties();
+		while(keys.hasMoreElements()) {
+			String key = (String) keys.nextElement(); 
+			props.put(key, currentMap.getPropertyValue(key));
+		}
+		((PropertiesTableModel)mapProperties.getModel()).update(props);
+		mapProperties.repaint();
+	}
 
     public void getProps() {
         init();
@@ -52,6 +84,12 @@ public class PropertiesDialog extends JDialog implements ActionListener, ListSel
     }
 
     public void actionPerformed(ActionEvent e) {
+    	if(e.getActionCommand().equalsIgnoreCase("ok")) {
+    		currentMap.setProperties(((PropertiesTableModel)mapProperties.getModel()).getProperties());
+    		dispose();
+    	} else if (e.getActionCommand().equalsIgnoreCase("cancel")) {
+    		dispose();
+    	}
     }
 
 	public void valueChanged(ListSelectionEvent e) {

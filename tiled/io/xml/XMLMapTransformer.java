@@ -300,7 +300,7 @@ public class XMLMapTransformer implements MapReader
 			} else if(child.getNodeName().equalsIgnoreCase("property")) {
 				tile.setProperty(getAttributeValue(child,"name"),getAttributeValue(child,"value"));
 			} else if(child.getNodeName().equalsIgnoreCase("link")) {
-				//TODO: support links
+				tile.setLink(getAttributeValue(child, "target"));
 			}
 		}
 
@@ -433,15 +433,14 @@ public class XMLMapTransformer implements MapReader
             }
 
             // Load the properties
-            l = doc.getElementsByTagName("properties");
-            if ((item = l.item(0)) != null && item.getParentNode() == mapNode) {
-                NodeList children = item.getChildNodes();
-                for (int i = 0; i < children.getLength(); i++) {
-                    Node prop = children.item(i);
-                    map.addProperty(getAttributeValue(prop, "name"),
-                            getAttributeValue(prop, "value"));
-                }
+            l = doc.getElementsByTagName("property");
+			for (int i = 0; (item = l.item(i)) != null; i++) {
+				if(item.getParentNode() == mapNode) {                   
+	                map.addProperty(getAttributeValue(item, "name"),
+	                        getAttributeValue(item, "value"));
+				}
             }
+
             // Load the tile sets
             l = doc.getElementsByTagName("tileset");
             for (int i = 0; (item = l.item(i)) != null; i++) {

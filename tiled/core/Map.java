@@ -193,6 +193,10 @@ public class Map extends TiledEntity implements Cloneable
 		return properties.getProperty(key);
 	}
 
+	public void setProperties(Properties prop) {
+		properties=prop;
+	}
+
     /**
      * Removes the map layer at the specified index. Layers above this layer
      * will move down to fill the gap.

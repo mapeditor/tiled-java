@@ -226,38 +226,35 @@ public class MapEditor implements ActionListener,
         redoMenuItem.setEnabled(false);
 
 
-	/*transformSub = new JMenu("Transform");
-	transformSub.add(createMenuItem("Rotate 90", null, "Rotate 90 degrees counterclockwise"));
-	transformSub.add(createMenuItem("Rotate 180", null, "Rotate 180 degrees counterclockwise"));
-	transformSub.add(createMenuItem("Rotate 270", null, "Rotate 270 degrees counterclockwise"));
-	transformSub.addSeparator();
-	transformSub.add(createMenuItem("Flip Horizontal", null, "Flip the map horizontally"));
-	transformSub.add(createMenuItem("Flip Vertical", null, "Flip the map vertically"));
-	mapEventAdapter.addListener(transformSub);*/
+		/*transformSub = new JMenu("Transform");
+		transformSub.add(createMenuItem("Rotate 90", null, "Rotate 90 degrees counterclockwise"));
+		transformSub.add(createMenuItem("Rotate 180", null, "Rotate 180 degrees counterclockwise"));
+		transformSub.add(createMenuItem("Rotate 270", null, "Rotate 270 degrees counterclockwise"));
+		transformSub.addSeparator();
+		transformSub.add(createMenuItem("Flip Horizontal", null, "Flip the map horizontally"));
+		transformSub.add(createMenuItem("Flip Vertical", null, "Flip the map vertically"));
+		mapEventAdapter.addListener(transformSub);*/
 
         m = new JMenu("Edit");
         m.add(undoMenuItem);
         m.add(redoMenuItem);
-	//m.addSeparator();
-	//m.add(transformSub);
-	//mapEventAdapter.addListener(transformSub);
-	m.addSeparator();
-	m.add(createMenuItem("Preferences...", null, "Configure options of the editor", null));
-        mapEventAdapter.addListener(undoMenuItem);
-	mapEventAdapter.addListener(redoMenuItem);
-        menuBar.add(m);
+		//m.addSeparator();
+		//m.add(transformSub);
+		//mapEventAdapter.addListener(transformSub);
+		m.addSeparator();
+		m.add(createMenuItem("Preferences...", null, "Configure options of the editor", null));
+	        mapEventAdapter.addListener(undoMenuItem);
+		mapEventAdapter.addListener(redoMenuItem);
+	        menuBar.add(m);
 
-        /*
-        mapSub = new JMenu("Objects");
+        
         m = new JMenu("Map");
-        m.add(createMenuItem("Expand", null, "Expand map borders"));
+        //m.add(createMenuItem("Modify Dimensions", null, "Modify map dimensions"));
         m.addSeparator();
         m.add(createMenuItem("Properties", null, "Map properties"));
-        m.add(createMenuItem("Add Object", null, "Add a new object"));
-        m.add(mapSub);
         mapEventAdapter.addListener(m);
         menuBar.add(m);
-        */
+        
 
         layerAdd = createMenuItem("Add Layer", null, "Add a layer");
         layerClone = createMenuItem("Duplicate Layer", null,
