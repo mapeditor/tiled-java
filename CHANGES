@@ -1,27 +1,30 @@
 0.5.0 - TBD
 
-* Added width and height attributes to layer element (can be different from map
-  width and height)
+* Added width and height attributes to layer element
 * Added layer properties, analoguous to tile and map properties
-** Added support for object placement
-* Added a version attribute to the map tag in the DTD (and support)
-* Added a basedir attribute to the tileset tag in the DTD (and support),
-  suggested by Radomir Dopieralski
-* Added support for masked bitmaps on tileset image imports (Issue #52)
+/ Added support for object placement
+* Added a version attribute to the map tag
+* Added a basedir attribute to the tileset tag (suggested by Radomir
+  Dopieralski)
+* Added support for masked bitmaps on tileset image imports
 * Added support for highlighting tile under cursor
 * Added support for creating an image snapshot of the map
-** Added documentation for the TMX format
-* Merged in Rainer Deyke's shared images code
-* Fixed determining the relative path to tileset images
-* Fixed some old things in the DTD suggested by Radomir Dopieralski
-* Fixed drawing artifacts in selections
-* Fixed Copy, Cut, and Paste menu options to be disabled when no map is loaded
-* Completed the Search/Replace dialog
-* User can now choose whether to automatically create tiles from tileset images
+* Added additional zoom levels (by Marc Ilgen)
+* Added background color option (by Marc Ilgen)
+/ Added documentation for the TMX format
+* Added an option whether to automatically create tiles from tileset images
   upon import or not.
-* Tiled now supports reading TMX/TSX files from URLs
+* Added support for reading TMX/TSX files from URLs
+* Improved GUI in several places
+* Merged in Rainer Deyke's shared images code
+* Completed the Search/Replace dialog
 * Changed the MultisetListRenderer to show tiles actual-size when selected
 * Generalized the dialogs for properties and added delete capabilities.
+* Fixed determining the relative path to tileset images
+* Fixed some old things in the DTD (suggested by Radomir Dopieralski)
+* Fixed drawing artifacts in selections
+* Fixed Copy, Cut, and Paste menu options to be disabled when no map is loaded
+* Fixed cancelling Save As operation still saving the map
 
 0.4.2 - October 14th, 2004
 
@@ -31,7 +34,7 @@
 * Added plugin target for building bundled plugins
 * Removed API usage deprecated by Java 5.0
 * Fixed a NullPointerException when loading plugins
-* Fixed layer naming on undo (issue #75)
+* Fixed layer naming on undo
 
 0.4.1 - September 24th, 2004
 

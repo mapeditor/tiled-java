@@ -31,16 +31,16 @@ public abstract class MapView extends JPanel implements Scrollable
     public static final int PF_GRIDMODE     = 0x00000001;
     public static final int PF_BOUNDARYMODE = 0x00000002;
     public static final int PF_COORDINATES  = 0x00000004;
-	public static final int PF_NOSPECIAL    = 0x00000008;
+    public static final int PF_NOSPECIAL    = 0x00000008;
 
-    public static int ZOOM_NORMALSIZE = 3;
+    public static int ZOOM_NORMALSIZE = 5;
 
     protected Map myMap;
     protected int modeFlags = 0;
     protected double zoom = 1.0;
-    protected int zoomLevel = 3;
+    protected int zoomLevel = 5;
     protected static double[] zoomLevels = {
-        0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 4.0
+        0.0625, 0.125, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 4.0
     };
 
     private SmoothZoomer smoothZoomer;
@@ -161,8 +161,15 @@ public abstract class MapView extends JPanel implements Scrollable
 
         g2d.setStroke(new BasicStroke(2.0f));
 
-        // Do an initial fill
-        g.setColor(new Color(64, 64, 64));
+        // Do an initial fill with the background color
+        try {
+            TiledConfiguration conf = TiledConfiguration.getInstance();
+            String colorString = conf.getValue("tiled.background.color");
+            g.setColor(Color.decode(colorString));
+        } catch (NumberFormatException e) {
+            g.setColor(new Color(64, 64, 64));
+        }
+
         g.fillRect(clip.x, clip.y, clip.width, clip.height);
 
         while (li.hasNext()) {
@@ -176,10 +183,10 @@ public abstract class MapView extends JPanel implements Scrollable
                         g2d.setComposite(AlphaComposite.SrcOver);
                     }
                     
-                    if(layer instanceof TileLayer) {
-                    	paintLayer(g, (TileLayer) layer, currentZoom);
-                    } else if (layer instanceof ObjectGroup){
-                    	paintLayer(g, (ObjectGroup)layer, currentZoom);
+                    if (layer instanceof TileLayer) {
+                        paintLayer(g, (TileLayer)layer, currentZoom);
+                    } else if (layer instanceof ObjectGroup) {
+                        paintLayer(g, (ObjectGroup)layer, currentZoom);
                     }
                 }
             }
@@ -253,7 +260,8 @@ public abstract class MapView extends JPanel implements Scrollable
     protected abstract void paintLayer(Graphics g, ObjectGroup og, double zoom);
     
     protected void paintEdge(Graphics g, MapLayer layer, int x, int y) {
-        /*Polygon grid = createGridPolygon(x, y, 0);
+        /*
+        Polygon grid = createGridPolygon(x, y, 0);
         PathIterator itr = grid.getPathIterator(null);
         double nextPoint[] = new double[6];
         double prevPoint[], firstPoint[];
@@ -302,7 +310,8 @@ public abstract class MapView extends JPanel implements Scrollable
             g.drawLine(
                     (int)nextPoint[0], (int)nextPoint[1],
                     (int)firstPoint[0], (int)firstPoint[1]);
-        }*/
+        }
+        */
     }
 
     /**

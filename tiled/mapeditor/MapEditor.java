@@ -1698,6 +1698,9 @@ public class MapEditor implements ActionListener,
                 configuration.addConfigPair("tmx.save.maplocation",
                         filename.substring(0, filename.lastIndexOf(
                                 File.separatorChar) + 1));
+            } else {
+                // User cancelled operation, do nothing
+                return;
             }
         }
 
