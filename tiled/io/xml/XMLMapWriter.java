@@ -229,6 +229,16 @@ public class XMLMapWriter implements MapWriter
             	w.startElement("layer");
 			}
             //w.writeAttribute("id", "" + l.getId());
+			
+			Enumeration keys = l.getProperties();
+            while(keys.hasMoreElements()) {
+                String key = (String) keys.nextElement();
+                w.startElement("property");
+                w.writeAttribute("name", key);
+                w.writeAttribute("value", l.getPropertyValue(key));
+                w.endElement();
+            }
+			
             w.writeAttribute("name", l.getName());
             if (bounds.x != 0) {
                 w.writeAttribute("xoffset", "" + bounds.x);

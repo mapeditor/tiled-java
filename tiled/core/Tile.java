@@ -18,10 +18,11 @@ import java.util.*;
 
 public class Tile
 {
-    private Image tileImage, scaledImage = null;
+    private Image internalImage, scaledImage;
     private int id = -1;
     private int stdHeight;
     private int groundHeight;          // Height above ground
+    private int tileImageId=-1, tileOrientation;
     private Properties properties;
     private TileSet tileset;
 
@@ -30,9 +31,11 @@ public class Tile
     }
 
     public Tile(Tile t) {
-        properties = (Properties)t.properties.clone();        
-        if (t.tileImage != null) {
-            tileImage = t.tileImage.getScaledInstance(
+        properties = (Properties)t.properties.clone();
+        tileImageId = t.tileImageId;
+        tileset = t.tileset;
+        if (tileset != null) {
+            scaledImage = getImage().getScaledInstance(
                     -1, -1, Image.SCALE_DEFAULT);
         }
         groundHeight = getHeight();
@@ -49,18 +52,35 @@ public class Tile
 
     /**
      * Changes the image of the tile as long as it is not null.
+     * 
      */
     public void setImage(Image i) {
-        tileImage = i;
+    	
+    	if(tileset != null) {
+    		tileset.overlayImage(""+tileImageId, i);
+    	} else {
+    		internalImage = i;
+    	}
         groundHeight = getHeight();
     }
 
+    public void setImage(int id) {
+    	tileImageId = id;
+    	groundHeight = getHeight();
+    }
+    
     public void setStandardHeight(int i) {
         stdHeight = i;
     }
 
     public void setTileSet(TileSet set) {
         tileset = set;
+        if(internalImage != null) {
+        	if((tileImageId = tileset.getIdByImage(set.queryImage(internalImage))) == -1) {
+        		tileImageId = set.addImage(internalImage);
+        		internalImage = null;
+        	}
+        }
     }
 
 	public void setProperty(String key, String value) {
@@ -95,13 +115,10 @@ public class Tile
     }
 
     public void drawRaw(Graphics g, int x, int y, double zoom) {
-        if (tileImage != null) {
             if (zoom != 1.0) {
-                int h = (int)(tileImage.getHeight(null) * zoom);
+                int h = (int)(getHeight() * zoom);
 				if (scaledImage == null || scaledImage.getHeight(null) != h) {
-					scaledImage = tileImage.getScaledInstance(
-							(int)(getWidth() * zoom), h,
-							BufferedImage.SCALE_SMOOTH);
+					scaledImage = getScaledImage(zoom);
 					MediaTracker mediaTracker = new MediaTracker(new Canvas());
 					mediaTracker.addImage(scaledImage, 0);
 					try {
@@ -112,15 +129,16 @@ public class Tile
 						return;
 					}
 					mediaTracker.removeImage(scaledImage);
-				}
-                g.drawImage(scaledImage, x, y, null);
+					g.drawImage(scaledImage, x, y, null);
+				} else {
+		        	//TODO: drawing ids when there is no tile data should be a config option.
+		            //g.drawString("" + id, x, y);
+		        }
+                
             } else {
-                g.drawImage(tileImage, x, y, null);
+                g.drawImage(getImage(), x, y, null);
             }
-        } else {
-        	//TODO: drawing ids when there is no tile data should be a config option.
-            //g.drawString("" + id, x, y);
-        }
+        
     }
 
     public void draw(Graphics g, int x, int y, double zoom) {
@@ -139,48 +157,57 @@ public class Tile
     }
 
     public int getWidth() {
-        if (tileImage != null) {
-            return tileImage.getWidth(null);
-        } else {
-            return 0;
-        }
+    	if(tileset != null) {
+    		Dimension d = tileset.getImageDimensions(""+tileImageId);
+    		return d.width;
+    	} else if(internalImage != null){
+    		return internalImage.getWidth(null);
+    	}
+    	return 0;
     }
 
     public int getHeight() {
-        if (tileImage != null) {
-            return tileImage.getHeight(null);
-        } else {
-            return 0;
-        }
+    	if(tileset != null) {
+    		Dimension d = tileset.getImageDimensions(""+tileImageId);
+    		return d.height;
+    	} else if(internalImage != null){
+    		return internalImage.getHeight(null);
+    	}
+    	return 0;
+    }
+    
+    public int getImageId() {
+    	return tileImageId;
     }
 
+    public int getImageOrientation() {
+    	return tileOrientation;
+    }
+    
     /**
-     * Returns the tile image.
+     * 
+     * @return
      */
     public Image getImage() {
-        return tileImage;
-    }
-
-    public int getImageId() {
-        return 0;
+    	if(tileset != null) {
+    		return tileset.getImageById(""+tileImageId);
+    	} else {
+    		return internalImage;
+    	}
     }
 
     /**
      * Returns a scaled instance of the tile image.
      */
     public Image getScaledImage(double zoom) {
-        if (tileImage != null) {
-            return tileImage.getScaledInstance(
-                    (int)(getWidth() * zoom), (int)(getHeight() * zoom),
-                    BufferedImage.SCALE_SMOOTH);
-        } else {
-            return null;
-        }
+        return getImage().getScaledInstance(
+                (int)(getWidth() * zoom), (int)(getHeight() * zoom),
+                BufferedImage.SCALE_SMOOTH);
     }
 
     public String toString() {
         String out = "";
-        out += "Tile: " + id + "(" + getWidth() + "x" + getHeight() + ")";
+        out += "Tile: " + id + " Image: "+tileImageId+" (" + getWidth() + "x" + getHeight() + ")";
         return out;
     }
 }

@@ -29,6 +29,7 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
     private JPanel layerOps, generalOps, tilesetOps, gridOps;
     private IntegerSpinner undoDepth, gridOpacity;
     private JCheckBox cbBinaryEncode, cbCompressLayerData, cbEmbedImages;
+	private JRadioButton rbEmbedInTiles, rbEmbedInSet;
     private JCheckBox cbGridAA;
     private JColorChooser gridColor;
     private TiledConfiguration configuration;
@@ -46,6 +47,11 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
         cbBinaryEncode = new JCheckBox("Use binary encoding");
         cbCompressLayerData = new JCheckBox("Compress layer data (gzip)");
         cbEmbedImages = new JCheckBox("Embed images (png)");
+        rbEmbedInTiles = new JRadioButton("Embed images in tiles");
+        rbEmbedInSet = new JRadioButton("Use Tileset (shared) images");
+        ButtonGroup bg = new ButtonGroup();
+        bg.add(rbEmbedInTiles);
+        bg.add(rbEmbedInSet);
         undoDepth = new IntegerSpinner();
         cbGridAA = new JCheckBox("Antialiasing");
         gridOpacity = new IntegerSpinner(0, 0, 255);
@@ -60,7 +66,11 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
 
         cbBinaryEncode.setActionCommand("tmx.save.encodeLayerData");
         cbCompressLayerData.setActionCommand("tmx.save.layerCompression");
-        cbEmbedImages.setActionCommand("tmx.save.embedImages");
+        //cbEmbedImages.setActionCommand("tmx.save.embedImages");
+        rbEmbedInTiles.setActionCommand("tmx.save.embedImages");
+        rbEmbedInTiles.setEnabled(false);
+		rbEmbedInSet.setActionCommand("tmx.save.tileSetImages");
+		rbEmbedInSet.setEnabled(false);
         undoDepth.setName("tmx.undo.depth");
         cbGridAA.setActionCommand("tiled.grid.antialias");
         gridOpacity.setName("tiled.grid.opacity");
@@ -112,7 +122,11 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 1; c.gridy = 0; c.weightx = 1;
         tilesetOps.add(cbEmbedImages, c);
-
+        c.gridy = 1; c.insets = new Insets(0, 10, 0, 0);
+        tilesetOps.add(rbEmbedInTiles, c);
+        c.gridy = 2; c.insets = new Insets(0, 10, 0, 0);
+        tilesetOps.add(rbEmbedInSet, c);
+        
         /* GRID OPTIONS */
         gridOps = new VerticalStaticJPanel();
         gridOps.setLayout(new GridBagLayout());
@@ -258,6 +272,11 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
 
         if (source == cbBinaryEncode) {
             cbCompressLayerData.setEnabled(cbBinaryEncode.isSelected());
+        } else if(source == cbEmbedImages) {
+        	rbEmbedInTiles.setSelected(cbEmbedImages.isSelected() && rbEmbedInTiles.isSelected());
+        	rbEmbedInTiles.setEnabled(cbEmbedImages.isSelected());
+        	rbEmbedInSet.setSelected(cbEmbedImages.isSelected() && rbEmbedInSet.isSelected());
+        	rbEmbedInSet.setEnabled(cbEmbedImages.isSelected());
         }
         bApply.setEnabled(true);
     }

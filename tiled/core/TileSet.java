@@ -14,15 +14,24 @@ package tiled.core;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.PixelGrabber;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import javax.imageio.ImageIO;
+import javax.imageio.stream.ImageInputStream;
+
+import tiled.util.Util;
+
+import java.util.zip.CRC32;
+import java.util.zip.Checksum;
 
 
 public class TileSet
 {
     private Vector tiles;
+    private Hashtable images, imageCache;
     private int id;
     private int firstGid;
     private int standardHeight;
@@ -33,6 +42,8 @@ public class TileSet
 
     public TileSet() {
         tiles = new Vector();
+        images = new Hashtable();
+        imageCache = new Hashtable();
     }
 
     /**
@@ -300,11 +311,105 @@ public class TileSet
     public String toString() {
     	return name + " ["+getTotalTiles()+"]";
     }
+    
+    //TILE IMAGE CODE
+    
+    private String checksumImage(Image i) {
+    	PixelGrabber pg = new PixelGrabber(i,0,0,-1,-1,false);
+    	Checksum sum = new CRC32();
+		
+		try {
+			pg.grabPixels();
+			ImageInputStream is;
+			
+			try {
+				ByteArrayInputStream bais = new ByteArrayInputStream(Util.convertIntegersToBytes((int[])pg.getPixels()));
+				byte[] bytes = new byte[1024];
+		        int len = 0;
 
-    /**
-     *
-     */
-    public int addImage(Image i) {
-	return 0;
+		        while ((len = bais.read(bytes)) >= 0) {
+		            sum.update(bytes, 0, len);
+		        }
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+    	return Long.toHexString(sum.getValue());
     }
+    
+    public int getIdByImage(Image i) {
+    	Iterator itr = imageCache.keySet().iterator();
+    	int id= -1;
+    	if(i != null) {
+	    	while(itr.hasNext()) {
+	    		Image img = (Image) imageCache.get(itr.next());
+	    		id++;
+	    		if(img.equals(i)) {
+	    			break;
+	    		}
+	    	}
+    	}
+    	return id;
+    }
+    
+    public Image getImageById(Object key) {
+    	return (Image) imageCache.get(images.get(key));
+    }
+    
+    public void overlayImage(Object key, Image i) {
+    	String hash = checksumImage(i);
+    	imageCache.put(hash, i);
+    	images.put(key, hash);
+    }
+
+	/**
+	 * @param string
+	 * @return
+	 */
+	public Dimension getImageDimensions(Object key) {
+		Image i = (Image) imageCache.get(images.get(key));
+		
+		return new Dimension(i.getWidth(null), i.getHeight(null));
+	}
+
+	/**
+	 * @param internalImage
+	 * @return
+	 */
+	public Image queryImage(Image image) {
+		String hash = checksumImage(image);
+		if(imageCache.get(hash) != null) {
+			System.out.println("Success");
+		}
+		return (Image) imageCache.get(hash); 
+	}
+
+	/**
+	 * @param internalImage
+	 * @return
+	 */
+	public int addImage(Image image) {
+		int t = images.size();
+		String cs = checksumImage(image);
+		System.out.println("Checksum: " + cs);
+		images.put(""+t, cs);
+		imageCache.put(cs, image);
+		return t;
+	}
+	
+	private boolean isUsed(String hash) {
+		Iterator itr = tiles.iterator();
+		while(itr.hasNext()) {
+			Tile t = (Tile) itr.next();
+			if(hash.equals(images.get(""+t.getImageId()))) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 }

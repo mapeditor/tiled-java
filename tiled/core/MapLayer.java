@@ -15,6 +15,8 @@ package tiled.core;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.Area;
+import java.util.Enumeration;
+import java.util.Properties;
 
 
 /**
@@ -39,6 +41,7 @@ public class MapLayer implements Cloneable
     protected Map myMap;
     protected float opacity = 1.0f;
     protected Rectangle bounds;
+    private Properties properties;
 
     public MapLayer() {
         bounds = new Rectangle();
@@ -556,4 +559,20 @@ public class MapLayer implements Cloneable
     	}
     	return true;
     }
+    
+	public void setProperty(String key, String value) {
+		properties.setProperty(key,value);
+	}
+
+	public void setProperties(Properties p) {
+		properties = p;
+	}
+
+	public Enumeration getProperties() {
+		return properties.keys();
+	}
+
+	public String getPropertyValue(String key) {
+		return properties.getProperty(key);
+	}
 }
