@@ -488,6 +488,9 @@ public class MapLayer implements Cloneable
             System.arraycopy(map[i], 0, clone.map[i], 0, map[i].length);
         }
 
+        // Create a new bounds object
+        clone.bounds = new Rectangle(bounds);
+
         return clone;
     }
 
