@@ -55,11 +55,11 @@ public class TileSet
 
         BufferedImage tilebmp = null;
 
-	tilebmp = ImageIO.read(imgFile);
+        tilebmp = ImageIO.read(imgFile);
 
-	if(tilebmp == null) {
-		throw new Exception("Failed to load " + tilebmpFile);
-	}
+        if (tilebmp == null) {
+            throw new Exception("Failed to load " + tilebmpFile);
+        }
 
         int iw = tilebmp.getWidth();
         int ih = tilebmp.getHeight();
