@@ -14,6 +14,7 @@
 package tiled.mapeditor.widget;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -28,7 +29,8 @@ public class MiniMapViewer extends JPanel
     private MapView myView;
     private JScrollPane mainPanel;
     private double scale = 0.0625;
-
+    private BufferedImage renderedMap;
+    
     public MiniMapViewer() {
         setSize(MAX_HEIGHT, MAX_HEIGHT);
     }
@@ -42,7 +44,11 @@ public class MiniMapViewer extends JPanel
         myView = view;
         myView.setZoom(scale);
         Dimension d = myView.getPreferredSize();
+        renderedMap = new BufferedImage(d.width, d.height, BufferedImage.TYPE_INT_ARGB);
         //scale = MAX_HEIGHT / (double)d.height;
+        Graphics2D g = renderedMap.createGraphics();
+        g.setClip(0, 0, d.width, d.height);
+        myView.paint(g);
     }
     
     public Dimension getPreferredSize() {
@@ -60,19 +66,34 @@ public class MiniMapViewer extends JPanel
         mainPanel = main;
     }
 
-    public void paint(Graphics g) {
-        if (myView != null) {
-            myView.paint(g);
+    public void refresh() {
+        if(renderedMap != null && myView != null) {
+            Dimension d = myView.getPreferredSize();
+	        Graphics2D g = renderedMap.createGraphics();
+	        g.setClip(0, 0, d.width, d.height);
+	        myView.paint(g);
         }
+    }
+    
+    public void paint(Graphics g) {
+        /*if (myView != null) {
+            myView.paint(g);
+        }*/
+        if(renderedMap != null) {
+            g.drawImage(renderedMap, 0, 0, null);
+        }
+        
         if (mainPanel != null) {
             g.setColor(Color.yellow);
-            Rectangle viewArea = mainPanel.getViewportBorderBounds();
+            Rectangle viewArea = mainPanel.getViewport().getBounds();
+            //Rectangle viewArea = mainPanel.getViewportBorderBounds();
             if (viewArea != null) {
+                System.out.println(viewArea.x+","+viewArea.y);
                 g.drawRect(
                         (int)((viewArea.x-1) * scale),
                         (int)((viewArea.y-1) * scale),
-                        (int)(viewArea.width * scale),
-                        (int)(viewArea.height * scale));
+                        (int)((viewArea.width-1) * scale),
+                        (int)((viewArea.height-1) * scale));
             }
         }
     }

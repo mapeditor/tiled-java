@@ -25,9 +25,12 @@ import java.beans.PropertyChangeListener;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import tiled.core.Tile;
 import tiled.mapeditor.brush.*;
+import tiled.mapeditor.util.LayerTableModel;
 import tiled.mapeditor.widget.BrushBrowser;
 import tiled.mapeditor.widget.IntegerSpinner;
 import tiled.mapeditor.widget.MiniMapViewer;
@@ -35,7 +38,7 @@ import tiled.mapeditor.widget.VerticalStaticJPanel;
 
 
 public class BrushDialog extends JFrame implements ActionListener,
-       ChangeListener, MouseListener, PropertyChangeListener
+       ChangeListener, MouseListener, PropertyChangeListener, ListSelectionListener
 {
     private JFrame parent;
     private AbstractBrush myBrush;
@@ -93,8 +96,7 @@ public class BrushDialog extends JFrame implements ActionListener,
     }
 
     private JPanel createOptionsPanel() {
-        JPanel optionsPanel = new JPanel();
-        optionsPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 5, 5));
+        JPanel optionsPanel = new VerticalStaticJPanel();
         cbRandomBrush = new JCheckBox("Random");
         cbRandomBrush.setToolTipText(
                 "Make brush paint randomly within the shape area");
@@ -111,9 +113,11 @@ public class BrushDialog extends JFrame implements ActionListener,
 
         optionsPanel.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
-        c.fill = GridBagConstraints.BOTH;
+        c.anchor = GridBagConstraints.NORTH;
+        c.fill = GridBagConstraints.NONE;
         c.weightx = 1; c.weighty = 1;
         optionsPanel.add(affected,c);
+        //c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 1;
         optionsPanel.add(affectLayers,c);
         c.gridx = 0; c.gridy = 1;
@@ -128,11 +132,35 @@ public class BrushDialog extends JFrame implements ActionListener,
         JPanel customPanel = new JPanel();
         
         MiniMapViewer mmv = new MiniMapViewer();
+        if(myBrush instanceof CustomBrush) {
+            //mmv.setView(((CustomBrush)myBrush));
+        }
+        
         JScrollPane miniSp = new JScrollPane();
         miniSp.getViewport().setView(mmv);
+        miniSp.setPreferredSize(new Dimension(100,100));
+        JButton bCreate = new JButton("Create...");
+        bCreate.addActionListener(this);
+        JButton bLoad = new JButton("Load...");
+        bLoad.addActionListener(this);
+        JTable layerTable = new JTable(new LayerTableModel(myBrush));
+        layerTable.getColumnModel().getColumn(0).setPreferredWidth(32);
+        layerTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        layerTable.getSelectionModel().addListSelectionListener(this);
         
-        
-        
+        customPanel.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        c.anchor = GridBagConstraints.NORTH;
+        c.fill = GridBagConstraints.NONE;
+        c.weightx = 2; c.weighty = 2;
+        customPanel.add(miniSp, c);
+        c.weightx = 1; c.weighty = 1;
+        c.gridx=2;
+        customPanel.add(bCreate, c);
+        c.gridy=1;
+        customPanel.add(bLoad, c);
+        c.gridx=0; c.gridy=2;
+        customPanel.add(layerTable, c);
         
         return customPanel;
     }
@@ -265,5 +293,10 @@ public class BrushDialog extends JFrame implements ActionListener,
 
     public void propertyChange(PropertyChangeEvent evt) {
         bApply.setEnabled(true);
+    }
+
+    public void valueChanged(ListSelectionEvent e) {
+        // TODO Auto-generated method stub
+        
     }
 }

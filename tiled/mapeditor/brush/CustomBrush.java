@@ -64,7 +64,7 @@ public class CustomBrush extends AbstractBrush
         while (itr.hasNext()) {
             TileLayer tl = (TileLayer)itr.next();            
             TileLayer tm = (TileLayer)mp.getLayer(initLayer++);
-            if (tm != null) {
+            if (tm != null && tm.isVisible()) {
                 tl.setOffset(centerx, centery);
                 tl.mergeOnto(tm);
             }

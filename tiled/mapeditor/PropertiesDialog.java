@@ -132,7 +132,9 @@ public class PropertiesDialog extends JDialog implements ActionListener,
             }
             
             for(int i=0;i<total;i++) {
-                tableModel.remove(keys[i]);
+                if(keys[i]!=null) {
+                    tableModel.remove(keys[i]);
+                }
             }
             
         }

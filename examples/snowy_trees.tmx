@@ -79,7 +79,7 @@
    </image>
   </tile>
  </tileset>
- <layer name="Ground" width="40" height="40" opacity="0.46">
+ <layer name="Ground" width="40" height="40">
   <data encoding="base64" compression="gzip">
    H4sIAAAAAAAAAO2TOw7AMAhDie9/6K4RaqIMILuphyeRBV74jIgY5nog4GA856/ivholVPYRySW/VUBw3E5rsvo2193VZ8901R+lfeu8hco8eIkrclY7dvy5Y+Ydef/iqHS/N3ju3JX9lR0Rmn6qXtmP7bFyYzsYY4zh8QAS+GkxABkAAA==
   </data>

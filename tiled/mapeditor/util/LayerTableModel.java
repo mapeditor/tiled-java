@@ -14,19 +14,19 @@ package tiled.mapeditor.util;
 
 import javax.swing.table.AbstractTableModel;
 
-import tiled.core.Map;
 import tiled.core.MapLayer;
+import tiled.core.MultilayerPlane;
 
 public class LayerTableModel extends AbstractTableModel
 {
-    private Map map;
+    private MultilayerPlane map;
     private String[] columnNames = { "Show", "Layer name" };
 
-    public LayerTableModel(Map map) {
+    public LayerTableModel(MultilayerPlane map) {
         this.map = map;
     }
 
-    public void setMap(Map map) {
+    public void setMap(MultilayerPlane map) {
         this.map = map;
         fireTableDataChanged();
     }

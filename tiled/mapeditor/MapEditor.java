@@ -533,10 +533,10 @@ public class MapEditor implements ActionListener,
 
         //navigation and tool options
         //TODO: the minimap is prohibitively slow, need to speed this up before it can be used
-        /*miniMap = new MiniMapViewer();
+        miniMap = new MiniMapViewer();
         miniMap.setMainPanel(mapScrollPane);
         JScrollPane miniMapSp = new JScrollPane();
-        miniMapSp.getViewport().setView(miniMap);*/
+        miniMapSp.getViewport().setView(miniMap);
         
         // Layer table
         layerTable = new JTable(new LayerTableModel(currentMap));
@@ -596,7 +596,7 @@ public class MapEditor implements ActionListener,
         c.insets = new Insets(3, 0, 0, 0); c.weightx = 1; c.weighty = 1;
         c.fill = GridBagConstraints.BOTH;
         c.gridx = 0; c.gridy = 0;
-        //layerPanel.add(miniMapSp, c);
+        layerPanel.add(miniMapSp, c);
         c.weighty = 0; c.gridy += 1;
         layerPanel.add(sliderPanel, c);
         c.weighty = 1; c.gridy += 1;
