@@ -328,12 +328,8 @@ public abstract class MapLayer implements Cloneable
         properties = p;
     }
 
-    public Properties getAllProperties() {
+    public Properties getProperties() {
         return properties;
-    }
-
-    public Enumeration getProperties() {
-        return properties.keys();
     }
 
     public String getPropertyValue(String key) {

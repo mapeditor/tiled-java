@@ -161,16 +161,15 @@ public class Map extends MultilayerPlane implements Cloneable
 
     public void removeTileset(TileSet s) {
         // Sanity check
-        if (tilesets.indexOf(s) == -1) {
-            return;
-        }
+        assert tilesets.indexOf(s) != -1;
 
         // Go through the map and remove any instances of the tiles in the set
-        for (int i = 0; i < s.getTotalTiles(); i++) {
-            ListIterator itr = getLayers();
-            Tile tile = s.getTile(i);
-            while (itr.hasNext()) {
-                MapLayer ml = (MapLayer)itr.next();
+        Iterator tileIterator = s.iterator();
+        while (tileIterator.hasNext()) {
+            Tile tile = (Tile)tileIterator.next();
+            Iterator layerIterator = getLayers();
+            while (layerIterator.hasNext()) {
+                MapLayer ml = (MapLayer)layerIterator.next();
                 if (ml instanceof TileLayer) {
                     ((TileLayer)ml).removeTile(tile);
                 }
@@ -193,10 +192,6 @@ public class Map extends MultilayerPlane implements Cloneable
         properties.put(key, value);
     }
 
-    public Enumeration getProperties() {
-        return properties.keys();
-    }
-
     public String getPropertyValue(String key) {
         return properties.getProperty(key);
     }
@@ -204,7 +199,7 @@ public class Map extends MultilayerPlane implements Cloneable
     /**
      * @return the map properties
      */
-    public Properties getAllProperties() {
+    public Properties getProperties() {
         return properties;
     }
 
@@ -395,6 +390,7 @@ public class Map extends MultilayerPlane implements Cloneable
     /**
      * Returns the sum of the size of each tile set.
      */
+    /*
     public int getTotalTiles() {
         int totalTiles = 0;
         Iterator itr = tilesets.iterator();
@@ -406,6 +402,7 @@ public class Map extends MultilayerPlane implements Cloneable
 
         return totalTiles;
     }
+    */
 
     /**
      * Returns the amount of objects on the map.

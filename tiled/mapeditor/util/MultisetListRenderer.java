@@ -98,27 +98,26 @@ public class MultisetListRenderer extends DefaultListCellRenderer
         itr = sets.iterator();
         while (itr.hasNext()) {
             TileSet ts = (TileSet) itr.next();
-            totalSlots += ts.getTotalTiles();
+            totalSlots += ts.size();
         }
         tileImages = new ImageIcon[totalSlots];
 
         itr = sets.iterator();
-        while(itr.hasNext()) {
+        while (itr.hasNext()) {
             TileSet ts = (TileSet) itr.next();
             tileImages[curSlot++] = new ImageIcon(setImage);
-            for (int i = 0; i < ts.getTotalTiles(); i++) {
-                t = ts.getTile(i);
-                if (t != null) {
-                    Image img = t.getScaledImage(zoom);
-                    if (img != null) {
-                        tileImages[curSlot] = new ImageIcon(img);
-                    } else {
-                        tileImages[curSlot] = null;
-                    }
-                    curSlot++;
+
+            Iterator tileIterator = ts.iterator();
+
+            while (tileIterator.hasNext()) {
+                Tile tile = (Tile)tileIterator.next();
+                Image img = tile.getScaledImage(zoom);
+                if (img != null) {
+                    tileImages[curSlot] = new ImageIcon(img);
                 } else {
-                    tileImages[curSlot++] = null;
+                    tileImages[curSlot] = null;
                 }
+                curSlot++;
             }
         }
     }

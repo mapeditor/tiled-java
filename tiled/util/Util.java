@@ -17,40 +17,35 @@ import java.io.IOException;
 
 
 public class Util {
-	 public static byte [] convertIntegersToBytes (int [] integers) {
+    public static byte[] convertIntegersToBytes (int[] integers) {
+        if (integers != null) {
+            byte outputBytes[] = new byte[integers.length * 4];
 
-	 	if ( integers !=null ) {
-	 		
-	 		byte outputBytes[] = new byte[integers.length * 4];
+            for(int i = 0, k = 0; i < integers.length; i++) {
+                int integerTemp = integers[i];
+                for(int j = 0; j < 4; j++, k++) {
+                    outputBytes[k] = (byte)((integerTemp >> (8*j)) & 0xFF);
+                }
+            }
+            return outputBytes;
+        } else {
+            return null;
+        }
+    }
 
-	 		
+    public static boolean checkRoot(String filename) {
+        File[] roots = File.listRoots();
 
-	 		for(int i=0, k=0; i < integers.length; i++) {
-	 				int integerTemp = integers[i];
-	 				for(int j=0; j < 4; j++, k++) {
-	 					outputBytes[k] = (byte) ( (integerTemp >> (8*j) ) & 0xFF );
-	 				}
-	 		}
-	 		return outputBytes;
-	 	} else {
-	 		return null;
-	 	}
-
-	 }
-	 
-	 public static boolean checkRoot(String filename) {
-	 	File [] roots = File.listRoots();
-	 	
-	 	for(int i=0;i<roots.length;i++) {
-	 		try {
-                if(filename.startsWith(roots[i].getCanonicalPath())) {
-                	return true;
+        for (int i = 0; i < roots.length; i++) {
+            try {
+                if (filename.startsWith(roots[i].getCanonicalPath())) {
+                    return true;
                 }
             } catch (IOException e) {
-            	//Do we care?
+                // Do we care?
             }
-	 	}
-	 	
-	 	return false;
-	 }
+        }
+
+        return false;
+    }
 }

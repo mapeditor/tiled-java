@@ -100,6 +100,9 @@ public class TilePalettePanel extends JPanel implements Scrollable,
             return;
         }
 
+        // TODO: In its current form this code doesn't take into account gabs
+        // in the tileset (tile ids without associated tiles), causing it to
+        // draw the gabs and leave out tiles at the end.
         for (int i = 0; i < tilesets.size(); i++) {
             TileSet tileset = (TileSet)tilesets.get(i);
             if (tileset != null) {					
@@ -137,7 +140,7 @@ public class TilePalettePanel extends JPanel implements Scrollable,
             TileSet tileset = (TileSet)tilesets.get(0);
             int twidth = tileset.getStandardWidth() + 1;
             int theight = tileset.getTileHeightMax() + 1;
-            int tileCount = tileset.getTotalTiles();
+            int tileCount = tileset.size();
             int tilesPerRow = Math.max(1, (getWidth() - 1) / twidth);
             int rows = (tileCount / tilesPerRow +
                     (((tileCount) % tilesPerRow > 0) ? 1 : 0));

@@ -110,9 +110,9 @@ public class XMLMapWriter implements MapWriter
             w.writeAttribute("tilewidth", "" + map.getTileWidth());
             w.writeAttribute("tileheight", "" + map.getTileHeight());
 
-            Enumeration keys = map.getProperties();
+            Enumeration keys = map.getProperties().keys();
             while (keys.hasMoreElements()) {
-                String key = (String) keys.nextElement();
+                String key = (String)keys.nextElement();
                 w.startElement("property");
                 w.writeAttribute("name", key);
                 w.writeAttribute("value", map.getPropertyValue(key));
@@ -125,7 +125,7 @@ public class XMLMapWriter implements MapWriter
                 TileSet tileset = (TileSet)itr.next();
                 tileset.setFirstGid(firstgid);
                 writeTileset(tileset, w, wp);
-                firstgid += tileset.getTotalTiles();
+                firstgid += tileset.getMaxTileId() + 1;
             }
 
             Iterator ml = map.getLayers();
@@ -162,10 +162,10 @@ public class XMLMapWriter implements MapWriter
                 //w.writeAttribute("spacing", "0");
             }
 
-			if(set.getBaseDir() != null) {
-				w.writeAttribute("basedir", set.getBaseDir());
-			}
-			
+            if (set.getBaseDir() != null) {
+                w.writeAttribute("basedir", set.getBaseDir());
+            }
+
             if (source != null) {
                 // External tileset
                 w.writeAttribute("source", source.substring(
@@ -210,29 +210,29 @@ public class XMLMapWriter implements MapWriter
                     }
                 }
                 
-                //check to see if there is a need to write tile elements
-                if(set.isOneforOne()) {
-	                int totalTiles = set.getTotalTiles();
-					boolean needWrite = false;
-		
-	
-					for (int i = 0; i < totalTiles; i++) {
-						Tile tile = set.getTile(i);
-						if(tile.getProperties().hasMoreElements()) {
-							needWrite = true;
-							break;				//as long as one has properties, they all need to be written
-						}
-					}
-					
-					if(needWrite) {
-		                for (int i = 0; i < totalTiles; i++) {
-		                    Tile tile = set.getTile(i);
-		                    if (tile != null) {
-		                        writeTile(tile, w);
-		                    }
-		                }
-					}
-	                
+                // Check to see if there is a need to write tile elements
+                if (set.isOneforOne()) {
+                    Iterator tileIterator = set.iterator();
+                    boolean needWrite = false;
+
+                    while (tileIterator.hasNext()) {
+                        Tile tile = (Tile)tileIterator.next();
+                        if (tile.getProperties().hasMoreElements()) {
+                            needWrite = true;
+                            break;
+                            // As long as one has properties, they all need to
+                            // be written.
+                            // TODO: This shouldn't be necessary
+                        }
+                    }
+
+                    if (needWrite) {
+                        tileIterator = set.iterator();
+                        while (tileIterator.hasNext()) {
+                            Tile tile = (Tile)tileIterator.next();
+                            writeTile(tile, w);
+                        }
+                    }
                 }
             }
             w.endElement();
@@ -241,12 +241,14 @@ public class XMLMapWriter implements MapWriter
         }
     }
     
-    private void writeObjectGroup(ObjectGroup o, XMLWriter w) throws IOException {
-    	ListIterator itr = o.getObjects();
-    	Rectangle r = o.getBounds();
-    	while(itr.hasNext()) {
-    	    writeObject((MapObject) itr.next(), o, w);
-    	}
+    private void writeObjectGroup(ObjectGroup o, XMLWriter w)
+        throws IOException
+    {
+        Iterator itr = o.getObjects();
+        Rectangle r = o.getBounds();
+        while (itr.hasNext()) {
+            writeObject((MapObject)itr.next(), o, w);
+        }
     }    
     
     /**
@@ -272,7 +274,7 @@ public class XMLMapWriter implements MapWriter
             } else if(l instanceof ObjectGroup){
                 w.startElement("objectgroup");
             } else {
-            	w.startElement("layer");
+                w.startElement("layer");
             }
 
             w.writeAttribute("name", l.getName());
@@ -292,7 +294,7 @@ public class XMLMapWriter implements MapWriter
                 w.writeAttribute("opacity", "" + l.getOpacity());
             }
 
-            Enumeration keys = l.getProperties();
+            Enumeration keys = l.getProperties().keys();
             while (keys.hasMoreElements()) {
                 String key = (String) keys.nextElement();
                 w.startElement("property");
@@ -301,58 +303,58 @@ public class XMLMapWriter implements MapWriter
                 w.endElement();
             }
 
-            if(l instanceof ObjectGroup){
-                writeObjectGroup((ObjectGroup) l, w);
+            if (l instanceof ObjectGroup){
+                writeObjectGroup((ObjectGroup)l, w);
             } else {
-	            w.startElement("data");
-	            if (encodeLayerData) {
-	                w.writeAttribute("encoding", "base64");
-	
-	                if (compressLayerData) {
-	                    w.writeAttribute("compression", "gzip");
-	                    out = new GZIPOutputStream(baos);
-	                } else {
-	                    out = baos;
-	                }
-	
-	                for (int y = 0; y < l.getHeight(); y++) {
-	                    for (int x = 0; x < l.getWidth(); x++) {
-	                        Tile tile = ((TileLayer)l).getTileAt(x, y);
-	                        int gid = 0;
-	
-	                        if (tile != null) {
-	                            gid = tile.getGid();
-	                        }
-	
-	                        out.write((gid      ) & 0x000000FF);
-	                        out.write((gid >>  8) & 0x000000FF);
-	                        out.write((gid >> 16) & 0x000000FF);
-	                        out.write((gid >> 24) & 0x000000FF);
-	                    }
-	                }
-	
-	                if (compressLayerData) {
-	                    ((GZIPOutputStream)out).finish();
-	                }
-	
-	                w.writeCDATA(new String(Base64.encode(baos.toByteArray())));
-	            } else {
-	                for (int y = 0; y < l.getHeight(); y++) {
-	                    for (int x = 0; x < l.getWidth(); x++) {
-	                        Tile tile = ((TileLayer)l).getTileAt(x, y);
-	                        int gid = 0;
-	
-	                        if (tile != null) {
-	                            gid = tile.getGid();
-	                        }
-	
-	                        w.startElement("tile");
-	                        w.writeAttribute("gid", ""+gid);
-	                        w.endElement();
-	                    }
-	                }
-	            }
-	            w.endElement();
+                w.startElement("data");
+                if (encodeLayerData) {
+                    w.writeAttribute("encoding", "base64");
+
+                    if (compressLayerData) {
+                        w.writeAttribute("compression", "gzip");
+                        out = new GZIPOutputStream(baos);
+                    } else {
+                        out = baos;
+                    }
+
+                    for (int y = 0; y < l.getHeight(); y++) {
+                        for (int x = 0; x < l.getWidth(); x++) {
+                            Tile tile = ((TileLayer)l).getTileAt(x, y);
+                            int gid = 0;
+
+                            if (tile != null) {
+                                gid = tile.getGid();
+                            }
+
+                            out.write((gid      ) & 0x000000FF);
+                            out.write((gid >>  8) & 0x000000FF);
+                            out.write((gid >> 16) & 0x000000FF);
+                            out.write((gid >> 24) & 0x000000FF);
+                        }
+                    }
+
+                    if (compressLayerData) {
+                        ((GZIPOutputStream)out).finish();
+                    }
+
+                    w.writeCDATA(new String(Base64.encode(baos.toByteArray())));
+                } else {
+                    for (int y = 0; y < l.getHeight(); y++) {
+                        for (int x = 0; x < l.getWidth(); x++) {
+                            Tile tile = ((TileLayer)l).getTileAt(x, y);
+                            int gid = 0;
+
+                            if (tile != null) {
+                                gid = tile.getGid();
+                            }
+
+                            w.startElement("tile");
+                            w.writeAttribute("gid", ""+gid);
+                            w.endElement();
+                        }
+                    }
+                }
+                w.endElement();
             }
             w.endElement();
         } catch (XMLWriterException e) {

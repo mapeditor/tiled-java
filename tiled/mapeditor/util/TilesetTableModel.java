@@ -5,21 +5,18 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
 
 package tiled.mapeditor.util;
 
-import java.util.ListIterator;
+import java.util.Iterator;
 import java.util.Vector;
 import javax.swing.table.AbstractTableModel;
 
-import tiled.core.Map;
-import tiled.core.MapLayer;
-import tiled.core.TileLayer;
-import tiled.core.TileSet;
+import tiled.core.*;
 
 
 public class TilesetTableModel extends AbstractTableModel
@@ -67,7 +64,7 @@ public class TilesetTableModel extends AbstractTableModel
     }
 
     public boolean isCellEditable(int row, int col) {
-        if (col == 0) {    	
+        if (col == 0) {
             return true;
         }
         return false;
@@ -86,14 +83,20 @@ public class TilesetTableModel extends AbstractTableModel
 
     private int checkSetUsage(TileSet s) {
         int used = 0;
+        Iterator tileIterator = s.iterator();
 
-        for (int i = 0; i < s.getTotalTiles(); i++) {
-            ListIterator itr = map.getLayers();
+        while (tileIterator.hasNext()) {
+            Tile tile = (Tile)tileIterator.next();
+            Iterator itr = map.getLayers();
+
             while (itr.hasNext()) {
                 MapLayer ml = (MapLayer)itr.next();
-                if (((TileLayer)ml).isUsed(s.getTile(i))) {
-                    used++;
-                    break;
+
+                if (ml instanceof TileLayer) {
+                    if (((TileLayer)ml).isUsed(tile)) {
+                        used++;
+                        break;
+                    }
                 }
             }
         }

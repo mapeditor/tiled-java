@@ -15,7 +15,7 @@ package tiled.mapeditor;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
-import java.util.ListIterator;
+import java.util.Iterator;
 import java.util.Vector;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -136,41 +136,41 @@ public class TilesetManager extends JDialog implements ActionListener,
         } else if (command.equals("Export...")) {
             JFileChooser ch = new JFileChooser(map.getFilename());
 
-			ch.setFileFilter(new TiledFileFilter(TiledFileFilter.FILTER_TSX));
+            ch.setFileFilter(new TiledFileFilter(TiledFileFilter.FILTER_TSX));
             int ret = ch.showSaveDialog(this);
             if (ret == JFileChooser.APPROVE_OPTION) {
                 String filename = ch.getSelectedFile().getAbsolutePath();
-				File exist = new File(filename);
-				
-				if((exist.exists() && JOptionPane.showConfirmDialog(this, "The file already exists. Do you wish to overwrite it?") == JOptionPane.OK_OPTION) || !exist.exists()) {
-					try {
-						XMLMapWriter mw = new XMLMapWriter();
-						mw.writeTileset(set,filename);
-						set.setSource(filename);
-						exportButton.setEnabled(false);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
+                File exist = new File(filename);
+
+                if ((exist.exists() && JOptionPane.showConfirmDialog(this, "The file already exists. Do you wish to overwrite it?") == JOptionPane.OK_OPTION) || !exist.exists()) {
+                    try {
+                        XMLMapWriter mw = new XMLMapWriter();
+                        mw.writeTileset(set,filename);
+                        set.setSource(filename);
+                        exportButton.setEnabled(false);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         } else if (command.equals("Save")) {
-			JFileChooser ch = new JFileChooser(map.getFilename());
-	
-			ch.setFileFilter(new TiledFileFilter(TiledFileFilter.FILTER_TSX));
-			int ret = ch.showSaveDialog(this);
-			if (ret == JFileChooser.APPROVE_OPTION) {
-				String filename = ch.getSelectedFile().getAbsolutePath();
-				
-				try {
-					XMLMapWriter mw = new XMLMapWriter();
-					mw.writeTileset(set,filename);
-					set.setSource(filename);
-					exportButton.setEnabled(false);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		} else {
+            JFileChooser ch = new JFileChooser(map.getFilename());
+
+            ch.setFileFilter(new TiledFileFilter(TiledFileFilter.FILTER_TSX));
+            int ret = ch.showSaveDialog(this);
+            if (ret == JFileChooser.APPROVE_OPTION) {
+                String filename = ch.getSelectedFile().getAbsolutePath();
+
+                try {
+                    XMLMapWriter mw = new XMLMapWriter();
+                    mw.writeTileset(set,filename);
+                    set.setSource(filename);
+                    exportButton.setEnabled(false);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        } else {
             System.out.println("Unimplemented command: " + command);
         }
     }
@@ -182,12 +182,15 @@ public class TilesetManager extends JDialog implements ActionListener,
 
     private int checkSetUsage(TileSet s) {
         int used = 0;
+        Iterator tileIterator = s.iterator();
 
-        for (int i = 0; i < s.getTotalTiles(); i++) {
-            ListIterator itr = map.getLayers();
-            while (itr.hasNext()) {
-                MapLayer ml = (MapLayer)itr.next();
-                if (ml.isUsed(s.getTile(i))) {
+        while (tileIterator.hasNext()) {
+            Tile tile = (Tile)tileIterator.next();
+            Iterator layerIterator = map.getLayers();
+
+            while (layerIterator.hasNext()) {
+                MapLayer ml = (MapLayer)layerIterator.next();
+                if (ml.isUsed(tile)) {
                     used++;
                     break;
                 }

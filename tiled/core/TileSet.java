@@ -225,7 +225,7 @@ public class TileSet
      */
     public void addTile(Tile t) {
         if (t.getId() < 0) {
-            t.setId(this.getTotalTiles());
+            t.setId(tiles.size());
         }
 
         if (t.getId() >= tiles.size()) {
@@ -270,7 +270,7 @@ public class TileSet
      *
      * @return the amount of tiles in this tileset
      */
-    public int getTotalTiles() {
+    public int size() {
         int total = 0;
         for (int i = 0; i < tiles.size(); i++) {
             if (tiles.get(i) != null) {
@@ -278,6 +278,24 @@ public class TileSet
             }
         }
         return total;
+    }
+
+    /**
+     * Returns the maximum tile id.
+     *
+     * @return the maximum tile id, or -1 when there are no tiles
+     */
+    public int getMaxTileId() {
+        return tiles.size() - 1;
+    }
+
+    /**
+     * Returns an iterator over the tiles in this tileset.
+     *
+     * @return an iterator over the tiles in this tileset.
+     */
+    public Iterator iterator() {
+        return new TileIterator(tiles);
     }
 
     /**
@@ -400,7 +418,7 @@ public class TileSet
      * @return the name of the tileset, and the total tiles
      */
     public String toString() {
-        return getName() + " [" + getTotalTiles() + "]";
+        return getName() + " [" + size() + "]";
     }
 
 

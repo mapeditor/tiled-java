@@ -1177,13 +1177,13 @@ public class MapEditor implements ActionListener,
             }
         } else if (command.equals("Properties")) {
             PropertiesDialog pd = new PropertiesDialog(appFrame,
-                    currentMap.getAllProperties());
+                    currentMap.getProperties());
             pd.setTitle("Map Properties");
             pd.getProps();
         } else if (command.equals("Layer Properties")) {
             MapLayer layer = getCurrentLayer();
             PropertiesDialog lpd =
-                new PropertiesDialog(appFrame, layer.getAllProperties());
+                new PropertiesDialog(appFrame, layer.getProperties());
             lpd.setTitle(layer.getName() + " Properties");
             lpd.getProps();
         } else if (command.equals("Show Boundaries") ||
