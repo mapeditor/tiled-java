@@ -91,9 +91,7 @@ public class XMLMapWriter implements MapWriter
         try {
             w.startElement("map");
 
-            //w.writeAttribute("id", "" + mapId);
-
-			w.writeAttribute("version", "0.99a");
+            w.writeAttribute("version", "0.99a");
 
             switch (map.getOrientation()) {
                 case Map.MDO_ORTHO:
@@ -216,19 +214,19 @@ public class XMLMapWriter implements MapWriter
                     Iterator tileIterator = set.iterator();
                     boolean needWrite = false;
 
-                    if (conf.keyHasValue("tmx.save.embedImages","1")) {
-                    	needWrite = true;
+                    if (conf.keyHasValue("tmx.save.embedImages", "1")) {
+                        needWrite = true;
                     } else {
-	                    while (tileIterator.hasNext()) {
-	                        Tile tile = (Tile)tileIterator.next();
-	                        if (!tile.getProperties().isEmpty()) {
-	                            needWrite = true;
-	                            break;
-	                            // As long as one has properties, they all need to
-	                            // be written.
-	                            // TODO: This shouldn't be necessary
-	                        }
-	                    }
+                        while (tileIterator.hasNext()) {
+                            Tile tile = (Tile)tileIterator.next();
+                            if (!tile.getProperties().isEmpty()) {
+                                needWrite = true;
+                                break;
+                                // As long as one has properties, they all
+                                // need to be written.
+                                // TODO: This shouldn't be necessary
+                            }
+                        }
                     }
 
                     if (needWrite) {
@@ -554,6 +552,5 @@ public class XMLMapWriter implements MapWriter
     }
 
     public void setErrorStack(Stack es) {
-    	
     }
 }

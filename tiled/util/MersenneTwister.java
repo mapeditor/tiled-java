@@ -1,4 +1,5 @@
 package tiled.util;
+
 /** 
    A C-program for MT19937, with initialization improved 2002/1/26.
    Coded by Takuji Nishimura and Makoto Matsumoto.
@@ -44,7 +45,6 @@ package tiled.util;
    @author Makoto Matsumoto (matumoto@math.keio.ac.jp)
    @author Takuji Nishimura
 */
-
 public class MersenneTwister {
     public static int N = 624;
     public static int M = 397;

@@ -142,9 +142,8 @@ public class MappyMapReader implements MapReader
     }
 
     public void setErrorStack(Stack es) {
-    	//TODO: implement this
+        // TODO: implement setErrorStack
     }
-    
 
 
     private Chunk findChunk(String header) {

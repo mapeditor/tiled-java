@@ -21,8 +21,8 @@ import javax.swing.JScrollPane;
 import tiled.view.MapView;
 
 
-public class MiniMapViewer extends JPanel {
-
+public class MiniMapViewer extends JPanel
+{
     public static final int MAX_HEIGHT = 150;
 
     private MapView myView;
@@ -30,7 +30,7 @@ public class MiniMapViewer extends JPanel {
     private double scale = 1.0;
 
     public MiniMapViewer() {
-        setSize(MAX_HEIGHT,MAX_HEIGHT);
+        setSize(MAX_HEIGHT, MAX_HEIGHT);
     }
 
     public MiniMapViewer(MapView view) {
@@ -50,9 +50,10 @@ public class MiniMapViewer extends JPanel {
     }
 
     public void paint(Graphics g) {
-        if(myView != null)
-        	myView.paint(g);
-        if (mainPanel!=null) {
+        if (myView != null) {
+            myView.paint(g);
+        }
+        if (mainPanel != null) {
             g.setColor(Color.yellow);
             Rectangle viewArea = mainPanel.getGraphics().getClipBounds();
             if (viewArea != null) {

@@ -97,7 +97,7 @@ public class MappyMapWriter implements MapWriter
     }
 
     public void setErrorStack(Stack es) {
-    	//TODO: implement this
+        // TODO: implement setErrorStack
     }
     
     

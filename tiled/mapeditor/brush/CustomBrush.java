@@ -26,16 +26,15 @@ public class CustomBrush extends AbstractBrush
     }
 
     public CustomBrush(MultilayerPlane m) {
-    	this();
-    	this.addAllLayers(m.getLayerVector());
+        this();
+        this.addAllLayers(m.getLayerVector());
     }
     
     public void setAffectedLayers(int num) {
-    	
     }
     
     public int getAffectedLayers() {
-    	return getTotalLayers();
+        return getTotalLayers();
     }
     
     public Rectangle getBounds() {
@@ -54,36 +53,37 @@ public class CustomBrush extends AbstractBrush
      * @param initLayer  The first layer to paint to.
      * @return The rectangular region affected by the painting  
      */
-    public Rectangle commitPaint(MultilayerPlane mp, int x, int y, int initLayer) {
+    public Rectangle commitPaint(MultilayerPlane mp, int x, int y,
+            int initLayer)
+    {
         Rectangle bounds = this.getBounds();
         int centerx = (int)(x - (bounds.width / 2));
         int centery = (int)(y - (bounds.height / 2));
         
         ListIterator itr = getLayers();
-        while(itr.hasNext()) {
+        while (itr.hasNext()) {
             TileLayer tl = (TileLayer)itr.next();            
-            TileLayer tm = (TileLayer) mp.getLayer(initLayer++);
-            if(tm != null) {
-	            tl.setOffset(centerx,centery);
-	            tl.mergeOnto(tm);
+            TileLayer tm = (TileLayer)mp.getLayer(initLayer++);
+            if (tm != null) {
+                tl.setOffset(centerx, centery);
+                tl.mergeOnto(tm);
             }
         }
         
         return new Rectangle(centerx, centery, bounds.width, bounds.height);
     }
 
-	/* (non-Javadoc)
-	 * @see tiled.mapeditor.brush.Brush#paint(java.awt.Graphics, int, int)
-	 */
-	public void paint(Graphics g, int x, int y) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	public boolean equals(Brush b) {
-		if(b instanceof CustomBrush) {
-			//TODO: THIS
-		}
-		return false;
-	}
+    /* (non-Javadoc)
+     * @see tiled.mapeditor.brush.Brush#paint(java.awt.Graphics, int, int)
+     */
+    public void paint(Graphics g, int x, int y) {
+        // TODO Auto-generated method stub
+    }
+
+    public boolean equals(Brush b) {
+        if (b instanceof CustomBrush) {
+            //TODO: THIS
+        }
+        return false;
+    }
 }

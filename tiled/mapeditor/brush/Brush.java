@@ -25,11 +25,11 @@ public abstract class Brush extends MultilayerPlane
     }
 
     /**
-     * This will set the number of layers to affect, the default is 1 - the layer specified
-     * in commitPaint
+     * This will set the number of layers to affect, the default is 1 - the
+     * layer specified in commitPaint.
      * 
      * @see Brush#commitPaint(MultilayerPlane, int, int, int)
-     * @param num   The number of layers to affect.
+     * @param num   the number of layers to affect.
      */
     public abstract void setAffectedLayers(int num);
     

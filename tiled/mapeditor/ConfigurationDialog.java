@@ -28,8 +28,9 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
     private JButton bOk, bApply, bCancel;
     private JPanel layerOps, generalOps, tilesetOps, gridOps;
     private IntegerSpinner undoDepth, gridOpacity;
-    private JCheckBox cbBinaryEncode, cbCompressLayerData, cbEmbedImages, cbReportIOWarnings;
-	private JRadioButton rbEmbedInTiles, rbEmbedInSet;
+    private JCheckBox cbBinaryEncode, cbCompressLayerData, cbEmbedImages;
+    private JCheckBox cbReportIOWarnings;
+    private JRadioButton rbEmbedInTiles, rbEmbedInSet;
     private JCheckBox cbGridAA;
     private JColorChooser gridColor;
     private TiledConfiguration configuration;
@@ -73,8 +74,8 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
         
         rbEmbedInTiles.setActionCommand("tmx.save.embedImages");
         rbEmbedInTiles.setEnabled(false);
-		rbEmbedInSet.setActionCommand("tmx.save.tileSetImages");
-		rbEmbedInSet.setEnabled(false);
+        rbEmbedInSet.setActionCommand("tmx.save.tileSetImages");
+        rbEmbedInSet.setEnabled(false);
         undoDepth.setName("tiled.undo.depth");
         cbGridAA.setActionCommand("tiled.grid.antialias");
         gridOpacity.setName("tiled.grid.opacity");
@@ -86,7 +87,7 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
         bOk.addActionListener(this);
         bApply.addActionListener(this);
         bCancel.addActionListener(this);
-		bApply.setEnabled(false);
+        bApply.setEnabled(false);
 
         /* LAYER OPTIONS */
         layerOps = new VerticalStaticJPanel();
@@ -208,10 +209,10 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
         gridOpacity.setValue(
                 configuration.getIntValue(gridOpacity.getName(), 255));
 
-		if(configuration.keyHasValue("tmx.save.embedImages", "1")) {
-			cbEmbedImages.setSelected(true);
-			rbEmbedInTiles.setSelected(true);
-		}
+        if (configuration.keyHasValue("tmx.save.embedImages", "1")) {
+            cbEmbedImages.setSelected(true);
+            rbEmbedInTiles.setSelected(true);
+        }
 
         // Handle checkboxes
         updateFromConf(layerOps);
@@ -282,15 +283,18 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
     }
 
     public void stateChanged(ChangeEvent event) {
+        // TODO: Check state change relevance (don't enable apply when it's
+        // just a hover event)
+
         Object source = event.getSource();
 
         if (source == cbBinaryEncode) {
             cbCompressLayerData.setEnabled(cbBinaryEncode.isSelected());
-        } else if(source == cbEmbedImages) {
-        	rbEmbedInTiles.setSelected(cbEmbedImages.isSelected() && rbEmbedInTiles.isSelected());
-        	rbEmbedInTiles.setEnabled(cbEmbedImages.isSelected());
-        	rbEmbedInSet.setSelected(cbEmbedImages.isSelected() && rbEmbedInSet.isSelected());
-        	rbEmbedInSet.setEnabled(cbEmbedImages.isSelected());
+        } else if (source == cbEmbedImages) {
+            rbEmbedInTiles.setSelected(cbEmbedImages.isSelected() && rbEmbedInTiles.isSelected());
+            rbEmbedInTiles.setEnabled(cbEmbedImages.isSelected());
+            rbEmbedInSet.setSelected(cbEmbedImages.isSelected() && rbEmbedInSet.isSelected());
+            rbEmbedInSet.setEnabled(cbEmbedImages.isSelected());
         }
         bApply.setEnabled(true);
     }

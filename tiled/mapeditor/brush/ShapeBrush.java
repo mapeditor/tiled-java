@@ -33,15 +33,15 @@ public class ShapeBrush extends AbstractBrush
     }
     
     public ShapeBrush(AbstractBrush sb) {
-    	super(sb);
-    	if(sb instanceof ShapeBrush) {
-    		shape = ((ShapeBrush)sb).shape;
-    		paintTile = ((ShapeBrush)sb).paintTile;
-    	}
+        super(sb);
+        if (sb instanceof ShapeBrush) {
+            shape = ((ShapeBrush)sb).shape;
+            paintTile = ((ShapeBrush)sb).paintTile;
+        }
     }
     
     /**
-     * Make a circular brush
+     * Makes this brush a circular brush.
      * 
      * @param rad the radius of the circular region
      */
@@ -51,7 +51,7 @@ public class ShapeBrush extends AbstractBrush
     }
 
     /**
-     * Make a rectangular brush
+     * Makes this brush a rectangular brush.
      * 
      * @param r a Rectangle to use as the shape of the brush
      */
@@ -81,17 +81,17 @@ public class ShapeBrush extends AbstractBrush
 
         // TODO: This loop does not take all edges into account
 
-        for(int l=0;l<numLayers;l++) {
-        	TileLayer tl = (TileLayer) mp.getLayer(initLayer - l);
-        	if(tl != null) {
-		        for (int i = 0; i <= bounds.height+1; i++) {
-		            for (int j = 0; j <= bounds.width+1; j++) {
-		                if (shape.contains(j, i)) {
-		                    tl.setTileAt(j + centerx, i + centery, paintTile);
-		                }
-		            }
-		        }
-        	}
+        for(int l = 0; l < numLayers; l++) {
+            TileLayer tl = (TileLayer)mp.getLayer(initLayer - l);
+            if (tl != null) {
+                for (int i = 0; i <= bounds.height + 1; i++) {
+                    for (int j = 0; j <= bounds.width + 1; j++) {
+                        if (shape.contains(j, i)) {
+                            tl.setTileAt(j + centerx, i + centery, paintTile);
+                        }
+                    }
+                }
+            }
         }
         
         // Return affected area
@@ -110,20 +110,20 @@ public class ShapeBrush extends AbstractBrush
         return shape.getBounds();
     }
     
-	public void paint(Graphics g, int x, int y) {		
-		if(shape.isRectangular()) {
-			g.fillRect(x,y,shape.getBounds().width,shape.getBounds().height);
-		} else {
-			if(!shape.isPolygonal()) {
-				g.fillOval(x,y,shape.getBounds().width,shape.getBounds().height);
-			}
-		}
-	}
+    public void paint(Graphics g, int x, int y) {
+        if (shape.isRectangular()) {
+            Rectangle bounds = shape.getBounds();
+            g.fillRect(x, y, bounds.width, bounds.height);
+        } else if (!shape.isPolygonal()) {
+            Rectangle bounds = shape.getBounds();
+            g.fillOval(x, y, bounds.width, bounds.height);
+        }
+    }
 
-	public boolean equals(Brush b) {
-		if(b instanceof ShapeBrush) {
-			return ((ShapeBrush)b).shape.equals(shape);
-		}
-		return false;
-	}
+    public boolean equals(Brush b) {
+        if (b instanceof ShapeBrush) {
+            return ((ShapeBrush)b).shape.equals(shape);
+        }
+        return false;
+    }
 }

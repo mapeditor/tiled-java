@@ -1609,7 +1609,7 @@ public class MapEditor implements ActionListener,
     }
 
     public void setBrush(AbstractBrush b) {
-    	currentBrush = b;
+        currentBrush = b;
     }
     
     private void updateTitle() {
@@ -1653,19 +1653,20 @@ public class MapEditor implements ActionListener,
     }
 
     private void reportPluginMessages(Stack s) {
-    	//TODO: maybe have a nice dialog with a scrollbar, in case there are a lot of messages...
-        if(TiledConfiguration.getInstance().keyHasValue("tiled.report.io",1)) {
-        	if(s.size() > 0) {
-		        Iterator itr = s.iterator();
-		        String warnings = "";
-		        while(itr.hasNext()) {
-		            String warn = (String) itr.next();
-		            warnings = warnings + warn + "\n";
-		        }
-		        JOptionPane.showMessageDialog(this.appFrame,  warnings,
-		        																"Loading Messages",
-																				JOptionPane.INFORMATION_MESSAGE);
-        	}
+        // TODO: maybe have a nice dialog with a scrollbar, in case there are a
+        // lot of messages...
+        if (TiledConfiguration.getInstance().keyHasValue("tiled.report.io",1)) {
+            if (s.size() > 0) {
+                Iterator itr = s.iterator();
+                String warnings = "";
+                while(itr.hasNext()) {
+                    String warn = (String) itr.next();
+                    warnings = warnings + warn + "\n";
+                }
+                JOptionPane.showMessageDialog(this.appFrame,  warnings,
+                        "Loading Messages",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
         }
     }
     
@@ -1688,8 +1689,8 @@ public class MapEditor implements ActionListener,
             }
 
             if (mr != null) {
-            	Stack errors = new Stack();
-            	mr.setErrorStack(errors);
+                Stack errors = new Stack();
+                mr.setErrorStack(errors);
                 setCurrentMap(mr.readMap(file));
                 reportPluginMessages(errors);
                 updateRecent(file);
@@ -1777,9 +1778,9 @@ public class MapEditor implements ActionListener,
             }
 
             if (mw != null) {
-            	Stack errors = new Stack();
-            	mw.setErrorStack(errors);
-            	mw.writeMap(currentMap, filename);            	
+                Stack errors = new Stack();
+                mw.setErrorStack(errors);
+                mw.writeMap(currentMap, filename);
                 currentMap.setFilename(filename);
                 updateRecent(filename);
                 undoStack.commitSave();

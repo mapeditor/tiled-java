@@ -15,15 +15,15 @@ package tiled.io;
 import java.util.Stack;
 
 /**
- * This is the interface for all Tiled I/O plugins, whether they
- * load, save, or both. The PluginClassLoader also uses this to
- * check the supported file extensions 
+ * This is the interface for all Tiled I/O plugins, whether they load, save, or
+ * both. The PluginClassLoader also uses this to check the supported file
+ * extensions.
  */
 public interface PluggableMapIO
 {
     /**
-     * Lists supported file extensions. This function is used by the
-     * editor to find the plugin to use for a specific file extension.
+     * Lists supported file extensions. This function is used by the editor to
+     * find the plugin to use for a specific file extension.
      * 
      * @return a comma delimited string of supported file extensions
      * @throws Exception
@@ -32,10 +32,10 @@ public interface PluggableMapIO
 
     /**
      * Returns a short description of the plugin, or the plugin name. This 
-     * string is displayed in the list of loaded plugins under the
-     * Help menu in Tiled.
+     * string is displayed in the list of loaded plugins under the Help menu in
+     * Tiled.
      * 
-     * @return A short name or description  
+     * @return a short name or description  
      */
     public String getName();
 
@@ -43,19 +43,19 @@ public interface PluggableMapIO
      * Returns a long description (no limit) that details the plugin's 
      * capabilities, author, contact info, etc.
      * 
-     * @return A long description of the plugin
+     * @return a long description of the plugin
      */
     public String getDescription();
     
     public String getPluginPackage();
     
     /**
-     * The Stack object passed by the editor when the plugin is called to 
-     * load or save a map can be used by the plugin to notify the user
-     * of any problems or messages.
+     * The Stack object passed by the editor when the plugin is called to load
+     * or save a map can be used by the plugin to notify the user of any
+     * problems or messages.
      * 
-     * @param es An initialized Stack that will be used by the editor to 
-     * print messages from the plugin 
+     * @param es an initialized Stack that will be used by the editor to 
+     *           print messages from the plugin 
      */
     public void setErrorStack(Stack es);
 }

@@ -191,7 +191,7 @@ public class XMLMapTransformer implements MapReader
                 Node n = nl.item(i);
                 if (n.getNodeName().equals("data")) {
                     Node cdata = n.getChildNodes().item(0);
-                    if(cdata == null) {
+                    if (cdata == null) {
                         warnings.push("WARN: image <data> tag enclosed no data. (empty data tag)");
                     } else {
                         String sdata = cdata.getNodeValue();
@@ -280,7 +280,7 @@ public class XMLMapTransformer implements MapReader
         int tileHeight = getAttribute(t, "tileheight", 0);
         int tileSpacing = getAttribute(t, "spacing", 0);
 
-        if(set.getBaseDir() != null) {
+        if (set.getBaseDir() != null) {
             tilesetBaseDir = set.getBaseDir().indexOf("://") > 0 ? set.getBaseDir() : (new File(set.getBaseDir())).toURL().toString(); 
         }
 
@@ -397,7 +397,7 @@ public class XMLMapTransformer implements MapReader
                     tile.setImageOrientation(orientation);
                 }
             } else if (child.getNodeName().equalsIgnoreCase("property")) {
-                tileProps.setProperty(getAttributeValue(child,"name"),
+                tileProps.setProperty(getAttributeValue(child, "name"),
                         getAttributeValue(child, "value"));
             }
         }
@@ -437,7 +437,7 @@ public class XMLMapTransformer implements MapReader
         }
 
         Rectangle r = ml.getBounds();
-        if(r.height == 0 && r.width == 0) {
+        if (r.height == 0 && r.width == 0) {
             ml.setBounds(map.getBounds());
             warnings.push("INFO: defaulting layer '"+ml.getName()+"' dimensions to map dimensions");
         }
@@ -452,39 +452,39 @@ public class XMLMapTransformer implements MapReader
 
                 if (encoding != null && encoding.equalsIgnoreCase("base64")) {
                     Node cdata = child.getChildNodes().item(0);
-                    if(cdata == null) {
+                    if (cdata == null) {
                         warnings.push("WARN: layer <data> tag enclosed no data. (empty data tag)");
                     } else {
-	                    char[] enc = cdata.getNodeValue().trim().toCharArray();
-	                    byte[] dec = Base64.decode(enc);
-	                    ByteArrayInputStream bais = new ByteArrayInputStream(dec);
-	                    InputStream is;
-	
-	                    String comp = getAttributeValue(child, "compression");
-	
-	                    if (comp != null && comp.equalsIgnoreCase("gzip")) {
-	                        is = new GZIPInputStream(bais);
-	                    } else {
-	                        is = bais;
-	                    }
-	
-	                    for (int y = 0; y < ml.getHeight(); y++) {
-	                        for (int x = 0; x < ml.getWidth(); x++) {
-	                            int tileId = 0;
-	                            tileId |= is.read();
-	                            tileId |= is.read() <<  8;
-	                            tileId |= is.read() << 16;
-	                            tileId |= is.read() << 24;
-	
-	                            TileSet ts = map.findTileSetForTileGID(tileId);
-	                            if (ts != null) {
-	                                ml.setTileAt(x, y,
-	                                        ts.getTile(tileId - ts.getFirstGid()));
-	                            } else {
-	                                ml.setTileAt(x, y, map.getNullTile());
-	                            }
-	                        }
-	                    }
+                        char[] enc = cdata.getNodeValue().trim().toCharArray();
+                        byte[] dec = Base64.decode(enc);
+                        ByteArrayInputStream bais = new ByteArrayInputStream(dec);
+                        InputStream is;
+
+                        String comp = getAttributeValue(child, "compression");
+
+                        if (comp != null && comp.equalsIgnoreCase("gzip")) {
+                            is = new GZIPInputStream(bais);
+                        } else {
+                            is = bais;
+                        }
+
+                        for (int y = 0; y < ml.getHeight(); y++) {
+                            for (int x = 0; x < ml.getWidth(); x++) {
+                                int tileId = 0;
+                                tileId |= is.read();
+                                tileId |= is.read() <<  8;
+                                tileId |= is.read() << 16;
+                                tileId |= is.read() << 24;
+
+                                TileSet ts = map.findTileSetForTileGID(tileId);
+                                if (ts != null) {
+                                    ml.setTileAt(x, y,
+                                            ts.getTile(tileId - ts.getFirstGid()));
+                                } else {
+                                    ml.setTileAt(x, y, map.getNullTile());
+                                }
+                            }
+                        }
                     }
                 } else {
                     int x = 0, y = 0;
@@ -508,10 +508,8 @@ public class XMLMapTransformer implements MapReader
                         }
                     }
                 }
-
-
             } else if (child.getNodeName().equalsIgnoreCase("property")) {
-                mlProps.setProperty(getAttributeValue(child,"name"),
+                mlProps.setProperty(getAttributeValue(child, "name"),
                         getAttributeValue(child, "value"));
             }
         }
@@ -652,7 +650,7 @@ public class XMLMapTransformer implements MapReader
         
         xmlPath = filename.substring(0,
                 filename.lastIndexOf(File.separatorChar) + 1);
-        if(xmlFile.indexOf("://") == -1) {
+        if (xmlFile.indexOf("://") == -1) {
             xmlFile = (new java.io.File(xmlFile)).toURL().toString();
             xmlPath = (new java.io.File(xmlPath)).toURL().toString();
         }
@@ -699,6 +697,6 @@ public class XMLMapTransformer implements MapReader
     }
     
     public void setErrorStack(Stack es) {
-    	warnings = es;
+        warnings = es;
     }
 }
