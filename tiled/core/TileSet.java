@@ -31,6 +31,7 @@ import java.util.zip.Checksum;
 
 public class TileSet
 {
+    private String base;
     private Vector tiles;
     private Hashtable images, imageCache;
     private int id;
@@ -138,6 +139,15 @@ public class TileSet
     public void setSource(String source) {
         externalSource = source;
     }
+
+	/**
+	 * Sets the base directory for the tileset
+	 * 
+	 * @param base a String containing the native format directory
+	 */
+	public void setBaseDir(String base) {
+		this.base = base;
+	}
 
     /**
      * Sets the filename of the tileset image. Doesn't change the tileset in
@@ -301,6 +311,15 @@ public class TileSet
         return externalSource;
     }
 
+	/**
+	 * Returns the base directory for the tileset
+	 * 
+	 * @return a directory in native format as given in the tileset file or tag
+	 */
+	public String getBaseDir() {
+		return base;
+	}
+
     /**
      * Returns the filename of the tile bitmap.
      *
@@ -321,19 +340,28 @@ public class TileSet
     }
 
     /**
-     * Returns the name of this tileset.
+     * @return the name of this tileset.
      */
     public String getName() {
         return name;
     }
 
+	/**
+	 * @return the name of the tileset, and the total tiles
+	 */
     public String toString() {
-        return name + " [" + getTotalTiles() + "]";
+        return getName() + " [" + getTotalTiles() + "]";
     }
 
 
     // TILE IMAGE CODE
 
+	/**
+	 * Provides a CRC32 checksum of a given image <code>i</code>
+	 * 
+	 * @param i a preloaded Image object
+	 * @return a String containing the checksum value
+	 */
     private String checksumImage(Image i) {
         PixelGrabber pg = new PixelGrabber(i, 0, 0, -1, -1, false);
         Checksum sum = new CRC32();
@@ -362,14 +390,29 @@ public class TileSet
         return Long.toHexString(sum.getValue());
     }
 
+	/**
+	 * 
+	 * @return returns the total number of images in the set
+	 */
     public int getTotalImages() {
         return images.size();
     }
     
+    /**
+     * 
+     * @return returns an Enumeration of the image ids
+     */
     public Enumeration getImageIds() {
         return images.keys();
     }
     
+    /**
+     * This function uses the CRC32 checksums to find the cached version of the image
+     * supplied.
+     * 
+     * @param i an Image object
+     * @return returns the id of the given image, or -1 if the image is not in the set
+     */
     public int getIdByImage(Image i) {
         Iterator itr = imageCache.keySet().iterator();
         int searchId = -1;
@@ -385,6 +428,11 @@ public class TileSet
         return searchId;
     }
 
+	/**
+	 * 
+	 * @param key
+	 * @return
+	 */
     public Image getImageById(Object key) {
         if (images.get(key) == null) {
             return null;
@@ -399,8 +447,10 @@ public class TileSet
     }
 
     /**
+     * Returns the dimensions of an image as specified by the id <code>key</code>
+     * 
      * @param key
-     * @return dimensions of image with given key
+     * @return dimensions of image with referenced by given key
      */
     public Dimension getImageDimensions(Object key) {
         if (images.get(key) != null) {

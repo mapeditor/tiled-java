@@ -145,3 +145,16 @@ Date:       24/09/04
 Summary:    The ability to set properties for individual layers.
 State:      A necessary feature that will be added sooner or later.
 
+- 24 --------------------------------------------------------------------------
+Suggestor:  Radomir Dopieralski <sheep@atos.wmid.amu.edu.pl>
+Date:	    29/10/04
+Summary:    Tileset should allow a base directory attribute for relative
+	    image paths.
+State:      This will be included in the 0.5.0 release
+
+- 25 --------------------------------------------------------------------------
+Suggestor:  Radomir Dopieralski <sheep@atos.wmid.amu.edu.pl>
+Date:	    29/10/04
+Summary:    Tilesets should allow a designated default tile image.
+State:      Interesting.
+

@@ -257,6 +257,8 @@ public class XMLMapTransformer implements MapReader
         TileSet set = null;
         boolean hasTileTags = false;
 
+		String tilesetBaseDir = xmlPath;
+
         try {
             set = (TileSet)unmarshalClass(TileSet.class, t);
         } catch (Exception e) {
@@ -266,6 +268,10 @@ public class XMLMapTransformer implements MapReader
         int tileWidth = getAttribute(t, "tilewidth", 0);
         int tileHeight = getAttribute(t, "tileheight", 0);
         int tileSpacing = getAttribute(t, "spacing", 0);
+
+		if(set.getBaseDir() != null) {
+			tilesetBaseDir = set.getBaseDir().indexOf("://") > 0 ? set.getBaseDir() : "file://"+set.getBaseDir(); 
+		}
 
         if (set.getSource() != null) {
             TileSet ext = unmarshalTilesetFile(new URL(xmlPath + set.getSource()).openStream(), 
@@ -298,7 +304,7 @@ public class XMLMapTransformer implements MapReader
                         if (sourceFile.getAbsolutePath().equals(source)) {
                             sourcePath = sourceFile.getCanonicalPath();
                         } else {
-                            sourcePath = xmlPath + source;
+                            sourcePath = tilesetBaseDir + source;
                         }
 
                         set.importTileBitmap(sourcePath, tileWidth, tileHeight,

@@ -91,6 +91,8 @@ public class XMLMapWriter implements MapWriter
 
             //w.writeAttribute("id", "" + mapId);
 
+			w.writeAttribute("version", map.getVersion());
+
             switch (map.getOrientation()) {
                 case Map.MDO_ORTHO:
                     w.writeAttribute("orientation", "orthogonal"); break;
@@ -164,6 +166,8 @@ public class XMLMapWriter implements MapWriter
                 w.writeAttribute("tileheight", "" + set.getStandardHeight());
                 //w.writeAttribute("spacing", "0");
             }
+
+			w.writeAttribute("basedir", set.getBaseDir());
 
             if (source != null) {
                 // External tileset

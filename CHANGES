@@ -4,8 +4,12 @@
   width and height)
 * Added layer properties, analoguous to tile and map properties
 * Added support for object placement
-* Merged Rainer's shared images code
+* Added a version attribute to the map tag in the DTD (and support)
+* Added a basedir attribute to the tileset tag in the DTD (and support)
+  suggested by Radomir Dopieralski
+* Merged in Rainer Deyke's shared images code
 * Fixed determining the relative path to tileset images
+* Fixed some old things in the DTD suggested by Radomir Dopieralski
 * New tilesets can have tiles auto-created from images
 * Tiled now supports reading TMX/TSX files from URLs
 

@@ -41,7 +41,7 @@ public class Map extends MultilayerPlane implements Cloneable
     int orientation = MDO_ORTHO;
     EventListenerList mapChangeListeners;
     Properties properties;
-    String filename;
+    String filename, version;
 
     /**
      * @param width  the map width in tiles.
@@ -267,6 +267,10 @@ public class Map extends MultilayerPlane implements Cloneable
         fireMapChanged();
     }
 
+	public void setVersion(String version) {
+		this.version = version;
+	}
+
     public void setFilename(String filename) {
         this.filename = filename;
     }
@@ -299,6 +303,10 @@ public class Map extends MultilayerPlane implements Cloneable
         this.orientation = orientation;
         // TODO: fire mapChangedNotification about orientation change
     }
+
+	public String getVersion() {
+		return version;
+	}
 
     public String getFilename() {
         return filename;

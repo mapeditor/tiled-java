@@ -205,6 +205,7 @@ public final class TiledConfiguration
         addConfigPair("tmx.save.tileSetImages", "0");
         addConfigPair("tmx.save.embedtileSetImages", "0");
         addConfigPair("tmx.undo.depth", "30");
+		addConfigPair("tiled.cursorhighlight", "1");
         addConfigPair("tiled.grid.color", "0x000000");
         addConfigPair("tiled.grid.antialias", "1");
         addConfigPair("tiled.grid.opacity", "255");

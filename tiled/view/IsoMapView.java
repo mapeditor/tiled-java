@@ -78,7 +78,7 @@ public class IsoMapView extends MapView
                 if (t != null && t != myMap.getNullTile()) {
                     if (SelectionLayer.class.isInstance(layer)) {
                         g.fillPolygon(gridPoly);
-                        paintEdge(g, layer, gx, gy);
+                        //paintEdge(g, layer, gx, gy);
                     } else {
                         t.draw(g, gx, gy, zoom);
                     }

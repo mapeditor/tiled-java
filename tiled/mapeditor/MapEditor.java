@@ -78,6 +78,7 @@ public class MapEditor implements ActionListener,
     Tile currentTile;
     int currentLayer = -1;
     boolean bMouseIsDown = false;
+    SelectionLayer cursorHighlight;
     Point mousePressLocation, mouseInitialPressLocation;
     Point moveDist;
     int mouseButton;
@@ -157,6 +158,9 @@ public class MapEditor implements ActionListener,
         undoSupport = new UndoableEditSupport();
         undoSupport.addUndoableEditListener(new UndoAdapter());
 
+		cursorHighlight = new SelectionLayer(1,1);
+		cursorHighlight.select(0,0);
+		
         mapEventAdapter = new MapEventAdapter();
         currentBrush = new ShapeBrush();
         ((ShapeBrush)currentBrush).makeQuadBrush(new Rectangle(0, 0, 1, 1));
@@ -268,16 +272,17 @@ public class MapEditor implements ActionListener,
             }
         } catch (IOException e) {
             JOptionPane.showMessageDialog(appFrame,
-                    e.getMessage() + (e.getCause() != null ? "\nCause: "+e.getCause().getMessage() : ""), "Error while loading map",
+                    e.getMessage() + (e.getCause() != null ? "\nCause: "+e.getCause().getMessage() : ""),
+					"Error while loading map",
                     JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-        } catch (Exception e) {
             //e.printStackTrace();
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(appFrame,
                     "Error while loading " + file + ": " +
-                    e.getMessage(), "Error while loading map",
+                    e.getMessage() + (e.getCause() != null ? "\nCause: "+e.getCause().getMessage() : ""),
+					"Error while loading map",
                     JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
+            //e.printStackTrace();
         }
 
         return false;
@@ -968,7 +973,7 @@ public class MapEditor implements ActionListener,
     public void mouseMoved(MouseEvent e) {
         if (bMouseIsDown) {
             doMouse(e);
-        }
+        }		
 
         Point tile = mapView.screenToTileCoords(e.getX(), e.getY());
         if (currentMap.inBounds(tile.x, tile.y)) {
@@ -976,6 +981,15 @@ public class MapEditor implements ActionListener,
         } else {
             tileCoordsLabel.setText(" ");
         }
+        
+		if(TiledConfiguration.getInstance().keyHasValue("tiled.cursorhighlight", 1)) {
+			Rectangle redraw = cursorHighlight.getBounds();
+			cursorHighlight.setOffset(tile.x, tile.y);
+			mapView.repaintRegion(new Rectangle(Math.min(tile.x, redraw.x)-1,
+											Math.min(tile.y, redraw.y)-1,
+											Math.max(tile.x, redraw.x)+1,
+											Math.max(tile.y, redraw.y)+1));
+		}
     }
 
     public void mouseDragged(MouseEvent e) {
@@ -1791,6 +1805,10 @@ public class MapEditor implements ActionListener,
         
         if (miniMap != null && currentMap != null) {
             miniMap.setView(currentMap.createView());
+        }
+        
+        if(currentMap != null) {
+        	currentMap.addLayerSpecial(cursorHighlight);
         }
         
         undoStack.discardAllEdits();

@@ -89,7 +89,7 @@ public class OrthoMapView extends MapView
                     if (SelectionLayer.class.isInstance(layer)) {
                         Polygon gridPoly = createGridPolygon(gx, gy, 1);
                         g.fillPolygon(gridPoly);
-                        paintEdge(g, layer, gx, gy);
+                        //paintEdge(g, layer, gx, gy);
                     } else {
                         t.draw(g, gx, gy, zoom);
                     }
