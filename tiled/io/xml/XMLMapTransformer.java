@@ -52,6 +52,16 @@ public class XMLMapTransformer implements MapReader
         warnings = new Stack();
     }
 
+    private String makeUrl(String filename) throws MalformedURLException {
+        String url = "";
+        if(filename.indexOf("://") > 0 || filename.startsWith("file:")) {
+            url = filename;
+        } else {
+            url = (new File(filename)).toURL().toString();
+        }
+        return url;
+    }
+    
     private int reflectFindMethodByName(Class c, String methodName) {
         Method[] methods = c.getMethods();
         //System.out.println("Searching for " + methodName);
@@ -177,13 +187,18 @@ public class XMLMapTransformer implements MapReader
         return o;
     }
 
-    private Image unmarshalImage(Node t) throws MalformedURLException, IOException {
+    private Image unmarshalImage(Node t, String baseDir) throws MalformedURLException, IOException {
         Image img = null;
 
         String source = getAttributeValue(t, "source");
         
         if (source != null) {
-            img = ImageIO.read(new URL(xmlPath + source));
+            if(Util.checkRoot(source)) {
+                source = makeUrl(source);
+            } else {
+                source = baseDir + source;
+            }
+            img = ImageIO.read(new URL(source));
         } else {
             NodeList nl = t.getChildNodes();
 
@@ -281,12 +296,16 @@ public class XMLMapTransformer implements MapReader
         int tileSpacing = getAttribute(t, "spacing", 0);
 
         if (set.getBaseDir() != null) {
-            tilesetBaseDir = set.getBaseDir().indexOf("://") > 0 ? set.getBaseDir() : (new File(set.getBaseDir())).toURL().toString(); 
+            tilesetBaseDir = makeUrl(set.getBaseDir()); 
         }
 
         if (set.getSource() != null) {
             
-            String filename = xmlPath + set.getSource();
+            String filename = tilesetBaseDir + set.getSource();
+            if(Util.checkRoot(set.getSource())) {
+                filename = makeUrl(set.getSource());
+            }
+            
             TileSet ext = null;
             try{
                 InputStream in = new URL(filename).openStream();
@@ -311,7 +330,7 @@ public class XMLMapTransformer implements MapReader
             for (int i = 0; i < children.getLength(); i++) {
                 Node child = children.item(i);
                 if (child.getNodeName().equalsIgnoreCase("tile")) {
-                    set.addTile(unmarshalTile(child));
+                    set.addTile(unmarshalTile(child, tilesetBaseDir));
                 } else if (child.getNodeName().equalsIgnoreCase("image")) {
                     String source = getAttributeValue(child, "source");
 
@@ -319,18 +338,16 @@ public class XMLMapTransformer implements MapReader
                         // Not a shared image, but a entire set in one image
                         // file
                         File sourceFile = new File(source);
-                        String sourcePath;
-                        if (sourceFile.getAbsolutePath().equals(source)) {
-                            sourcePath = sourceFile.getCanonicalPath();
-                        } else {
-                            sourcePath = tilesetBaseDir + source;
+                        String sourcePath = tilesetBaseDir + source;
+                        if(Util.checkRoot(source)) {
+                            sourcePath = makeUrl(source);
                         }
 
                         set.importTileBitmap(sourcePath, tileWidth, tileHeight,
                                 tileSpacing, !hasTileTags);
 
                     } else {
-                        set.addImage(unmarshalImage(child),
+                        set.addImage(unmarshalImage(child, tilesetBaseDir),
                                 getAttributeValue(child, "id"));
                     }
                 }
@@ -360,7 +377,7 @@ public class XMLMapTransformer implements MapReader
         return obj;
     }
 
-    private Tile unmarshalTile(Node t) throws Exception {
+    private Tile unmarshalTile(Node t, String baseDir) throws Exception {
         Tile tile = null;
 
         try {
@@ -377,7 +394,7 @@ public class XMLMapTransformer implements MapReader
             if (child.getNodeName().equalsIgnoreCase("image")) {
                 int id = getAttribute(child, "id", -1);
                 if (id < 0) {
-                    tile.setImage(unmarshalImage(child));
+                    tile.setImage(unmarshalImage(child, baseDir));
                 } else {
                     tile.setImage(id);
                     int rotation = getAttribute(child, "rotation", 0);
@@ -622,10 +639,10 @@ public class XMLMapTransformer implements MapReader
         
         xmlPath = filename.substring(0,
                 filename.lastIndexOf(File.separatorChar) + 1);
-        if (xmlFile.indexOf("://") == -1) {
-            xmlFile = (new java.io.File(xmlFile)).toURL().toString();
-            xmlPath = (new java.io.File(xmlPath)).toURL().toString();
-        }
+        
+        xmlFile = makeUrl(xmlFile);
+        xmlPath = makeUrl(xmlPath);
+        
         URL url = new URL(xmlFile);
         Map unmarshalledMap = unmarshal(url.openStream());
         unmarshalledMap.setFilename(filename);
@@ -636,7 +653,7 @@ public class XMLMapTransformer implements MapReader
     }
 
     public Map readMap(InputStream in) throws Exception {
-        xmlPath = ".";
+        xmlPath = makeUrl(".");
         
         Map unmarshalledMap = unmarshal(in);
         
@@ -650,10 +667,10 @@ public class XMLMapTransformer implements MapReader
         
         xmlPath = filename.substring(0,
                 filename.lastIndexOf(File.separatorChar) + 1);
-        if (xmlFile.indexOf("://") == -1) {
-            xmlFile = (new java.io.File(xmlFile)).toURL().toString();
-            xmlPath = (new java.io.File(xmlPath)).toURL().toString();
-        }
+        
+        xmlFile = makeUrl(xmlFile);
+        xmlPath = makeUrl(xmlPath);
+
         URL url = new URL(xmlFile);
         return unmarshalTilesetFile(url.openStream(), filename);
     }
