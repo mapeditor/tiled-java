@@ -320,10 +320,6 @@ public abstract class MapLayer implements Cloneable
         bLocked = lock;
     }
 
-    protected boolean checkPermission() {
-        return (!bLocked);
-    }
-
     public void setProperty(String key, String value) {
         properties.setProperty(key,value);
     }

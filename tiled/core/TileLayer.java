@@ -22,7 +22,7 @@ public class TileLayer extends MapLayer
     protected Tile map[][];
 
     public TileLayer() {
-    	super();
+        super();
     }
 
     /**
@@ -30,7 +30,7 @@ public class TileLayer extends MapLayer
      * @param h height in tiles
      */
     public TileLayer(int w, int h) {
-        super(w,h);
+        super(w, h);
     }
 
     public TileLayer(Rectangle r) {
@@ -68,7 +68,7 @@ public class TileLayer extends MapLayer
         Tile[][] trans;
         int xtrans = 0, ytrans = 0;
 
-        if (!checkPermission())
+        if (getLocked())
             return;
 
         switch (angle) {
@@ -117,7 +117,7 @@ public class TileLayer extends MapLayer
      * @param dir the axial orientation to mirror around
      */
     public void mirror(int dir) {
-        if (!checkPermission())
+        if (getLocked())
             return;
 
         Tile[][] mirror = new Tile[bounds.height][bounds.width];
@@ -152,16 +152,16 @@ public class TileLayer extends MapLayer
     }
 
     public void setWidth(int w) {
-    	super.setWidth(w);
-    	resize(w, bounds.height, 0, 0);
+        super.setWidth(w);
+        resize(w, bounds.height, 0, 0);
     }
     
     /**
      * Sets the height of the map in tiles
      */
     public void setHeight(int h) {
-    	super.setHeight(h);
-    	resize(bounds.width, h, 0, 0);
+        super.setHeight(h);
+        resize(bounds.width, h, 0, 0);
     }
     
     /**
@@ -188,34 +188,32 @@ public class TileLayer extends MapLayer
     public MapLayer createDiff(MapLayer ml) {
         if (ml == null) { return null; }
 
-        if(ml instanceof TileLayer) {
-        
-	        Rectangle r = null;
-	
-	        for (int y = bounds.y; y < bounds.height + bounds.y; y++) {
-	            for (int x = bounds.x; x < bounds.width + bounds.x; x++) {
-	                if (((TileLayer)ml).getTileAt(x, y) != getTileAt(x, y)) {
-	                    if (r != null) {
-	                        r.add(x, y);
-	                    } else {
-	                        r = new Rectangle(new Point(x, y));
-	                    }
-	                }
-	            }
-	        }
-	
-	        if (r != null) {
-	            MapLayer diff = new TileLayer(
-	                    new Rectangle(r.x, r.y, r.width + 1, r.height + 1));
-	            diff.copyFrom(ml);
-	            return diff;
-	        } else {
-	            return new TileLayer();
-	        }
+        if (ml instanceof TileLayer) {
+            Rectangle r = null;
+
+            for (int y = bounds.y; y < bounds.height + bounds.y; y++) {
+                for (int x = bounds.x; x < bounds.width + bounds.x; x++) {
+                    if (((TileLayer)ml).getTileAt(x, y) != getTileAt(x, y)) {
+                        if (r != null) {
+                            r.add(x, y);
+                        } else {
+                            r = new Rectangle(new Point(x, y));
+                        }
+                    }
+                }
+            }
+
+            if (r != null) {
+                MapLayer diff = new TileLayer(
+                        new Rectangle(r.x, r.y, r.width + 1, r.height + 1));
+                diff.copyFrom(ml);
+                return diff;
+            } else {
+                return new TileLayer();
+            }
         } else {
-        	return null;
+            return null;
         }
-        
     }
 
     /**
@@ -224,7 +222,7 @@ public class TileLayer extends MapLayer
      * @param tile the Tile to be removed
      */
     public void removeTile(Tile tile) {
-        if (!checkPermission())
+        if (getLocked())
             return;
 
         for (int y = 0; y < bounds.height; y++) {
@@ -246,7 +244,7 @@ public class TileLayer extends MapLayer
      */
     public void setTileAt(int tx, int ty, Tile ti) {
         try {
-            if (checkPermission())
+            if (!getLocked())
                 map[ty - bounds.y][tx - bounds.x] = ti;
         } catch (ArrayIndexOutOfBoundsException e) {
             // Silently ignore out of bounds exception
@@ -292,7 +290,7 @@ public class TileLayer extends MapLayer
      * @param replace the replacement tile
      */
     public void replaceTile(Tile find, Tile replace) {
-        if (!checkPermission())
+        if (getLocked())
             return;
 
         for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
@@ -317,7 +315,7 @@ public class TileLayer extends MapLayer
             for (int x = bounds.x; x < bounds.x + bounds.width; x++) {
                 Tile tile = getTileAt(x, y);
                 if (tile != myMap.getNullTile()) {
-                	((TileLayer)other).setTileAt(x, y, tile);
+                    ((TileLayer)other).setTileAt(x, y, tile);
                 }
             }
         }
@@ -331,7 +329,7 @@ public class TileLayer extends MapLayer
      * @param other
      */
     public void copyFrom(MapLayer other) {
-        if (!checkPermission())
+        if (getLocked())
             return;
 
         for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
@@ -342,7 +340,7 @@ public class TileLayer extends MapLayer
     }
 
     public void maskedCopyFrom(MapLayer other, Area mask) {
-        if (!checkPermission())
+        if (getLocked())
             return;
 
         Rectangle boundBox = mask.getBounds();
@@ -401,7 +399,7 @@ public class TileLayer extends MapLayer
      * @param dy     the shift in y direction
      */
     public void resize(int width, int height, int dx, int dy) {
-        if (!checkPermission())
+        if (getLocked())
             return;
 
         Tile[][] newMap = new Tile[height][width];

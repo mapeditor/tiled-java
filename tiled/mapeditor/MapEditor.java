@@ -1383,7 +1383,9 @@ public class MapEditor implements ActionListener,
 
     private class CancelSelectionAction extends AbstractAction {
         public CancelSelectionAction() {
-            super("Deselect");
+            super("None");
+            putValue(ACCELERATOR_KEY,
+                    KeyStroke.getKeyStroke("control shift A"));
             putValue(SHORT_DESCRIPTION, "Cancel selection");
         }
 
@@ -1400,7 +1402,9 @@ public class MapEditor implements ActionListener,
 
     private class SelectAllAction extends AbstractAction {
         public SelectAllAction() {
-            super("Select All");
+            super("All");
+            putValue(ACCELERATOR_KEY,
+                    KeyStroke.getKeyStroke("control A"));
             putValue(SHORT_DESCRIPTION, "Select entire map");
         }
 
@@ -1419,7 +1423,9 @@ public class MapEditor implements ActionListener,
 
     private class InverseSelectionAction extends AbstractAction {
         public InverseSelectionAction() {
-            super("Invert Selection");
+            super("Invert");
+            putValue(ACCELERATOR_KEY,
+                    KeyStroke.getKeyStroke("control I"));
             putValue(SHORT_DESCRIPTION, "Inverse of the current selection");
         }
 

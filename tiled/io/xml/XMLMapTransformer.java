@@ -568,11 +568,11 @@ public class XMLMapTransformer implements MapReader
             for (int i = 0; i < l.getLength(); i++) {
                 Node sibs = l.item(i);
                 if (sibs.getParentNode() == mapNode) {
-                    if(sibs.getNodeName().equals("layer")) {
-	                    MapLayer layer = unmarshalLayer(sibs);
-	                    if (layer != null) {
-	                        map.addLayer(layer);
-	                    }
+                    if (sibs.getNodeName().equals("layer")) {
+                        MapLayer layer = unmarshalLayer(sibs);
+                        if (layer != null) {
+                            map.addLayer(layer);
+                        }
                     }else if(sibs.getNodeName().equals("objectgroup")) {
                         MapLayer layer = unmarshalObjectGroup(sibs);
                         if (layer != null) {
@@ -617,7 +617,7 @@ public class XMLMapTransformer implements MapReader
         
         xmlPath = filename.substring(0,
                 filename.lastIndexOf(File.separatorChar) + 1);
-        if(xmlFile.indexOf("://") == -1) {
+        if (xmlFile.indexOf("://") == -1) {
             xmlFile = (new java.io.File(xmlFile)).toURL().toString();
             xmlPath = (new java.io.File(xmlPath)).toURL().toString();
         }

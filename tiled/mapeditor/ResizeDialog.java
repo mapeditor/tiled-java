@@ -173,10 +173,10 @@ public class ResizeDialog extends JDialog implements ActionListener,
 
         if (evt.getPropertyName().equalsIgnoreCase("offsetX")) {
             int val = ((Integer)evt.getNewValue()).intValue();
-            offsetX.setValue(new Integer((int)(val / (currentMap.getTileWidth() * zoom))));
+            offsetX.setValue((int)(val / (currentMap.getTileWidth() * zoom)));
         } else if(evt.getPropertyName().equalsIgnoreCase("offsetY")) {
             int val = ((Integer)evt.getNewValue()).intValue();
-            offsetY.setValue(new Integer((int)(val / (currentMap.getTileHeight() * zoom))));
+            offsetY.setValue((int)(val / (currentMap.getTileHeight() * zoom)));
         }
     }
     
