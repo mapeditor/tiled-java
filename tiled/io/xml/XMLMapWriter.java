@@ -33,16 +33,9 @@ public class XMLMapWriter implements MapWriter
      *
      * @param filename the filename of the map file
      */
-    public void writeMap(Map map, String filename) throws IOException {
+    public void writeMap(Map map, String filename) throws Exception {
         FileOutputStream os = new FileOutputStream(filename);
-        Writer writer = new OutputStreamWriter(os);
-        XMLWriter xmlWriter = new XMLWriter(writer);
-
-        xmlWriter.startDocument();
-        writeMap(map, xmlWriter, filename);
-        xmlWriter.endDocument();
-
-        writer.flush();
+        writeMap(map, os);
     }
 
     /**
@@ -50,18 +43,35 @@ public class XMLMapWriter implements MapWriter
      *
      * @param filename the filename of the tileset file
      */
-    public void writeTileset(TileSet set, String filename) throws IOException {
+    public void writeTileset(TileSet set, String filename) throws Exception {
         FileOutputStream os = new FileOutputStream(filename);
-        Writer writer = new OutputStreamWriter(os);
+        writeTileset(set, os);
+    }
+
+
+	public void writeMap(Map map, OutputStream out) throws Exception {
+		Writer writer = new OutputStreamWriter(out);
         XMLWriter xmlWriter = new XMLWriter(writer);
 
         xmlWriter.startDocument();
-        writeTileset(set, xmlWriter, filename);
+        writeMap(map, xmlWriter, "/.");
         xmlWriter.endDocument();
 
         writer.flush();
-    }
+		
+	}
 
+	public void writeTileset(TileSet set, OutputStream out) throws Exception {
+		Writer writer = new OutputStreamWriter(out);
+        XMLWriter xmlWriter = new XMLWriter(writer);
+
+        xmlWriter.startDocument();
+        writeTileset(set, xmlWriter, "/.");
+        xmlWriter.endDocument();
+
+        writer.flush();
+	}
+    
     private void writeMap(Map map, XMLWriter w, String wp) throws IOException {
         try {
             w.startElement("map");
@@ -326,20 +336,23 @@ public class XMLMapWriter implements MapWriter
                                     ImageHelper.imageToPNG(tileImage))));
                     w.endElement();
                     w.endElement();	
+                } else if(conf.keyHasValue("tmx.save.tileSetImages", "1")) {
+                	w.startElement("image");
+                	w.writeAttribute("id", ""+tile.getImageId());
+                	w.endElement();
                 } else {
                     String prefix = conf.getValue("tmx.save.tileImagePrefix");
                     String filename = conf.getValue("tmx.save.maplocation") +
                         prefix + tileId + ".png";
                     w.startElement("image");
                     w.writeAttribute("source", prefix + tileId + ".png");
-                    FileOutputStream fw = new FileOutputStream(
-                            new File(filename));
+                    FileOutputStream fw = new FileOutputStream(new File(filename));
                     byte[] data = ImageHelper.imageToPNG(tileImage);
                     fw.write(data, 0, data.length);
                     fw.close();
                     w.endElement();
                 }        
-                        }
+            }
 
             w.endElement();
         } catch (XMLWriterException e) {
@@ -453,4 +466,5 @@ public class XMLMapWriter implements MapWriter
         } catch (IOException e) {}
         return false;
     }
+
 }

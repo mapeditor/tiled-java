@@ -13,6 +13,7 @@
 package tiled.io;
 
 import java.io.FileFilter;
+import java.io.InputStream;
 
 import tiled.core.Map;
 import tiled.core.TileSet;
@@ -24,6 +25,7 @@ public interface MapReader extends PluggableMapIO, FileFilter
      * Loads a map from a file.
      *
      * @param filename the filename of the map file
+     * @return a tiled.core.Map object with the relevant data
      */
     public Map readMap(String filename) throws Exception;
 
@@ -31,6 +33,19 @@ public interface MapReader extends PluggableMapIO, FileFilter
      * Loads a tileset from a file.
      *
      * @param filename the filename of the tileset file
+     * @return a tiled.core.Map object with the relevant data
      */
     public TileSet readTileset(String filename) throws Exception;
+    
+    /**
+     * Loads a map from an already opened stream. Useful
+     * for maps which are part of a larger binary dataset
+     * 
+     * @param in
+     * @return a tiled.core.Map object with the relevant data
+     * @throws Exception
+     */
+    public Map readMap(InputStream in) throws Exception;
+    
+    public TileSet readTileset(InputStream in) throws Exception;
 }

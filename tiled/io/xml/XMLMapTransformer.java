@@ -198,10 +198,17 @@ public class XMLMapTransformer implements MapReader
         }
         mediaTracker.removeImage(img);
 
+        if(getAttributeValue(t, "set") != null) {
+        	TileSet ts = (TileSet) map.getTilesets().get(Integer.parseInt(getAttributeValue(t, "set")));
+        	if(ts != null) {
+        		ts.addImage(img);
+        	}
+        }
+        
         return img;
     }
 
-    private TileSet unmarshalTilesetFile(String filename) throws Exception {
+    private TileSet unmarshalTilesetFile(InputStream in) throws Exception {
         TileSet set = null;
         Node tsNode;
         Document tsDoc = null;
@@ -209,17 +216,14 @@ public class XMLMapTransformer implements MapReader
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         try {
             DocumentBuilder builder = factory.newDocumentBuilder();
-            tsDoc = builder.parse(new File(filename));
+            tsDoc = builder.parse(in, ".");
         } catch (FileNotFoundException fnf) {
             // TODO: Have a popup and ask the user to browse to the file...
             throw new Exception("Where else can I look?");
         }
 
         String xmlPathSave = xmlPath;
-        if (filename.indexOf(File.separatorChar) >= 0) {
-            xmlPath = filename.substring(0,
-                    filename.lastIndexOf(File.separatorChar) + 1);
-        }
+        xmlPath = ".";
 
         NodeList tsNodeList = tsDoc.getElementsByTagName("tileset");
 
@@ -229,7 +233,7 @@ public class XMLMapTransformer implements MapReader
                 throw new Exception(
                         "Recursive external Tilesets are not supported.");
             }
-            set.setSource(filename);
+            //set.setSource(filename);
             // TODO: This is a deliberate break. multiple tilesets per TSX are
             // not supported yet (maybe never)...
             break;
@@ -253,7 +257,7 @@ public class XMLMapTransformer implements MapReader
         int tileSpacing = getAttribute(t, "spacing", 0);
 
         if (set.getSource() != null) {
-            TileSet ext = unmarshalTilesetFile(xmlPath + set.getSource());
+            TileSet ext = unmarshalTilesetFile(new FileInputStream(xmlPath + set.getSource()));
             ext.setFirstGid(set.getFirstGid());
             return ext;
         } else {
@@ -530,10 +534,34 @@ public class XMLMapTransformer implements MapReader
         return unmarshal(filename);
     }
 
+    public Map readMap(InputStream in) throws Exception {            //TODO: this and the unmarshal function should be joined
+    	DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        try {
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            doc = builder.parse(in, ".");
+        } catch (SAXException e) {
+            e.printStackTrace();
+            throw new Exception("Error while parsing map file.");
+        }
+
+        // TODO: A problem arrises with xmlPath if the tag sources are absolute
+        // path...
+        xmlPath = ".";
+
+        buildMap(doc);
+
+        //map.setFilename(xmlFile);
+        return map;
+    }
+    
     public TileSet readTileset(String filename) throws Exception {
-        return unmarshalTilesetFile(filename);
+        return unmarshalTilesetFile(new FileInputStream(filename));
     }
 
+    public TileSet readTileset(InputStream in) throws Exception {
+    	return unmarshalTilesetFile(in);
+    }
+    
     /**
      * @see tiled.io.MapReader#getFilter()
      */

@@ -13,7 +13,7 @@
 package tiled.io;
 
 import java.io.FileFilter;
-import java.io.IOException;
+import java.io.OutputStream;
 
 import tiled.core.Map;
 import tiled.core.TileSet;
@@ -26,12 +26,24 @@ public interface MapWriter  extends PluggableMapIO, FileFilter
      *
      * @param filename the filename of the map file
      */
-    public void writeMap(Map map, String filename) throws IOException;
+    public void writeMap(Map map, String filename) throws Exception;
 
     /**
      * Saves a tileset to a file.
      *
      * @param filename the filename of the tileset file
      */
-    public void writeTileset(TileSet set, String filename) throws IOException;
+    public void writeTileset(TileSet set, String filename) throws Exception;
+    
+    /**
+     * Writes a map to an already opened stream. Useful
+     * for maps which are part of a larger binary dataset
+     * 
+     * @param map the Map to be written
+     * @param out
+     * @throws Exception
+     */
+    public void writeMap(Map map, OutputStream out) throws Exception;
+    
+    public void writeTileset(TileSet set, OutputStream out) throws Exception;
 }
