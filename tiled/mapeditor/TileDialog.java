@@ -18,6 +18,7 @@ import java.io.File;
 import java.util.Enumeration;
 import java.util.Properties;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -127,22 +128,18 @@ public class TileDialog extends JDialog
     }
 
     private void changeImage() {
-        File file;
         JFileChooser ch = new JFileChooser();
         ch.setMultiSelectionEnabled(true);
         int ret = ch.showOpenDialog(this);
-        file = ch.getSelectedFile();
 
         try {
-            currentTile.setImage(Toolkit.getDefaultToolkit().getImage(
-                        file.getAbsolutePath()));
+            currentTile.setImage(ImageIO.read(ch.getSelectedFile()));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private void newTile(Tile t) {
-        String name = null;
         File files[];
         JFileChooser ch = new JFileChooser();
         ch.setMultiSelectionEnabled(true);
@@ -153,20 +150,9 @@ public class TileDialog extends JDialog
             files = ch.getSelectedFiles();
 
             for (int i = 0; i < files.length; i++) {
-                name = files[i].getAbsolutePath();
 
                 try {
-                    image = Toolkit.getDefaultToolkit().getImage(name);
-                    MediaTracker mediaTracker = new MediaTracker(this);
-                    mediaTracker.addImage(image, 0);
-                    try {
-                        mediaTracker.waitForID(0);
-                    }
-                    catch (InterruptedException ie) {
-                        System.err.println(ie);
-                        return;
-                    }
-                    mediaTracker.removeImage(image);
+                    image = ImageIO.read(files[i]);
                     //n.setImage(Toolkit.getDefaultToolkit().createImage(new FilteredImageSource(image.getSource(),new TransImageFilter(cm.getRGB(64305)))));
                 } catch (Exception e) {
                     JOptionPane.showMessageDialog(this, e.getMessage(),

@@ -55,4 +55,17 @@ public class ImageHelper
     static public Image bytesToImage(byte[] imageData) {
         return Toolkit.getDefaultToolkit().createImage(imageData);
     }
+    
+    /**
+     * This function loads the image denoted by <code>file</code>. This supports
+     * PNG, GIF, JPG, and BMP (in 1.5).
+     * 
+     * @param file
+     * @return the (partially) loaded image
+     * @throws IOException
+     */
+    static public Image loadImageFile(File file) throws IOException {
+		BufferedImage buffer = ImageIO.read(file);
+		return buffer;
+    }
 }

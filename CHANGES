@@ -16,7 +16,7 @@
 * Tile palette dialog remembers size and position and doesn't close when a tile
   is selected
 * Saving unencoded layers is possible through config options
-* The right mouse button now functions as eye dropper (tile grabber)
+* The right mouse button now functions as eye dropper/tile grabber
 * Added "Preferences..." option under "Edit" menu
 * First tile of tileset is selected when map is loaded
 * Added toolbar buttons to zoom in and out

@@ -40,6 +40,7 @@ Bugtracker:  http://www.biggeruniverse.com/projects/flyspray/
 
 - Frode Lindeijer for the design of the logo
 - Eean Cook for various contributions
+- Rickard Isaksson for an improved image loader
 - Kevin Kelley for the base64 encoder/decoder we use
 - GNOME and GIMP for their magnificent icons
 - Nephilim for suggesting layer opacity
