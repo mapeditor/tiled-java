@@ -298,6 +298,9 @@ public class XMLMapTransformer implements MapReader
             e.printStackTrace();
         }
 
+		obj.setX(getAttribute(t, "x", 0));
+		obj.setY(getAttribute(t, "y", 0));
+		
         NodeList children = t.getChildNodes();
 
         for (int i = 0; i < children.getLength(); i++) {
@@ -409,8 +412,11 @@ public class XMLMapTransformer implements MapReader
                     }
                 }
 
-                break;
-            }
+
+            } else if (child.getNodeName().equalsIgnoreCase("property")) {
+				ml.setProperty(getAttributeValue(child,"name"),
+				getAttributeValue(child, "value"));
+			}
         }
 
         return ml;

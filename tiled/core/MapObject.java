@@ -24,7 +24,7 @@ public class MapObject {
     protected float map_x, map_y;
     protected Rectangle bounds;
     protected boolean bVisible = true;
-    protected String name, source;
+    protected String source, type;
     protected int id;
 
     public MapObject() {
@@ -48,8 +48,8 @@ public class MapObject {
 		map_y=y;
 	}
 
-	public void setName(String s) {
-		name = s;
+	public void setType(String s) {
+		type = s;
 	}
 
 	public void setSource(String s) {
@@ -72,8 +72,8 @@ public class MapObject {
 		return (int)map_y;
 	}
 
-	public String getName() {
-		return name;
+	public String getType() {
+		return type;
 	}
 
 	public String getSource() {
@@ -93,7 +93,7 @@ public class MapObject {
     }
 
     public String toString() {
-        String s = name+"("+id+"): ("+map_x+","+map_y+")";
+        String s = type+"("+id+"): ("+map_x+","+map_y+")";
 
         return s;
     }

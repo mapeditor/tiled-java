@@ -61,6 +61,7 @@ public class Map extends MultilayerPlane implements Cloneable
         properties = new Properties();
         tilesets = new Vector();
         specialLayers = new Vector();
+        objects = new LinkedList();
     }
 
     /**
@@ -176,6 +177,10 @@ public class Map extends MultilayerPlane implements Cloneable
     public void addObject(MapObject o) {
         objects.add(o);
     }
+
+	public Iterator getObjects() {
+		return objects.iterator();
+	}
 
     public void addProperty(String key, String value) {
         properties.put(key, value);

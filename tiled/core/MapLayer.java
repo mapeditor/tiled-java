@@ -46,6 +46,7 @@ public class MapLayer implements Cloneable
     public MapLayer() {
         bounds = new Rectangle();
         setMap(null);
+		properties = new Properties();
     }
 
     /**
@@ -54,16 +55,19 @@ public class MapLayer implements Cloneable
      */
     public MapLayer(int w, int h) {
         setBounds(new Rectangle(0, 0, w, h));
+		properties = new Properties();
     }
 
     public MapLayer(Rectangle r) {
         setBounds(r);
+		properties = new Properties();
     }
 
     public MapLayer(MapLayer ml) {
         id = ml.id;
         name = ml.getName();
         bounds = new Rectangle(ml.getBounds());
+		properties = new Properties();
 
         map = new Tile[bounds.height][];
         for (int y = 0; y < bounds.height; y++) {
@@ -78,6 +82,7 @@ public class MapLayer implements Cloneable
     MapLayer(Map m) {
         bounds = new Rectangle();
         setMap(m);
+		properties = new Properties();
     }
 
     /**
@@ -88,6 +93,7 @@ public class MapLayer implements Cloneable
     public MapLayer(Map m, int w, int h) {
         this(w, h);
         setMap(m);
+		properties = new Properties();
     }
 
     /**

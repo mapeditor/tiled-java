@@ -84,7 +84,7 @@ public class MapEditor implements ActionListener,
     Brush currentBrush;
     SelectionLayer marqueeSelection = null;
     MapLayer clipboardLayer = null;
-    
+
     // GUI components
     JPanel      mainPanel;
     JPanel      toolPanel;
@@ -96,6 +96,7 @@ public class MapEditor implements ActionListener,
     JMenuItem   layerAdd, layerClone, layerDel;
     JMenuItem   layerUp, layerDown;
     JMenuItem   layerMerge, layerMergeAll;
+    JMenuItem	layerProperties;
     JMenu       recentMenu;
     JScrollPane mapScrollPane;
     JTable      layerTable;
@@ -372,7 +373,8 @@ public class MapEditor implements ActionListener,
         layerMerge = createMenuItem("Merge Down", null,
                 "Merge current layer onto next lower", "shift control M");
         layerMergeAll = createMenuItem("Merge All", null, "Merge all layers");
-
+		layerProperties = createMenuItem("Layer Properties", null, "Current layer properties");
+		
         mapEventAdapter.addListener(layerAdd);
 
         m = new JMenu("Layer");
@@ -385,6 +387,8 @@ public class MapEditor implements ActionListener,
         m.addSeparator();
         m.add(layerMerge);
         m.add(layerMergeAll);
+        m.addSeparator();
+        m.add(layerProperties);
         mapEventAdapter.addListener(m);
         menuBar.add(m);
 
@@ -704,6 +708,10 @@ public class MapEditor implements ActionListener,
     public Map getCurrentMap() {
         return currentMap;
     }
+
+	public MapLayer getCurrentLayer() {
+		return currentMap.getLayer(currentLayer);
+	}
 
     /**
      * Returns the main application frame.
@@ -1066,7 +1074,10 @@ public class MapEditor implements ActionListener,
         } else if (command.equals("Properties")) {
             MapPropertiesDialog pd = new MapPropertiesDialog(appFrame, this);
             pd.getProps();
-        } else if (command.equals("Show Boundaries") ||
+        } else if (command.equals("Layer Properties")) {
+			LayerPropertiesDialog lpd = new LayerPropertiesDialog(appFrame, this);
+			lpd.getProps();
+		} else if (command.equals("Show Boundaries") ||
                 command.equals("Hide Boundaries")) {
             mapView.toggleMode(MapView.PF_BOUNDARYMODE);
         } else if (command.equals("Show Grid") ||

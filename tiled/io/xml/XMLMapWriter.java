@@ -118,6 +118,12 @@ public class XMLMapWriter implements MapWriter
                 writeMapLayer(layer, w);
             }
 
+			Iterator obj = map.getObjects();
+			while(obj.hasNext()) {
+				MapObject o = (MapObject)obj.next();
+				writeObject(o, w);
+			}
+
             w.endElement();
         } catch (XMLWriterException e) {
             e.printStackTrace();
@@ -228,16 +234,7 @@ public class XMLMapWriter implements MapWriter
 			} else {
             	w.startElement("layer");
 			}
-            //w.writeAttribute("id", "" + l.getId());
-			
-			Enumeration keys = l.getProperties();
-            while(keys.hasMoreElements()) {
-                String key = (String) keys.nextElement();
-                w.startElement("property");
-                w.writeAttribute("name", key);
-                w.writeAttribute("value", l.getPropertyValue(key));
-                w.endElement();
-            }
+            //w.writeAttribute("id", "" + l.getId());			
 			
             w.writeAttribute("name", l.getName());
             if (bounds.x != 0) {
@@ -253,6 +250,15 @@ public class XMLMapWriter implements MapWriter
             if (l.getOpacity() < 1.0f) {
                 w.writeAttribute("opacity", "" + l.getOpacity());
             }
+
+			Enumeration keys = l.getProperties();
+			while(keys.hasMoreElements()) {
+				String key = (String) keys.nextElement();
+				w.startElement("property");
+				w.writeAttribute("name", key);
+				w.writeAttribute("value", l.getPropertyValue(key));
+				w.endElement();
+			}
 
 			w.startElement("data");
             if (encodeLayerData) {
@@ -373,10 +379,10 @@ public class XMLMapWriter implements MapWriter
 
     private void writeObject(MapObject m, XMLWriter w) throws IOException {
         try {
-            w.startElement("object");
-            w.writeAttribute("name", m.getName());
+            w.startElement("object");            
             w.writeAttribute("x", "" + m.getX());
             w.writeAttribute("y", "" + m.getY());
+			w.writeAttribute("type", m.getType());
             w.writeAttribute("source", m.getSource());
 
             Enumeration keys = m.getProperties();
