@@ -5,7 +5,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
@@ -69,8 +69,9 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
         tilebmpCheck = new JCheckBox("Reference tileset image", false);
         tilebmpCheck.addChangeListener(this);
 
-		tileAutoCheck = new JCheckBox("Auto-create tiles for tile images", false);
-		tileAutoCheck.setEnabled(false);
+        tileAutoCheck = new JCheckBox("Auto-create tiles for tile images",
+                false);
+        tileAutoCheck.setEnabled(false);
 
         okButton = new JButton("OK");
         cancelButton = new JButton("Cancel");
@@ -91,7 +92,7 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
         c.fill = GridBagConstraints.NONE;
         c.insets = new Insets(0, 5, 0, 0);
         tilebmpPathPanel.add(browseButton, c);
-        
+
 
         // Create the tile bitmap import setting panel
 
@@ -106,8 +107,8 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridwidth = 2;
         tilebmpPanel.add(tilebmpCheck, c);
-		c.gridy = 1;
-		tilebmpPanel.add(tileAutoCheck, c);
+        c.gridy = 1;
+        tilebmpPanel.add(tileAutoCheck, c);
         c.gridy = 2; c.gridwidth = 1;
         c.fill = GridBagConstraints.NONE;
         tilebmpPanel.add(tilebmpFileLabel, c);
@@ -127,9 +128,9 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
         buttons.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
         buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
         buttons.add(Box.createGlue());
-        buttons.add(cancelButton);
-        buttons.add(Box.createRigidArea(new Dimension(5, 0)));
         buttons.add(okButton);
+        buttons.add(Box.createRigidArea(new Dimension(5, 0)));
+        buttons.add(cancelButton);
 
 
         // Top part of form
@@ -187,9 +188,10 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
                 int spacing = tileSpacing.intValue();
                 try {
                     newTileset.importTileBitmap(file,
-                            map.getTileWidth(), map.getTileHeight(), spacing, tileAutoCheck.isSelected());
+                            map.getTileWidth(), map.getTileHeight(), spacing,
+                            tileAutoCheck.isSelected());
                 } catch (Exception e) {
-		    JOptionPane.showMessageDialog(this,
+                    JOptionPane.showMessageDialog(this,
                         e.getMessage(), "Error while importing tileset",
                         JOptionPane.ERROR_MESSAGE);
                     newTileset = null;
