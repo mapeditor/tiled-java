@@ -19,6 +19,7 @@ import javax.swing.undo.AbstractUndoableEdit;
 
 import tiled.core.*;
 
+
 public class MapLayerEdit extends AbstractUndoableEdit
 {
     protected Map myMap;
@@ -67,7 +68,7 @@ public class MapLayerEdit extends AbstractUndoableEdit
             throw new CannotUndoException();
         }
         layerUndo.copyTo(ml);
-        ml.setOffset(layerUndo.getBounds().x,layerUndo.getBounds().y);
+        //ml.setOffset(layerUndo.getBounds().x, layerUndo.getBounds().y);
     }
 
     public boolean canUndo() {
@@ -83,11 +84,11 @@ public class MapLayerEdit extends AbstractUndoableEdit
             throw new CannotRedoException();
         }
         layerRedo.copyTo(ml);
-        ml.setOffset(layerRedo.getBounds().x,layerRedo.getBounds().y);
+        //ml.setOffset(layerRedo.getBounds().x, layerRedo.getBounds().y);
     }
 
     public boolean canRedo() {
-        if(layerRedo!=null&&myMap.getLayer(layerRedo.getId())!=null) {
+        if (layerRedo != null && myMap.getLayer(layerRedo.getId()) != null) {
             return true;
         }
         return false;

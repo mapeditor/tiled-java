@@ -1200,7 +1200,8 @@ public class MapEditor implements ActionListener,
             Tile newTile, Tile oldTile) {
         if (newTile == oldTile) return;
 
-        Rectangle affectedBounds = new Rectangle(x, y, 1, 1);
+        int minX = x, minY = y;
+        int maxX = x, maxY = y;
         Stack stack = new Stack();
         MapLayer before = new MapLayer(layer);
         before.setId(layer.getId());
@@ -1218,30 +1219,21 @@ public class MapEditor implements ActionListener,
             {
                 layer.setTileAt(p.x, p.y, newTile);
 
+                if (minX > p.x) { minX = p.x; }
+                if (minY > p.y) { minY = p.y; }
+                if (maxX < p.x) { maxX = p.x; }
+                if (maxY < p.y) { maxY = p.y; }
+
                 stack.push(new Point(p.x, p.y - 1));
                 stack.push(new Point(p.x, p.y + 1));
                 stack.push(new Point(p.x + 1, p.y));
                 stack.push(new Point(p.x - 1, p.y));
-
-                if (!affectedBounds.contains(p.x, p.y)) {
-                    if (p.x < affectedBounds.x) {
-                        affectedBounds.width += affectedBounds.x - p.x;
-                        affectedBounds.x = p.x;
-                    } else if (p.x > affectedBounds.x + affectedBounds.width) {
-                        affectedBounds.width = p.x - affectedBounds.x;
-                    }
-
-                    if (p.y < affectedBounds.y) {
-                        affectedBounds.height += affectedBounds.y-p.y;
-                        affectedBounds.y = p.y;
-                    } else if (p.y > affectedBounds.y + affectedBounds.height) {
-                        affectedBounds.height = p.y - affectedBounds.y;
-                    }
-                }
             }
         }
 
-        after = new MapLayer(affectedBounds);
+        Rectangle bounds = new Rectangle(
+                minX, minY, maxX - minX + 1, maxY - minY + 1);
+        after = new MapLayer(bounds);
         after.copyFrom(layer);
         after.setId(layer.getId());
 

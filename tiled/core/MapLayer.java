@@ -29,15 +29,16 @@ public class MapLayer implements Cloneable
     public static final int ROTATE_180 = 180;
     public static final int ROTATE_270 = 270;
 
-    protected int id, heightInTiles, widthInTiles;
+    protected int id;
     protected Tile map[][];
     private String name;
     private boolean isVisible = true;
     protected Map myMap;
     protected float opacity = 1.0f;
-    protected int xOffset, yOffset;
+    protected Rectangle bounds;
 
     public MapLayer() {
+        bounds = new Rectangle();
         setMap(null);
     }
 
@@ -46,26 +47,21 @@ public class MapLayer implements Cloneable
      * @param h height in tiles
      */
     public MapLayer(int w, int h) {
-        map = new Tile[h][w];
-        heightInTiles = h;
-        widthInTiles = w;
+        setBounds(new Rectangle(0, 0, w, h));
     }
 
-	public MapLayer(Rectangle r) {
-		setBounds(r);
-	}
+    public MapLayer(Rectangle r) {
+        setBounds(r);
+    }
 
     public MapLayer(MapLayer ml) {
         id = ml.id;
-        xOffset = ml.xOffset;
-        yOffset = ml.yOffset;
-        widthInTiles = ml.widthInTiles;
-        heightInTiles = ml.heightInTiles;
+        bounds = new Rectangle(ml.getBounds());
 
-        map = new Tile[heightInTiles][];
-        for (int i = 0; i < heightInTiles; i++) {
-            map[i] = new Tile[widthInTiles];
-            System.arraycopy(ml.map[i], 0, map[i], 0, widthInTiles);
+        map = new Tile[bounds.height][];
+        for (int y = 0; y < bounds.height; y++) {
+            map[y] = new Tile[bounds.width];
+            System.arraycopy(ml.map[y], 0, map[y], 0, bounds.width);
         }
     }
 
@@ -73,6 +69,7 @@ public class MapLayer implements Cloneable
      * @param m the map this layer is part of
      */
     MapLayer(Map m) {
+        bounds = new Rectangle();
         setMap(m);
     }
 
@@ -82,15 +79,13 @@ public class MapLayer implements Cloneable
      * @param h height in tiles
      */
     MapLayer(Map m, int w, int h) {
-        map = new Tile[h][w];
+        this(w, h);
         setMap(m);
-        heightInTiles = h;
-        widthInTiles = w;
     }
 
     public void translate(int deltaX, int deltaY) {
-        xOffset += deltaX;
-        yOffset += deltaY;
+        bounds.x += deltaX;
+        bounds.y += deltaY;
     }
 
     public void rotate(int angle) {
@@ -99,17 +94,17 @@ public class MapLayer implements Cloneable
 
         switch (angle) {
             case ROTATE_90:
-                trans = new Tile[widthInTiles][heightInTiles];
-                xtrans = heightInTiles - 1;
+                trans = new Tile[bounds.width][bounds.height];
+                xtrans = bounds.height - 1;
                 break;
             case ROTATE_180:
-                trans = new Tile[heightInTiles][widthInTiles];
-                xtrans = widthInTiles - 1;
-                ytrans = heightInTiles - 1;
+                trans = new Tile[bounds.height][bounds.width];
+                xtrans = bounds.width - 1;
+                ytrans = bounds.height - 1;
                 break;
             case ROTATE_270:
-                trans = new Tile[widthInTiles][heightInTiles];
-                ytrans = widthInTiles - 1;
+                trans = new Tile[bounds.width][bounds.height];
+                ytrans = bounds.width - 1;
                 break;
             default:
                 System.out.println("Unsupported rotation (" + angle + ")");
@@ -120,27 +115,27 @@ public class MapLayer implements Cloneable
         int cos_angle = (int)Math.round(Math.cos(ra));
         int sin_angle = (int)Math.round(Math.sin(ra));
 
-        for (int y = 0; y < heightInTiles; y++) {
-            for (int x = 0; x < widthInTiles; x++) {
+        for (int y = 0; y < bounds.height; y++) {
+            for (int x = 0; x < bounds.width; x++) {
                 int xrot = x * cos_angle - y * sin_angle;
                 int yrot = x * sin_angle + y * cos_angle;
                 trans[yrot + ytrans][xrot + xtrans] = getTileAt(x, y);
             }
         }
 
-        widthInTiles = trans[0].length;
-        heightInTiles = trans.length;
+        bounds.width = trans[0].length;
+        bounds.height = trans.length;
         map = trans;
     }
 
     public void mirror(int dir) {
-        Tile[][] mirror = new Tile[heightInTiles][widthInTiles];
-        for (int y = 0; y < heightInTiles; y++) {
-            for (int x = 0; x < widthInTiles; x++) {
+        Tile[][] mirror = new Tile[bounds.height][bounds.width];
+        for (int y = 0; y < bounds.height; y++) {
+            for (int x = 0; x < bounds.width; x++) {
                 if (dir == MIRROR_VERTICAL) {
-                    mirror[y][x] = map[(heightInTiles - 1) - y][x];
+                    mirror[y][x] = map[(bounds.height - 1) - y][x];
                 } else {
-                    mirror[y][x] = map[y][(widthInTiles - 1) - x];
+                    mirror[y][x] = map[y][(bounds.width - 1) - x];
                 }
             }
         }
@@ -148,8 +143,8 @@ public class MapLayer implements Cloneable
     }
 
     public boolean isUsed(Tile t) {
-        for (int y = 0; y < heightInTiles; y++) {
-            for (int x = 0; x < widthInTiles; x++) {
+        for (int y = 0; y < bounds.height; y++) {
+            for (int x = 0; x < bounds.width; x++) {
                 if (map[y][x] == t) {
                     return true;
                 }
@@ -159,41 +154,41 @@ public class MapLayer implements Cloneable
     }
 
     public void setBounds(Rectangle bounds) {
-        xOffset = bounds.x;
-        yOffset = bounds.y;
-        widthInTiles = bounds.width;
-        heightInTiles = bounds.height;
-        map = new Tile[heightInTiles][widthInTiles];
+        this.bounds = bounds;
+        map = new Tile[bounds.height][bounds.width];
     }
 
     /**
-     * Creates a diff of the two layers, <code>ml</code> is considered the significant diiference
+     * Creates a diff of the two layers, <code>ml</code> is considered the
+     * significant difference.
      * 
      * @param ml
-     * @return A new FiniteMapLayer the represents the difference between this layer, and the argument, or null if no difference exists
+     * @return A new FiniteMapLayer the represents the difference between this
+     *         layer, and the argument, or null if no difference exists.
      */	
     public MapLayer createDiff(MapLayer ml) {		
-        if(ml == null)
+        if (ml == null) {
             return null;
-        Rectangle rect = new Rectangle();
-        boolean start=false;
-        for (int i = yOffset; i < heightInTiles + yOffset; i++) {
-            for (int j = xOffset; j < widthInTiles + xOffset; j++) {
+        }
+        Rectangle r = new Rectangle();
+        boolean start = false;
+        for (int i = bounds.y; i < bounds.height + bounds.y; i++) {
+            for (int j = bounds.x; j < bounds.width + bounds.x; j++) {
                 if (ml.getTileAt(j, i) != getTileAt(j, i)) {
                     if (start) {
-                        rect.width = Math.abs(j - rect.x);
-                        rect.height = Math.abs(i - rect.y);		
+                        r.width = Math.max(Math.abs(j - r.x), r.width);
+                        r.height = Math.max(Math.abs(i - r.y), r.height);
                     } else {
                         start = true;
-                        rect.x = j;
-                        rect.y = i;
+                        r.x = j;
+                        r.y = i;
                     }
                 }
 
             }
         }
 
-        MapLayer diff = new MapLayer(rect);
+        MapLayer diff = new MapLayer(r);
         diff.copyFrom(ml);		
         return diff;
     }
@@ -204,10 +199,10 @@ public class MapLayer implements Cloneable
      * @param tile the tile to be removed
      */
     public void removeTile(Tile tile) {
-        for (int i = 0; i < heightInTiles; i++) {
-            for (int j = 0; j < widthInTiles; j++) {
-                if (map[i][j] == tile) {
-                    map[i][j] = myMap.getNullTile();
+        for (int y = 0; y < bounds.height; y++) {
+            for (int x = 0; x < bounds.width; x++) {
+                if (map[y][x] == tile) {
+                    map[y][x] = myMap.getNullTile();
                 }
             }
         }
@@ -247,7 +242,7 @@ public class MapLayer implements Cloneable
      */
     public void setTileAt(int tx, int ty, Tile ti) {
         try {        	
-            map[ty - yOffset][tx - xOffset] = ti;
+            map[ty - bounds.y][tx - bounds.x] = ti;
         } catch (ArrayIndexOutOfBoundsException e) {
             // Silently ignore out of bounds exception
         }
@@ -293,16 +288,16 @@ public class MapLayer implements Cloneable
     }
 
     public void setXOffset(int xOff) {
-        xOffset = xOff;
+        bounds.x = xOff;
     }
 
     public void setYOffset(int yOff) {
-        yOffset = yOff;
+        bounds.y = yOff;
     }
 
     public void setOffset(int xOff, int yOff) {
-        xOffset = xOff;
-        yOffset = yOff;
+        bounds.x = xOff;
+        bounds.y = yOff;
     }
 
     /**
@@ -329,7 +324,7 @@ public class MapLayer implements Cloneable
      */
     public Tile getTileAt(int tx, int ty) {    	
         try {
-            return map[ty - yOffset][tx - xOffset];
+            return map[ty - bounds.y][tx - bounds.x];
         } catch (ArrayIndexOutOfBoundsException e) {
             return null;
         }
@@ -339,21 +334,21 @@ public class MapLayer implements Cloneable
      * Returns layer width in tiles.
      */
     public int getWidth() {
-        return widthInTiles;
+        return bounds.width;
     }
 
     /**
      * Returns layer height in tiles.
      */
     public int getHeight() {
-        return heightInTiles;
+        return bounds.height;
     }
 
     /**
      * Returns layer bounds.
      */
     public Rectangle getBounds() {
-        return new Rectangle(xOffset, yOffset, widthInTiles, heightInTiles);
+        return bounds;
     }
 
     /**
@@ -376,19 +371,23 @@ public class MapLayer implements Cloneable
      * Merges this layer onto another layer.
      */
     public void mergeOnto(MapLayer other) {
-        for (int i = 0; i < heightInTiles; i++) {
-            for (int j = 0; j < widthInTiles; j++) {
-                if (map[i][j] != myMap.getNullTile()) {
-                    other.setTileAt(j+xOffset, i+yOffset, map[i][j]);
+        for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
+            for (int x = bounds.x; x < bounds.x + bounds.width; x++) {
+                Tile tile = getTileAt(x, y);
+                if (tile != myMap.getNullTile()) {
+                    other.setTileAt(x, y, tile);
                 }
             }
         }
     }
 
+    /**
+     * Copy data from another layer onto this layer.
+     */
     public void copyFrom(MapLayer other) {
-        for (int i = 0; i < heightInTiles; i++) {
-            for (int j = 0; j < widthInTiles; j++) {				
-                setTileAt(j, i, other.getTileAt(j+xOffset,i+yOffset));				
+        for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
+            for (int x = bounds.x; x < bounds.x + bounds.width; x++) {
+                setTileAt(x, y, other.getTileAt(x, y));
             }
         }
     }
@@ -396,12 +395,12 @@ public class MapLayer implements Cloneable
     /**
      * Unlike mergeOnto, copyTo includes the null tile when merging
      * 
-     * @param other
+     * @param other the layer to copy this layer to
      */
     public void copyTo(MapLayer other) {
-        for (int i = 0; i < heightInTiles; i++) {
-            for (int j = 0; j < widthInTiles; j++) {				
-                other.setTileAt(j+xOffset, i+yOffset, map[i][j]);				
+        for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
+            for (int x = bounds.x; x < bounds.x + bounds.width; x++) {
+                other.setTileAt(x, y, getTileAt(x, y));
             }
         }
     }
@@ -426,16 +425,16 @@ public class MapLayer implements Cloneable
     /**
      * @see MultilayerPlane#resize
      * 
-     * @param width
-     * @param height
-     * @param dx
-     * @param dy
+     * @param width  the new width of the layer
+     * @param height the new height of the layer
+     * @param dx     the shift in x direction
+     * @param dy     the shift in y direction
      */
     public void resize(int width, int height, int dx, int dy) {
         Tile[][] newMap = new Tile[height][width];
 
-        int maxX = Math.min(width, widthInTiles + dx);
-        int maxY = Math.min(height, heightInTiles + dy);
+        int maxX = Math.min(width, bounds.width + dx);
+        int maxY = Math.min(height, bounds.height + dy);
 
         for (int x = Math.max(0, dx); x < maxX; x++) {
             for (int y = Math.max(0, dy); y < maxY; y++) {
@@ -444,7 +443,7 @@ public class MapLayer implements Cloneable
         }
 
         map = newMap;
-        widthInTiles = width;
-        heightInTiles = height;
+        bounds.width = width;
+        bounds.height = height;
     }
 }
