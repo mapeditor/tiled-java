@@ -204,7 +204,7 @@ public final class TiledConfiguration
         addConfigPair("tmx.save.encodeLayerData", "1");
         addConfigPair("tmx.save.tileSetImages", "0");
         addConfigPair("tmx.save.embedtileSetImages", "0");
-        addConfigPair("tmx.load.report", "1");
+        addConfigPair("tiled.report.io", "0");
         addConfigPair("tiled.undo.depth", "30");
         addConfigPair("tiled.selection.color", "0x0000FF");
         addConfigPair("tiled.background.color", "0x404040");

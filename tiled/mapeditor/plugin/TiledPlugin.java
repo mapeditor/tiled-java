@@ -14,6 +14,7 @@ package tiled.mapeditor.plugin;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.util.Stack;
 
 import tiled.io.MapReader;
 import tiled.io.MapWriter;
@@ -53,6 +54,14 @@ public class TiledPlugin implements PluggableMapIO, FileFilter {
 	public boolean accept(File pathname) {
 		
 		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see tiled.io.PluggableMapIO#setErrorStack(java.util.Stack)
+	 */
+	public void setErrorStack(Stack es) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

@@ -15,6 +15,7 @@ package tiled.plugins.mappy;
 import java.io.*;
 import java.util.LinkedList;
 import java.util.Properties;
+import java.util.Stack;
 import java.util.Vector;
 import java.util.Iterator;
 
@@ -140,6 +141,10 @@ public class MappyMapReader implements MapReader
         return false;
     }
 
+    public void setErrorStack(Stack es) {
+    	//TODO: implement this
+    }
+    
 
 
     private Chunk findChunk(String header) {

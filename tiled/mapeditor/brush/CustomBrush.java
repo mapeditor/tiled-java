@@ -12,13 +12,14 @@
 
 package tiled.mapeditor.brush;
 
+import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.util.ListIterator;
 
 import tiled.core.MultilayerPlane;
 import tiled.core.TileLayer;
 
-public class CustomBrush extends Brush
+public class CustomBrush extends AbstractBrush
 {
     public CustomBrush() {
         super();
@@ -27,6 +28,14 @@ public class CustomBrush extends Brush
     public CustomBrush(MultilayerPlane m) {
     	this();
     	this.addAllLayers(m.getLayerVector());
+    }
+    
+    public void setAffectedLayers(int num) {
+    	
+    }
+    
+    public int getAffectedLayers() {
+    	return getTotalLayers();
     }
     
     /**
@@ -50,10 +59,27 @@ public class CustomBrush extends Brush
         while(itr.hasNext()) {
             TileLayer tl = (TileLayer)itr.next();            
             TileLayer tm = (TileLayer) mp.getLayer(initLayer++);
-            tl.setOffset(centerx,centery);
-            tl.mergeOnto(tm);
+            if(tm != null) {
+	            tl.setOffset(centerx,centery);
+	            tl.mergeOnto(tm);
+            }
         }
         
         return new Rectangle(centerx, centery, bounds.width, bounds.height);
     }
+
+	/* (non-Javadoc)
+	 * @see tiled.mapeditor.brush.Brush#paint(java.awt.Graphics, int, int)
+	 */
+	public void paint(Graphics g, int x, int y) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	public boolean equals(Brush b) {
+		if(b instanceof CustomBrush) {
+			//TODO: THIS
+		}
+		return false;
+	}
 }

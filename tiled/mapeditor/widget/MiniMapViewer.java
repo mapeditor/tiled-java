@@ -39,10 +39,10 @@ public class MiniMapViewer extends JPanel {
     }
 
     public void setView(MapView view) {
-        myView = view;
+        myView = view;        
+        myView.setZoom(scale);
         Dimension d = myView.getPreferredSize();
         scale = MAX_HEIGHT / (double)d.height;
-        myView.setZoom(scale);
     }
 
     public void setMainPanel(JScrollPane main) {
@@ -50,10 +50,10 @@ public class MiniMapViewer extends JPanel {
     }
 
     public void paint(Graphics g) {
-        //if(myView != null)
-        //	myView.paint(g);
+        if(myView != null)
+        	myView.paint(g);
         if (mainPanel!=null) {
-            g.setColor(Color.red);
+            g.setColor(Color.yellow);
             Rectangle viewArea = mainPanel.getGraphics().getClipBounds();
             if (viewArea != null) {
                 g.drawRect(

@@ -6,6 +6,7 @@
 * Added a version attribute to the map tag
 * Added a basedir attribute to the tileset tag (suggested by Radomir
   Dopieralski)
+* Added support for shared images (merged in Rainer Deyke's shared images code)
 * Added support for masked bitmaps on tileset image imports
 * Added support for highlighting tile under cursor
 * Added support for creating an image snapshot of the map
@@ -15,8 +16,11 @@
 * Added an option whether to automatically create tiles from tileset images
   upon import or not.
 * Added support for reading TMX/TSX files from URLs
+* Added the RandomBrush for doing 'spray-paint' painting (suggested
+  by Rainer Deyke)
+/ Added the brush dialog, and support for a wide range of brush operations
+* Added a message framework for reporting load/save problems to the user
 * Improved GUI in several places
-* Merged in Rainer Deyke's shared images code
 * Completed the Search/Replace dialog
 * Changed the MultisetListRenderer to show tiles actual-size when selected
 * Generalized the dialogs for properties and added delete capabilities.
@@ -84,7 +88,7 @@
 0.3.0 - June 15th, 2004
 
 * All the features and polish required to release the Mechanae map editor as
-  a more general tiled map editor, including:
+  a more general Tiled map editor, including:
 * Support for isometric maps
 * Zooming in
 * Support for multiple tilesets

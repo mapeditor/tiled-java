@@ -15,6 +15,7 @@ package tiled.plugins.mappy;
 import java.io.*;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Stack;
 
 import tiled.io.MapWriter;
 import tiled.plugins.mappy.MappyMapReader.BlkStr;
@@ -95,6 +96,10 @@ public class MappyMapWriter implements MapWriter
         return false;
     }
 
+    public void setErrorStack(Stack es) {
+    	//TODO: implement this
+    }
+    
     
     private void createMPHDChunk(Map m) throws IOException {
         Chunk c = new Chunk("MPHD");

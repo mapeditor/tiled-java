@@ -63,7 +63,8 @@ public class TileImageDialog extends JDialog
         imageList.addListSelectionListener(this);
         JScrollPane sp = new JScrollPane();
         sp.getViewport().setView(imageList);
-
+        sp.setPreferredSize(new Dimension(150, 150));
+        
         // image panel
         JPanel image_panel = new JPanel();
         image_panel.setLayout(new BoxLayout(image_panel, BoxLayout.Y_AXIS));

@@ -13,8 +13,10 @@
 package tiled.mapeditor.brush;
 
 import java.awt.Rectangle;
+import java.awt.geom.Area;
 
 import tiled.core.MultilayerPlane;
+import tiled.core.TileLayer;
 import tiled.util.MersenneTwister;
 
 public class RandomBrush extends ShapeBrush {
@@ -27,8 +29,25 @@ public class RandomBrush extends ShapeBrush {
         mt = new MersenneTwister(System.currentTimeMillis());
     }
     
+    public RandomBrush(Area shape) {
+    	super(shape);
+    	mt = new MersenneTwister(System.currentTimeMillis());
+    }
+    
+    public RandomBrush(AbstractBrush sb) {
+    	super(sb);
+    	mt = new MersenneTwister(System.currentTimeMillis());
+    	if(sb instanceof RandomBrush) {
+    		ratio = ((RandomBrush)sb).ratio;
+    	}
+    }
+    
     public void setRatio(double r){
         ratio = r;
+    }
+    
+    public double getRatio() {
+    	return ratio;
     }
     
     /**
@@ -39,12 +58,23 @@ public class RandomBrush extends ShapeBrush {
      * @param x  The x-coordinate where the click occurred.
      * @param y  The y-coordinate where the click occurred.
      */
-    public Rectangle commitPaint(MultilayerPlane mp, int x, int y, int start) {
+    public Rectangle commitPaint(MultilayerPlane mp, int x, int y, int initLayer) {
         Rectangle bounds = shape.getBounds();
         int centerx = (int)(x - (bounds.width / 2));
         int centery = (int)(y - (bounds.height / 2));
         
-        //TODO: use the Mersenne Twister to randomize painting the specified tile
+        for(int i=0;i<numLayers;i++) {
+        	TileLayer tl = (TileLayer) mp.getLayer(initLayer - i);
+        	if(tl != null) {
+	        	for(int cy = 0; cy <= bounds.height; cy++) {
+	        		for(int cx = 0; cx < bounds.width; cx++) {
+				        if(shape.contains(cx, cy) && (mt.genrand() % 101) <= (100*ratio) ) {
+				        	tl.setTileAt(cx+centerx, cy+centery, paintTile);
+				        }
+	        		}
+	        	}
+        	}
+        }
         
         return new Rectangle(centerx, centery, bounds.width, bounds.height);
     }

@@ -19,7 +19,6 @@ import java.awt.MediaTracker;
 import java.awt.Rectangle;
 import java.io.*;
 import java.lang.reflect.*;
-import java.util.Iterator;
 import java.util.Stack;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -626,14 +625,7 @@ public class XMLMapTransformer implements MapReader
         Map unmarshalledMap = unmarshal(url.openStream());
         unmarshalledMap.setFilename(filename);
         
-        //TODO: put this is a popup window
-        if(TiledConfiguration.getInstance().keyHasValue("tmx.load.report",1)) {
-	        Iterator itr = warnings.iterator();
-	        while(itr.hasNext()) {
-	            String warn = (String) itr.next();
-	            System.out.println(warn);
-	        }
-        }
+        
         
         return unmarshalledMap;
     }
@@ -697,5 +689,9 @@ public class XMLMapTransformer implements MapReader
             }
         } catch (IOException e) {}
         return false;
+    }
+    
+    public void setErrorStack(Stack es) {
+    	warnings = es;
     }
 }

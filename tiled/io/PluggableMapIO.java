@@ -12,6 +12,8 @@
 
 package tiled.io;
 
+import java.util.Stack;
+
 
 public interface PluggableMapIO
 {
@@ -28,4 +30,6 @@ public interface PluggableMapIO
     public String getDescription();
     
     public String getPluginPackage();
+    
+    public void setErrorStack(Stack es);
 }

@@ -12,6 +12,7 @@
 
 package tiled.mapeditor.brush;
 
+import java.awt.Graphics;
 import java.awt.Rectangle;
 
 import tiled.core.MultilayerPlane;
@@ -23,6 +24,17 @@ public abstract class Brush extends MultilayerPlane
         super();
     }
 
+    /**
+     * This will set the number of layers to affect, the default is 1 - the layer specified
+     * in commitPaint
+     * 
+     * @see Brush#commitPaint(MultilayerPlane, int, int, int)
+     * @param num   The number of layers to affect.
+     */
+    public abstract void setAffectedLayers(int num);
+    
+    public abstract int getAffectedLayers();
+    
     /**
      * This is the main processing method for a Brush object. Painting starts
      * on initLayer, and if the brush has more than one layer, then the brush  
@@ -37,4 +49,8 @@ public abstract class Brush extends MultilayerPlane
      */
     public abstract Rectangle commitPaint(MultilayerPlane mp, int x, int y,
             int initLayer);
+    
+    public abstract void paint(Graphics g, int x, int y);
+    
+    public abstract boolean equals(Brush b);
 }

@@ -87,7 +87,7 @@ public class TileDialog extends JDialog
         tileList.addListSelectionListener(this);
         JScrollPane sp = new JScrollPane();
         sp.getViewport().setView(tileList);
-
+        sp.setPreferredSize(new Dimension(150, 150));
 
         // The split pane
 
@@ -162,6 +162,7 @@ public class TileDialog extends JDialog
         imageList.addListSelectionListener(this);
         JScrollPane sp = new JScrollPane();
         sp.getViewport().setView(imageList);
+        sp.setPreferredSize(new Dimension(150, 150));
 
         // Buttons
         bAddImage = new JButton("Add Image");

@@ -100,6 +100,7 @@ Suggestor:  Rainer Deyke <root@rainerdeyke.com>
 Date:       24/09/04
 Summary:    The ability to flip and rotate individual and blocks of tiles.
 State:      Selections maybe, not the tile images for now.
+            This will be included in a 0.5.0 release.
 
 - 18 --------------------------------------------------------------------------
 Suggestor:  Rainer Deyke <root@rainerdeyke.com>

@@ -28,7 +28,7 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
     private JButton bOk, bApply, bCancel;
     private JPanel layerOps, generalOps, tilesetOps, gridOps;
     private IntegerSpinner undoDepth, gridOpacity;
-    private JCheckBox cbBinaryEncode, cbCompressLayerData, cbEmbedImages;
+    private JCheckBox cbBinaryEncode, cbCompressLayerData, cbEmbedImages, cbReportIOWarnings;
 	private JRadioButton rbEmbedInTiles, rbEmbedInSet;
     private JCheckBox cbGridAA;
     private JColorChooser gridColor;
@@ -47,6 +47,7 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
         cbBinaryEncode = new JCheckBox("Use binary encoding");
         cbCompressLayerData = new JCheckBox("Compress layer data (gzip)");
         cbEmbedImages = new JCheckBox("Embed images (png)");
+        cbReportIOWarnings = new JCheckBox("Report I/O messages");
         rbEmbedInTiles = new JRadioButton("Embed images in tiles");
         rbEmbedInSet = new JRadioButton("Use Tileset (shared) images");
         ButtonGroup bg = new ButtonGroup();
@@ -59,6 +60,7 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
         cbBinaryEncode.addChangeListener(this);
         cbCompressLayerData.addChangeListener(this);
         cbEmbedImages.addChangeListener(this);
+        cbReportIOWarnings.addChangeListener(this);
         cbGridAA.addChangeListener(this);
         undoDepth.addChangeListener(this);
         gridOpacity.addChangeListener(this);
@@ -67,6 +69,8 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
         cbBinaryEncode.setActionCommand("tmx.save.encodeLayerData");
         cbCompressLayerData.setActionCommand("tmx.save.layerCompression");
         //cbEmbedImages.setActionCommand("tmx.save.embedImages");
+        cbReportIOWarnings.setActionCommand("tiled.report.io");
+        
         rbEmbedInTiles.setActionCommand("tmx.save.embedImages");
         rbEmbedInTiles.setEnabled(false);
 		rbEmbedInSet.setActionCommand("tmx.save.tileSetImages");
@@ -111,7 +115,10 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 1; c.weightx = 1;
         generalOps.add(undoDepth, c);
-
+        c.gridy = 1;
+        c.gridx = 0;
+        generalOps.add(cbReportIOWarnings, c);
+        
         /* TILESET OPTIONS */
         tilesetOps = new VerticalStaticJPanel();
         tilesetOps.setLayout(new GridBagLayout());
@@ -160,7 +167,7 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
         saving.setLayout(new BoxLayout(saving, BoxLayout.Y_AXIS));
         saving.add(layerOps);
         saving.add(tilesetOps);
-
+        
         JPanel general = new JPanel();
         general.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
         general.setLayout(new BoxLayout(general, BoxLayout.Y_AXIS));
@@ -208,6 +215,7 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
 
         // Handle checkboxes
         updateFromConf(layerOps);
+        updateFromConf(generalOps);
         updateFromConf(tilesetOps);
         updateFromConf(gridOps);
 
@@ -239,6 +247,7 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
 
         // Handle checkboxes
         processOptions(layerOps);
+        processOptions(generalOps);
         processOptions(tilesetOps);
         processOptions(gridOps);
 

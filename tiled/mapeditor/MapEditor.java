@@ -18,6 +18,7 @@ import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
 import java.awt.print.PrinterException;
 import java.io.*;
+import java.util.Iterator;
 import java.util.Stack;
 import java.util.Vector;
 
@@ -57,7 +58,8 @@ public class MapEditor implements ActionListener,
     protected static final int PS_EYED    = 4;
     protected static final int PS_MARQUEE = 5;
     protected static final int PS_MOVE    = 6;
-
+    protected static final int PS_MOVEOBJ    = 7;
+    
     private Cursor curDefault = null;
     private Cursor curPaint   = null;
     private Cursor curErase   = null;
@@ -84,7 +86,7 @@ public class MapEditor implements ActionListener,
     Point mousePressLocation, mouseInitialPressLocation;
     Point moveDist;
     int mouseButton;
-    Brush currentBrush;
+    AbstractBrush currentBrush;
     SelectionLayer marqueeSelection = null;
     MapLayer clipboardLayer = null;
 
@@ -118,7 +120,8 @@ public class MapEditor implements ActionListener,
     AbstractButton layerUpButton, layerDownButton;
     AbstractButton paintButton, eraseButton, pourButton;
     AbstractButton eyedButton, marqueeButton, moveButton;
-
+    AbstractButton objectMoveButton, objectAddButton;
+    
     TilePalettePanel tilePalettePanel;
     TilePaletteDialog tilePaletteDialog;
     AboutDialog aboutDialog;
@@ -168,11 +171,12 @@ public class MapEditor implements ActionListener,
                     "tiled.cursorhighlight", 1));
 
         mapEventAdapter = new MapEventAdapter();
-        currentBrush = new ShapeBrush();
-        ((ShapeBrush)currentBrush).makeQuadBrush(new Rectangle(0, 0, 1, 1));
-
-
-
+        
+        //Create a default brush
+        ShapeBrush sb = new ShapeBrush();
+        sb.makeQuadBrush(new Rectangle(0, 0, 1, 1));
+        setBrush(sb);
+        
         // Create the actions
         zoomInAction = new ZoomInAction();
         zoomOutAction = new ZoomOutAction();
@@ -250,53 +254,6 @@ public class MapEditor implements ActionListener,
     }
 
     /**
-     * Loads a map.
-     *
-     * @param file filename of map to load
-     * @return <code>true</code> if the file was loaded, <code>false</code> if
-     *         an error occured
-     */
-    public boolean loadMap(String file) {
-        try {
-            MapReader mr = null;
-            if (file.endsWith(".tmx")) {
-                // Override, so people can't overtake our format
-                mr = new XMLMapTransformer();
-            } else {
-                mr = (MapReader)pluginLoader.getReaderFor(
-                        file.substring(file.lastIndexOf('.') + 1));
-            }
-
-            if (mr != null) {
-                setCurrentMap(mr.readMap(file));
-                updateRecent(file);
-                return true;
-            } else {
-                JOptionPane.showMessageDialog(appFrame,
-                        "Unsupported map format", "Error while loading map",
-                        JOptionPane.ERROR_MESSAGE);
-            }
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(appFrame,
-                    e.getMessage() + (e.getCause() != null ? "\nCause: " +
-                        e.getCause().getMessage() : ""),
-                    "Error while loading map",
-                    JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(appFrame,
-                    "Error while loading " + file + ": " +
-                    e.getMessage() + (e.getCause() != null ? "\nCause: " +
-                        e.getCause().getMessage() : ""),
-                    "Error while loading map",
-                    JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-        }
-
-        return false;
-    }
-
-    /**
      * Creates all the menus and submenus of the top menu bar. Handles
      * assigning listeners and tooltips as well.
      */
@@ -311,7 +268,9 @@ public class MapEditor implements ActionListener,
                 "control W");
         JMenuItem print =
             createMenuItem("Print...", null, "Print the map", "control P");
-
+        JMenuItem brushop =
+            createMenuItem("Brushes...", null, "Options for brushes", "control B");
+        
         recentMenu = new JMenu("Open Recent");
 
         mapEventAdapter.addListener(save);
@@ -329,6 +288,8 @@ public class MapEditor implements ActionListener,
         fileMenu.add(save);
         fileMenu.add(saveAs);
         fileMenu.add(saveAsImage);
+        fileMenu.addSeparator();
+        fileMenu.add(brushop);
         // TODO: Re-add print menuitem when printing is functional
         //fileMenu.addSeparator();
         //fileMenu.add(print);
@@ -512,21 +473,24 @@ public class MapEditor implements ActionListener,
         Icon iconPour = loadIcon("resources/gimp-tool-bucket-fill-22.png");
         Icon iconEyed = loadIcon("resources/gimp-tool-color-picker-22.png");
         Icon iconMarquee = loadIcon("resources/gimp-tool-rect-select-22.png");
-
+        Icon iconMoveObject = loadIcon("resources/gimp-tool-object-move-22.png");
+        
         paintButton = createToggleButton(iconPaint, "paint", "Paint");
         eraseButton = createToggleButton(iconErase, "erase", "Erase");
         pourButton = createToggleButton(iconPour, "pour", "Fill");
         eyedButton = createToggleButton(iconEyed, "eyed", "Eye dropper");
         marqueeButton = createToggleButton(iconMarquee, "marquee", "Select");
         moveButton = createToggleButton(iconMove, "move", "Move layer");
-
+        objectMoveButton = createToggleButton(iconMoveObject, "moveobject", "Move Object");
+        
         mapEventAdapter.addListener(moveButton);
         mapEventAdapter.addListener(paintButton);
         mapEventAdapter.addListener(eraseButton);
         mapEventAdapter.addListener(pourButton);
         mapEventAdapter.addListener(eyedButton);
         mapEventAdapter.addListener(marqueeButton);
-
+        mapEventAdapter.addListener(objectMoveButton);
+        
         JToolBar toolBar = new JToolBar(JToolBar.VERTICAL);
         toolBar.setFloatable(false);
         toolBar.add(moveButton);
@@ -535,6 +499,8 @@ public class MapEditor implements ActionListener,
         toolBar.add(pourButton);
         toolBar.add(eyedButton);
         toolBar.add(marqueeButton);
+        toolBar.add(Box.createRigidArea(new Dimension(0, 5)));
+        toolBar.add(objectMoveButton);
         toolBar.add(Box.createRigidArea(new Dimension(0, 5)));
         toolBar.add(new TButton(zoomInAction));
         toolBar.add(new TButton(zoomOutAction));
@@ -554,7 +520,7 @@ public class MapEditor implements ActionListener,
         JButton b;
         JToolBar tabsPanel = new JToolBar();
         JTabbedPane paintPanel = new JTabbedPane();
-        JTabbedPane navOpts = new JTabbedPane();
+        
         dataPanel = new JPanel(new BorderLayout());
 
         // Try to load the icons
@@ -567,8 +533,6 @@ public class MapEditor implements ActionListener,
         //navigation and tool options
         miniMap = new MiniMapViewer();
         miniMap.setMainPanel(mapScrollPane);
-        navOpts.addTab("Navigation", miniMap);
-        navOpts.addTab("Tool Options", new JPanel());
 
         // Layer table
         layerTable = new JTable(new LayerTableModel(currentMap));
@@ -629,7 +593,7 @@ public class MapEditor implements ActionListener,
         c.fill = GridBagConstraints.BOTH;
         c.gridx = 0; c.gridy = 0;
         c.weighty = 1;
-        layerPanel.add(navOpts);
+        layerPanel.add(miniMap);
         c.weighty = 0; c.gridy += 1;
         layerPanel.add(sliderPanel, c);
         c.weighty = 1; c.gridy += 1;
@@ -1085,6 +1049,8 @@ public class MapEditor implements ActionListener,
             setCurrentPointerState(PS_MARQUEE);
         } else if (command.equals("move")) {
             setCurrentPointerState(PS_MOVE);
+        } else if (command.equals("moveobject")) {
+            setCurrentPointerState(PS_MOVEOBJ);
         } else if (command.equals("palette")) {
             if (currentMap != null) {
                 if (tilePaletteDialog == null) {
@@ -1123,6 +1089,9 @@ public class MapEditor implements ActionListener,
             } catch (PrinterException e) {
                 e.printStackTrace();
             }
+        } else if (command.equals("Brushes...")) {
+                BrushDialog bd = new BrushDialog(this, appFrame, currentBrush);
+                bd.setVisible(true);
         } else if (command.equals("Add Layer") ||
                 command.equals("Duplicate Layer") ||
                 command.equals("Delete Layer") ||
@@ -1639,6 +1608,10 @@ public class MapEditor implements ActionListener,
         undoSupport.postEdit(mle);
     }
 
+    public void setBrush(AbstractBrush b) {
+    	currentBrush = b;
+    }
+    
     private void updateTitle() {
         String title = "Tiled";
 
@@ -1677,6 +1650,73 @@ public class MapEditor implements ActionListener,
     private boolean unsavedChanges() {
         return (currentMap != null && undoStack.canUndo() &&
                 !undoStack.isAllSaved());
+    }
+
+    private void reportPluginMessages(Stack s) {
+    	//TODO: maybe have a nice dialog with a scrollbar, in case there are a lot of messages...
+        if(TiledConfiguration.getInstance().keyHasValue("tiled.report.io",1)) {
+        	if(s.size() > 0) {
+		        Iterator itr = s.iterator();
+		        String warnings = "";
+		        while(itr.hasNext()) {
+		            String warn = (String) itr.next();
+		            warnings = warnings + warn + "\n";
+		        }
+		        JOptionPane.showMessageDialog(this.appFrame,  warnings,
+		        																"Loading Messages",
+																				JOptionPane.INFORMATION_MESSAGE);
+        	}
+        }
+    }
+    
+    /**
+     * Loads a map.
+     *
+     * @param file filename of map to load
+     * @return <code>true</code> if the file was loaded, <code>false</code> if
+     *         an error occured
+     */
+    public boolean loadMap(String file) {
+        try {
+            MapReader mr = null;
+            if (file.endsWith(".tmx")) {
+                // Override, so people can't overtake our format
+                mr = new XMLMapTransformer();
+            } else {
+                mr = (MapReader)pluginLoader.getReaderFor(
+                        file.substring(file.lastIndexOf('.') + 1));
+            }
+
+            if (mr != null) {
+            	Stack errors = new Stack();
+            	mr.setErrorStack(errors);
+                setCurrentMap(mr.readMap(file));
+                reportPluginMessages(errors);
+                updateRecent(file);
+                return true;
+            } else {
+                JOptionPane.showMessageDialog(appFrame,
+                        "Unsupported map format", "Error while loading map",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(appFrame,
+                    e.getMessage() + (e.getCause() != null ? "\nCause: " +
+                        e.getCause().getMessage() : ""),
+                    "Error while loading map",
+                    JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(appFrame,
+                    "Error while loading " + file + ": " +
+                    e.getMessage() + (e.getCause() != null ? "\nCause: " +
+                        e.getCause().getMessage() : ""),
+                    "Error while loading map",
+                    JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+
+        return false;
     }
 
     /**
@@ -1737,11 +1777,14 @@ public class MapEditor implements ActionListener,
             }
 
             if (mw != null) {
-                mw.writeMap(currentMap, filename);
+            	Stack errors = new Stack();
+            	mw.setErrorStack(errors);
+            	mw.writeMap(currentMap, filename);            	
                 currentMap.setFilename(filename);
                 updateRecent(filename);
                 undoStack.commitSave();
                 updateTitle();
+                reportPluginMessages(errors);
             } else {
                 JOptionPane.showMessageDialog(appFrame,
                         "Unsupported map format", "Error while saving map",
@@ -1995,7 +2038,7 @@ public class MapEditor implements ActionListener,
     public void setCurrentTile(Tile tile) {
         if (currentTile != tile) {
             currentTile = tile;
-            if (ShapeBrush.class.isInstance(currentBrush)) {
+            if (!(currentBrush instanceof CustomBrush)) {
                 ((ShapeBrush)currentBrush).setTile(tile);
             }
             tilePaletteButton.setTile(currentTile);
@@ -2012,7 +2055,8 @@ public class MapEditor implements ActionListener,
         eyedButton.setSelected(state == PS_EYED);
         marqueeButton.setSelected(state == PS_MARQUEE);
         moveButton.setSelected(state == PS_MOVE);
-
+        objectMoveButton.setSelected(state == PS_MOVEOBJ);
+        
         // Set the matching cursor
         if (mapView != null) {
             switch (currentPointerState) {

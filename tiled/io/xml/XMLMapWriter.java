@@ -18,6 +18,7 @@ import java.io.*;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Properties;
+import java.util.Stack;
 import java.util.Vector;
 import java.util.zip.GZIPOutputStream;
 
@@ -215,15 +216,19 @@ public class XMLMapWriter implements MapWriter
                     Iterator tileIterator = set.iterator();
                     boolean needWrite = false;
 
-                    while (tileIterator.hasNext()) {
-                        Tile tile = (Tile)tileIterator.next();
-                        if (!tile.getProperties().isEmpty()) {
-                            needWrite = true;
-                            break;
-                            // As long as one has properties, they all need to
-                            // be written.
-                            // TODO: This shouldn't be necessary
-                        }
+                    if (conf.keyHasValue("tmx.save.embedImages","1")) {
+                    	needWrite = true;
+                    } else {
+	                    while (tileIterator.hasNext()) {
+	                        Tile tile = (Tile)tileIterator.next();
+	                        if (!tile.getProperties().isEmpty()) {
+	                            needWrite = true;
+	                            break;
+	                            // As long as one has properties, they all need to
+	                            // be written.
+	                            // TODO: This shouldn't be necessary
+	                        }
+	                    }
                     }
 
                     if (needWrite) {
@@ -548,4 +553,7 @@ public class XMLMapWriter implements MapWriter
         return false;
     }
 
+    public void setErrorStack(Stack es) {
+    	
+    }
 }
