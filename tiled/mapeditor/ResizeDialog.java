@@ -12,8 +12,7 @@
 
 package tiled.mapeditor;
 
-import java.awt.Dimension;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
@@ -84,6 +83,25 @@ public class ResizeDialog extends JDialog implements ActionListener {
 		orient.add(lm);
 		orient.add(lr);
 		
+		/* ORIGINAL SIZE PANEL */
+		JPanel origin = new VerticalStaticJPanel();
+		origin.setBorder(BorderFactory.createCompoundBorder(
+					BorderFactory.createTitledBorder("Original size"),
+					BorderFactory.createEmptyBorder(0, 5, 5, 5)));
+		GridBagConstraints c = new GridBagConstraints();
+		c.anchor = GridBagConstraints.EAST;
+		c.fill = GridBagConstraints.VERTICAL;
+		//c.insets = new Insets(5, 0, 0, 0);
+		c.weightx = 1;
+		c.weighty = 1;
+		origin.add(new JLabel("Width: "), c);
+		c.gridy = 1;
+		origin.add(new JLabel("Height: "), c);
+		c.gridx = 1; c.gridy = 0;
+		origin.add(new JLabel("" + currentMap.getWidth()), c);
+		c.gridy = 1;
+		origin.add(new JLabel("" + currentMap.getHeight()), c);
+		
 		/* BUTTONS PANEL */
 		bResize.addActionListener(this);
 		bCancel.addActionListener(this);
@@ -98,6 +116,7 @@ public class ResizeDialog extends JDialog implements ActionListener {
 		JPanel mainPanel = new JPanel();
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
 		mainPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+		mainPanel.add(origin);
 		mainPanel.add(sizing);
 		mainPanel.add(orient);
 		mainPanel.add(Box.createRigidArea(new Dimension(0, 5)));

@@ -37,6 +37,9 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
         cbEmbedImages = new JCheckBox("Embed images (png)");
         tUndoDepth = new JTextField(3);
         cbBinaryEncode.addChangeListener(this);
+        cbCompressLayerData.addChangeListener(this);
+        cbEmbedImages.addChangeListener(this);
+		//TODO: also watch tUndoDepth for a change...
 
         cbBinaryEncode.setActionCommand("tmx.save.encodeLayerData");
         cbCompressLayerData.setActionCommand("tmx.save.layerCompression");
@@ -49,7 +52,7 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
         bOk.addActionListener(this);
         bApply.addActionListener(this);
         bCancel.addActionListener(this);
-
+		bApply.setEnabled(false);
 
         /* LAYER OPTIONS */
         layerOps = new VerticalStaticJPanel();
@@ -96,11 +99,9 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
         buttons.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
         buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
         buttons.add(Box.createGlue());
-        buttons.add(bOk);
-        // TODO: Re-enable apply button, but make sure it's disabled when no
-        // options have been changed.
-        //buttons.add(Box.createRigidArea(new Dimension(5, 0)));
-        //buttons.add(bApply);
+        buttons.add(bOk);        
+        buttons.add(Box.createRigidArea(new Dimension(5, 0)));
+        buttons.add(bApply);
         buttons.add(Box.createRigidArea(new Dimension(5, 0)));
         buttons.add(bCancel);
 
@@ -173,6 +174,7 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
             } catch (ClassCastException e) {
             }
         }
+        bApply.setEnabled(false);
     }
 
     private void processOptions() {
@@ -221,5 +223,6 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
         if (source == cbBinaryEncode) {
             cbCompressLayerData.setEnabled(cbBinaryEncode.isSelected());
         }
+        bApply.setEnabled(true);
     }
 }

@@ -65,7 +65,7 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
         tileWidth.setEnabled(false);
         tileHeight.setEnabled(false);
 
-        tilebmpCheck = new JCheckBox("Reference tile bitmap", false);
+        tilebmpCheck = new JCheckBox("Reference tileset bitmap", false);
         tilebmpCheck.addChangeListener(this);
 
         okButton = new JButton("OK");
@@ -94,7 +94,7 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
         JPanel tilebmpPanel = new VerticalStaticJPanel();
         tilebmpPanel.setLayout(new GridBagLayout());
         tilebmpPanel.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createTitledBorder("From tile bitmap"),
+                    BorderFactory.createTitledBorder("From Tileset Bitmap"),
                     BorderFactory.createEmptyBorder(0, 5, 5, 5)));
         c.gridx = 0; c.gridy = 0; c.weightx = 0;
         c.insets = new Insets(5, 0, 0, 0);

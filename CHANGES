@@ -1,6 +1,15 @@
 0.4.0 - Pending
 
 * TiledConfiguration defaults to preset values initially
+* Layer rotation and flipping
+* Generic properties method of setting values on tiles and the map
+* A file filter on loading and saving for .tmx and .tsx
+* Improved UI
+* Fixed a bug in TiledConfiguration when there was no previous .conf file
+* Map resizing dialog
+* Updated DTD
+* Better architecture for Tile palette
+* Implemented a better underlying architecture for Maps and Brushes.
 
 0.3.1 - June 17th, 2004
 

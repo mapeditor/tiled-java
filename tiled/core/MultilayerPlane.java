@@ -52,8 +52,14 @@ public class MultilayerPlane {
 		return l;
 	}
 
-	public void addLayerAfter(MapLayer l) {
-		//TODO: Implement MultilayerPlane#addLayerAfter
+	/**
+	 * Adds the MapLayer <code>l</code> after the MapLayer <code>after</code>.
+	 * 
+	 * @param l
+	 * @param after
+	 */
+	public void addLayerAfter(MapLayer l, MapLayer after) {
+		layers.add(layers.indexOf(after)+1,l);
 	}
 
 	public void addAllLayers(Collection c) {

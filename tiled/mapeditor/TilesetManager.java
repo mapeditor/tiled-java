@@ -14,6 +14,7 @@ package tiled.mapeditor;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 import java.util.ListIterator;
 import java.util.Vector;
 import javax.swing.*;
@@ -142,23 +143,27 @@ public class TilesetManager extends JDialog implements ActionListener,
             int ret = ch.showSaveDialog(this);
             if (ret == JFileChooser.APPROVE_OPTION) {
                 String filename = ch.getSelectedFile().getAbsolutePath();
-                try {
-                    XMLMapWriter mw = new XMLMapWriter();
-                    mw.writeTileset(set,filename);
-                    set.setSource(filename);
-                    exportButton.setEnabled(false);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+				File exist = new File(filename);
+				
+				if((exist.exists() && JOptionPane.showConfirmDialog(this, "The file already exists. Do you wish to overwrite it?") == JOptionPane.OK_OPTION) || !exist.exists()) {
+					try {
+						XMLMapWriter mw = new XMLMapWriter();
+						mw.writeTileset(set,filename);
+						set.setSource(filename);
+						exportButton.setEnabled(false);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
             }
         } else if (command.equals("Save")) {
 			JFileChooser ch = new JFileChooser(map.getFilename());
 	
-			//TODO: warn vehemently if the set file already exists
 			ch.setFileFilter(new TiledFileFilter(TiledFileFilter.FILTER_TSX));
 			int ret = ch.showSaveDialog(this);
 			if (ret == JFileChooser.APPROVE_OPTION) {
 				String filename = ch.getSelectedFile().getAbsolutePath();
+				
 				try {
 					XMLMapWriter mw = new XMLMapWriter();
 					mw.writeTileset(set,filename);
