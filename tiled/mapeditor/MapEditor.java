@@ -1637,11 +1637,11 @@ public class MapEditor implements ActionListener,
 
     /**
      * Saves the current map, optionally with a "Save As" dialog. If
-     * <code>filename</code> is <code>null</code> or <code>saveAs</code> is
+     * <code>filename</code> is <code>null</code> or <code>bSaveAs</code> is
      * passed <code>true</code>, a "Save As" dialog is opened.
      *
      * @param filename Filename to save the current map to.
-     * @param saveAs   Pass <code>true</code> to ask for a new filename using
+     * @param bSaveAs  Pass <code>true</code> to ask for a new filename using
      *                 a "Save As" dialog.
      */
     public void saveMap(String filename, boolean bSaveAs) {
