@@ -12,33 +12,29 @@
 
 package tiled.mapeditor.undo;
 
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
-import javax.swing.undo.UndoableEdit;
-import javax.swing.undo.AbstractUndoableEdit;
+import javax.swing.undo.*;
 
 import tiled.core.*;
 
 
 public class MapLayerEdit extends AbstractUndoableEdit
 {
-    protected Map myMap;
-    MapLayer layerUndo = null, layerRedo = null;
-    String name;
-    protected boolean inProgress = false;
+    private MapLayer editedLayer;
+    private MapLayer layerUndo = null, layerRedo = null;
+    private String name;
+    private boolean inProgress = false;
 
-    public MapLayerEdit(Map m) {
-        myMap = m;
+    public MapLayerEdit(MapLayer layer) {
+        editedLayer = layer;
     }
 
-    public MapLayerEdit(Map m, MapLayer before) {
-        myMap = m;
+    public MapLayerEdit(MapLayer layer, MapLayer before) {
+        this(layer);
         start(before);
     }
 
-    public MapLayerEdit(Map m, MapLayer before, MapLayer after) {
-        myMap = m;
-        start(before);
+    public MapLayerEdit(MapLayer layer, MapLayer before, MapLayer after) {
+        this(layer, before);
         end(after);
     }
 
@@ -63,35 +59,25 @@ public class MapLayerEdit extends AbstractUndoableEdit
 
     /* inherited methods */
     public void undo() throws CannotUndoException {
-        MapLayer ml = myMap.getLayer(layerUndo.getId());
-        if (ml == null) {
+        if (editedLayer == null) {
             throw new CannotUndoException();
         }
-        layerUndo.copyTo(ml);
-        //ml.setOffset(layerUndo.getBounds().x, layerUndo.getBounds().y);
+        layerUndo.copyTo(editedLayer);
     }
 
     public boolean canUndo() {
-        if (layerUndo != null && myMap.getLayer(layerUndo.getId()) != null) {
-            return true;
-        }
-        return false;
+        return (layerUndo != null && editedLayer != null);
     }
 
     public void redo() throws CannotRedoException {
-        MapLayer ml = myMap.getLayer(layerRedo.getId());
-        if (ml == null) {
+        if (editedLayer == null) {
             throw new CannotRedoException();
         }
-        layerRedo.copyTo(ml);
-        //ml.setOffset(layerRedo.getBounds().x, layerRedo.getBounds().y);
+        layerRedo.copyTo(editedLayer);
     }
 
     public boolean canRedo() {
-        if (layerRedo != null && myMap.getLayer(layerRedo.getId()) != null) {
-            return true;
-        }
-        return false;
+        return (layerRedo != null && editedLayer != null);
     }
 
     public void die() {

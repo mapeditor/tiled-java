@@ -783,7 +783,7 @@ public class MapEditor implements ActionListener,
         {
             MapLayer layer = currentMap.getLayer(currentLayer);
             paintEdit =
-                new MapLayerEdit(currentMap, new MapLayer(layer), null);
+                new MapLayerEdit(layer, new MapLayer(layer), null);
         }
         doMouse(e);
     }
@@ -1098,7 +1098,7 @@ public class MapEditor implements ActionListener,
         public void actionPerformed(ActionEvent evt) {
             MapLayer layer = currentMap.getLayer(currentLayer);
             MapLayerEdit transEdit;
-            transEdit = new MapLayerEdit(currentMap, new MapLayer(layer));
+            transEdit = new MapLayerEdit(layer, new MapLayer(layer));
             switch (transform) {
                 case MapLayer.ROTATE_90:
                     transEdit.setPresentationName("Rotate");
@@ -1227,7 +1227,7 @@ public class MapEditor implements ActionListener,
         after.copyFrom(layer);
         after.setId(layer.getId());
 
-        MapLayerEdit mle = new MapLayerEdit(currentMap, before, after);
+        MapLayerEdit mle = new MapLayerEdit(layer, before, after);
         mle.setPresentationName("Fill");
         undoSupport.postEdit(mle);
     }

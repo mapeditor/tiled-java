@@ -14,25 +14,26 @@ package tiled.mapeditor.undo;
 
 import java.util.ListIterator;
 import java.util.Vector;
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
-import javax.swing.undo.UndoableEdit;
+import javax.swing.undo.*;
 
 import tiled.core.*;
 
 
-public class MapLayerStateEdit extends MapLayerEdit
+public class MapLayerStateEdit extends AbstractUndoableEdit
 {
-    Vector beforeLayerSet, afterLayerSet;
+    private Map myMap;
+    private Vector beforeLayerSet, afterLayerSet;
+    private boolean inProgress = false;
+    private String name;
 
     public MapLayerStateEdit(Map m, ListIterator beforeSet, ListIterator afterSet) {
-        super(m);
+        this(m);
         start(beforeSet);
         afterLayerSet = new Vector();
     }
 
     public MapLayerStateEdit(Map m) {
-        super(m);
+        myMap = m;
         start(m.getLayers());
     }
 
@@ -84,9 +85,6 @@ public class MapLayerStateEdit extends MapLayerEdit
         return false;
     }
 
-    public void die() {
-    }
-
     public boolean addEdit(UndoableEdit anEdit) {
         return false;
     }
@@ -103,5 +101,13 @@ public class MapLayerStateEdit extends MapLayerEdit
 
     public boolean isSignificant() {
         return true;
+    }
+
+    public void setPresentationName(String s) {
+        name = s;
+    }
+
+    public String getPresentationName() {
+        return name;
     }
 }
