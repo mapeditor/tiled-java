@@ -114,6 +114,7 @@ public class MapEditor implements ActionListener,
     TilePalettePanel tilePalettePanel;
     TilePaletteDialog tilePaletteDialog;
     AboutDialog aboutDialog;
+    PluginDialog pluginDialog;
     MapLayerEdit paintEdit;
 
     // Actions
@@ -435,6 +436,7 @@ public class MapEditor implements ActionListener,
 
         m = new JMenu("Help");
         m.add(createMenuItem("About", null, "Show about window"));
+		m.add(createMenuItem("About Plugins", null, "Show plugin window"));
         menuBar.add(m);
     }
 
@@ -1078,7 +1080,12 @@ public class MapEditor implements ActionListener,
                 aboutDialog = new AboutDialog(appFrame);
             }
             aboutDialog.setVisible(true);
-        } else if (command.substring(0, command.length() < 5 ? command.length() : 5).equals("_open")) {
+        } else if (command.equals("About Plugins")) {
+			if (pluginDialog == null) {
+				pluginDialog = new PluginDialog(appFrame, pluginLoader);
+			}
+			pluginDialog.setVisible(true);
+		} else if (command.substring(0, command.length() < 5 ? command.length() : 5).equals("_open")) {
             try {
                 loadMap(configuration.getValue(
                             "tmx.recent." + command.substring(5)));
@@ -1540,7 +1547,7 @@ public class MapEditor implements ActionListener,
             try {
     			MapWriter writers[] = (MapWriter[]) pluginLoader.getWriters();
     			for(int i=0;i<writers.length;i++) {
-    	        	ch.addChoosableFileFilter(new TiledFileFilter(writers[i].getFilter(),writers[i].getDescription()));
+    	        	ch.addChoosableFileFilter(new TiledFileFilter(writers[i].getFilter(),writers[i].getName()));
     	        }
     		} catch (Throwable e) {
     			JOptionPane.showMessageDialog(appFrame,
@@ -1602,7 +1609,7 @@ public class MapEditor implements ActionListener,
 	try {
 		MapReader readers[] = (MapReader[]) pluginLoader.getReaders();
 		for(int i=0;i<readers.length;i++) {
-			ch.addChoosableFileFilter(new TiledFileFilter(readers[i].getFilter(),readers[i].getDescription()));
+			ch.addChoosableFileFilter(new TiledFileFilter(readers[i].getFilter(),readers[i].getName()));
 		}
 	} catch (Throwable e) {
 		JOptionPane.showMessageDialog(appFrame,
