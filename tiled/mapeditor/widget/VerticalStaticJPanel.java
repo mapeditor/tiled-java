@@ -17,6 +17,10 @@ import java.awt.LayoutManager;
 import javax.swing.JPanel;
 
 
+/**
+ * A variation on JPanel that will specify the preferred height as both the
+ * minimum and maximum.
+ */
 public class VerticalStaticJPanel extends JPanel
 {
     public VerticalStaticJPanel() {

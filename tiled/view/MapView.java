@@ -13,10 +13,10 @@
 package tiled.view;
 
 import java.awt.*;
+import java.awt.geom.PathIterator;
 import java.util.Iterator;
 import javax.swing.Scrollable;
 import javax.swing.JPanel;
-import java.awt.geom.PathIterator;
 
 import tiled.core.*;
 import tiled.mapeditor.selection.SelectionLayer;
@@ -150,95 +150,104 @@ public abstract class MapView extends JPanel implements Scrollable
      * Draws all the visible layers of the map.
      */
     public void paint(Graphics g) {
+        double currentZoom = zoom;
         Graphics2D g2d = (Graphics2D)g;
         Iterator li = myMap.getLayers();
         MapLayer layer;
-        double currentZoom = zoom;
         Rectangle clip = g.getClipBounds();
 
-		g2d.setStroke(new BasicStroke(2.0f));		
+        g2d.setStroke(new BasicStroke(2.0f));		
 
         // Do an initial fill
         g.setColor(new Color(64, 64, 64));
         g.fillRect(clip.x, clip.y, clip.width, clip.height);
 
         while (li.hasNext()) {
-        	if((layer = (MapLayer)li.next()) != null) {
-	            float opacity = layer.getOpacity();
-	            if (layer.isVisible() && opacity > 0.0f) {
-	                if (opacity < 1.0f) {
-	                    g2d.setComposite(AlphaComposite.getInstance(
-	                                AlphaComposite.SRC_ATOP, opacity));
-	                } else {
-	                    g2d.setComposite(AlphaComposite.SrcOver);
-	                }
-	                paint(g, layer, currentZoom);
-	            }
-        	}
+            if ((layer = (MapLayer)li.next()) != null) {
+                float opacity = layer.getOpacity();
+                if (layer.isVisible() && opacity > 0.0f) {
+                    if (opacity < 1.0f) {
+                        g2d.setComposite(AlphaComposite.getInstance(
+                                    AlphaComposite.SRC_ATOP, opacity));
+                    } else {
+                        g2d.setComposite(AlphaComposite.SrcOver);
+                    }
+                    paint(g, layer, currentZoom);
+                }
+            }
         }
 
-		li = myMap.getLayersSpecial();
+        li = myMap.getLayersSpecial();
 
-		while(li.hasNext()) {
-			layer = (MapLayer) li.next();
-			if (layer.getClass() == SelectionLayer.class) {
-				((Graphics2D)g).setComposite(AlphaComposite.getInstance(
-									   AlphaComposite.SRC_ATOP, 0.3f));
-				g.setColor(((SelectionLayer)layer).getHighlightColor());
-			}
-			paint(g, layer, currentZoom);
-		}
+        while (li.hasNext()) {
+            layer = (MapLayer) li.next();
+            if (layer.getClass() == SelectionLayer.class) {
+                ((Graphics2D)g).setComposite(AlphaComposite.getInstance(
+                                    AlphaComposite.SRC_ATOP, 0.3f));
+                g.setColor(((SelectionLayer)layer).getHighlightColor());
+            }
+            paint(g, layer, currentZoom);
+        }
 
         if (getMode(PF_GRIDMODE)) {
-			g2d.setStroke(new BasicStroke());
+            g2d.setStroke(new BasicStroke());
             g2d.setComposite(AlphaComposite.SrcOver);
             paintGrid(g, currentZoom);
         }		
     }
 
-	protected void paintEdge(MapLayer layer, int x, int y, Graphics g) {
-		Polygon grid = createGridPolygon(x,y,0);
-		PathIterator itr = grid.getPathIterator(null);
-		double nextPoint[] = new double[6], prevPoint[],firstPoint[];
-	
-		Point p = screenToTileCoords(x, y);
-		int tx = p.x;
-		int ty = p.y;
-		
-		itr.currentSegment(nextPoint);
-		firstPoint = prevPoint=nextPoint;
-		
-		//NORTH
-		itr.next();
-		nextPoint = new double[6];
-		itr.currentSegment(nextPoint);
-		if(layer.getTileAt(tx,ty-1)==null) {
-			g.drawLine((int)prevPoint[0],(int)prevPoint[1],(int)nextPoint[0],(int)nextPoint[1]);
-		}
-		
-		//EAST
-		itr.next();
-		prevPoint = nextPoint;
-		nextPoint = new double[6];
-		itr.currentSegment(nextPoint);
-		if(layer.getTileAt(tx+1,ty)==null) {
-			g.drawLine((int)prevPoint[0],(int)prevPoint[1],(int)nextPoint[0],(int)nextPoint[1]);
-		}
-		
-		// SOUTH
-		itr.next();
-		prevPoint = nextPoint;
-		nextPoint = new double[6];
-		itr.currentSegment(nextPoint);
-		if(layer.getTileAt(tx,ty+1)==null) {
-			g.drawLine((int)prevPoint[0],(int)prevPoint[1],(int)nextPoint[0],(int)nextPoint[1]);
-		}
-		
-		// WEST
-		if(layer.getTileAt(tx-1,ty)==null) {
-			g.drawLine((int)nextPoint[0],(int)nextPoint[1],(int)firstPoint[0],(int)firstPoint[1]);
-		}
-	}
+    protected void paintEdge(Graphics g, MapLayer layer, int x, int y) {
+        Polygon grid = createGridPolygon(x, y, 0);
+        PathIterator itr = grid.getPathIterator(null);
+        double nextPoint[] = new double[6];
+        double prevPoint[], firstPoint[];
+
+        Point p = screenToTileCoords(x, y);
+        int tx = p.x;
+        int ty = p.y;
+
+        itr.currentSegment(nextPoint);
+        firstPoint = prevPoint = nextPoint;
+
+        // Top
+        itr.next();
+        nextPoint = new double[6];
+        itr.currentSegment(nextPoint);
+        if (layer.getTileAt(tx, ty - 1) == null) {
+            g.drawLine(
+                    (int)prevPoint[0], (int)prevPoint[1],
+                    (int)nextPoint[0], (int)nextPoint[1]);
+        }
+
+        // Right
+        itr.next();
+        prevPoint = nextPoint;
+        nextPoint = new double[6];
+        itr.currentSegment(nextPoint);
+        if (layer.getTileAt(tx + 1, ty) == null) {
+            g.drawLine(
+                    (int)prevPoint[0], (int)prevPoint[1],
+                    (int)nextPoint[0], (int)nextPoint[1]);
+        }
+
+        // Left
+        itr.next();
+        prevPoint = nextPoint;
+        nextPoint = new double[6];
+        itr.currentSegment(nextPoint);
+        if (layer.getTileAt(tx, ty + 1) == null) {
+            g.drawLine(
+                    (int)prevPoint[0], (int)prevPoint[1],
+                    (int)nextPoint[0], (int)nextPoint[1]);
+        }
+
+        // Bottom
+        if (layer.getTileAt(tx - 1, ty) == null) {
+            g.drawLine(
+                    (int)nextPoint[0], (int)nextPoint[1],
+                    (int)firstPoint[0], (int)firstPoint[1]);
+        }
+    }
 
     /**
      * Tells this view a certain region of the map needs to be repainted.

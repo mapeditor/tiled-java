@@ -66,10 +66,6 @@ public class XMLMapWriter implements MapWriter
         try {
             w.startElement("map");
 
-            if (map.getName() != null) {
-                w.writeAttribute("name", map.getName());
-            }
-            //w.writeAttribute("version", major_rev + "." + minor_rev);
             //w.writeAttribute("id", "" + mapId);
 
             switch (map.getOrientation()) {

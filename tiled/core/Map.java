@@ -22,7 +22,6 @@ import tiled.view.*;
  * The Map class is the focal point of the <code>tiled.core</code> package.
  * This class also handles notifing listeners if there is a change to any layer
  * or object contained by the map.
- * 
  */
 public class Map extends MultilayerPlane implements Cloneable
 {
@@ -31,34 +30,32 @@ public class Map extends MultilayerPlane implements Cloneable
     public static final int MDO_OBLIQUE = 3;
     public static final int MDO_HEX     = 4;
 
-	private Vector specialLayers;
+    private Vector specialLayers;
     private Vector tilesets;
     private LinkedList objects;
     int id;
-    
-    int defaultTileWidth, defaultTileHeight;
+
+    int tileWidth, tileHeight;
     int totalObjects = 0;
     int lit = 1;
     int orientation = MDO_ORTHO;
     EventListenerList mapChangeListeners;
     Properties properties;
     String filename;
-    String name;
-    String version;
 
     /**
-     * @param width  The map width in tiles.
-     * @param height The map height in tiles.
+     * @param width  the map width in tiles.
+     * @param height the map height in tiles.
      */
     public Map(int width, int height) {
-		super(width, height);
-        init();        
+        super(width, height);
+        init();
     }
 
-	/**
-	 * Internal initialization of the Map
-	 *
-	 */
+    /**
+     * Internal initialization of the Map
+     *
+     */
     private void init() {
         mapChangeListeners = new EventListenerList();
         properties = new Properties();
@@ -98,35 +95,34 @@ public class Map extends MultilayerPlane implements Cloneable
         }
     }
 
-	/**
-	 * Causes a MapChangedEvent to be fired.
-	 *
-	 */
-	public void touch() {
-		fireMapChanged();
-	}
+    /**
+     * Causes a MapChangedEvent to be fired.
+     */
+    public void touch() {
+        fireMapChanged();
+    }
 
-	public void addLayerSpecial(MapLayer l) {
-		l.setMap(this);
-		specialLayers.add(l);
-		l.setId(specialLayers.indexOf(l));
-		fireMapChanged();
-	}
-	
-	public MapLayer addLayer(MapLayer l) {		
-		l.setMap(this);
-		super.addLayer(l);
-		fireMapChanged();
-		return l;
-	}
+    public void addLayerSpecial(MapLayer l) {
+        l.setMap(this);
+        specialLayers.add(l);
+        l.setId(specialLayers.indexOf(l));
+        fireMapChanged();
+    }
 
-	public MapLayer addLayer() {
-		MapLayer layer = new MapLayer(this, widthInTiles, heightInTiles);
-		layer.setName("Layer "+super.getTotalLayers());		
-		super.addLayer(layer);
-		fireMapChanged();
-		return layer;
-	}
+    public MapLayer addLayer(MapLayer l) {		
+        l.setMap(this);
+        super.addLayer(l);
+        fireMapChanged();
+        return l;
+    }
+
+    public MapLayer addLayer() {
+        MapLayer layer = new MapLayer(this, widthInTiles, heightInTiles);
+        layer.setName("Layer "+super.getTotalLayers());		
+        super.addLayer(layer);
+        fireMapChanged();
+        return layer;
+    }
 
     /**
      * Adds a Tileset to this Map. If the set is already attached to this map,
@@ -142,18 +138,18 @@ public class Map extends MultilayerPlane implements Cloneable
         Tile t = s.getTile(0);
 
         if (t != null) {
-            int tileWidth = t.getWidth();
-            int tileHeight = t.getHeight();
-            if (tileWidth != defaultTileWidth) {
-                if (defaultTileWidth == 0) {
-                    defaultTileWidth = tileWidth;
-                    defaultTileHeight = tileHeight;
+            int tw = t.getWidth();
+            int th = t.getHeight();
+            if (tw != tileWidth) {
+                if (tileWidth == 0) {
+                    tileWidth = tw;
+                    tileHeight = th;
                 }
             }
         }
 
-        s.setStandardHeight(defaultTileHeight);
-        s.setStandardWidth(defaultTileWidth);
+        s.setStandardHeight(tileHeight);
+        s.setStandardWidth(tileWidth);
         tilesets.add(s);
         fireMapChanged();
     }
@@ -179,24 +175,24 @@ public class Map extends MultilayerPlane implements Cloneable
     }
 
     public void addObject(MapObject o) {
-		objects.add(o);
+        objects.add(o);
     }
 
     public void addProperty(String key, String value) {
         properties.put(key, value);
     }
 
-	public Enumeration getProperties() {
-		return properties.keys();
-	}
-	
-	public String getPropertyValue(String key) {
-		return properties.getProperty(key);
-	}
+    public Enumeration getProperties() {
+        return properties.keys();
+    }
 
-	public void setProperties(Properties prop) {
-		properties=prop;
-	}
+    public String getPropertyValue(String key) {
+        return properties.getProperty(key);
+    }
+
+    public void setProperties(Properties prop) {
+        properties = prop;
+    }
 
     /**
      * @see MultilayerPlane#removeLayer
@@ -207,22 +203,22 @@ public class Map extends MultilayerPlane implements Cloneable
         return layer;
     }
 
-	public MapLayer removeLayerSpecial(int index) {
-		MapLayer layer = null;
-		try {
-			layer = (MapLayer) specialLayers.remove(index);
-			fireMapChanged();
-		}catch (ArrayIndexOutOfBoundsException e) {
-		}
-		return layer;
-	}
+    public MapLayer removeLayerSpecial(int index) {
+        MapLayer layer = null;
+        try {
+            layer = (MapLayer) specialLayers.remove(index);
+            fireMapChanged();
+        } catch (ArrayIndexOutOfBoundsException e) {
+        }
+        return layer;
+    }
 
-	/**
-	 * @see MultilayerPlane#removeAllLayers
-	 */
+    /**
+     * @see MultilayerPlane#removeAllLayers
+     */
     public void removeAllLayers() {
-		super.removeAllLayers();
-		fireMapChanged();
+        super.removeAllLayers();
+        fireMapChanged();
     }
 
     public void setLayerVector(Vector layers) {
@@ -230,62 +226,56 @@ public class Map extends MultilayerPlane implements Cloneable
         fireMapChanged();
     }
 
-	/**
-	 * @see MultilayerPlane#swapLayerUp
-	 */
+    /**
+     * @see MultilayerPlane#swapLayerUp
+     */
     public void swapLayerUp(int index) throws Exception {
         super.swapLayerUp(index);
         fireMapChanged();
     }
 
-	/**
-	 * @see MultilayerPlane#swapLayerDown
-	 */
+    /**
+     * @see MultilayerPlane#swapLayerDown
+     */
     public void swapLayerDown(int index) throws Exception {
         super.swapLayerDown(index);
         fireMapChanged();
     }
 
-	/**
-	 * @see MultilayerPlane#mergeLayerDown
-	 */
+    /**
+     * @see MultilayerPlane#mergeLayerDown
+     */
     public void mergeLayerDown(int index) throws Exception {
         super.mergeLayerDown(index);
         fireMapChanged();
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public void setFilename(String filename) {
         this.filename = filename;
     }
 
+    /**
+     * Sets a new tile width.
+     */
     public void setTileWidth(int width) {
-        defaultTileWidth = width;
+        tileWidth = width;
+        fireMapChanged();
     }
 
+    /**
+     * Sets a new tile height.
+     */
     public void setTileHeight(int height) {
-        defaultTileHeight = height;
+        tileHeight = height;
+        fireMapChanged();
     }
 
-    public void setTotalLayers(int nr) {
-        while (getTotalLayers() < nr) {
-            addLayer();
-        }
-    }
-
-	public void setVersion(String v) {
-		version = v;
-	}
-
-	/**
-	 * @see MultilayerPlane#resize
-	 */
+    /**
+     * @see MultilayerPlane#resize
+     */
     public void resize(int width, int height, int dx, int dy) {
-    	super.resize(width, height, dx, dy);
-    	fireMapChanged();
+        super.resize(width, height, dx, dy);
+        fireMapChanged();
     }
 
     public void setOrientation(int orientation) {
@@ -293,21 +283,13 @@ public class Map extends MultilayerPlane implements Cloneable
         // TODO: fire mapChangedNotification about orientation change
     }
 
-	public String getVersion() {
-		return version;
-	}
-
     public String getFilename() {
         return filename;
     }
 
-    public String getName() {
-        return name;
+    public Iterator getLayersSpecial() {
+        return specialLayers.iterator();
     }
-
-	public Iterator getLayersSpecial() {
-		return specialLayers.iterator();
-	}
 
     /**
      * Returns a vector with the currently loaded tilesets.
@@ -316,14 +298,14 @@ public class Map extends MultilayerPlane implements Cloneable
         return tilesets;
     }
 
-	/**
-	* Retrieves the designated "Blank" or "Null" tile
-	*
-	*@return returns designated Null tile, or null by default
-	*/
-	public Tile getNullTile() {
-		return null;
-	}
+    /**
+     * Retrieves the designated "Blank" or "Null" tile
+     *
+     * @return designated Null tile, or null by default
+     */
+    public Tile getNullTile() {
+        return null;
+    }
 
     /**
      * Get the tile set that matches the given global tile id, only to be used
@@ -359,14 +341,14 @@ public class Map extends MultilayerPlane implements Cloneable
      * Returns default tile width for this map.
      */
     public int getTileWidth() {
-        return defaultTileWidth;
+        return tileWidth;
     }
 
     /**
      * Returns default tile height for this map.
      */
     public int getTileHeight() {
-        return defaultTileHeight;
+        return tileHeight;
     }
 
     /**
@@ -437,17 +419,22 @@ public class Map extends MultilayerPlane implements Cloneable
         return orientation;
     }
 
+    /**
+     * Returns string describing the map. The form is <code>Map[width x height
+     * x layers][tileWidth x tileHeight]</code>, for example <code>
+     * Map[64x64x2][24x24]</code>.
+     *
+     * @return string describing map
+     */
     public String toString() {
-        String sout = new String();
-        sout += "Current data: map is version: "+version+"\n id: "+id;
-        sout += "\ntotal layers: " + getTotalLayers();
-        sout += "\nobjects in map: " + totalObjects;
-        sout += "\ntile dimensions: " + defaultTileWidth + "x" +
-            defaultTileHeight;
-        sout += "\nmap dimensions: " + widthInTiles + "x" + heightInTiles;
-        return sout;
+        return "Map[" + widthInTiles + "x" + heightInTiles + "x" +
+            getTotalLayers() + "][" + tileWidth + "x" +
+            tileHeight + "]";
     }
 
+    /**
+     * Determines wether the point (x,y) falls within the map boundaries.
+     */
     public boolean inBounds(int x, int y) {
         return (x >= 0 && y >= 0 &&
                 x < this.widthInTiles && y < this.heightInTiles);

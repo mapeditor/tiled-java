@@ -78,16 +78,16 @@ public class OrthoMapView extends MapView
                 y < endY; y++, gy += tsize.height) {
             for (int x = startX, gx = startX * tsize.width + toffset;
                     x < endX; x++, gx += tsize.width) {
-				Polygon gridPoly = createGridPolygon(gx, gy, 1);
+                Polygon gridPoly = createGridPolygon(gx, gy, 1);
                 Tile t = layer.getTileAt(x, y);
                 
                 if (t != null && t != myMap.getNullTile()) {
-					if(layer.getClass() == SelectionLayer.class) {
-						g.fillPolygon(gridPoly);
-						paintEdge(layer,gx,gy,g);
-					} else {
-						t.draw(g, gx, gy, zoom);
-					}
+                    if (SelectionLayer.class.isInstance(layer)) {
+                        g.fillPolygon(gridPoly);
+                        paintEdge(g, layer, gx, gy);
+                    } else {
+                        t.draw(g, gx, gy, zoom);
+                    }
                 }                
             }
         }

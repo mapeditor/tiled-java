@@ -19,12 +19,12 @@ import javax.swing.*;
 import tiled.core.*;
 import tiled.mapeditor.widget.*;
 
+
 public class NewMapDialog extends JDialog implements ActionListener
 {
     private Map newMap;
     private IntegerSpinner mapWidth, mapHeight;
     private IntegerSpinner tileWidth, tileHeight;
-    private JTextField mapName;
     private JComboBox mapTypeChooser;
 
     public NewMapDialog(JFrame parent) {
@@ -102,24 +102,18 @@ public class NewMapDialog extends JDialog implements ActionListener
         mapTypeChooser = new JComboBox();
         mapTypeChooser.addItem("Orthogonal");
         mapTypeChooser.addItem("Isometric");
-        // TODO: Re-enable these when their views are implemented
+        // TODO: Enable when view is implemented
         //mapTypeChooser.addItem("Oblique");
         mapTypeChooser.addItem("Hexagonal");
-
-        mapName = new JTextField("Untitled");
 
         JPanel miscPropPanel = new VerticalStaticJPanel();
         miscPropPanel.setLayout(new GridBagLayout());
         miscPropPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
         c.gridx = 0; c.gridy = 0; c.weightx = 0;
         c.fill = GridBagConstraints.NONE;
-        miscPropPanel.add(new JLabel("Map name: "), c);
-        c.gridy = 1;
         miscPropPanel.add(new JLabel("Map type: "), c);
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 1; c.gridy = 0; c.weightx = 1;
-        miscPropPanel.add(mapName, c);
-        c.gridy = 1;
         miscPropPanel.add(mapTypeChooser, c);
 
         // Putting two size panels next to eachother
@@ -168,8 +162,7 @@ public class NewMapDialog extends JDialog implements ActionListener
             }
 
             newMap = new Map(w, h);
-            newMap.setName(mapName.getText());
-            newMap.setTotalLayers(1);
+            newMap.addLayer();
             newMap.setTileWidth(twidth);
             newMap.setTileHeight(theight);
             newMap.setOrientation(orientation);

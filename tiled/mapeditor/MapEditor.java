@@ -408,12 +408,12 @@ public class MapEditor implements ActionListener,
         Icon iconEyed = loadIcon("resources/gimp-tool-color-picker-22.png");
         Icon iconMarquee = loadIcon("resources/gimp-tool-rect-select-22.png");
 
-        paintButton = createToggleButton(iconPaint, "paint");
-        eraseButton = createToggleButton(iconErase, "erase");
-        pourButton = createToggleButton(iconPour, "pour");
-        eyedButton = createToggleButton(iconEyed, "eyed");
-        marqueeButton = createToggleButton(iconMarquee, "marquee");
-        moveButton = createToggleButton(iconMove, "move");
+        paintButton = createToggleButton(iconPaint, "paint", "Paint");
+        eraseButton = createToggleButton(iconErase, "erase", "Erase");
+        pourButton = createToggleButton(iconPour, "pour", "Fill");
+        eyedButton = createToggleButton(iconEyed, "eyed", "Eye dropper");
+        marqueeButton = createToggleButton(iconMarquee, "marquee", "Select");
+        moveButton = createToggleButton(iconMove, "move", "Move layer");
 
         mapEventAdapter.addListener(moveButton);
         mapEventAdapter.addListener(paintButton);
@@ -611,8 +611,11 @@ public class MapEditor implements ActionListener,
         return menuItem;
     }
 
-    private AbstractButton createToggleButton(Icon icon, String command) {
-        return createButton(icon, command, true);
+    private AbstractButton createToggleButton(Icon icon, String command,
+            String tt) {
+        AbstractButton button = createButton(icon, command, true);
+        button.setToolTipText(tt);
+        return button;
     }
 
     private AbstractButton createButton(Icon icon, String command) {

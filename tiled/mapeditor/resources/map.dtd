@@ -3,8 +3,6 @@
 <!ELEMENT map (property+, tileset+, layer+, object+)>
 <!ATTLIST map
     id          ID     #IMPLIED
-    version     CDATA  #IMPLIED
-    name        CDATA  #IMPLIED
     orientation (orthogonal | isometric | hexagonal | oblique)  #REQUIRED
     width       CDATA  #REQUIRED
     height      CDATA  #REQUIRED
@@ -30,18 +28,18 @@
 
 <!ELEMENT layer  (data)>
 <!ATTLIST layer
-   id      ID    #REQUIRED
-   name    CDATA #IMPLIED
-   visible CDATA #IMPLIED
-   opacity CDATA #IMPLIED
+    id      ID    #REQUIRED
+    name    CDATA #IMPLIED
+    visible CDATA #IMPLIED
+    opacity CDATA #IMPLIED
 >
 
 <!ELEMENT object (property+)>
 <!ATTLIST object
-  name     CDATA #IMPLIED
-  x        CDATA #REQUIRED
-  y        CDATA #REQUIRED
-  source   CDATA #REQUIRED
+    name     CDATA #IMPLIED
+    x        CDATA #REQUIRED
+    y        CDATA #REQUIRED
+    source   CDATA #REQUIRED
 >
 
 <!ELEMENT image (data)>

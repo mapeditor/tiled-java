@@ -447,7 +447,6 @@ public class XMLMapTransformer implements MapReader
             }
 
             // Load other map attributes
-            map.setName(getAttributeValue(mapNode,"name"));
             String orientation = getAttributeValue(mapNode, "orientation");
             int tileWidth = getAttribute(mapNode, "tilewidth", 0);
             int tileHeight = getAttribute(mapNode, "tileheight", 0);

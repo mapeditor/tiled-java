@@ -34,16 +34,4 @@ public interface MapWriter  extends PluggableMapIO, FileFilter
      * @param filename the filename of the tileset file
      */
     public void writeTileset(TileSet set, String filename) throws IOException;
-    
-    /**
-     * Lists supported file types
-     * 
-     * @return a comma delimited string of supported file extensions
-     * @throws Exception
-     */
-    public String getFilter() throws Exception;
-    
-    public String getName();
-    
-    public String getDescription();
 }

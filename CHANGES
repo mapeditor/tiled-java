@@ -1,8 +1,9 @@
 0.4.1 - TBD
 
 * Added Search/Replace functionality
-* Added tiled.mapeditor.widget package for custom widgets
+* Added tooltips to tool buttons
 * Implementation of HexMapView, making Hex maps possible (Andreas Mross)
+* Removed name and version attributes from map, custom properties suffice there
 
 0.4.0 - August 4th, 2004
 
@@ -42,7 +43,7 @@
 * Zooming in
 * Support for multiple tilesets
 * Support for external tilesets
-* Support for tileset bitmaps (TODO)
+* Support for tileset bitmaps
 * A lot of stability and user interface enhancements
 * Shortcuts on menu items
 * New, XML-based, universal tiled map and tileset file formats (tmx, tsx)

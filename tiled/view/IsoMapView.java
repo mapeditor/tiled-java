@@ -61,14 +61,15 @@ public class IsoMapView extends MapView
 
         // Determine area to draw from clipping rectangle
         Rectangle clipRect = g.getClipBounds();
-        clipRect.height += myMap.getTileHeightMax()*zoom - tileSize.height;
-        int logical_row_max=(clipRect.y+clipRect.height)/(tsize_height_delta)+1;
-        int originx = (myMap.getHeight() - 1) * (tileSize.width / 2);		
-		
+        clipRect.height += myMap.getTileHeightMax() * zoom - tileSize.height;
+        int logical_row_max =
+            (clipRect.y + clipRect.height) / (tsize_height_delta) + 1;
+        int originx = (myMap.getHeight() - 1) * (tileSize.width / 2);
+
         // Draw this map layer
-        for(int logical_row = Math.max(clipRect.y/tsize_height_delta-1,0); logical_row<logical_row_max;logical_row++) {
-            int x = Math.max(logical_row-(myMap.getHeight()-1),0);
-            int y = Math.min(logical_row,myMap.getHeight()-1);
+        for (int logical_row = Math.max(clipRect.y / tsize_height_delta - 1, 0); logical_row < logical_row_max; logical_row++) {
+            int x = Math.max(logical_row - (myMap.getHeight() - 1), 0);
+            int y = Math.min(logical_row, myMap.getHeight() - 1);
             int gx = Math.abs(originx - logical_row * tsize_width_delta);
             int gy = (logical_row * tsize_height_delta) /*- clipRect.y*/;
             Polygon gridPoly = createGridPolygon(gx, gy, 1);
@@ -78,19 +79,19 @@ public class IsoMapView extends MapView
 
                 Tile t = layer.getTileAt(x, y);
                 if (t != null && t != myMap.getNullTile()) {
-					if(layer.getClass() == SelectionLayer.class) {
-						g.fillPolygon(gridPoly);
-						paintEdge(layer,gx,gy,g);
-					} else {
-						t.draw(g, gx, gy, zoom);
-					}
+                    if (SelectionLayer.class.isInstance(layer)) {
+                        g.fillPolygon(gridPoly);
+                        paintEdge(g, layer, gx, gy);
+                    } else {
+                        t.draw(g, gx, gy, zoom);
+                    }
                 }
 
                 x++;
                 y--;
                 gx += tileSize.width;
                 gridPoly.translate(tileSize.width, 0);
-			}
+            }
         }
     }	
 
@@ -118,13 +119,11 @@ public class IsoMapView extends MapView
         for (int y = startY; y <= endY; y++) {
             Point start = tileToScreenCoords(startX, y);
             Point end = tileToScreenCoords(endX, y);
-
             g.drawLine(start.x, start.y, end.x, end.y);
         }
         for (int x = startX; x <= endX; x++) {
             Point start = tileToScreenCoords(x, startY);
             Point end = tileToScreenCoords(x, endY);
-
             g.drawLine(start.x, start.y, end.x, end.y);
         }
     }

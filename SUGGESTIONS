@@ -2,20 +2,20 @@
 SUGGESTIONS - A primitive attempt to keep track of user suggestions
 ===============================================================================
 
--------------------------------------------------------------------------------
+- 01 --------------------------------------------------------------------------
 Suggestor:  Ahmed Mohombe <amohombe@yahoo.com>
 Date:       08/03/04
 Summary:    Isometric mode by shifting every other row in y direction.
 State:      To be implemented (task #78)
 Problems:   Shift even rows or odd rows? Or how to make that an option?
 
--------------------------------------------------------------------------------
+- 02 --------------------------------------------------------------------------
 Suggestor:  Ahmed Mohombe <amohombe@yahoo.com>
 Date:       08/04/04
 Summary:    Show tile coordinates on each tile (analoguous to Show Grid).
 State:      To be discussed
 
--------------------------------------------------------------------------------
+- 03 --------------------------------------------------------------------------
 Suggestor:  Ahmed Mohombe <amohombe@yahoo.com>
 Date:       08/04/04
 Summary:    Coordinate translator to use when the user view on the map is not
@@ -25,14 +25,14 @@ State:      To be discussed
 Problems:   The engine the user is using will still need to understand the
             way Tiled uses the coordinates.
 
--------------------------------------------------------------------------------
+- 04 --------------------------------------------------------------------------
 Suggestor:  Ahmed Mohombe <amohombe@yahoo.com>
 Date:       08/04/04
 Summary:    Allow tilesets with a border to be used by Tiled. Borders around
             the tileset image are used by FreeCiv for example.
 State:      To be implemented (offset attributes, task #79)
 
--------------------------------------------------------------------------------
+- 05 --------------------------------------------------------------------------
 Suggestor:  Ahmed Mohombe <amohombe@yahoo.com>
 Suggestor:  Andreas Mross <amross@stagingconnections.com>
 Date:       08/04/04 10:44
@@ -41,7 +41,7 @@ Summary:    File chooser should remember last place where it was opened, for
             for opening map files.
 State:      To be implemented (task #81)
 
--------------------------------------------------------------------------------
+- 06 --------------------------------------------------------------------------
 Suggestor:  Ahmed Mohombe <amohombe@yahoo.com>
 Date:       08/04/04
 Summary:    There are a lot of GUI libraries for Java to create certain common
@@ -49,7 +49,7 @@ Summary:    There are a lot of GUI libraries for Java to create certain common
             glazedlists, gui-commands and wizard-framework from java.dev.net.
 State:      Not needed at the moment
 
--------------------------------------------------------------------------------
+- 07 --------------------------------------------------------------------------
 Suggestor:  Nephilim <nephilim@mac.com>
 Date:       06/16/04
 Summary:    Text layers and numeric layers for adding engine-specific
@@ -58,59 +58,58 @@ Summary:    Text layers and numeric layers for adding engine-specific
 State:      Interesting, but custom tile properties and future object support
             should suffice for now.
 
--------------------------------------------------------------------------------
+- 08 --------------------------------------------------------------------------
 Suggestor:  Nephilim <nephilim@mac.com>
 Date:       06/16/04
 Summary:    Keyboard shortcuts for switching between layers, to toggle
             display of tile palette and to switch between palette sets.
 State:      Interesting, needs research.
 
--------------------------------------------------------------------------------
+- 09 --------------------------------------------------------------------------
 Suggestor:  Nephilim <nephilim@mac.com>
 Date:       06/16/04
 Summary:    A little window that shows all the layers in the currently pointed
             at cell.
 State:      Sounds a bit like GUI bloat, might be interesting as an option.
 
--------------------------------------------------------------------------------
+- 10 --------------------------------------------------------------------------
 Suggestor:  Nephilim <nephilim@mac.com>
 Date:       06/16/04
 Summary:    Ability to drag the map around by holding spacebar a la Photoshop
             and similar.
 State:      Needs research.
 
--------------------------------------------------------------------------------
+- 11 --------------------------------------------------------------------------
 Suggestor:  Andreas Mross <amross@stagingconnections.com>
 Date:       09/09/04
 Summary:    Execute pour in seperate thread, to prevent locking up rest of UI.
 State:      Needs research.
 
-
--------------------------------------------------------------------------------
+- 12 --------------------------------------------------------------------------
 Suggestor:  Andreas Mross <amross@stagingconnections.com>
 Date:       09/09/04
 Summary:    Use AffineTransform for the zooming feature.
 State:      Needs research.
 
--------------------------------------------------------------------------------
+- 13 --------------------------------------------------------------------------
 Suggestor:  Andreas Mross <amross@stagingconnections.com>
 Date:       09/08/04
 Summary:    Hexagonal map view.
 State:      Implemented himself, integration in process.
 
--------------------------------------------------------------------------------
+- 14 --------------------------------------------------------------------------
 Suggestor:  Andreas Mross <amross@stagingconnections.com>
 Date:       09/08/04
 Summary:    Input/output plugins for map loading/saving.
 State:      Implementation in progress (task #89)
 
--------------------------------------------------------------------------------
+- 15 --------------------------------------------------------------------------
 Suggestor:  Andreas Mross <amross@stagingconnections.com>
 Date:       09/08/04
 Summary:    Tooltips on the icons.
 State:      Will look into.
 
--------------------------------------------------------------------------------
+- 16 --------------------------------------------------------------------------
 Suggestor:  Andreas Mross <amross@stagingconnections.com>
 Date:       09/09/04
 Summary:    Additional documentation on the map format.
