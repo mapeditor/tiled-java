@@ -1,14 +1,11 @@
 ------------------------
- TILED MAP EDITOR 0.3.x
+ TILED MAP EDITOR 0.4.x
 ------------------------
 
-This is Tiled, a general purpose tiled map editor. A lot of polish went into
-this release in an attempt to make a good first impression.
+This is Tiled, a general purpose tiled map editor. Although this release is
+pretty capable and flexible, we don't expect it to be able to do enough for
+most people at the moment. We need your feedback!
 
-Although this first release is pretty capable and flexible, we don't expect it
-to be able to do enough for most people at the moment. This is where we need
-you. Tell us what you are missing or why you can't use this editor at the
-moment.
 
 Website:     http://tiled.rpgdx.net/
 Subversion:  svn://www.biggeruniverse.com/tiled/
