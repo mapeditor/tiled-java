@@ -97,7 +97,8 @@ public class PropertiesTableModel extends AbstractTableModel
                 break;
             }
         }
-	}
+        fireTableDataChanged();
+    }
     
     public void update(Properties props) {
         properties = props;

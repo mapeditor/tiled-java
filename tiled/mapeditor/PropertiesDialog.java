@@ -122,8 +122,7 @@ public class PropertiesDialog extends JDialog implements ActionListener,
         } else if (source == bCancel) {
             dispose();
         } else if (source == bDel) {
-    	    ((PropertiesTableModel)mapProperties.getModel()).remove(mapProperties.getSelectedRow());
-    	    repaint();
+            tableModel.remove(mapProperties.getSelectedRow());
         }
     }
 
