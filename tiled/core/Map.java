@@ -27,7 +27,7 @@ public class Map extends MultilayerPlane implements Cloneable
 
     private Vector tilesets;
     private LinkedList objects;
-    int major_rev, minor_rev, id;
+    int id;
     
     int defaultTileWidth, defaultTileHeight;
     int totalObjects = 0;
@@ -37,6 +37,7 @@ public class Map extends MultilayerPlane implements Cloneable
     Properties properties;
     String filename;
     String name;
+    String version;
 
     /**
      * @param width  The map width in tiles.
@@ -235,6 +236,10 @@ public class Map extends MultilayerPlane implements Cloneable
         }
     }
 
+	public void setVersion(String v) {
+		version = v;
+	}
+
 	/**
 	 * @see MultilayerPlane#resize
 	 */
@@ -247,6 +252,10 @@ public class Map extends MultilayerPlane implements Cloneable
         this.orientation = orientation;
         // TODO: fire mapChangedNotification about orientation change
     }
+
+	public String getVersion() {
+		return version;
+	}
 
     public String getFilename() {
         return filename;
@@ -386,7 +395,7 @@ public class Map extends MultilayerPlane implements Cloneable
 
     public String toString() {
         String sout = new String();
-        sout += "Current data: map is v"+major_rev+"."+minor_rev+"\n id: "+id;
+        sout += "Current data: map is version: "+version+"\n id: "+id;
         sout += "\ntotal layers: " + getTotalLayers();
         sout += "\nobjects in map: " + totalObjects;
         sout += "\ntile dimensions: " + defaultTileWidth + "x" +

@@ -75,6 +75,14 @@ public class Tile
 		properties = p;
 	}
 
+	public void setName(String n) {
+		name = n;
+	}
+
+	public String getName() {
+		return name;
+	}
+
 	public Enumeration getProperties() {
 		return properties.keys();
 	}

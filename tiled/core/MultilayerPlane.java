@@ -107,6 +107,13 @@ public class MultilayerPlane {
 		removeLayer(index);
 	}
 	
+	/**
+	 * Get a MapLayer by its id. 
+	 * 
+	 * @deprecated
+	 * @param i the id to search for
+	 * @return a MapLayer, or null if none were found
+	 */
 	public MapLayer getLayerById(int i) {
 		MapLayer temp = null;
 		Iterator li = layers.iterator();
@@ -144,6 +151,9 @@ public class MultilayerPlane {
 	 */
 	public void resize(int width, int height, int dx, int dy) {
 		// TODO: Implement Map#resize
+		
+		widthInTiles = width;
+		heightInTiles= height;
 	}
 	
 }

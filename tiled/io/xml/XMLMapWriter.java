@@ -296,9 +296,9 @@ public class XMLMapWriter implements MapWriter
             int tileId = tile.getId();
 
             w.writeAttribute("id", "" + tileId);
-            //if (tile.getName() != null) {
-            //    w.writeAttribute("name", "" + tile.getName());
-            //}
+            if (tile.getName() != null) {
+                w.writeAttribute("name", tile.getName());
+            }
 
             //if (groundHeight != getHeight()) {
             //    w.writeAttribute("groundheight", "" + groundHeight);

@@ -185,6 +185,11 @@ public class MapEditor implements ActionListener,
         }
     }
 
+	/**
+	 * Creates all the menus and submenus of the top menu bar. Handles
+	 * assigning listeners and tooltips as well.
+	 *
+	 */
     private void createMenuBar() {
         JMenu m, modifySub, mapSub, transformSub;
 
@@ -214,6 +219,7 @@ public class MapEditor implements ActionListener,
         // TODO: Re-add print menuitem when printing is functional
         //m.addSeparator();
         //m.add(print);
+		//mapEventAdapter.addListener(print);
         m.addSeparator();
         m.add(close);
         m.add(createMenuItem("Exit", null, "Exit the map editor", "control Q"));
@@ -340,6 +346,10 @@ public class MapEditor implements ActionListener,
         menuBar.add(m);
     }
 
+	/**
+	 * Creates the left hand main toolbox
+	 *
+	 */
     private void createToolbox() {
         ImageIcon iconPaint = null, iconErase = null, iconPour = null;
         ImageIcon iconEyed = null, iconMarquee = null, iconMove = null;
@@ -930,6 +940,7 @@ public class MapEditor implements ActionListener,
             if (currentMap != null) {
                 JFileChooser ch = new JFileChooser(currentMap.getFilename());
 
+				ch.setFileFilter(new TiledFileFilter());
                 int ret = ch.showOpenDialog(appFrame);
                 if (ret == JFileChooser.APPROVE_OPTION) {
                     String filename = ch.getSelectedFile().getAbsolutePath();
