@@ -148,26 +148,25 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
     }
 
     private void updateFromConf() {
-
         tUndoDepth.setText(TiledConfiguration.getValue(tUndoDepth.getName()));
 
-        // handle checkboxes...
-        for(int i=0;i<layerOps.getComponentCount();i++) {
-            try{
+        // Handle checkboxes
+        for (int i = 0; i < layerOps.getComponentCount(); i++) {
+            try {
                 AbstractButton b = (AbstractButton)layerOps.getComponent(i);
-                if(b.getClass().equals(JCheckBox.class)) {
-                    if(TiledConfiguration.keyHasValue(b.getActionCommand(),"1")) {
+                if (b.getClass().equals(JCheckBox.class)) {
+                    if (TiledConfiguration.keyHasValue(b.getActionCommand(), "1")) {
                         b.setSelected(true);
                     }
                 }
             } catch (ClassCastException e) {
             }
         }
-        for(int i=0;i<tilesetOps.getComponentCount();i++) {
-            try{
+        for (int i = 0; i < tilesetOps.getComponentCount(); i++) {
+            try {
                 AbstractButton b = (AbstractButton)tilesetOps.getComponent(i);
-                if(b.getClass().equals(JCheckBox.class)) {
-                    if(TiledConfiguration.keyHasValue(b.getActionCommand(),"1")) {
+                if (b.getClass().equals(JCheckBox.class)) {
+                    if (TiledConfiguration.keyHasValue(b.getActionCommand(), "1")) {
                         b.setSelected(true);
                     }
                 }
@@ -177,40 +176,41 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
     }
 
     private void processOptions() {
+        TiledConfiguration.addConfigPair(
+                tUndoDepth.getName(),tUndoDepth.getText());
 
-        TiledConfiguration.addConfigPair(tUndoDepth.getName(),tUndoDepth.getText());
-
-        //handle checkboxes
-        for(int i=0;i<layerOps.getComponentCount();i++) {
-            try{
+        // Handle checkboxes
+        for (int i = 0; i < layerOps.getComponentCount(); i++) {
+            try {
                 AbstractButton b = (AbstractButton)layerOps.getComponent(i);
-                if(b.getClass().equals(JCheckBox.class)) {
-                    TiledConfiguration.addConfigPair(b.getActionCommand(),b.isSelected()?"1":"0");
+                if (b.getClass().equals(JCheckBox.class)) {
+                    TiledConfiguration.addConfigPair(
+                            b.getActionCommand(), b.isSelected() ? "1" : "0");
                 }
             } catch (ClassCastException e) {
             }
         }
-        for(int i=0;i<tilesetOps.getComponentCount();i++) {
-            try{
+        for (int i = 0; i < tilesetOps.getComponentCount(); i++) {
+            try {
                 AbstractButton b = (AbstractButton)tilesetOps.getComponent(i);
-                if(b.getClass().equals(JCheckBox.class)) {
-                    TiledConfiguration.addConfigPair(b.getActionCommand(),b.isSelected()?"1":"0");
+                if (b.getClass().equals(JCheckBox.class)) {
+                    TiledConfiguration.addConfigPair(
+                            b.getActionCommand(),b.isSelected() ? "1" : "0");
                 }
             } catch (ClassCastException e) {
             }
         }
-
     }
 
-    public void actionPerformed(ActionEvent e) {
-        String command = e.getActionCommand();
+    public void actionPerformed(ActionEvent event) {
+        Object source = event.getSource();
 
-        if(command.equalsIgnoreCase("ok")) {
+        if (source == bOk) {
             processOptions();
             dispose();
-        } else if(command.equalsIgnoreCase("cancel")) {
+        } else if (source == bCancel) {
             dispose();
-        } else if(command.equalsIgnoreCase("apply")) {
+        } else if (source == bApply) {
             processOptions();
         }
     }

@@ -12,6 +12,7 @@
 
 package tiled.mapeditor;
 
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -24,14 +25,15 @@ import javax.swing.event.ListSelectionListener;
 import tiled.core.*;
 
 
-public class PropertiesDialog extends JDialog implements ActionListener, ListSelectionListener
+public class MapPropertiesDialog extends JDialog implements ActionListener,
+       ListSelectionListener
 {
     private Map currentMap;
     private JTable mapProperties;
 
-    public PropertiesDialog(MapEditor m) {
+    public MapPropertiesDialog(MapEditor m) {
         currentMap = m.getCurrentMap();
-        //pack();
+        pack();
         setLocationRelativeTo(getOwner());
         setTitle("Map Properties");
         setModal(true);
@@ -54,10 +56,10 @@ public class PropertiesDialog extends JDialog implements ActionListener, ListSel
         buttonPanel.add(bOk);
         buttonPanel.add(bCancel);
 
-        getContentPane().setLayout(new BoxLayout(getContentPane(),BoxLayout.Y_AXIS));
-
-        getContentPane().add(propScrollPane);
-        getContentPane().add(buttonPanel);
+        Container cp = getContentPane();
+        cp.setLayout(new BoxLayout(cp, BoxLayout.Y_AXIS));
+        cp.add(propScrollPane);
+        cp.add(buttonPanel);
 
         updateInfo();
 
