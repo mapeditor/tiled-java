@@ -1,4 +1,4 @@
-package mappy;
+package tiled.plugins.mappy;
 
 import java.io.*;
 import java.awt.Image;
@@ -18,7 +18,8 @@ public class MappyMapReader implements MapReader {
     private static final int BLKSTR_WIDTH=32;
     private int twidth, theight;
 
-    private static class BlkStr {
+    private class BlkStr {
+    
 	public long bg,fg0,fg1,fg2;
 	public long user1, user2;   //user long data
 	public int user3, user4;    //user short data

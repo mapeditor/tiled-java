@@ -89,10 +89,10 @@ public class PluginClassLoader extends URLClassLoader
                     JarEntry writer = jf.getJarEntry(
                             writerClassName.replace('.', '/') + ".class");
 
-                    if (readerClassName != null) {
+                    if (readerClassName != null && reader != null) {
                         readerClass = loadFromJar(jf, reader, readerClassName);
                     }
-                    if (writerClassName != null) {
+                    if (writerClassName != null && writer != null) {
                         writerClass = loadFromJar(jf, writer, writerClassName);
                     }
 

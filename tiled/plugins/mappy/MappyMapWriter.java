@@ -1,4 +1,4 @@
-package mappy;
+package tiled.plugins.mappy;
 
 import java.io.*;
 
