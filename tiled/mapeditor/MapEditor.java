@@ -1124,9 +1124,9 @@ public class MapEditor implements ActionListener,
         if (e.getMap() == currentMap) {
             mapScrollPane.setViewportView(mapView);
             updateLayerTable();
-	    if (tilePaletteDialog != null) {
-	    tilePaletteDialog.setMap(currentMap);
-	    }
+            if (tilePaletteDialog != null) {
+                tilePaletteDialog.setMap(currentMap);
+            }
         }
     }
 

@@ -22,8 +22,8 @@ import tiled.core.*;
 public class NewMapDialog extends JDialog implements ActionListener
 {
     private Map newMap;
-    private JSpinner mapWidth, mapHeight;
-    private JSpinner tileWidth, tileHeight;
+    private IntegerSpinner mapWidth, mapHeight;
+    private IntegerSpinner tileWidth, tileHeight;
     private JTextField mapName;
     private JComboBox mapTypeChooser;
 
@@ -38,23 +38,10 @@ public class NewMapDialog extends JDialog implements ActionListener
     private void init() {
         // Create the primitives
 
-        mapWidth = new JSpinner(
-                new SpinnerNumberModel(64, 1, Integer.MAX_VALUE, 1));
-        mapHeight = new JSpinner(
-                new SpinnerNumberModel(64, 1, Integer.MAX_VALUE, 1));
-        tileWidth = new JSpinner(
-                new SpinnerNumberModel(35, 1, Integer.MAX_VALUE, 1));
-        tileHeight = new JSpinner(
-                new SpinnerNumberModel(35, 1, Integer.MAX_VALUE, 1));
-
-        mapWidth.setPreferredSize(
-                new Dimension(60, mapWidth.getPreferredSize().height));
-        mapHeight.setPreferredSize(
-                new Dimension(60, mapHeight.getPreferredSize().height));
-        tileWidth.setPreferredSize(
-                new Dimension(60, tileWidth.getPreferredSize().height));
-        tileHeight.setPreferredSize(
-                new Dimension(60, tileHeight.getPreferredSize().height));
+        mapWidth = new IntegerSpinner(64, 1);
+        mapHeight = new IntegerSpinner(64, 1);
+        tileWidth = new IntegerSpinner(35, 1);
+        tileHeight = new IntegerSpinner(35, 1);
 
 
         // Map size fields
@@ -165,10 +152,10 @@ public class NewMapDialog extends JDialog implements ActionListener
 
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand().equals("OK")) {
-            int w = ((Number)mapWidth.getValue()).intValue();
-            int h = ((Number)mapHeight.getValue()).intValue();
-            int twidth = ((Number)tileWidth.getValue()).intValue();
-            int theight = ((Number)tileHeight.getValue()).intValue();
+            int w = mapWidth.intValue();
+            int h = mapHeight.intValue();
+            int twidth = tileWidth.intValue();
+            int theight = tileHeight.intValue();
             int orientation = Map.MDO_ORTHO;
             String mapTypeString = (String)mapTypeChooser.getSelectedItem();
 

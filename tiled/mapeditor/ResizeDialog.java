@@ -29,7 +29,7 @@ public class ResizeDialog extends JDialog implements ActionListener,
        PropertyChangeListener, ChangeListener
 {
     private Map currentMap;
-    private JSpinner width, height, offsetX, offsetY;
+    private IntegerSpinner width, height, offsetX, offsetY;
     private JButton bOk, bCancel;
     private ResizePanel orient;
 
@@ -46,22 +46,10 @@ public class ResizeDialog extends JDialog implements ActionListener,
         bOk = new JButton("OK");
         bCancel = new JButton("Cancel");
 
-        width = new JSpinner(new SpinnerNumberModel(currentMap.getWidth(),
-                    1, Integer.MAX_VALUE, 1));
-        height = new JSpinner(new SpinnerNumberModel(currentMap.getHeight(),
-                    1, Integer.MAX_VALUE, 1));
-        offsetX = new JSpinner(new SpinnerNumberModel());
-        offsetY = new JSpinner(new SpinnerNumberModel());
-
-        // Set a nicer preferred width for these spinners
-        width.setPreferredSize(
-                new Dimension(60, width.getPreferredSize().height));
-        height.setPreferredSize(
-                new Dimension(60, height.getPreferredSize().height));
-        offsetX.setPreferredSize(
-                new Dimension(60, offsetX.getPreferredSize().height));
-        offsetY.setPreferredSize(
-                new Dimension(60, offsetY.getPreferredSize().height));
+        width = new IntegerSpinner(currentMap.getWidth(), 1);
+        height = new IntegerSpinner(currentMap.getHeight(), 1);
+        offsetX = new IntegerSpinner();
+        offsetY = new IntegerSpinner();
 
 		offsetX.addChangeListener(this);
 		offsetY.addChangeListener(this);
@@ -171,11 +159,11 @@ public class ResizeDialog extends JDialog implements ActionListener,
         Object src = e.getSource();
 
         if (src == bOk) {
-            int nwidth = ((Number)width.getValue()).intValue();
-            int nheight = ((Number)height.getValue()).intValue();
+            int nwidth = width.intValue();
+            int nheight = height.intValue();
+            int dx = offsetX.intValue();
+            int dy = offsetY.intValue();
             // Math works out in MapLayer#resize
-            int dx = ((Number)offsetX.getValue()).intValue();
-            int dy = ((Number)offsetY.getValue()).intValue();
             currentMap.resize(nwidth, nheight, dx, dy);
             dispose();
         } else if (src == bCancel) {

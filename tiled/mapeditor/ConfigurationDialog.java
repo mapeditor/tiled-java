@@ -26,7 +26,7 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
 {
     private JButton bOk, bApply, bCancel;
     private JPanel layerOps, generalOps, tilesetOps;
-    private JTextField tUndoDepth;
+    private IntegerSpinner undoDepth;
     private JCheckBox cbBinaryEncode, cbCompressLayerData, cbEmbedImages;
 
     public ConfigurationDialog(JFrame parent) {
@@ -41,16 +41,16 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
         cbBinaryEncode = new JCheckBox("Use binary encoding");
         cbCompressLayerData = new JCheckBox("Compress layer data (gzip)");
         cbEmbedImages = new JCheckBox("Embed images (png)");
-        tUndoDepth = new JTextField(3);
+        undoDepth = new IntegerSpinner();
         cbBinaryEncode.addChangeListener(this);
         cbCompressLayerData.addChangeListener(this);
         cbEmbedImages.addChangeListener(this);
-		//TODO: also watch tUndoDepth for a change...
+        undoDepth.addChangeListener(this);
 
         cbBinaryEncode.setActionCommand("tmx.save.encodeLayerData");
         cbCompressLayerData.setActionCommand("tmx.save.layerCompression");
         cbEmbedImages.setActionCommand("tmx.save.embedImages");
-        tUndoDepth.setName("tmx.undo.depth");
+        undoDepth.setName("tmx.undo.depth");
 
         bOk = new JButton("OK");
         bApply = new JButton("Apply");
@@ -86,7 +86,7 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
         generalOps.add(new JLabel("Undo Depth: "), c);
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 1; c.weightx = 1;
-        generalOps.add(tUndoDepth, c);
+        generalOps.add(undoDepth, c);
 
         /* TILESET OPTIONS */
         tilesetOps = new VerticalStaticJPanel();
@@ -148,7 +148,8 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
     }
 
     private void updateFromConf() {
-        tUndoDepth.setText(TiledConfiguration.getValue(tUndoDepth.getName()));
+        undoDepth.setValue(Integer.parseInt(
+                    TiledConfiguration.getValue(undoDepth.getName())));
 
         // Handle checkboxes
         for (int i = 0; i < layerOps.getComponentCount(); i++) {
@@ -181,7 +182,7 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
 
     private void processOptions() {
         TiledConfiguration.addConfigPair(
-                tUndoDepth.getName(),tUndoDepth.getText());
+                undoDepth.getName(), "" + undoDepth.intValue());
 
         // Handle checkboxes
         for (int i = 0; i < layerOps.getComponentCount(); i++) {
@@ -204,6 +205,8 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
             } catch (ClassCastException e) {
             }
         }
+
+        bApply.setEnabled(false);
     }
 
     public void actionPerformed(ActionEvent event) {

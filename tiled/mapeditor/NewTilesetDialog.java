@@ -25,7 +25,8 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
 {
     private Map map;
     private TileSet newTileset;
-    private JTextField tileWidth, tileHeight, tileSpacing;
+    private JTextField tileWidth, tileHeight;
+    private IntegerSpinner tileSpacing;
     private JTextField tilesetName;
     private JTextField tilebmpFile;
     private JLabel nameLabel, tileWidthLabel, tileHeightLabel, spacingLabel;
@@ -56,7 +57,7 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
         tilesetName = new JTextField("Untitled");
         tileWidth = new JTextField("" + map.getTileWidth(), 3);
         tileHeight = new JTextField("" + map.getTileHeight(), 3);
-        tileSpacing = new JTextField("0", 3);
+        tileSpacing = new IntegerSpinner(0, 0);
         tilebmpFile = new JTextField(10);
         tilebmpFile.setEnabled(false);
 
@@ -178,7 +179,7 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
 
             if (tilebmpCheck.isSelected()) {
                 String file = tilebmpFile.getText();
-                int spacing = Integer.parseInt(tileSpacing.getText());
+                int spacing = tileSpacing.intValue();
                 try {
                     newTileset.importTileBitmap(file,
                             map.getTileWidth(), map.getTileHeight(), spacing);
