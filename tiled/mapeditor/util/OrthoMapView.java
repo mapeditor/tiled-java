@@ -80,11 +80,11 @@ public class OrthoMapView extends MapView
                 if (t != null && t != myMap.getNullTile()) {
                     t.draw(g, gx, gy, zoom);
                     if (toffset > 0) {
-                        if ((t.getFlags() & Tile.T_IMPASSABLE) != 0) {
+                        /*if ((t.getFlags() & Tile.T_IMPASSABLE) != 0) {
                             g.setColor(Color.red);
                             g.drawRect(gx, gy,
                                     tsize.width - 2, tsize.height - 2);
-                        }
+                        }*/
                     }
                 }                
             }

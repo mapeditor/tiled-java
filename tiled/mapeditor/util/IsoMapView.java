@@ -85,10 +85,11 @@ public class IsoMapView extends MapView
 				if (t != null && t != myMap.getNullTile()) {
 					t.draw(g, gx, gy, zoom);
 					if (showGrid) {
-						if ((t.getFlags() & Tile.T_IMPASSABLE) != 0) {
+						//TODO: create a system that the user can use to highlight tiles with certain properties (search)
+						/*if ((t.getFlags() & Tile.T_IMPASSABLE) != 0) {
 							g.setColor(Color.red);
 							g.drawPolygon(gridPoly);
-						}
+						}*/
 					}
 				}
 

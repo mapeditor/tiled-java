@@ -17,36 +17,27 @@ import java.awt.MediaTracker;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.util.Enumeration;
+import java.util.Properties;
 
 
 public class Tile
 {
-    public static final int T_MOVABLE    = 0x0001;
-    public static final int T_PAINFUL    = 0x0002;
-    public static final int T_IMPASSABLE = 0x0004;
-    public static final int T_ANIMATED   = 0x0008;
-    public static final int T_BOTTOM     = 0x0010;
-    public static final int T_LINK       = 0x0020;
-    public static final int T_NOMCROSS   = 0x0040;
-    public static final int T_LANDING    = 0x0080;
-
-    public static final int T_COST       = 0x0100;
 
     private Image tileImage, scaledImage = null;
     private int id = -1;
     private int stdHeight;
     private int groundHeight;          // Height above ground
-    private String name, link;
-    private float cost = 0.0f;
-    private short flags = T_COST;
+    private String name, link;    
+    private Properties properties;
     private TileSet tileset;
 
     public Tile() {
+    	properties = new Properties();
     }
 
-    public Tile(Tile t) {
-        cost = t.cost;
-        flags = t.flags;
+    public Tile(Tile t) {		
+		properties = (Properties) t.properties.clone();        
         tileImage = t.tileImage.getScaledInstance(-1, -1, Image.SCALE_DEFAULT);
         groundHeight = getHeight();
     }
@@ -55,22 +46,6 @@ public class Tile
         if (i >= 0) {
             id = i;
         }
-    }
-
-    public void appendFlag(short f) {
-        flags = (short)(flags | f);
-    }
-
-    public void unsetFlag(short f) {
-        flags = (short)((0xFFFF ^ f) & flags);
-    }
-
-    public void setFlags(short f) {
-        flags = f;
-    }
-
-    public void setCost(float c) {
-        cost = c;
     }
 
     public void setLink(String l) {
@@ -98,6 +73,22 @@ public class Tile
         tileset = set;
     }
 
+	public void setProperty(String key, String value) {
+		properties.setProperty(key,value);
+	}
+
+	public void setProperties(Properties p) {
+		properties = p;
+	}
+
+	public Enumeration getProperties() {
+		return properties.keys();
+	}
+
+	public String getPropertyValue(String key) {
+		return properties.getProperty(key);
+	}
+
     public int getId() {
         return id;
     }
@@ -107,14 +98,6 @@ public class Tile
             return id + tileset.getFirstGid();
         }
         return id;
-    }
-
-    public short getFlags() {
-        return flags;
-    }
-
-    public float getCost() {
-        return cost;
     }
 
     public TileSet getTileSet() {

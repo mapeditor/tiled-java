@@ -15,6 +15,7 @@ package tiled.io.xml;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.io.*;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
 import java.util.zip.GZIPOutputStream;
@@ -303,15 +304,20 @@ public class XMLMapWriter implements MapWriter
             //if (tile.getName() != null) {
             //    w.writeAttribute("name", "" + tile.getName());
             //}
-            if (tile.getCost() != 0.0f) {
-                w.writeAttribute("cost", "" + tile.getCost());
-            }
+
             //if (groundHeight != getHeight()) {
             //    w.writeAttribute("groundheight", "" + groundHeight);
             //}
 
-            // TODO: Add property tags for things like impassable, etc.
-
+            Enumeration keys = tile.getProperties();
+			while(keys.hasMoreElements()) {
+				String key = (String) keys.nextElement();
+				w.startElement("property");
+				w.writeAttribute("name", key);
+				w.writeAttribute("value", tile.getPropertyValue(key));
+				w.endElement();
+			}
+			
             if (tile.getLink() != null) {
                 w.startElement("link");
                 w.writeAttribute("target", tile.getLink());

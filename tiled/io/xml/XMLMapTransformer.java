@@ -290,14 +290,19 @@ public class XMLMapTransformer implements MapReader
         } catch (Exception e) {
             e.printStackTrace();
         }
+        
+		NodeList children = t.getChildNodes();
 
-        Node image = getChildNode(t,"image");
-
-        if (image == null) {
-            throw new Exception("Tile tag does not contain an image tag!");
-        }
-
-        tile.setImage(unmarshalImage(image));
+		for (int i = 0; i < children.getLength(); i++) {
+			Node child = children.item(i);
+			if(child.getNodeName().equalsIgnoreCase("image")) {
+				tile.setImage(unmarshalImage(child));
+			} else if(child.getNodeName().equalsIgnoreCase("property")) {
+				tile.setProperty(getAttributeValue(child,"name"),getAttributeValue(child,"value"));
+			} else if(child.getNodeName().equalsIgnoreCase("link")) {
+				//TODO: support links
+			}
+		}
 
         return tile;
     }
