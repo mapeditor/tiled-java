@@ -15,7 +15,6 @@ package tiled.mapeditor.undo;
 import java.util.Iterator;
 import javax.swing.undo.*;
 
-import tiled.mapeditor.*;
 import tiled.util.TiledConfiguration;
 
 

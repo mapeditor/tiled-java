@@ -12,10 +12,8 @@
 
 package tiled.mapeditor;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.*;
+import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
 
@@ -29,6 +27,7 @@ public class SearchDialog extends JDialog implements ActionListener {
 	private Map myMap;
 	private JComboBox searchCBox, replaceCBox;
 	private JButton bReplace, bReplaceAll;
+	private Point currentMatch = null;
 	
 	public SearchDialog(JFrame parent) {
 			this(parent, null);
@@ -45,9 +44,12 @@ public class SearchDialog extends JDialog implements ActionListener {
 	private void init() {
 		
 		JPanel buttonPanel = new JPanel();
+		JPanel closePanel = new JPanel();
+		closePanel.setLayout(new BorderLayout());
+		JPanel scopePanel = new JPanel();
 		JPanel searchPanel = new JPanel();
 		VerticalStaticJPanel mainPanel = new VerticalStaticJPanel();
-		mainPanel.setLayout(new BorderLayout());
+		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 		
 		JButton bFind = new JButton("Find");
 		bFind.addActionListener(this);
@@ -55,47 +57,55 @@ public class SearchDialog extends JDialog implements ActionListener {
 		bFindNext.addActionListener(this);
 		bReplace = new JButton("Replace");
 		bReplace.addActionListener(this);
-		bReplace.setEnabled(false);
 		bReplaceAll = new JButton("Replace All");
 		bReplaceAll.addActionListener(this);
-		bReplaceAll.setEnabled(false);
 		JButton bCancel = new JButton("Cancel");
 		bCancel.addActionListener(this);
 		
 		/* SEARCH PANEL */
-		searchPanel.setLayout(new BorderLayout());
+		searchPanel.setBorder(BorderFactory.createEtchedBorder());
+		searchPanel.setLayout(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = 2; c.weighty = 1;
+		searchPanel.add(new JLabel("Find:"),c);
+		c.gridx=1;
 		searchCBox = new JComboBox();
 		searchCBox.setRenderer(new MultisetListRenderer(myMap, .5));
 		//searchCBox.setSelectedIndex(1);
 		searchCBox.setEditable(false);
-		searchPanel.add(searchCBox,BorderLayout.WEST);
-		JCheckBox cbReplace = new JCheckBox("Replace With");
-		cbReplace.addActionListener(this);
+		searchPanel.add(searchCBox,c);
+		c.gridy=1;
+		c.gridx=0;
+		searchPanel.add(new JLabel("Replace:"),c);
+		c.gridx=1;
 		replaceCBox = new JComboBox();
 		replaceCBox.setRenderer(new MultisetListRenderer(myMap, .5));
 		//searchCBox.setSelectedIndex(1);
 		replaceCBox.setEditable(false);
-		replaceCBox.setEnabled(false);
-		searchPanel.add(replaceCBox,BorderLayout.EAST);
+		searchPanel.add(replaceCBox,c);
 		queryTiles(searchCBox);
 		queryTiles(replaceCBox);
-		searchPanel.add(cbReplace,BorderLayout.CENTER);
 		mainPanel.add(searchPanel, BorderLayout.NORTH);
+		
+		/* SCOPE PANEL */
+		scopePanel.setBorder(BorderFactory.createCompoundBorder(
+							BorderFactory.createTitledBorder("Scope"),
+							BorderFactory.createEmptyBorder(0, 5, 5, 5)));
+		
+		mainPanel.add(scopePanel);
+		mainPanel.add(Box.createRigidArea(new Dimension(0, 5)));
 		
 		/* BUTTONS PANEL */
 		buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
-		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-		buttonPanel.add(Box.createGlue());
+		buttonPanel.setLayout(new GridLayout(2,2,0,0));
 		buttonPanel.add(bFind);
-		buttonPanel.add(Box.createRigidArea(new Dimension(5, 0)));
 		buttonPanel.add(bFindNext);
-		buttonPanel.add(Box.createRigidArea(new Dimension(5, 0)));
 		buttonPanel.add(bReplace);
-		buttonPanel.add(Box.createRigidArea(new Dimension(5, 0)));
 		buttonPanel.add(bReplaceAll);
-		buttonPanel.add(Box.createRigidArea(new Dimension(5, 0)));
-		buttonPanel.add(bCancel);
-		mainPanel.add(buttonPanel,BorderLayout.SOUTH);
+		closePanel.add(bCancel, BorderLayout.EAST);
+		mainPanel.add(buttonPanel);
+		mainPanel.add(closePanel);
 		
 		getContentPane().add(mainPanel);
 		getRootPane().setDefaultButton(bFind);
@@ -131,18 +141,11 @@ public class SearchDialog extends JDialog implements ActionListener {
 		} else if(command.equalsIgnoreCase("find")) {
 			//TODO: find must trigger a drawing condition to highlight instances of the found tile on the map
 			
+		} else if(command.equalsIgnoreCase("find all")) {
+			
+			
 		} else if(command.equalsIgnoreCase("replace all")) {
 			replaceAll((Tile) searchCBox.getSelectedItem(),(Tile) replaceCBox.getSelectedItem());
-		} else if(command.equalsIgnoreCase("replace with")) {
-			if(((JCheckBox)e.getSource()).isSelected()) {
-				bReplace.setEnabled(true);
-				bReplaceAll.setEnabled(true);
-				replaceCBox.setEnabled(true);
-			} else {
-				bReplace.setEnabled(false);
-				bReplaceAll.setEnabled(false);
-				replaceCBox.setEnabled(false);
-			}
 		}
 		
 	}
@@ -151,6 +154,7 @@ public class SearchDialog extends JDialog implements ActionListener {
 		
 		//TODO: allow for "scopes" of one or more layers, rather than all layers
 		ListIterator itr = myMap.getLayers();
+		myMap.touch();
 		while(itr.hasNext()) {
 			MapLayer layer = (MapLayer) itr.next();
 			layer.replaceTile(f,r);

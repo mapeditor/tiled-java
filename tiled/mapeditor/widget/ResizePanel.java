@@ -73,6 +73,10 @@ public class ResizePanel extends JPanel implements MouseListener,
 		return oldDim;
 	}
 
+	public double getZoom() {
+		return zoom;
+	}
+
 	public void mouseClicked(MouseEvent e) {
 	}
 

@@ -75,9 +75,8 @@ public class ResizeDialog extends JDialog implements ActionListener,
         offsetPanel.add(offsetY, c);
         c.gridx = 2; c.gridy = 0; c.gridheight = 2; c.weightx = 1;
         offsetPanel.add(new JPanel(), c);
-        // TODO: Enable when ResizePanel is working
-        //c.gridx = 0; c.gridy = 2; c.gridwidth = 3; c.gridheight = 1;
-        //offsetPanel.add(orient, c);
+        c.gridx = 0; c.gridy = 2; c.gridwidth = 3; c.gridheight = 1;
+        offsetPanel.add(orient, c);
 
         // New size panel
         JPanel newSizePanel = new VerticalStaticJPanel(new GridBagLayout());
@@ -174,16 +173,19 @@ public class ResizeDialog extends JDialog implements ActionListener,
     }
 
     public void propertyChange(PropertyChangeEvent evt) {
+    	
         if(evt.getPropertyName().equalsIgnoreCase("offsetX")) {
-        	offsetX.setValue((Integer)evt.getNewValue());
+			int val = ((Integer)evt.getNewValue()).intValue();
+        	offsetX.setValue(new Integer((int)(val/(currentMap.getTileWidth()*orient.getZoom()))));
         } else if(evt.getPropertyName().equalsIgnoreCase("offsetY")) {
-			offsetY.setValue((Integer)evt.getNewValue());
+        	int val = ((Integer)evt.getNewValue()).intValue();
+			offsetY.setValue(new Integer((int)(val/(currentMap.getTileHeight()*orient.getZoom()))));
         }
     }
     
     public void stateChanged(ChangeEvent e) {
         if(e.getSource() == offsetX || e.getSource() == offsetY) {
-        	orient.moveMap(((Integer)(offsetX.getValue())).intValue(),((Integer)(offsetY.getValue())).intValue());
+        	orient.moveMap((int)(((Integer)(offsetX.getValue())).intValue()*(currentMap.getTileWidth()*orient.getZoom())),(int)(((Integer)(offsetY.getValue())).intValue()*(currentMap.getTileHeight()*orient.getZoom())));
         }
     }
 }

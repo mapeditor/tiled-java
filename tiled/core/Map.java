@@ -93,6 +93,10 @@ public class Map extends MultilayerPlane implements Cloneable
         }
     }
 
+	public void touch() {
+		fireMapChanged();
+	}
+
 	public MapLayer addLayer(MapLayer l) {		
 		l.setMap(this);
 		super.addLayer(l);

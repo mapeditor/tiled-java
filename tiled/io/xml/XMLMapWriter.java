@@ -215,7 +215,7 @@ public class XMLMapWriter implements MapWriter
             Rectangle bounds = l.getBounds();
 
             w.startElement("layer");
-            w.writeAttribute("id", "" + l.getId());
+            //w.writeAttribute("id", "" + l.getId());
             w.writeAttribute("name", l.getName());
             if (bounds.x != 0) {
                 w.writeAttribute("xoffset", "" + bounds.x);
