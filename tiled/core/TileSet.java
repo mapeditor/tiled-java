@@ -18,7 +18,6 @@ import java.awt.image.PixelGrabber;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.*;
 import java.util.zip.CRC32;
 import java.util.zip.Checksum;
@@ -93,7 +92,7 @@ public class TileSet
 
         System.out.println("Importing " + imgFilename + "...");
 
-        importTileBitmap(ImageIO.read(new URL(imgFilename)), tileWidth,
+        importTileBitmap(ImageIO.read(imgFile.toURL()), tileWidth,
                 tileHeight, spacing, createTiles);
     }
 

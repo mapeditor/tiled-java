@@ -335,18 +335,17 @@ public class XMLMapTransformer implements MapReader
                     String source = getAttributeValue(child, "source");
 
                     if (source != null && getAttributeValue(child, "id") == null) {
-                        // Not a shared image, but a entire set in one image
+                        // Not a shared image, but an entire set in one image
                         // file
                         
-                        String sourcePath = tilesetBaseDir + source;
-                        if (Util.checkRoot(source)) {
-                            sourcePath = makeUrl(source);
+                        //FIXME: importTileBitmap does not fully support URLs
+                        String sourcePath = source;
+                        if (!Util.checkRoot(source)) {
+                            sourcePath = tilesetBaseDir.substring(tilesetBaseDir.indexOf(':')+1) + source;
                         }
-
+                        
                         set.importTileBitmap(sourcePath, tileWidth, tileHeight,
                                 tileSpacing, !hasTileTags);
-
-                        set.setTilesetImageFilename(source);
 
                     } else {
                         set.addImage(unmarshalImage(child, tilesetBaseDir),
