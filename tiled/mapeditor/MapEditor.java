@@ -34,6 +34,7 @@ import tiled.mapeditor.util.*;
 import tiled.mapeditor.widget.*;
 import tiled.mapeditor.undo.*;
 import tiled.util.TiledConfiguration;
+import tiled.util.Util;
 import tiled.io.MapReader;
 import tiled.io.MapWriter;
 import tiled.io.xml.XMLMapTransformer;
@@ -93,7 +94,7 @@ public class MapEditor implements ActionListener,
     JPanel      statusBar;
     JMenuBar    menuBar;
     JMenuItem   undoMenuItem, redoMenuItem;
-    JCheckBoxMenuItem gridMenuItem, boundaryMenuItem;
+    JCheckBoxMenuItem gridMenuItem, boundaryMenuItem, cursorMenuItem;
     JMenuItem   layerAdd, layerClone, layerDel;
     JMenuItem   layerUp, layerDown;
     JMenuItem   layerMerge, layerMergeAll;
@@ -275,14 +276,14 @@ public class MapEditor implements ActionListener,
                     e.getMessage() + (e.getCause() != null ? "\nCause: "+e.getCause().getMessage() : ""),
 					"Error while loading map",
                     JOptionPane.ERROR_MESSAGE);
-            //e.printStackTrace();
+            e.printStackTrace();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(appFrame,
                     "Error while loading " + file + ": " +
                     e.getMessage() + (e.getCause() != null ? "\nCause: "+e.getCause().getMessage() : ""),
 					"Error while loading map",
                     JOptionPane.ERROR_MESSAGE);
-            //e.printStackTrace();
+            e.printStackTrace();
         }
 
         return false;
@@ -434,6 +435,11 @@ public class MapEditor implements ActionListener,
         gridMenuItem.addActionListener(this);
         gridMenuItem.setToolTipText("Toggle grid");
         gridMenuItem.setAccelerator(KeyStroke.getKeyStroke("control G"));
+		cursorMenuItem = new JCheckBoxMenuItem("Highlight Cursor");
+		cursorMenuItem.setSelected(TiledConfiguration.getInstance().keyHasValue("tiled.cursorhighlight",1));
+		cursorMenuItem.addActionListener(this);
+		cursorMenuItem.setToolTipText("Toggle highlighting on-map cursor position");
+		//cursorMenuItem.setAccelerator(KeyStroke.getKeyStroke("control G"));
         boundaryMenuItem = new JCheckBoxMenuItem("Show Boundaries");
         boundaryMenuItem.addActionListener(this);
         boundaryMenuItem.setToolTipText("Toggle layer boundaries");
@@ -444,6 +450,7 @@ public class MapEditor implements ActionListener,
         m.add(new TMenuItem(zoomNormalAction));
         m.addSeparator();
         m.add(gridMenuItem);
+        m.add(cursorMenuItem);
         // TODO: Enable when boudary drawing code finished.
         //m.add(boundaryMenuItem);
         // TODO: Hook this up to coordinates drawing on tiles.
@@ -1001,6 +1008,16 @@ public class MapEditor implements ActionListener,
         } else {
             tileCoordsLabel.setText(" ");
         }
+        
+        
+		if(TiledConfiguration.getInstance().keyHasValue("tiled.cursorhighlight", 1)) {
+			Rectangle redraw = cursorHighlight.getBounds();
+			cursorHighlight.setOffset(tile.x, tile.y);
+			mapView.repaintRegion(new Rectangle(Math.min(tile.x, redraw.x)-1,
+											Math.min(tile.y, redraw.y)-1,
+											Math.max(tile.x, redraw.x)+1,
+											Math.max(tile.y, redraw.y)+1));
+		}
     }
 
     public void actionPerformed(ActionEvent event) {
@@ -1122,7 +1139,9 @@ public class MapEditor implements ActionListener,
                 command.equals("Hide Grid")) {
             // Toggle grid
             mapView.toggleMode(MapView.PF_GRIDMODE);
-        } else if (command.equals("Resize")) {
+        } else if (command.equals("Highlight Cursor")) {        	
+        	TiledConfiguration.getInstance().addConfigPair("tiled.cursorhighlight", Integer.toString(cursorMenuItem.isSelected() ? 1 : 0));
+		} else if (command.equals("Resize")) {
             ResizeDialog rd = new ResizeDialog(appFrame, this);
             rd.showDialog();
         }  else if (command.equals("Search")) {
@@ -1913,15 +1932,18 @@ public class MapEditor implements ActionListener,
     /**
      * Starts Tiled.
      *
-     * @param args the first argument may be map file
+     * @param args the first argument may be a map file
      */
     public static void main(String[] args) {
         MapEditor editor = new MapEditor();
 
         if (args.length > 0) {
         	String toLoad = args[0];
-        	if(!toLoad.startsWith("/") && !toLoad.startsWith("./")) {
-        		toLoad="./"+toLoad;
+        	if(!Util.checkRoot(toLoad) || toLoad.startsWith(".")) {
+        		if(toLoad.startsWith(".")) {
+        			toLoad=toLoad.substring(1);
+        		}
+        		toLoad=System.getProperty("user.dir")+File.separatorChar+toLoad;
         	}
             editor.loadMap(toLoad);
         }

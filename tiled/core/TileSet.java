@@ -380,7 +380,6 @@ public class TileSet
                     sum.update(bytes, 0, len);
                 }
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         } catch (InterruptedException e) {

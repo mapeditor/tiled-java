@@ -174,7 +174,7 @@ public class OrthoMapView extends MapView
         int endY = (region.y + region.height) * tsize.height;
 
         Rectangle dirty =
-            new Rectangle(startX, startY, endX - startX, endY - startY);
+            new Rectangle(startX-1, startY-1, (endX - startX)+1, (endY - startY+1));
 
         repaint(dirty);
     }

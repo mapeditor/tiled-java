@@ -60,7 +60,7 @@ public class SearchDialog extends JDialog implements ActionListener
 		bReplace.addActionListener(this);
 		bReplaceAll = new JButton("Replace All");
 		bReplaceAll.addActionListener(this);
-		JButton bCancel = new JButton("Cancel");
+		JButton bCancel = new JButton("Close");
 		bCancel.addActionListener(this);
 		
 		/* SEARCH PANEL */
@@ -136,42 +136,13 @@ public class SearchDialog extends JDialog implements ActionListener
 	public void actionPerformed(ActionEvent e) {
 		String command = e.getActionCommand();
 		
-		if(command.equalsIgnoreCase("cancel")) {
+		if(command.equalsIgnoreCase("close")) {
 			myMap.removeLayerSpecial(sl);
 			this.dispose();
 		} else if(command.equalsIgnoreCase("find")) {
-			boolean bFound = false;
-			
-			if(sl != null) {
-				myMap.removeLayerSpecial(sl);
-			} else {
-				sl = new SelectionLayer(myMap.getWidth(), myMap.getHeight());
+			if(searchCBox.getSelectedItem() instanceof Tile) {
+				find((Tile)searchCBox.getSelectedItem());
 			}
-			
-			for (int y = 0; y < myMap.getHeight() && !bFound; y++) {
-				for (int x = 0; x < myMap.getWidth() && !bFound; x++) {
-					ListIterator itr = myMap.getLayers();		
-					while(itr.hasNext()) {
-						MapLayer layer = (MapLayer) itr.next();
-						Rectangle bounds = layer.getBounds();
-				
-						if(layer.getTileAt(x,y) == (Tile) searchCBox.getSelectedItem()) {
-							if(currentMatch != null) {
-								if(currentMatch.equals(new Point(x,y))) {
-									continue;
-								}
-							}
-							sl.select(x,y);
-							bFound = true;
-							break;
-						}
-					}
-				}
-			}
-			
-			if(bFound)
-				myMap.addLayerSpecial(sl);
-			
 		} else if(command.equalsIgnoreCase("find all")) {
 			if(sl != null) {
 				myMap.removeLayerSpecial(sl);
@@ -191,9 +162,19 @@ public class SearchDialog extends JDialog implements ActionListener
 				}
 			}
 			myMap.addLayerSpecial(sl);
+			myMap.touch();
 			
 		} else if(command.equalsIgnoreCase("replace all")) {
-			replaceAll((Tile) searchCBox.getSelectedItem(),(Tile) replaceCBox.getSelectedItem());
+			if(!(searchCBox.getSelectedItem() instanceof TileSet) && !(replaceCBox.getSelectedItem() instanceof TileSet))
+				replaceAll((Tile) searchCBox.getSelectedItem(),(Tile) replaceCBox.getSelectedItem());
+		} else if(command.equalsIgnoreCase("replace")) {
+			if(!(searchCBox.getSelectedItem() instanceof TileSet) && !(replaceCBox.getSelectedItem() instanceof TileSet)) {
+				if(currentMatch == null) {
+					find((Tile)searchCBox.getSelectedItem());
+				}
+				
+				//TODO: replace tile on correct layer
+			}
 		}
 		
 	}
@@ -206,5 +187,42 @@ public class SearchDialog extends JDialog implements ActionListener
 			layer.replaceTile(f,r);
 		}
 		myMap.touch();
+	}
+	
+	private void find(Tile f) {
+		boolean bFound = false;
+				
+		if(sl != null) {
+			myMap.removeLayerSpecial(sl);
+		} else {
+			sl = new SelectionLayer(myMap.getWidth(), myMap.getHeight());
+		}
+
+		for (int y = 0; y < myMap.getHeight() && !bFound; y++) {
+			for (int x = 0; x < myMap.getWidth() && !bFound; x++) {
+				ListIterator itr = myMap.getLayers();		
+				while(itr.hasNext()) {
+					MapLayer layer = (MapLayer) itr.next();
+					Rectangle bounds = layer.getBounds();
+	
+					if(layer.getTileAt(x,y) == (Tile) searchCBox.getSelectedItem()) {
+						if(currentMatch != null) {
+							if(currentMatch.equals(new Point(x,y))) {
+								continue;
+							}
+						}
+						sl.select(x,y);
+						bFound = true;
+						currentMatch = new Point(x,y);
+						break;
+					}
+				}
+			}
+		}
+
+		if(bFound) {
+			myMap.addLayerSpecial(sl);
+			myMap.touch();
+		}
 	}
 }

@@ -12,6 +12,9 @@
 
 package tiled.util;
 
+import java.io.File;
+import java.io.IOException;
+
 
 public class Util {
 	 public static byte [] convertIntegersToBytes (int [] integers) {
@@ -33,5 +36,21 @@ public class Util {
 	 		return null;
 	 	}
 
+	 }
+	 
+	 public static boolean checkRoot(String filename) {
+	 	File [] roots = File.listRoots();
+	 	
+	 	for(int i=0;i<roots.length;i++) {
+	 		try {
+                if(filename.startsWith(roots[i].getCanonicalPath())) {
+                	return true;
+                }
+            } catch (IOException e) {
+            	//Do we care?
+            }
+	 	}
+	 	
+	 	return false;
 	 }
 }

@@ -69,7 +69,7 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
         tilebmpCheck = new JCheckBox("Reference tileset image", false);
         tilebmpCheck.addChangeListener(this);
 
-        tileAutoCheck = new JCheckBox("Auto-create tiles for tile images",
+        tileAutoCheck = new JCheckBox("Automatically create tiles from images",
                 false);
         tileAutoCheck.setEnabled(false);
 
@@ -187,7 +187,7 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
                 String file = tilebmpFile.getText();
                 int spacing = tileSpacing.intValue();
                 try {
-                    newTileset.importTileBitmap(file,
+                    newTileset.importTileBitmap("file://"+file,
                             map.getTileWidth(), map.getTileHeight(), spacing,
                             tileAutoCheck.isSelected());
                 } catch (Exception e) {

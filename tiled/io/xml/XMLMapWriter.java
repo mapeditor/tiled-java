@@ -91,7 +91,7 @@ public class XMLMapWriter implements MapWriter
 
             //w.writeAttribute("id", "" + mapId);
 
-			w.writeAttribute("version", map.getVersion());
+			w.writeAttribute("version", "0.99a");
 
             switch (map.getOrientation()) {
                 case Map.MDO_ORTHO:
