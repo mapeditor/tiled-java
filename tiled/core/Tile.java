@@ -30,6 +30,11 @@ public class Tile
         properties = new Properties();
     }
 
+	public Tile(TileSet set) {
+		this();
+		setTileSet(set);
+	}
+
     public Tile(Tile t) {
         properties = (Properties)t.properties.clone();
         tileImageId = t.tileImageId;
@@ -78,13 +83,10 @@ public class Tile
 
     public void setTileSet(TileSet set) {
         tileset = set;
-        //if (internalImage != null) {
-        //    tileImageId = tileset.getIdByImage(set.queryImage(internalImage));
-        //    if (tileImageId == -1) {
-        //        tileImageId = set.addImage(internalImage);
-        //        internalImage = null;
-        //    }
-        //}
+        if (internalImage != null) {
+            tileImageId = set.addImage(internalImage);
+			internalImage = null;
+        }
     }
 
     public void setProperty(String key, String value) {
@@ -123,17 +125,21 @@ public class Tile
             int h = (int)(getHeight() * zoom);
             if (scaledImage == null || scaledImage.getHeight(null) != h) {
                 scaledImage = getScaledImage(zoom);
-                MediaTracker mediaTracker = new MediaTracker(new Canvas());
-                mediaTracker.addImage(scaledImage, 0);
-                try {
-                    mediaTracker.waitForID(0);
-                }
-                catch (InterruptedException ie) {
-                    System.err.println(ie);
-                    return;
-                }
-                mediaTracker.removeImage(scaledImage);
-                g.drawImage(scaledImage, x, y, null);
+                if(scaledImage != null) {
+	                MediaTracker mediaTracker = new MediaTracker(new Canvas());
+	                mediaTracker.addImage(scaledImage, 0);
+	                try {
+	                    mediaTracker.waitForID(0);
+	                }
+	                catch (InterruptedException ie) {
+	                    System.err.println(ie);
+	                    return;
+	                }
+	                mediaTracker.removeImage(scaledImage);
+	                g.drawImage(scaledImage, x, y, null);
+				} else {
+					//TODO: allow drawing IDs when no image data exists as a config option
+				}
             } else {
                 g.drawImage(scaledImage, x, y, null);
             }

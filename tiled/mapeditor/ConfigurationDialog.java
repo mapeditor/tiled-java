@@ -201,6 +201,11 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
         gridOpacity.setValue(
                 configuration.getIntValue(gridOpacity.getName(), 255));
 
+		if(configuration.keyHasValue("tmx.save.embedImages", "1")) {
+			cbEmbedImages.setSelected(true);
+			rbEmbedInTiles.setSelected(true);
+		}
+
         // Handle checkboxes
         updateFromConf(layerOps);
         updateFromConf(tilesetOps);

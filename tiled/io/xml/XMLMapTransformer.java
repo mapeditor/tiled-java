@@ -170,6 +170,7 @@ public class XMLMapTransformer implements MapReader
         Image img = null;
 
         String source = getAttributeValue(t, "source");
+        
         if (source != null) {
             img = Toolkit.getDefaultToolkit().createImage(xmlPath + source);
         } else {
@@ -270,20 +271,23 @@ public class XMLMapTransformer implements MapReader
                 } else if (child.getNodeName().equalsIgnoreCase("image")) {
                     String source = getAttributeValue(child, "source");
 
-                    File sourceFile = new File(source);
-                    String sourcePath;
-                    if (sourceFile.getAbsolutePath().equals(source)) {
-                        sourcePath = sourceFile.getCanonicalPath();
-                    } else {
-                        sourcePath =
-                            new File(xmlPath + source).getCanonicalPath();
-                    }
-
-                    set.importTileBitmap(sourcePath,
-                            tileWidth, tileHeight, tileSpacing);
-
-                    // There can be only one image element
-                    break;
+					if(source != null) {
+	                    File sourceFile = new File(source);
+	                    String sourcePath;
+	                    if (sourceFile.getAbsolutePath().equals(source)) {
+	                        sourcePath = sourceFile.getCanonicalPath();
+	                    } else {
+	                    	set.addImage(unmarshalImage(child));
+	                        sourcePath =
+	                            new File(xmlPath + source).getCanonicalPath();
+	                    }
+	
+	                    set.importTileBitmap(sourcePath,
+	                            tileWidth, tileHeight, tileSpacing);
+	
+	                    // There can be only one image element
+	                    break;
+					}
                 }
             }
         }
@@ -327,7 +331,27 @@ public class XMLMapTransformer implements MapReader
         for (int i = 0; i < children.getLength(); i++) {
             Node child = children.item(i);
             if (child.getNodeName().equalsIgnoreCase("image")) {
-                tile.setImage(unmarshalImage(child));
+            	int id = getAttribute(child, "id", -1);
+            	if(id < 0) {
+                	tile.setImage(unmarshalImage(child));
+            	} else {
+            		tile.setImage(id);
+            		int rotation = getAttribute(child, "rotation", 0);
+					String flipped_s = getAttributeValue(child, "flipped");
+                    boolean flipped = (flipped_s != null
+                        && flipped_s.equalsIgnoreCase("true"));
+                    int orientation;
+                    if (rotation == 90) {
+                        orientation = (flipped ? 6 : 4);
+                    } else if (rotation == 180) {
+                        orientation = (flipped ? 2 : 3);
+                    } else if (rotation == 270) {
+                        orientation = (flipped ? 5 : 7);
+                    } else {
+                        orientation = (flipped ? 1 : 0);
+                    }
+                    tile.setImageOrientation(orientation);
+            	}
             } else if (child.getNodeName().equalsIgnoreCase("property")) {
                 tile.setProperty(getAttributeValue(child,"name"),
                         getAttributeValue(child, "value"));

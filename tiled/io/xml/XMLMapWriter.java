@@ -175,47 +175,48 @@ public class XMLMapWriter implements MapWriter
                 w.endElement();
             } else {
                 // Embedded tileset
-                /*
-                if (setImage != null) {
-                    TiledConfiguration conf = TiledConfiguration.getInstance();
-                    w.startElement("image");
-                    if (conf.keyHasValue(
-                                "tmx.save.tileSetImages", "1") &&
-                            conf.keyHasValue(
-                                "tmx.save.embedtileSetImages", "1")) {
-                        w.writeAttribute("format", "png");
-                        w.startElement("data");
-                        w.writeAttribute("encoding", "base64");
-                        w.writeCDATA(new String(Base64.encode(
-                                        ImageHelper.imageToPNG(setImage))));
-                        w.endElement();
-                    } else {
-                        if (externalImageSource == null ) {
-                            String source =	conf.getValue(
-                                    "tmx.save.tileImagePrefix") + "set.png";
-                            w.writeAttribute("source", source);
-                            FileOutputStream fw = new FileOutputStream(new File(
-                                        conf.getValue(
-                                            "tmx.save.maplocation") + source));
-                            byte[] data = ImageHelper.imageToPNG(setImage);
-                            fw.write(data, 0, data.length);
-                            fw.close();
-                        } else {
-                            w.writeAttribute("source", externalImageSource);
-                        }
-                    }
-                    w.endElement();
-                }
-                */
-                // If not a set bitmap, tiles handle their own images...
-
-                int totalTiles = set.getTotalTiles();
-
-                for (int i = 0; i < totalTiles; i++) {
-                    Tile tile = set.getTile(i);
-                    if (tile != null) {
-                        writeTile(tile, w);
-                    }
+                
+                
+                TiledConfiguration conf = TiledConfiguration.getInstance();
+                if(conf.keyHasValue("tmx.save.tileSetImages", "1")) {
+                	Enumeration ids = set.getImageIds();
+                	while(ids.hasMoreElements()) {
+                		String id = (String)ids.nextElement();
+						w.startElement("image");
+						w.writeAttribute("format", "png");
+						w.writeAttribute("id", id);
+						w.startElement("data");
+						w.writeAttribute("encoding", "base64");
+						w.writeCDATA(new String(Base64.encode(
+										ImageHelper.imageToPNG(set.getImageById(id)))));
+						w.endElement();
+						w.endElement();
+                	}
+                } else if(conf.keyHasValue("tmx.save.embedImages","0")) {
+                	if(source == null) {
+						String imgSource =	conf.getValue(
+								"tmx.save.tileImagePrefix") + "set.png";
+						w.writeAttribute("source", imgSource);
+						FileOutputStream fw = new FileOutputStream(new File(
+									conf.getValue(
+										"tmx.save.maplocation") + source));
+						//TODO: external sets are broken!
+						//byte[] data = ImageHelper.imageToPNG(setImage);
+						//fw.write(data, 0, data.length);
+						fw.close();
+                	}
+                } else{
+                
+	                // If not a set bitmap, tiles handle their own images...
+	
+	                int totalTiles = set.getTotalTiles();
+	
+	                for (int i = 0; i < totalTiles; i++) {
+	                    Tile tile = set.getTile(i);
+	                    if (tile != null) {
+	                        writeTile(tile, w);
+	                    }
+	                }
                 }
             }
             w.endElement();
@@ -357,7 +358,8 @@ public class XMLMapWriter implements MapWriter
             // Write encoded data
             if (tileImage != null && !conf.keyHasValue(
                         "tmx.save.tileSetImages", "1")) {
-                if (conf.keyHasValue("tmx.save.embedImages", "1")) {
+                if (conf.keyHasValue("tmx.save.embedImages", "1") 
+                		&& conf.keyHasValue("tmx.save.tileSetImages", "0")) {
                     w.startElement("image");
                     w.writeAttribute("format", "png");
                     w.startElement("data");
@@ -369,6 +371,17 @@ public class XMLMapWriter implements MapWriter
                 } else if(conf.keyHasValue("tmx.save.tileSetImages", "1")) {
                     w.startElement("image");
                     w.writeAttribute("id", "" + tile.getImageId());
+                    int orientation = tile.getImageOrientation();
+                    int rotation = 0;
+					boolean flipped
+					  = (orientation & 1) == ((orientation & 2) >> 1);
+					if ((orientation & 4) == 4) {
+						rotation = ((orientation & 1) == 1) ? 270 : 90;
+					} else {
+						rotation = ((orientation & 2) == 2) ? 180 : 0;
+					}
+					if (rotation != 0) w.writeAttribute("rotation", "" + rotation);
+					if (flipped) w.writeAttribute("flipped", "true");
                     w.endElement();
                 } else {
                     String prefix = conf.getValue("tmx.save.tileImagePrefix");
