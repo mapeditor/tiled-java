@@ -129,6 +129,9 @@ public final class PluginClassLoader extends URLClassLoader
                     JarEntry writer = jf.getJarEntry(
                             writerClassName.replace('.', '/') + ".class");
 
+                    monitor.setNote("Loading " + aName + "...");
+                    super.addURL((new File(aPath)).toURL());
+
                     if (readerClassName != null && reader != null) {
                         readerClass = loadFromJar(jf, reader, readerClassName);
                     }
@@ -146,12 +149,10 @@ public final class PluginClassLoader extends URLClassLoader
                     }
 
                     if (bPlugin) {
-                        monitor.setNote("Loading " + aName + "...");
-                        //System.out.println(
-                        //        "Added " + files[i].getCanonicalPath());
-                        super.addURL((new File(aPath)).toURL());
                         _add(readerClass);
                         _add(writerClass);
+                        //System.out.println(
+                        //        "Added " + files[i].getCanonicalPath());
                     }
 
                 } catch (IOException e) {
