@@ -151,7 +151,7 @@ public class ResizeDialog extends JDialog implements ActionListener,
     }
 
     public void showDialog() {
-        show();
+        setVisible(true);
     }
 
     public void actionPerformed(ActionEvent e) {

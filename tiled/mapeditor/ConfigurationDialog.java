@@ -179,7 +179,7 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
 
     public void configure() {
         updateFromConf();
-        show();
+        setVisible(true);
     }
 
     private void updateFromConf() {

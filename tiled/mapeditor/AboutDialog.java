@@ -49,8 +49,10 @@ public class AboutDialog extends JFrame
         }
     }
 
-    public void show() {
-        setLocationRelativeTo(parent);
-        super.show();
+    public void setVisible(boolean visible) {
+		if (visible) {
+	        setLocationRelativeTo(parent);
+		}
+        super.setVisible(visible);
     }
 }

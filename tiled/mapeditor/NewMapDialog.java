@@ -140,7 +140,7 @@ public class NewMapDialog extends JDialog implements ActionListener
     }
 
     public Map create() {
-        show();
+        setVisible(true);
         return newMap;
     }
 

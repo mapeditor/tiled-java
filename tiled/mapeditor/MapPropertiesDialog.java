@@ -86,7 +86,7 @@ public class MapPropertiesDialog extends JDialog implements ActionListener,
 
     public void getProps() {
         updateInfo();
-        show();
+        setVisible(true);
     }
 
     public void actionPerformed(ActionEvent event) {

@@ -166,7 +166,7 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
     }
 
     public TileSet create() {
-        show();
+        setVisible(true);
         return newTileset;
     }
 

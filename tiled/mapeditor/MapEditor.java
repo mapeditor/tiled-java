@@ -202,7 +202,7 @@ public class MapEditor implements ActionListener,
         setCurrentMap(null);
         updateRecent(null);
 
-        appFrame.show();
+        appFrame.setVisible(true);
     }
 
     private JPanel createContentPane() {
@@ -977,7 +977,7 @@ public class MapEditor implements ActionListener,
                     tilePaletteDialog =
                         new TilePaletteDialog(this, currentMap);
                 }
-                tilePaletteDialog.show();
+                tilePaletteDialog.setVisible(true);
             }
         } else {
             handleEvent(event);
@@ -1047,7 +1047,7 @@ public class MapEditor implements ActionListener,
         } else if (command.equals("Tileset Manager")) {
             if (currentMap != null) {
                 TilesetManager manager = new TilesetManager(this, currentMap);
-                manager.show();
+                manager.setVisible(true);
             }
         } else if (command.equals("Save")) {
             if (currentMap != null) {
@@ -1077,7 +1077,7 @@ public class MapEditor implements ActionListener,
             if (aboutDialog == null) {
                 aboutDialog = new AboutDialog(appFrame);
             }
-            aboutDialog.show();
+            aboutDialog.setVisible(true);
         } else if (command.substring(0, command.length() < 5 ? command.length() : 5).equals("_open")) {
             try {
                 loadMap(configuration.getValue(

@@ -115,7 +115,7 @@ public class SearchDialog extends JDialog implements ActionListener
 	}
 
     public void showDialog() {
-        show();
+        setVisible(true);
     }
 
 	private void queryTiles(JComboBox b) {
