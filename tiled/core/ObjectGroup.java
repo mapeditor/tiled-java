@@ -53,11 +53,8 @@ public class ObjectGroup extends MapLayer
     public ObjectGroup(ObjectGroup group) {
     }
 
-    public void translate(int dx, int dy) {
-    }
-
     /**
-     * @see MapLayer#translate(int)
+     * @see MapLayer#rotate(int)
      */
     public void rotate(int angle) {
     }

@@ -5,7 +5,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
@@ -41,7 +41,7 @@ public class Map extends MultilayerPlane implements Cloneable
     int orientation = MDO_ORTHO;
     EventListenerList mapChangeListeners;
     Properties properties;
-    String filename, version;
+    String filename;
 
     /**
      * @param width  the map width in tiles.
@@ -103,13 +103,13 @@ public class Map extends MultilayerPlane implements Cloneable
         fireMapChanged();
     }
 
-	public void addLayerSpecial(MapLayer l) {
-		l.setMap(this);
-		specialLayers.add(l);
-		fireMapChanged();
-	}
+    public void addLayerSpecial(MapLayer l) {
+        l.setMap(this);
+        specialLayers.add(l);
+        fireMapChanged();
+    }
 
-    public MapLayer addLayer(MapLayer l) {		
+    public MapLayer addLayer(MapLayer l) {
         l.setMap(this);
         super.addLayer(l);
         fireMapChanged();
@@ -118,12 +118,12 @@ public class Map extends MultilayerPlane implements Cloneable
 
     /**
      * Create a new empty TileLayer with the dimensions of the map. By default, the new layer's name is set to "Layer [layer index]"
-     * 
+     *
      * @return The new TileLayer instance.
      */
     public MapLayer addLayer() {
         MapLayer layer = new TileLayer(this, widthInTiles, heightInTiles);
-        layer.setName("Layer "+super.getTotalLayers());		
+        layer.setName("Layer "+super.getTotalLayers());
         super.addLayer(layer);
         fireMapChanged();
         return layer;
@@ -132,8 +132,8 @@ public class Map extends MultilayerPlane implements Cloneable
     /**
      * Adds a Tileset to this Map. If the set is already attached to this map,
      * <code>addTileset</code> simply returns.
-     *   
-     * @param s	a tileset to add
+     *
+     * @param s a tileset to add
      */
     public void addTileset(TileSet s) {
         if (s == null || tilesets.indexOf(s) > -1) {
@@ -171,8 +171,8 @@ public class Map extends MultilayerPlane implements Cloneable
             Tile tile = s.getTile(i);
             while (itr.hasNext()) {
                 MapLayer ml = (MapLayer)itr.next();
-                if(ml instanceof TileLayer) {
-                	((TileLayer)ml).removeTile(tile);
+                if (ml instanceof TileLayer) {
+                    ((TileLayer)ml).removeTile(tile);
                 }
             }
         }
@@ -185,9 +185,9 @@ public class Map extends MultilayerPlane implements Cloneable
         objects.add(o);
     }
 
-	public Iterator getObjects() {
-		return objects.iterator();
-	}
+    public Iterator getObjects() {
+        return objects.iterator();
+    }
 
     public void addProperty(String key, String value) {
         properties.put(key, value);
@@ -201,13 +201,13 @@ public class Map extends MultilayerPlane implements Cloneable
         return properties.getProperty(key);
     }
 
-	/**
-	 * @return
-	 */
-	public Properties getAllProperties() {
-		return properties;
-	}
-    
+    /**
+     * @return the map properties
+     */
+    public Properties getAllProperties() {
+        return properties;
+    }
+
     public void setProperties(Properties prop) {
         properties = prop;
     }
@@ -221,21 +221,21 @@ public class Map extends MultilayerPlane implements Cloneable
         return layer;
     }
 
-	public MapLayer removeLayerSpecial(MapLayer l) {
-		try {
-			if(specialLayers.remove(l)) {
-				fireMapChanged();
-			}
-		}catch (ArrayIndexOutOfBoundsException e) {
-		}
-		return l;
-	}
+    public MapLayer removeLayerSpecial(MapLayer l) {
+        try {
+            if (specialLayers.remove(l)) {
+                fireMapChanged();
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+        }
+        return l;
+    }
 
-	public void removeAllSpecialLayers() {
-		specialLayers.clear();
-		fireMapChanged();
-	}
-	
+    public void removeAllSpecialLayers() {
+        specialLayers.clear();
+        fireMapChanged();
+    }
+
     /**
      * @see MultilayerPlane#removeAllLayers
      */
@@ -274,10 +274,6 @@ public class Map extends MultilayerPlane implements Cloneable
         fireMapChanged();
     }
 
-	public void setVersion(String version) {
-		this.version = version;
-	}
-
     public void setFilename(String filename) {
         this.filename = filename;
     }
@@ -310,10 +306,6 @@ public class Map extends MultilayerPlane implements Cloneable
         this.orientation = orientation;
         // TODO: fire mapChangedNotification about orientation change
     }
-
-	public String getVersion() {
-		return version;
-	}
 
     public String getFilename() {
         return filename;
