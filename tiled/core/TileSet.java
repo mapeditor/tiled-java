@@ -300,4 +300,11 @@ public class TileSet
     public String toString() {
     	return name + " ["+getTotalTiles()+"]";
     }
+
+    /**
+     *
+     */
+    public int addImage(Image i) {
+	return 0;
+    }
 }

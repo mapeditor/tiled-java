@@ -161,6 +161,10 @@ public class Tile
         return tileImage;
     }
 
+    public int getImageId() {
+        return 0;
+    }
+
     /**
      * Returns a scaled instance of the tile image.
      */
