@@ -13,7 +13,7 @@ Problems:   Shift even rows or odd rows? Or how to make that an option?
 Suggestor:  Ahmed Mohombe <amohombe@yahoo.com>
 Date:       08/04/04
 Summary:    Show tile coordinates on each tile (analoguous to Show Grid).
-State:      To be discussed
+State:      Implementation in progress (task #82)
 
 - 03 --------------------------------------------------------------------------
 Suggestor:  Ahmed Mohombe <amohombe@yahoo.com>
@@ -80,19 +80,13 @@ State:      Needs research.
 Suggestor:  Andreas Mross <amross@stagingconnections.com>
 Date:       09/09/04
 Summary:    Use AffineTransform for the zooming feature.
-State:      Needs research.
+State:      Needs research, probably a no-go.
 
 - 13 --------------------------------------------------------------------------
 Suggestor:  Andreas Mross <amross@stagingconnections.com>
 Date:       09/08/04
 Summary:    Hexagonal map view.
-State:      Implemented himself, integration in process.
-
-- 14 --------------------------------------------------------------------------
-Suggestor:  Andreas Mross <amross@stagingconnections.com>
-Date:       09/08/04
-Summary:    Input/output plugins for map loading/saving.
-State:      Implementation in progress (task #89)
+State:      To be refined.
 
 - 16 --------------------------------------------------------------------------
 Suggestor:  Andreas Mross <amross@stagingconnections.com>
@@ -143,13 +137,13 @@ State:      Something we plan to work on.
 Suggestor:  Rainer Deyke <root@rainerdeyke.com>
 Date:       24/09/04
 Summary:    The ability to set properties for individual layers.
-State:      A necessary feature that will be added sooner or later.
+State:      This will be included in the 0.5.0 release.
 
 - 24 --------------------------------------------------------------------------
 Suggestor:  Radomir Dopieralski <sheep@atos.wmid.amu.edu.pl>
 Date:	    29/10/04
-Summary:    Tileset should allow a base directory attribute for relative
-	    image paths.
+Summary:    Tileset should allow a base directory attribute for relative image
+            paths.
 State:      This will be included in the 0.5.0 release
 
 - 25 --------------------------------------------------------------------------

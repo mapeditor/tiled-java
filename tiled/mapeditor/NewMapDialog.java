@@ -93,9 +93,9 @@ public class NewMapDialog extends JDialog implements ActionListener
         buttons.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
         buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
         buttons.add(Box.createGlue());
-        buttons.add(cancelButton);
-        buttons.add(Box.createRigidArea(new Dimension(5, 0)));
         buttons.add(okButton);
+        buttons.add(Box.createRigidArea(new Dimension(5, 0)));
+        buttons.add(cancelButton);
 
         // Map type and name inputs
 
