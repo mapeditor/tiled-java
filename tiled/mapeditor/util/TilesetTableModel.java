@@ -58,7 +58,7 @@ public class TilesetTableModel extends AbstractTableModel
             if (col == 0) {
                 return tileset.getName();
             } else {
-                return ""+checkSetUsage(tileset);
+                return "" + checkSetUsage(tileset);
             }
         } else {
             return null;
@@ -66,10 +66,10 @@ public class TilesetTableModel extends AbstractTableModel
     }
 
     public boolean isCellEditable(int row, int col) {
-    	if(col == 0) {    	
-        	return true;
-    	}
-    	return false;
+        if (col == 0) {    	
+            return true;
+        }
+        return false;
     }
 
     public void setValueAt(Object value, int row, int col) {
@@ -82,20 +82,20 @@ public class TilesetTableModel extends AbstractTableModel
             fireTableCellUpdated(row, col);
         }
     }
-    
-	private int checkSetUsage(TileSet s) {
-		int used=0;
-	
-		for(int i=0; i<s.getTotalTiles(); i++) {
-			ListIterator itr = map.getLayers();
-			while(itr.hasNext()) {
-				MapLayer ml = (MapLayer)itr.next();
-				if(ml.isUsed(s.getTile(i))) {
-					used++;
-					break;
-				}
-			}
-		}
-		return used;
-	}
+
+    private int checkSetUsage(TileSet s) {
+        int used = 0;
+
+        for (int i = 0; i < s.getTotalTiles(); i++) {
+            ListIterator itr = map.getLayers();
+            while (itr.hasNext()) {
+                MapLayer ml = (MapLayer)itr.next();
+                if (ml.isUsed(s.getTile(i))) {
+                    used++;
+                    break;
+                }
+            }
+        }
+        return used;
+    }
 }

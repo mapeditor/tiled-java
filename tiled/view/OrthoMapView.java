@@ -118,8 +118,6 @@ public class OrthoMapView extends MapView
             g.drawLine(p, clipRect.y, p, clipRect.y + clipRect.height - 1);
             p += tsize.width;
         }
-
-        paintCoordinates(g, zoom);
     }
 
     protected void paintCoordinates(Graphics g, double zoom) {
@@ -138,8 +136,7 @@ public class OrthoMapView extends MapView
         int startX = clipRect.x / tsize.width;
         int startY = clipRect.y / tsize.height;
         int endX = (clipRect.x + clipRect.width) / tsize.width + 1;
-        int endY = (clipRect.y + clipRect.height) / tsize.height + 3;
-        // (endY +2 for high tiles, could be done more properly)
+        int endY = (clipRect.y + clipRect.height) / tsize.height + 1;
 
         // Draw this map layer
         int gy = startY * tsize.height + toffset;

@@ -28,8 +28,9 @@ import tiled.util.TiledConfiguration;
  */
 public abstract class MapView extends JPanel implements Scrollable
 {
-    public static final int PF_GRIDMODE = 0x00000001;
+    public static final int PF_GRIDMODE     = 0x00000001;
     public static final int PF_BOUNDARYMODE = 0x00000002;
+    public static final int PF_COORDINATES  = 0x00000004;
 
     public static int ZOOM_NORMALSIZE = 3;
 
@@ -225,6 +226,10 @@ public abstract class MapView extends JPanel implements Scrollable
 
             paintGrid(g, currentZoom);
         }
+
+        if (getMode(PF_COORDINATES)) {
+            paintCoordinates(g, zoom);
+        }
     }
 
     protected void paintEdge(Graphics g, MapLayer layer, int x, int y) {
@@ -304,6 +309,11 @@ public abstract class MapView extends JPanel implements Scrollable
      * Draws the map grid.
      */
     protected abstract void paintGrid(Graphics g, double zoom);
+
+    /**
+     * Draws the coordinates on each tile.
+     */
+    protected abstract void paintCoordinates(Graphics g, double zoom);
 
     /**
      * Returns a Polygon that matches the grid around the specified <b>Map</b>

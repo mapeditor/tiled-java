@@ -121,6 +121,10 @@ public class IsoMapView extends MapView
         }
     }
 
+    protected void paintCoordinates(Graphics g, double zoom) {
+        // TODO: Implement paint coordinates for IsoMapView
+    }
+
     public void repaintRegion(Rectangle region) {
         Dimension tileSize = getTileSize(zoom);
         int maxExtraHeight =

@@ -56,6 +56,10 @@ public class ObliqueMapView extends MapView
         // TODO
     }
 
+    protected void paintCoordinates(Graphics g, double zoom) {
+        // TODO: Implement paintCoordinates for ObliqueMapView
+    }
+
 	public Point screenToTileCoords(int x, int y) {
 		// TODO Auto-generated method stub
 		return null;

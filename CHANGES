@@ -1,19 +1,19 @@
-0.4.1 - TBD
+0.4.1 - September 24th, 2004
 
 * Added search/replace functionality
 * Added tooltips to buttons
 * Added map save/load plugin support
-* Implementation of HexMapView, making Hex maps possible (Andreas Mross)
+* Added marquee selections
+* Added HexMapView, contributed by Andreas Mross (experimental)
 * Removed name and version attributes from map, custom properties suffice there
 * Removed name attribute from tile for same reason
 * Stopped Tiled from adding more and more newlines to the config file
 * More intelligent starting locations for file choosers
 * Fixes to tileset editing dialog
-* Window close button now checks for changes too
-* Undo/redo is working for moving layers
-* Grid display is configurable (opacity, antialiasing)
-* Added marquee selections
-* Moving a cloned layer no longer moves original too
+* Fixed window close button to behave the same as File->Exit
+* Fixed undo/redo for moving layers
+* Grid display is now configurable (opacity, antialiasing)
+* Fixed moving a duplicated layer to no longer move original too
 
 0.4.0 - August 4th, 2004
 
