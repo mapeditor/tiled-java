@@ -160,15 +160,16 @@ public class MapEditor implements ActionListener,
         undoSupport = new UndoableEditSupport();
         undoSupport.addUndoableEditListener(new UndoAdapter());
 
-		cursorHighlight = new SelectionLayer(1,1);
-		cursorHighlight.select(0,0);
-		cursorHighlight.setVisible(TiledConfiguration.getInstance().keyHasValue("tiled.cursorhighlight",1));
-		
+        cursorHighlight = new SelectionLayer(1, 1);
+        cursorHighlight.select(0,0);
+        cursorHighlight.setVisible(configuration.keyHasValue(
+                    "tiled.cursorhighlight", 1));
+
         mapEventAdapter = new MapEventAdapter();
         currentBrush = new ShapeBrush();
         ((ShapeBrush)currentBrush).makeQuadBrush(new Rectangle(0, 0, 1, 1));
 
-        
+
 
         // Create the actions
         zoomInAction = new ZoomInAction();
@@ -187,7 +188,7 @@ public class MapEditor implements ActionListener,
         selectAllAction = new SelectAllAction();
         cancelSelectionAction = new CancelSelectionAction();
         inverseAction = new InverseSelectionAction();
-        
+
         // Create our frame
         appFrame = new JFrame("Tiled");
         appFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -204,7 +205,7 @@ public class MapEditor implements ActionListener,
         updateRecent(null);
 
         appFrame.setVisible(true);
-        
+
         // Load plugins
         pluginLoader  = new PluginClassLoader();
         try {
@@ -276,14 +277,14 @@ public class MapEditor implements ActionListener,
         } catch (IOException e) {
             JOptionPane.showMessageDialog(appFrame,
                     e.getMessage() + (e.getCause() != null ? "\nCause: "+e.getCause().getMessage() : ""),
-					"Error while loading map",
+                    "Error while loading map",
                     JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(appFrame,
                     "Error while loading " + file + ": " +
                     e.getMessage() + (e.getCause() != null ? "\nCause: "+e.getCause().getMessage() : ""),
-					"Error while loading map",
+                    "Error while loading map",
                     JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
@@ -304,8 +305,8 @@ public class MapEditor implements ActionListener,
                 "control S");
         JMenuItem saveAs = createMenuItem("Save as...", null,
                 "Save current map as new file", "control shift S");
-		JMenuItem saveAsImage = createMenuItem("Save as Image...", null,
-						"Save current map as an image", "control shift I");
+        JMenuItem saveAsImage = createMenuItem("Save as Image...", null,
+                "Save current map as an image", "control shift I");
         JMenuItem close = createMenuItem("Close", null, "Close this map",
                 "control W");
         JMenuItem print =
@@ -314,7 +315,7 @@ public class MapEditor implements ActionListener,
 
         mapEventAdapter.addListener(save);
         mapEventAdapter.addListener(saveAs);
-		mapEventAdapter.addListener(saveAsImage);
+        mapEventAdapter.addListener(saveAsImage);
         mapEventAdapter.addListener(close);
         mapEventAdapter.addListener(print);
 
@@ -324,7 +325,7 @@ public class MapEditor implements ActionListener,
         m.add(recentMenu);
         m.add(save);
         m.add(saveAs);
-		m.add(saveAsImage);
+        m.add(saveAsImage);
         // TODO: Re-add print menuitem when printing is functional
         //m.addSeparator();
         //m.add(print);
@@ -339,13 +340,13 @@ public class MapEditor implements ActionListener,
         undoMenuItem.setEnabled(false);
         redoMenuItem.setEnabled(false);
 
-		copyMenuItem = new TMenuItem(copyAction);
-		cutMenuItem = new TMenuItem(cutAction);
-		pasteMenuItem = new TMenuItem(pasteAction);
-		copyMenuItem.setEnabled(false);
-		cutMenuItem.setEnabled(false);
-		pasteMenuItem.setEnabled(false);
-		
+        copyMenuItem = new TMenuItem(copyAction);
+        cutMenuItem = new TMenuItem(cutAction);
+        pasteMenuItem = new TMenuItem(pasteAction);
+        copyMenuItem.setEnabled(false);
+        cutMenuItem.setEnabled(false);
+        pasteMenuItem.setEnabled(false);
+
         JMenu transformSub = new JMenu("Transform");
         transformSub.add(new TMenuItem(rot90Action, true));
         transformSub.add(new TMenuItem(rot180Action, true));
@@ -369,9 +370,9 @@ public class MapEditor implements ActionListener,
                     null, "Configure options of the editor", null));
         mapEventAdapter.addListener(undoMenuItem);
         mapEventAdapter.addListener(redoMenuItem);
-		mapEventAdapter.addListener(copyMenuItem);
-		mapEventAdapter.addListener(cutMenuItem);
-		mapEventAdapter.addListener(pasteMenuItem);
+        mapEventAdapter.addListener(copyMenuItem);
+        mapEventAdapter.addListener(cutMenuItem);
+        mapEventAdapter.addListener(pasteMenuItem);
         menuBar.add(m);
 
 
@@ -432,7 +433,7 @@ public class MapEditor implements ActionListener,
         m.add(createMenuItem("Add Object", null, "Add an object"));
         mapEventAdapter.addListener(m);
         menuBar.add(m);
-        
+
         JMenu modifySub = new JMenu("Modify");
         modifySub.add(createMenuItem("Expand Selection", null, ""));
         modifySub.add(createMenuItem("Contract Selection", null, ""));
@@ -445,21 +446,29 @@ public class MapEditor implements ActionListener,
         //m.add(modifySub);
         mapEventAdapter.addListener(m);
         menuBar.add(m);
-        
+
 
         gridMenuItem = new JCheckBoxMenuItem("Show Grid");
         gridMenuItem.addActionListener(this);
         gridMenuItem.setToolTipText("Toggle grid");
         gridMenuItem.setAccelerator(KeyStroke.getKeyStroke("control G"));
-		cursorMenuItem = new JCheckBoxMenuItem("Highlight Cursor");
-		cursorMenuItem.setSelected(TiledConfiguration.getInstance().keyHasValue("tiled.cursorhighlight",1));
-		cursorMenuItem.addActionListener(this);
-		cursorMenuItem.setToolTipText("Toggle highlighting on-map cursor position");
-		//cursorMenuItem.setAccelerator(KeyStroke.getKeyStroke("control G"));
+
+        cursorMenuItem = new JCheckBoxMenuItem("Highlight Cursor");
+        cursorMenuItem.setSelected(configuration.keyHasValue(
+                    "tiled.cursorhighlight", 1));
+        cursorMenuItem.addActionListener(this);
+        cursorMenuItem.setToolTipText(
+                "Toggle highlighting on-map cursor position");
+
         boundaryMenuItem = new JCheckBoxMenuItem("Show Boundaries");
         boundaryMenuItem.addActionListener(this);
         boundaryMenuItem.setToolTipText("Toggle layer boundaries");
         boundaryMenuItem.setAccelerator(KeyStroke.getKeyStroke("control E"));
+
+        //coordinatesMenuItem = new JCheckBoxMenuItem("Show coordinates");
+        //coordinatesMenuItem.addActionListener(this);
+        //coordinatesMenuItem.setToolTipText("Toggle tile coordinates");
+
         m = new JMenu("View");
         m.add(new TMenuItem(zoomInAction));
         m.add(new TMenuItem(zoomOutAction));
@@ -789,7 +798,7 @@ public class MapEditor implements ActionListener,
             if (currentLayer >= 0) {
                 try {
                     MapLayer clone =
-                        (MapLayer)currentMap.getLayer(currentLayer).clone();
+                        (MapLayer)getCurrentLayer().clone();
                     clone.setName(clone.getName() + " copy");
                     currentMap.addLayer(clone);
                 } catch (CloneNotSupportedException ex) {
@@ -849,7 +858,7 @@ public class MapEditor implements ActionListener,
         }
 
         Point tile = mapView.screenToTileCoords(event.getX(), event.getY());
-        MapLayer layer = currentMap.getLayer(currentLayer);
+        MapLayer layer = getCurrentLayer();
 
         if (layer == null) {
             return;
@@ -935,7 +944,7 @@ public class MapEditor implements ActionListener,
                 case PS_PAINT:
                 case PS_ERASE:
                 case PS_POUR:
-                    MapLayer layer = currentMap.getLayer(currentLayer);
+                    MapLayer layer = getCurrentLayer();
                     paintEdit =
                         new MapLayerEdit(layer, new MapLayer(layer), null);
                     break;
@@ -962,7 +971,7 @@ public class MapEditor implements ActionListener,
     public void mouseReleased(MouseEvent event) {
         mouseButton = MouseEvent.NOBUTTON;
         bMouseIsDown = false;
-        MapLayer layer = currentMap.getLayer(currentLayer);
+        MapLayer layer = getCurrentLayer();
         Point limp = mouseInitialPressLocation;
 
        if (currentPointerState == PS_MARQUEE) {
@@ -996,7 +1005,7 @@ public class MapEditor implements ActionListener,
     public void mouseMoved(MouseEvent e) {
         if (bMouseIsDown) {
             doMouse(e);
-        }		
+        }
 
         Point tile = mapView.screenToTileCoords(e.getX(), e.getY());
         if (currentMap.inBounds(tile.x, tile.y)) {
@@ -1004,15 +1013,8 @@ public class MapEditor implements ActionListener,
         } else {
             tileCoordsLabel.setText(" ");
         }
-        
-		if(TiledConfiguration.getInstance().keyHasValue("tiled.cursorhighlight", 1)) {
-			Rectangle redraw = cursorHighlight.getBounds();
-			cursorHighlight.setOffset(tile.x, tile.y);
-			mapView.repaintRegion(new Rectangle(Math.min(tile.x, redraw.x)-1,
-											Math.min(tile.y, redraw.y)-1,
-											Math.max(tile.x, redraw.x)+1,
-											Math.max(tile.y, redraw.y)+1));
-		}
+
+        updateCursorHighlight(tile);
     }
 
     public void mouseDragged(MouseEvent e) {
@@ -1024,16 +1026,20 @@ public class MapEditor implements ActionListener,
         } else {
             tileCoordsLabel.setText(" ");
         }
-        
-        
-		if(TiledConfiguration.getInstance().keyHasValue("tiled.cursorhighlight", 1)) {
-			Rectangle redraw = cursorHighlight.getBounds();
-			cursorHighlight.setOffset(tile.x, tile.y);
-			mapView.repaintRegion(new Rectangle(Math.min(tile.x, redraw.x)-1,
-											Math.min(tile.y, redraw.y)-1,
-											Math.max(tile.x, redraw.x)+1,
-											Math.max(tile.y, redraw.y)+1));
-		}
+
+        updateCursorHighlight(tile);
+    }
+
+    private void updateCursorHighlight(Point tile) {
+        if (configuration.keyHasValue("tiled.cursorhighlight", 1)) {
+            Rectangle redraw = cursorHighlight.getBounds();
+            cursorHighlight.setOffset(tile.x, tile.y);
+            mapView.repaintRegion(new Rectangle(
+                        Math.min(tile.x, redraw.x) - 1,
+                        Math.min(tile.y, redraw.y) - 1,
+                        Math.max(tile.x, redraw.x) + 1,
+                        Math.max(tile.y, redraw.y) + 1));
+        }
     }
 
     public void actionPerformed(ActionEvent event) {
@@ -1140,17 +1146,19 @@ public class MapEditor implements ActionListener,
                 saveMap(currentMap.getFilename(), true);
             }
         } else if (command.equals("Save as Image...")) {
-			if (currentMap != null) {
-				saveMapImage(null);
-			}
-		} else if (command.equals("Properties")) {
-            PropertiesDialog pd = new PropertiesDialog(appFrame, currentMap.getAllProperties());
+            if (currentMap != null) {
+                saveMapImage(null);
+            }
+        } else if (command.equals("Properties")) {
+            PropertiesDialog pd = new PropertiesDialog(appFrame,
+                    currentMap.getAllProperties());
             pd.setTitle("Map Properties");
             pd.getProps();
         } else if (command.equals("Layer Properties")) {
+            MapLayer layer = getCurrentLayer();
             PropertiesDialog lpd =
-                new PropertiesDialog(appFrame,  currentMap.getLayer(this.currentLayer).getAllProperties());
-            lpd.setTitle(currentMap.getLayer(this.currentLayer).getName()+" Properties");
+                new PropertiesDialog(appFrame, layer.getAllProperties());
+            lpd.setTitle(layer.getName() + " Properties");
             lpd.getProps();
         } else if (command.equals("Show Boundaries") ||
                 command.equals("Hide Boundaries")) {
@@ -1159,10 +1167,11 @@ public class MapEditor implements ActionListener,
                 command.equals("Hide Grid")) {
             // Toggle grid
             mapView.toggleMode(MapView.PF_GRIDMODE);
-        } else if (command.equals("Highlight Cursor")) {        	
-        	TiledConfiguration.getInstance().addConfigPair("tiled.cursorhighlight", Integer.toString(cursorMenuItem.isSelected() ? 1 : 0));
-        	cursorHighlight.setVisible(cursorMenuItem.isSelected());
-		} else if (command.equals("Resize")) {
+        } else if (command.equals("Highlight Cursor")) {
+            configuration.addConfigPair("tiled.cursorhighlight",
+                    Integer.toString(cursorMenuItem.isSelected() ? 1 : 0));
+            cursorHighlight.setVisible(cursorMenuItem.isSelected());
+        } else if (command.equals("Resize")) {
             ResizeDialog rd = new ResizeDialog(appFrame, this);
             rd.showDialog();
         }  else if (command.equals("Search")) {
@@ -1225,7 +1234,7 @@ public class MapEditor implements ActionListener,
         if (currentMap != null && selectedRow >= 0) {
             currentLayer = currentMap.getTotalLayers() - selectedRow - 1;
 
-            float opacity = currentMap.getLayer(currentLayer).getOpacity();
+            float opacity = getCurrentLayer().getOpacity();
             opacitySlider.setValue((int)(opacity * 100));
         } else {
             currentLayer = -1;
@@ -1238,7 +1247,7 @@ public class MapEditor implements ActionListener,
         // At the moment, this can only be movement in the opacity slider
 
         if (currentMap != null && currentLayer >= 0) {
-            MapLayer layer = currentMap.getLayer(currentLayer);
+            MapLayer layer = getCurrentLayer();
             layer.setOpacity(opacitySlider.getValue() / 100.0f);
 
             /*MapLayerStateEdit mlse = new MapLayerStateEdit(currentMap);
@@ -1316,7 +1325,7 @@ public class MapEditor implements ActionListener,
             }
         }
         public void actionPerformed(ActionEvent evt) {
-            MapLayer layer = currentMap.getLayer(currentLayer);
+            MapLayer layer = getCurrentLayer();
             MapLayerEdit transEdit;
             transEdit = new MapLayerEdit(layer, new MapLayer(layer));
             switch (transform) {
@@ -1466,12 +1475,12 @@ public class MapEditor implements ActionListener,
                 clipboardLayer = new MapLayer(
                         marqueeSelection.getSelectedAreaBounds());
                 clipboardLayer.maskedCopyFrom(
-                        currentMap.getLayer(currentLayer),
+                        getCurrentLayer(),
                         marqueeSelection.getSelectedArea());
             }
         }
     }
-    
+
     private class CutAction extends AbstractAction {
         public CutAction() {
             super("Cut");
@@ -1481,13 +1490,13 @@ public class MapEditor implements ActionListener,
         }
         public void actionPerformed(ActionEvent evt) {
             if (currentMap != null && marqueeSelection != null) {
+                MapLayer ml = getCurrentLayer();
+
                 clipboardLayer = new MapLayer(
                         marqueeSelection.getSelectedAreaBounds());
                 clipboardLayer.maskedCopyFrom(
-                        currentMap.getLayer(currentLayer),
-                        marqueeSelection.getSelectedArea());
+                        ml, marqueeSelection.getSelectedArea());
 
-                MapLayer ml = currentMap.getLayer(currentLayer);
                 Rectangle area = marqueeSelection.getSelectedAreaBounds();
                 Area mask = marqueeSelection.getSelectedArea();
                 for (int i = area.y; i < area.height+area.y; i++) {
@@ -1501,7 +1510,7 @@ public class MapEditor implements ActionListener,
             }
         }
     }
-    
+
     private class PasteAction extends AbstractAction {
         public PasteAction() {
             super("Paste");
@@ -1522,7 +1531,7 @@ public class MapEditor implements ActionListener,
             }
         }
     }
-    
+
     private class UndoAdapter implements UndoableEditListener {
         public void undoableEditHappened(UndoableEditEvent evt) {
             undoStack.addEdit(evt.getEdit());
@@ -1701,37 +1710,40 @@ public class MapEditor implements ActionListener,
         configuration.remove("tmx.save.maplocation");
     }
 
-	public void saveMapImage(String filename) {
-		if (filename == null) {
-			JFileChooser ch = new JFileChooser();
+    public void saveMapImage(String filename) {
+        if (filename == null) {
+            JFileChooser ch = new JFileChooser();
 
-			if (ch.showSaveDialog(appFrame) == JFileChooser.APPROVE_OPTION) {
-				filename = ch.getSelectedFile().getAbsolutePath();
-			}
-		}
-		
-		if(filename != null) {
-			MapView myView = currentMap.createView();
-			if(mapView.getMode(MapView.PF_GRIDMODE))
-				myView.enableMode(MapView.PF_GRIDMODE);
-			myView.enableMode(MapView.PF_NOSPECIAL);
-			Dimension d = myView.getPreferredSize();
-			//BufferedImage i = new BufferedImage(currentMap.getWidth()*(currentMap.getTileWidth()+gridMod),currentMap.getHeight()*(currentMap.getTileHeight()+gridMod),BufferedImage.TYPE_INT_ARGB);
-			BufferedImage i = new BufferedImage(d.width, d.height, BufferedImage.TYPE_INT_ARGB);
-			Graphics2D g = i.createGraphics();
-			g.setClip(0,0,d.width,d.height);
-			myView.paint(g);
-			try {
-				ImageIO.write(i, filename.substring(filename.lastIndexOf('.')+1).toUpperCase(),new File(filename));
+            if (ch.showSaveDialog(appFrame) == JFileChooser.APPROVE_OPTION) {
+                filename = ch.getSelectedFile().getAbsolutePath();
+            }
+        }
+
+        if (filename != null) {
+            MapView myView = currentMap.createView();
+            if (mapView.getMode(MapView.PF_GRIDMODE))
+                myView.enableMode(MapView.PF_GRIDMODE);
+            myView.enableMode(MapView.PF_NOSPECIAL);
+            Dimension d = myView.getPreferredSize();
+            BufferedImage i = new BufferedImage(d.width, d.height,
+                    BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g = i.createGraphics();
+            g.setClip(0, 0, d.width, d.height);
+            myView.paint(g);
+
+            String format = filename.substring(filename.lastIndexOf('.') + 1);
+
+            try {
+                ImageIO.write(i, format, new File(filename));
             } catch (IOException e) {
                 e.printStackTrace();
-				JOptionPane.showMessageDialog(appFrame,
-									"Error while saving " + filename + ": " + e.toString(),
-									"Error while saving map image",
-									JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(appFrame,
+                        "Error while saving " + filename + ": " + e.toString(),
+                        "Error while saving map image",
+                        JOptionPane.ERROR_MESSAGE);
             }
-		}
-	}
+        }
+    }
 
     private void openMap() {
         String startLocation = "";
@@ -1744,7 +1756,7 @@ public class MapEditor implements ActionListener,
         JFileChooser ch = new JFileChooser(startLocation);
         ch.addChoosableFileFilter(
                 new TiledFileFilter(TiledFileFilter.FILTER_TMX));
-        
+
         try {
             MapReader readers[] = (MapReader[]) pluginLoader.getReaders();
             for(int i = 0; i < readers.length; i++) {
@@ -1875,15 +1887,15 @@ public class MapEditor implements ActionListener,
         if (tilePaletteDialog != null) {
             tilePaletteDialog.setMap(currentMap);
         }
-        
+
         if (miniMap != null && currentMap != null) {
             miniMap.setView(currentMap.createView());
         }
-        
-        if(currentMap != null) {
-        	currentMap.addLayerSpecial(cursorHighlight);
+
+        if (currentMap != null) {
+            currentMap.addLayerSpecial(cursorHighlight);
         }
-        
+
         undoStack.discardAllEdits();
         updateLayerTable();
         updateTitle();
@@ -1896,7 +1908,7 @@ public class MapEditor implements ActionListener,
             if (totalLayers > index && index >= 0) {
                 /*
                 if (paintEdit != null) {
-                    MapLayer layer = currentMap.getLayer(currentLayer);
+                    MapLayer layer = getCurrentLayer();
                     try {
                         MapLayer endLayer =
                             paintEdit.getStart().createDiff(layer);
@@ -1992,13 +2004,14 @@ public class MapEditor implements ActionListener,
         MapEditor editor = new MapEditor();
 
         if (args.length > 0) {
-        	String toLoad = args[0];
-        	if(!Util.checkRoot(toLoad) || toLoad.startsWith(".")) {
-        		if(toLoad.startsWith(".")) {
-        			toLoad=toLoad.substring(1);
-        		}
-        		toLoad=System.getProperty("user.dir")+File.separatorChar+toLoad;
-        	}
+            String toLoad = args[0];
+            if (!Util.checkRoot(toLoad) || toLoad.startsWith(".")) {
+                if (toLoad.startsWith(".")) {
+                    toLoad = toLoad.substring(1);
+                }
+                toLoad = System.getProperty("user.dir") +
+                    File.separatorChar + toLoad;
+            }
             editor.loadMap(toLoad);
         }
     }
