@@ -149,7 +149,23 @@ public class TilesetManager extends JDialog implements ActionListener,
                     e.printStackTrace();
                 }
             }
-        } else {
+        } else if (command.equals("Save")) {
+			JFileChooser ch = new JFileChooser(map.getFilename());
+	
+			//TODO: warn vehemently if the set file already exists
+			int ret = ch.showSaveDialog(this);
+			if (ret == JFileChooser.APPROVE_OPTION) {
+				String filename = ch.getSelectedFile().getAbsolutePath();
+				try {
+					XMLMapWriter mw = new XMLMapWriter();
+					mw.writeTileset(set,filename);
+					set.setSource(filename);
+					exportButton.setEnabled(false);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		} else {
             System.out.println("Unimplemented command: " + command);
         }
     }
@@ -192,6 +208,6 @@ public class TilesetManager extends JDialog implements ActionListener,
         exportButton.setEnabled(set != null && set.getSource() == null);
         editButton.setEnabled(set != null);
         removeButton.setEnabled(set != null);
-        saveButton.setEnabled(set != null);
+        saveButton.setEnabled(set != null && set.getSource() != null);
     }
 }

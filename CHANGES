@@ -1,3 +1,7 @@
+0.4.0 - Pending
+
+* TiledConfiguration defaults to preset values initially
+
 0.3.1 - June 17th, 2004
 
 * Tile palette dialog remembers size and position and doesn't close when a tile
