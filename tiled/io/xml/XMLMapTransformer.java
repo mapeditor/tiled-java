@@ -47,13 +47,11 @@ public class XMLMapTransformer implements MapReader
     private Map map = null;
     private Document doc;
     private Component mediaComponent;
-    private MediaTracker mediaTracker;
     private String xmlPath = null;
     private Stack warnings;
     
     public XMLMapTransformer() {
         mediaComponent = new Canvas();
-        mediaTracker = new MediaTracker(mediaComponent);
         warnings = new Stack();
     }
 
@@ -222,16 +220,6 @@ public class XMLMapTransformer implements MapReader
                 }
             }
         }
-
-        // Wait for the image to be ready
-        /*mediaTracker.addImage(img, 0);
-        try {
-            mediaTracker.waitForID(0);
-        }
-        catch (InterruptedException ie) {
-            System.err.println(ie);
-        }
-        mediaTracker.removeImage(img);*/
 
         /*
         if (getAttributeValue(t, "set") != null) {

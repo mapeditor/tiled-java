@@ -16,6 +16,7 @@ import java.lang.IllegalStateException;
 import java.lang.UnsupportedOperationException;
 import java.util.Iterator;
 import java.util.Vector;
+import java.util.NoSuchElementException;
 
 
 public class TileIterator implements Iterator
@@ -36,13 +37,13 @@ public class TileIterator implements Iterator
         return false;
     }
 
-    public Object next() {
+    public Object next() throws NoSuchElementException {
         while (pos < tiles.size()) {
             Tile t = (Tile)tiles.get(pos);
             pos++;
             if (t != null) return t;
         }
-        return null;
+        throw new NoSuchElementException();
     }
 
     public void remove()

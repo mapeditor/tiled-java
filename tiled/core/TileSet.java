@@ -55,7 +55,6 @@ public class TileSet
     private String base;
     private Vector tiles;
     private Hashtable images, imageCache;
-    private int id;
     private int firstGid;
     private int standardHeight;
     private int standardWidth;

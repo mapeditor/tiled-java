@@ -34,11 +34,9 @@ public class Map extends MultilayerPlane implements Cloneable
     private Vector specialLayers;
     private Vector tilesets;
     private LinkedList objects;
-    int id;
 
     int tileWidth, tileHeight;
     int totalObjects = 0;
-    int lit = 1;
     int orientation = MDO_ORTHO;
     EventListenerList mapChangeListeners;
     Properties properties;

@@ -50,9 +50,9 @@ public class AboutDialog extends JFrame
     }
 
     public void setVisible(boolean visible) {
-		if (visible) {
-	        setLocationRelativeTo(parent);
-		}
+        if (visible) {
+            setLocationRelativeTo(parent);
+        }
         super.setVisible(visible);
     }
 }
