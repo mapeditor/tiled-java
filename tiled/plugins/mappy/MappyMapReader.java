@@ -1,9 +1,18 @@
+/*
+ *  Mappy Plugin for Tiled, (c) 2004
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ * 
+ *  Adam Turk <aturk@biggeruniverse.com>
+ *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
+ */
+
 package tiled.plugins.mappy;
 
 import java.io.*;
-import java.awt.Image;
-import java.awt.Toolkit;
-import java.awt.image.*;
 import java.util.LinkedList;
 import java.util.Vector;
 import java.util.Iterator;
@@ -36,26 +45,29 @@ public class MappyMapReader implements MapReader {
      * @param filename the filename of the map file
      */
     public Map readMap(String filename) throws Exception {
-		Map ret = null;
+		return readMap(new FileInputStream(filename));
+    }
+        
+    public Map readMap(InputStream in) throws Exception {
+    	Map ret = null;
 		chunks = new LinkedList();
 		blocks = new Vector();
 		byte [] hdr = new byte[4];
-		FileInputStream fis = new FileInputStream(filename);
 		
-		fis.read(hdr);
-		long size = readLongReverse(fis);
-		fis.read(hdr);	
+    	in.read(hdr);
+		long size = Util.readLongReverse(in);
+		in.read(hdr);	
 	
 		try{
-			Chunk chunk = new Chunk(fis);
+			Chunk chunk = new Chunk(in);
 			while(chunk.isGood()) {
 				chunks.add(chunk);
-				chunk = new Chunk(fis);
+				chunk = new Chunk(in);
 			}
 		} catch(IOException ioe){}
 	
 		//now build a Tiled map...
-		Chunk c = findChunk("MPHD");	
+		Chunk c = findChunk("MPHD");
 		if(c != null) {
 		    ret = readMPHDChunk(c.getInputStream());
 		}else{
@@ -71,7 +83,7 @@ public class MappyMapReader implements MapReader {
 	
 		return ret;
     }
-                                                                                
+    
     /**
      * Loads a tileset from a file.
      *
@@ -82,6 +94,11 @@ public class MappyMapReader implements MapReader {
 		return null;
     }
 
+    public TileSet readTileset(InputStream in) {
+    	System.out.println("Tilesets aren't supported!");
+    	return null;
+    }
+    
     /**
      * @see tiled.io.MapReader#getFilter()
      */
@@ -114,26 +131,7 @@ public class MappyMapReader implements MapReader {
         return false;
     }
 
-    private long readLongReverse(InputStream in) throws IOException {
-		int a = in.read();
-		int b = in.read();
-		int c = in.read();
-		int d = in.read();
-	
-		return (long)((a<<24)|(b<<16)|(c<<8)|d);
-    }
-
-    private int readShortReverse(InputStream in) throws IOException {
-		int a = in.read();
-		int b = in.read();
-		return (int)((a<<8)|b);
-    }
-
-    private int readShort(InputStream in) throws IOException {
-    	int a = in.read();
-        int b = in.read();
-        return (int)(a|(b<<8));
-    }
+    
 
     private Chunk findChunk(String header) {
 		Iterator itr = chunks.iterator();
@@ -154,27 +152,27 @@ public class MappyMapReader implements MapReader {
 		major = in.read();
 		minor = in.read();
 		in.skip(2);	//skip lsb and reserved bytes - always msb
-		ret = new Map(readShort(in), readShort(in));
+		ret = new Map(Util.readShort(in), Util.readShort(in));
 		ret.setOrientation(Map.MDO_ORTHO);        //be sure to set the orientation!
 		ret.addProperty("(s)fmap reader","Don't modify properties marked (s) unless you really know what you're doing.");
 		ret.addProperty("version",""+major+"."+minor);
 		in.skip(4);	//reserved
-		twidth = readShort(in);
-		theight = readShort(in);
+		twidth = Util.readShort(in);
+		theight = Util.readShort(in);
 		set.setStandardWidth(twidth);
 		set.setStandardHeight(theight);
 		ret.setTileWidth(twidth);
 		ret.setTileHeight(theight);
 		set.setName("Static tiles");
 		ret.addTileset(set);
-		int depth = readShort(in);
+		int depth = Util.readShort(in);
 		if(depth<16) {
 			throw new IOException("Tile bitdepths less than 16 are not supported!");
 		}
 		ret.addProperty("(s)depth",""+depth);
 		in.skip(2);
-		int numBlocks = readShort(in);
-		int numBlocksGfx = readShort(in);
+		int numBlocks = Util.readShort(in);
+		int numBlocksGfx = Util.readShort(in);
 		Chunk c = findChunk("BKDT");
 		if(c == null) {
 			throw new IOException("No BKDT block found!");
@@ -182,6 +180,11 @@ public class MappyMapReader implements MapReader {
 		MapLayer ml = new MapLayer(ret, ret.getWidth(),ret.getHeight());
 		ml.setName("bg");
 		ret.addLayer(ml);
+		for(int i=1;i<8;i++) {
+			ml = new MapLayer(ret, ret.getWidth(),ret.getHeight());
+			ml.setName("Layer "+i);
+			ret.addLayer(ml);
+		}
 		ml = new MapLayer(ret, ret.getWidth(),ret.getHeight());
 		ml.setName("fg 1");
 		ret.addLayer(ml);
@@ -191,12 +194,7 @@ public class MappyMapReader implements MapReader {
 		ml = new MapLayer(ret, ret.getWidth(),ret.getHeight());
 		ml.setName("fg 3");
 		ret.addLayer(ml);
-		
-		for(int i=1;i<8;i++) {
-			ml = new MapLayer(ret, ret.getWidth(),ret.getHeight());
-			ml.setName("Layer "+i);
-			ret.addLayer(ml);
-		}
+				
 		readBKDTChunk(ret, c.getInputStream(), numBlocks);
 	
 		c = findChunk("BGFX");
@@ -229,7 +227,7 @@ public class MappyMapReader implements MapReader {
 			fg2 = m.getLayer(3);
 		for(int i=0;i<m.getHeight();i++) {
 			for(int j=0;j<m.getWidth();j++) {
-				int block = (int)((readShort(in)&0x00FF)/BLKSTR_WIDTH);
+				int block = (int)((Util.readShort(in)&0x00FF)/BLKSTR_WIDTH);
 				//System.out.print(""+block);
 				BlkStr blk = (BlkStr)blocks.get(block);
 				//System.out.println("bg: "+blk.bg);
@@ -248,26 +246,26 @@ public class MappyMapReader implements MapReader {
     private void readBGFXChunk(Map m, InputStream in, int num) throws IOException {
 		TileSet set = (TileSet)m.getTilesets().get(0);
 		set.addTile(new Tile()); 
-		readRawImage(in);   //skip the null-tile
+		Util.readRawImage(in, twidth, theight);   //skip the null-tile
 		for(int i=1;i<num;i++) {
 			Tile t = new Tile();
-			t.setImage(readRawImage(in));
+			t.setImage(Util.readRawImage(in, twidth, theight));
 			set.addTile(t);
 		}
     }
 
     private BlkStr readBLKSTR(InputStream in) throws IOException {
 		MappyMapReader.BlkStr ret = new MappyMapReader.BlkStr();
-		long widthMod = (twidth*theight*2*256);
-		ret.bg = readLongReverse(in)/widthMod;
-		ret.fg0 = readLongReverse(in)/widthMod;
-		ret.fg1 = readLongReverse(in)/widthMod;
-		ret.fg2 = readLongReverse(in)/widthMod;
+		long widthMod = (twidth*theight*512);
+		ret.bg = Util.readLongReverse(in)/widthMod;
+		ret.fg0 = Util.readLongReverse(in)/widthMod;
+		ret.fg1 = Util.readLongReverse(in)/widthMod;
+		ret.fg2 = Util.readLongReverse(in)/widthMod;
 	
-		ret.user1 = readLongReverse(in);
-		ret.user2 = readLongReverse(in);
-		ret.user3 = readShort(in);
-		ret.user4 = readShort(in);
+		ret.user1 = Util.readLongReverse(in);
+		ret.user2 = Util.readLongReverse(in);
+		ret.user3 = Util.readShort(in);
+		ret.user4 = Util.readShort(in);
 		ret.user5 = in.read();
 		ret.user6 = in.read();
 		ret.user7 = in.read();
@@ -277,21 +275,4 @@ public class MappyMapReader implements MapReader {
 		return ret;	
     }
 
-    private Image readRawImage(InputStream in) throws IOException {
-	 	DirectColorModel cm = new DirectColorModel(16,0xF800,0x07E0,0x001F);
-	
-		int [] pixels = new int[twidth*theight+1];
-		int i,j;
-	
-		for(i=0;i<theight;i++)
-			for(j=0;j<twidth;j++) {
-				pixels[i*twidth+j]=readShortReverse(in);
-				//System.out.println(pixels[i*width+j]);
-			}
-	
-		MemoryImageSource s = new MemoryImageSource(twidth,theight,cm,pixels,0,twidth);		
-			
-		return Toolkit.getDefaultToolkit().createImage(s);
-		//return(Toolkit.getDefaultToolkit().createImage(new FilteredImageSource(orig.getSource(),new TransImageFilter(cm.getRGB(64305)))));
-    }
 }
