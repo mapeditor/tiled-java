@@ -169,7 +169,7 @@ public final class PluginClassLoader extends URLClassLoader
         }
     }
 
-    public MapReader[] getReaders() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+    public MapReader[] getReaders() {
         MapReader[] result = new MapReader[readers.size()];
         for (int i = 0; i < readers.size(); ++i) {
           result[i] = (MapReader)(readers.elementAt(i));
@@ -177,7 +177,7 @@ public final class PluginClassLoader extends URLClassLoader
         return result;
     }
 
-    public MapWriter[] getWriters() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+    public MapWriter[] getWriters() {
         MapWriter[] result = new MapWriter[writers.size()];
         for (int i = 0; i < writers.size(); ++i) {
           result[i] = (MapWriter)(writers.elementAt(i));

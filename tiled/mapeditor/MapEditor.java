@@ -1121,14 +1121,25 @@ public class MapEditor implements ActionListener,
         } else if (command.equals("Import Tileset...")) {
             if (currentMap != null) {
                 JFileChooser ch = new JFileChooser(currentMap.getFilename());
+                MapReader readers[] = (MapReader[]) pluginLoader.getReaders();
+                for(int i = 0; i < readers.length; i++) {
+                    try {
+                        ch.addChoosableFileFilter(new TiledFileFilter(
+                                    readers[i].getFilter(),
+                                    readers[i].getName()));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
 
-                ch.setFileFilter(new TiledFileFilter());
+                ch.addChoosableFileFilter(
+                        new TiledFileFilter(TiledFileFilter.FILTER_TSX));
+
                 int ret = ch.showOpenDialog(appFrame);
                 if (ret == JFileChooser.APPROVE_OPTION) {
                     String filename = ch.getSelectedFile().getAbsolutePath();
-                    MapReader mr = new XMLMapTransformer();
                     try {
-                        TileSet set = mr.readTileset(filename);
+                        TileSet set = MapHelper.readTileset(filename);
                         set.setSource(null);
                         currentMap.addTileset(set);
                     } catch (Exception e) {
@@ -1136,6 +1147,7 @@ public class MapEditor implements ActionListener,
                     }
                 }
             }
+
         } else if (command.equals("Tileset Manager")) {
             if (currentMap != null) {
                 TilesetManager manager = new TilesetManager(this, currentMap);
@@ -1719,18 +1731,14 @@ public class MapEditor implements ActionListener,
                 ch = new JFileChooser(filename);
             }
 
-            try {
-                MapWriter writers[] = (MapWriter[]) pluginLoader.getWriters();
-                for(int i = 0; i < writers.length; i++) {
+            MapWriter writers[] = (MapWriter[]) pluginLoader.getWriters();
+            for(int i = 0; i < writers.length; i++) {
+                try {
                     ch.addChoosableFileFilter(new TiledFileFilter(
                                 writers[i].getFilter(), writers[i].getName()));
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            } catch (Throwable e) {
-                JOptionPane.showMessageDialog(appFrame,
-                        "Error while loading plugins: " + e.getMessage(),
-                        "Error while saving map",
-                        JOptionPane.ERROR_MESSAGE);
-                e.printStackTrace();
             }
 
             ch.addChoosableFileFilter(

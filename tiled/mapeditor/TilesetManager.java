@@ -141,19 +141,14 @@ public class TilesetManager extends JDialog implements ActionListener,
         } else if (command.equals("Export...")) {
             JFileChooser ch = new JFileChooser(map.getFilename());
 
-            try {
-                MapWriter writers[]
-                  = (MapWriter[]) PluginClassLoader.getInstance().getWriters();
-                for (int i = 0; i < writers.length; i++) {
+            MapWriter writers[] = PluginClassLoader.getInstance().getWriters();
+            for (int i = 0; i < writers.length; i++) {
+                try {
                     ch.addChoosableFileFilter(new TiledFileFilter(
                                 writers[i].getFilter(), writers[i].getName()));
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            } catch (Throwable e) {
-                JOptionPane.showMessageDialog(editor.getAppFrame(),
-                        "Error while loading plugins: " + e.getMessage(),
-                        "Error while exporting tileset",
-                        JOptionPane.ERROR_MESSAGE);
-                e.printStackTrace();
             }
             ch.addChoosableFileFilter
               (new TiledFileFilter(TiledFileFilter.FILTER_TSX));
@@ -175,19 +170,15 @@ public class TilesetManager extends JDialog implements ActionListener,
         } else if (command.equals("Save")) {
             JFileChooser ch = new JFileChooser(map.getFilename());
 
-            try {
-                MapWriter writers[]
-                  = (MapWriter[]) PluginClassLoader.getInstance().getWriters();
-                for (int i = 0; i < writers.length; i++) {
+            MapWriter writers[]
+              = (MapWriter[]) PluginClassLoader.getInstance().getWriters();
+            for (int i = 0; i < writers.length; i++) {
+                try {
                     ch.addChoosableFileFilter(new TiledFileFilter(
                                 writers[i].getFilter(), writers[i].getName()));
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            } catch (Throwable e) {
-                JOptionPane.showMessageDialog(editor.getAppFrame(),
-                        "Error while loading plugins: " + e.getMessage(),
-                        "Error while exporting tileset",
-                        JOptionPane.ERROR_MESSAGE);
-                e.printStackTrace();
             }
             ch.addChoosableFileFilter
               (new TiledFileFilter(TiledFileFilter.FILTER_TSX));

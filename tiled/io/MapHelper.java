@@ -145,7 +145,57 @@ public class MapHelper {
 
         return ret;
     }
-    
+
+    /**
+     * Loads a tileset. Use the extension (.xxx) of the filename to determine
+     * the plugin to use when reading the file. Throws an exception when the
+     * extension * is not supported by either the TMX writer or a plugin.
+     *
+     * @param file filename of map to load
+     * @return A new TileSet instance, loaded from the specified file by a
+     *    plugin
+     * @see MapReader#readTileset(String)
+     */
+    public static TileSet readTileset(String file) throws Exception {
+        TileSet ret = null;
+        try {
+            MapReader mr = null;
+            if (file.endsWith(".tsx")) {
+                // Override, so people can't overtake our format
+                mr = new XMLMapTransformer();
+            } else {
+                mr = (MapReader)pluginLoader.getReaderFor(
+                        file.substring(file.lastIndexOf('.') + 1));
+            }
+
+            if (mr != null) {
+                Stack errors = new Stack();
+                mr.setErrorStack(errors);
+                ret = mr.readTileset(file);
+                reportPluginMessages(errors);
+            } else {
+                throw new Exception("Unsupported tileset format");
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null,
+                    e.getMessage() + (e.getCause() != null ? "\nCause: " +
+                        e.getCause().getMessage() : ""),
+                    "Error while loading tileset",
+                    JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null,
+                    "Error while loading " + file + ": " +
+                    e.getMessage() + (e.getCause() != null ? "\nCause: " +
+                        e.getCause().getMessage() : ""),
+                    "Error while loading tileset",
+                    JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+
+        return ret;
+    }
+
     /**
      * Reports messages from the plugin to the user in a dialog
      * 
