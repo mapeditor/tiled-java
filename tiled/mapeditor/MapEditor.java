@@ -39,7 +39,6 @@ import tiled.util.Util;
 import tiled.io.MapHelper;
 import tiled.io.MapReader;
 import tiled.io.MapWriter;
-import tiled.io.xml.XMLMapTransformer;
 
 
 /**
@@ -66,7 +65,8 @@ public class MapEditor implements ActionListener,
     private Cursor curEyed    = null;
     private Cursor curMarquee = null;
 
-    public static final String version = "0.5.0";
+    /** current release version */
+    public static final String version = "0.5.1";
 
     private Map currentMap;
     private MapView mapView;
@@ -729,6 +729,8 @@ public class MapEditor implements ActionListener,
 
     /**
      * Returns the currently selected tile.
+     * 
+     * @return The currently selected tile.
      */
     public Tile getCurrentTile() {
         return currentTile;
@@ -736,6 +738,8 @@ public class MapEditor implements ActionListener,
 
     /**
      * Returns the current map.
+     * 
+     * @return The currently selected map.
      */
     public Map getCurrentMap() {
         return currentMap;
@@ -743,6 +747,8 @@ public class MapEditor implements ActionListener,
 
     /**
      * Returns the currently selected layer.
+     * 
+     * @return THe currently selected layer.
      */
     public MapLayer getCurrentLayer() {
         return currentMap.getLayer(currentLayer);
@@ -750,6 +756,8 @@ public class MapEditor implements ActionListener,
 
     /**
      * Returns the main application frame.
+     * 
+     * @return The frame of the main application
      */
     public Frame getAppFrame() {
         return appFrame;
@@ -1149,7 +1157,7 @@ public class MapEditor implements ActionListener,
 
         } else if (command.equals("Tileset Manager")) {
             if (currentMap != null) {
-                TilesetManager manager = new TilesetManager(this, currentMap);
+                TilesetManager manager = new TilesetManager(appFrame, currentMap);
                 manager.setVisible(true);
             }
         } else if (command.equals("Save")) {
@@ -1779,6 +1787,12 @@ public class MapEditor implements ActionListener,
         }
     }
 
+    /**
+     * Attempts to draw the entire map to an image file
+     * of the format of the extension. (filename.ext)
+     * 
+     * @param filename Image filename to save map render to.
+     */
     public void saveMapImage(String filename) {
         if (filename == null) {
             JFileChooser ch = new JFileChooser();
@@ -2067,6 +2081,13 @@ public class MapEditor implements ActionListener,
         }
     }
 
+    /**
+     * Loads an image that is part of the distribution jar
+     * 
+     * @param fname
+     * @return A BufferedImage instance of the image
+     * @throws IOException
+     */
     public static BufferedImage loadImageResource(String fname)
         throws IOException {
         return ImageIO.read(MapEditor.class.getResourceAsStream(fname));

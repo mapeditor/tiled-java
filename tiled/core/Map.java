@@ -26,9 +26,13 @@ import tiled.mapeditor.util.*;
  */
 public class Map extends MultilayerPlane implements Cloneable
 {
+    /** orthogonal */
     public static final int MDO_ORTHO   = 1;
+    /** isometric */
     public static final int MDO_ISO     = 2;
+    /** oblique */
     public static final int MDO_OBLIQUE = 3;
+    /** hexagonal */
     public static final int MDO_HEX     = 4;
 
     private Vector specialLayers;
@@ -66,6 +70,7 @@ public class Map extends MultilayerPlane implements Cloneable
     /**
      * Adds a change listener. The listener will be notified when the map
      * changes in certain ways.
+     * @param l
      *
      * @see MapChangeListener#mapChanged(MapChangedEvent)
      */
@@ -75,6 +80,7 @@ public class Map extends MultilayerPlane implements Cloneable
 
     /**
      * Removes a change listener.
+     * @param l
      */
     public void removeMapChangeListener(MapChangeListener l) {
         mapChangeListeners.remove(MapChangeListener.class, l);
@@ -159,9 +165,17 @@ public class Map extends MultilayerPlane implements Cloneable
         fireMapChanged();
     }
 
+    /**
+     * Removes a {@link TileSet} from the map, and removes any tiles
+     * in the set from the map layers. A {@link MapChangedEvent} is 
+     * fired when all processing is complete. 
+     * 
+     * @param s TileSet to remove
+     * @throws Exception
+     */
     public void removeTileset(TileSet s) throws Exception{
         // Sanity check
-        if (tilesets.indexOf(s) != -1)
+        if (tilesets.indexOf(s) == -1)
             return;
         
         // Go through the map and remove any instances of the tiles in the set
@@ -391,6 +405,8 @@ public class Map extends MultilayerPlane implements Cloneable
 
     /**
      * Returns the sum of the size of each tile set.
+     * 
+     * @return
      */
     /*
     public int getTotalTiles() {
@@ -408,6 +424,8 @@ public class Map extends MultilayerPlane implements Cloneable
 
     /**
      * Returns the amount of objects on the map.
+     * 
+     * @return The total objects in the map
      */
     public int getTotalObjects() {
         return totalObjects;
@@ -417,6 +435,8 @@ public class Map extends MultilayerPlane implements Cloneable
      * Returns the orientation of this map. Orientation will be one of
      * {@link Map#MDO_ISO}, {@link Map#MDO_ORTHO}, {@link Map#MDO_HEX} and
      * {@link Map#MDO_OBLIQUE}.
+     * 
+     * @return The orientation from the enumerated set
      */
     public int getOrientation() {
         return orientation;
@@ -437,6 +457,10 @@ public class Map extends MultilayerPlane implements Cloneable
 
     /**
      * Determines wether the point (x,y) falls within the map boundaries.
+     * 
+     * @param x
+     * @param y
+     * @return <code>true</code> if the point is within the map boundaries, <code>false</code> otherwise
      */
     public boolean inBounds(int x, int y) {
         return (x >= 0 && y >= 0 &&

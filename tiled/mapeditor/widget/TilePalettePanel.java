@@ -95,13 +95,23 @@ public class TilePalettePanel extends JPanel implements Scrollable,
         // Draw checkerboard background
         int side=10;
         int alt=1;
-        for(int k=clip.y-clip.y%side;k<=Math.max(10, (clip.y+clip.height/10)*10);k+=side,alt++) {
-            for(int l=1;l<=Math.max(10, (getWidth()/10)*10)+10;l+=side, alt++) {
-                if(alt%2 == 1) g.setColor(Color.LIGHT_GRAY);
-                else g.setColor(Color.WHITE);
-                g.fillRect(l,k,side,side);
+        int start = Math.min(0, (clip.y+clip.height/side)*side);
+        int end = Math.max(side, (clip.y+clip.height/side)*side);
+        int xEnd = Math.max(10, (getWidth()/10)*10)+10;
+        
+        g.setColor(Color.WHITE);
+        g.fillRect(clip.x, clip.y, clip.width, clip.height);
+        
+        for(int k=start;k<=end;k++,alt++) {
+            int y = k*side;
+            for(int l=1;l<=xEnd;l+=side, alt++) {
+                if(alt%2 == 1) {
+                    g.setColor(Color.LIGHT_GRAY);
+                    g.fillRect(l,y,side,side);
+                }
             }
-            if(clip.width%2!=0 || clip.width == 0) alt++;
+            //if(clip.width%2!=0 || clip.width == 0) alt++;
+            alt++;
         }
 
         if (tilesets.size() <= 0) {

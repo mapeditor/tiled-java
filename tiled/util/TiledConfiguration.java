@@ -34,6 +34,8 @@ public final class TiledConfiguration
     /**
      * Returns the tiled configuration class instance. Will return <code>null
      * </code> when the instance hasn't been created yet.
+     * 
+     * @return TiledConfiguration a reference to the singleton
      */
     public static TiledConfiguration getInstance() {
         return instance;
@@ -42,6 +44,7 @@ public final class TiledConfiguration
     /**
      * Returns the tiled configuration class instance. Will create a new
      * instance when it hasn't been created yet.
+     * @return TiledConfiguration same as @link{TiledConfiguration#getInstance}, but instantiates the singleton if it is null
      */
     public static TiledConfiguration getOrCreateInstance() {
         if (instance == null) {
@@ -54,6 +57,8 @@ public final class TiledConfiguration
      * Reads config settings from the given file.
      *
      * @param filename path of file to read configuration from
+     * @throws FileNotFoundException
+     * @throws IOException
      */
     public void parse(String filename)
         throws FileNotFoundException, IOException {
@@ -62,6 +67,9 @@ public final class TiledConfiguration
 
     /**
      * Reads config settings from the given buffered reader.
+     * 
+     * @param br a @link{BufferedReader} opened on the config file
+     * @throws IOException
      */
     public void parse(BufferedReader br) throws IOException {
         String line;
@@ -78,6 +86,9 @@ public final class TiledConfiguration
 
     /**
      * Returns wether the option is available in the config file.
+     * 
+     * @param name the name of the option to check for
+     * @return boolean <code>true</code> if the option has a non-<code>null</code> value, <code>false</code> otherwise
      */
     public boolean hasOption(String name) {
         return (settings.get(name) != null);
@@ -85,6 +96,9 @@ public final class TiledConfiguration
 
     /**
      * Returns the value of the given option.
+     * 
+     * @param option
+     * @return String The value of the specified option as a String
      */
     public String getValue(String option) {    	
          return (String)settings.get(option);
@@ -93,6 +107,10 @@ public final class TiledConfiguration
     /**
      * Returns the integer value of the given option, or the given default
      * when the option doesn't exist.
+     * 
+     * @param option
+     * @param def
+     * @return int The value of the specified option as an <code>int</code>
      */
     public int getIntValue(String option, int def) {
         String str = getValue(option);
@@ -197,6 +215,10 @@ public final class TiledConfiguration
         bw.close();
     }
     
+    /**
+     * Sets the default values for pertinent properties
+     * 
+     */
     public void populateDefaults() {
         addConfigPair("tmx.save.embedImages", "1");
         addConfigPair("tmx.save.tileImagePrefix", "tile");
