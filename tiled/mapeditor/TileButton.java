@@ -14,6 +14,7 @@ package tiled.mapeditor;
 
 import java.awt.*;
 import java.awt.event.*;
+
 import javax.swing.*;
 import javax.swing.event.EventListenerList;
 
@@ -50,14 +51,16 @@ public class TileButton extends JButton
     public void setTile( Tile t ) {
         tile = t;
         ImageIcon icon = null;
+        Insets i = getInsets();
 
         if (tile != null) {
             Image tileImg = tile.getImage();
             int imgWidth = tileImg.getWidth(null);
+            int w = getWidth() - i.left - i.right;
 
-            if (imgWidth > 26) {
-                icon = new ImageIcon(tileImg.getScaledInstance(26,
-                            (int)(tileImg.getHeight(null) * (26.0 / imgWidth)),
+            if (imgWidth > w) {
+                icon = new ImageIcon(tileImg.getScaledInstance(w,
+                            ((tileImg.getHeight(null) * w) / imgWidth),
                             Image.SCALE_SMOOTH));
             } else {
                 icon = new ImageIcon(tileImg);
@@ -127,45 +130,25 @@ public class TileButton extends JButton
         return maintainAspect;
     }
 
-    /*
-     *  Methods for Mouse Events
-     */
-    /*
-    protected void paintComponent( Graphics t ) {
-        Graphics g = t.create( );
-        Insets i = getInsets( );
-
-        if( tile != null ) {
-            if( maintainAspect ) {
-                int w = getWidth( ) - i.left - i.right;
-                double per = (double)w / (double)tile.getWidth( );
-                tile.drawRaw( g, i.left, i.top, per );
-            }
-            else {
-                tile.drawRaw( g, i.left, i.top, 1.0 );
-            }
-        }
-        else { 
-            g.setColor( new Color( 255, 255, 255 ) );
-            Dimension s = calculateInnerSize( );
-            g.fillRect( i.left, i.top, s.width, s.height );
-        }
-
-        g.dispose( );
-    }
-    */
-
     /**
-     *
+     * Adds a tile selection listener. The listener will be notified when the
+     * tile shown by the tile button changes.
      */
     public void addTileSelectionListener( TileSelectionListener l ) {
         tileSelectionListeners.add( TileSelectionListener.class, l );
     }
 
+    /**
+     * Removes a tile selection listener.
+     */
     public void removeTileSelectionListener( TileSelectionListener l ) {
         tileSelectionListeners.remove( TileSelectionListener.class, l );
     }
 
+    /**
+     * Notifies all registered tile selection listeners about a newly selected
+     * tile.
+     */
     protected void fireActionPerformed( TileSelectionEvent e ) {
         Object[] listeners = tileSelectionListeners.getListenerList( );
 

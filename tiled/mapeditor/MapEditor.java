@@ -5,7 +5,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
@@ -87,7 +87,6 @@ public class MapEditor implements ActionListener,
     JMenuItem   layerAdd, layerClone, layerDel;
     JMenuItem   layerUp, layerDown;
     JMenuItem   layerMerge, layerMergeAll;
-    JMenuItem   mRot90, mRot180, mRot270, mFlipHor, mFlipVer;
     JMenu       recentMenu;
     JScrollPane mapScrollPane;
     JTable      layerTable;
@@ -111,6 +110,8 @@ public class MapEditor implements ActionListener,
     // Actions
     Action zoomInAction, zoomOutAction, zoomNormalAction;
     Action undoAction, redoAction;
+    Action rot90Action, rot180Action, rot270Action;
+    Action flipHorAction, flipVerAction;
 
 
     public MapEditor() {
@@ -144,6 +145,11 @@ public class MapEditor implements ActionListener,
         zoomNormalAction = new ZoomNormalAction();
         undoAction = new UndoAction();
         redoAction = new RedoAction();
+        rot90Action = new LayerTransformAction(MapLayer.ROTATE_90);
+        rot180Action = new LayerTransformAction(MapLayer.ROTATE_180);
+        rot270Action = new LayerTransformAction(MapLayer.ROTATE_270);
+        flipHorAction = new LayerTransformAction(MapLayer.MIRROR_HORIZONTAL);
+        flipVerAction = new LayerTransformAction(MapLayer.MIRROR_VERTICAL);
 
         // Create our frame
         appFrame = new JFrame("Tiled");
@@ -204,19 +210,12 @@ public class MapEditor implements ActionListener,
         }
     }
 
-	/**
-	 * Creates all the menus and submenus of the top menu bar. Handles
-	 * assigning listeners and tooltips as well.
-	 *
-	 */
+    /**
+     * Creates all the menus and submenus of the top menu bar. Handles
+     * assigning listeners and tooltips as well.
+     */
     private void createMenuBar() {
         JMenu m;
-
-        Icon iconRot90 = loadIcon("resources/gimp-rotate-90-16.png");
-        Icon iconRot180 = loadIcon("resources/gimp-rotate-180-16.png");
-        Icon iconRot270 = loadIcon("resources/gimp-rotate-270-16.png");
-        Icon iconFlipHor = loadIcon("resources/gimp-flip-horizontal-16.png");
-        Icon iconFlipVer = loadIcon("resources/gimp-flip-vertical-16.png");
 
         menuBar = new JMenuBar();
 
@@ -255,31 +254,20 @@ public class MapEditor implements ActionListener,
         undoMenuItem.setEnabled(false);
         redoMenuItem.setEnabled(false);
 
-        mRot90 = createMenuItem("Rotate 90 degrees CW",
-                iconRot90, "Rotate 90 degrees clockwise");
-        mRot180 = createMenuItem("Rotate 180 degrees CW",
-                iconRot180, "Rotate 180 degrees clockwise");
-        mRot270 = createMenuItem("Rotate 90 degrees CCW",
-                iconRot270, "Rotate 90 degrees counterclockwise");
-        mFlipHor = createMenuItem("Flip Horizontal",
-                iconFlipHor, "Flip the map horizontally");
-        mFlipVer = createMenuItem("Flip Vertical",
-                iconFlipVer, "Flip the map vertically");
-
         JMenu transformSub = new JMenu("Transform");
-        transformSub.add(mRot90);
-        transformSub.add(mRot270);
-        transformSub.add(mRot180);
+        transformSub.add(new TMenuItem(rot90Action, true));
+        transformSub.add(new TMenuItem(rot180Action, true));
+        transformSub.add(new TMenuItem(rot270Action, true));
         transformSub.addSeparator();
-        transformSub.add(mFlipHor);
-        transformSub.add(mFlipVer);
+        transformSub.add(new TMenuItem(flipHorAction, true));
+        transformSub.add(new TMenuItem(flipVerAction, true));
         mapEventAdapter.addListener(transformSub);
 
         m = new JMenu("Edit");
         m.add(undoMenuItem);
         m.add(redoMenuItem);
         m.addSeparator();
-        m.add(transformSub);		
+        m.add(transformSub);
         m.addSeparator();
         m.add(createMenuItem("Preferences...",
                     null, "Configure options of the editor", null));
@@ -354,7 +342,6 @@ public class MapEditor implements ActionListener,
         mapEventAdapter.addListener(m);
         menuBar.add(m);
         */
-
 
         gridMenuItem = new JCheckBoxMenuItem("Show Grid");
         gridMenuItem.addActionListener(this);
@@ -617,12 +604,6 @@ public class MapEditor implements ActionListener,
         return button;
     }
 
-    private AbstractButton createButton(Action action) {
-        AbstractButton button = new JButton(action);
-        button.setMargin(new Insets(0, 0, 0, 0));
-        return button;
-    }
-
     /**
      * Returns the currently selected tile.
      */
@@ -653,7 +634,7 @@ public class MapEditor implements ActionListener,
         updateTitle();
     }
 
-	private void doLayerStateChange(ActionEvent event) {
+    private void doLayerStateChange(ActionEvent event) {
         String command = event.getActionCommand();
         if (currentMap == null) {
             return;
@@ -663,58 +644,58 @@ public class MapEditor implements ActionListener,
 
         mlse.setPresentationName(command);
 
-		if (command.equals("Add Layer")) {
-            currentMap.addLayer();            
+        if (command.equals("Add Layer")) {
+            currentMap.addLayer();
             setCurrentLayer(currentMap.getTotalLayers() - 1);
-		} else if (command.equals("Duplicate Layer")) {
-			if (currentLayer >= 0) {
-				try {
-					MapLayer clone =
-						(MapLayer)currentMap.getLayer(currentLayer).clone();
-					clone.setName(clone.getName() + " copy");
-					currentMap.addLayer(clone);
-				} catch (CloneNotSupportedException ex) {
-					ex.printStackTrace();
-				}
-				setCurrentLayer(currentMap.getTotalLayers() - 1);
-			}
-		} else if (command.equals("Move Layer Up")) {
-			if (currentLayer >= 0) {
-				try {
-					int cl = currentLayer;
-					currentMap.swapLayerUp(currentLayer);
-					setCurrentLayer(cl + 1);
-				} catch (Exception ex) {
-					System.out.println(ex.toString());
-				}
-			}
-		} else if (command.equals("Move Layer Down")) {
-			if (currentLayer >= 0) {
-				try {
-					int cl = currentLayer;
-					currentMap.swapLayerDown(currentLayer);
-					setCurrentLayer(cl - 1);
-				} catch (Exception ex) {
-					System.out.println(ex.toString());
-				}
-			}
-		} else if (command.equals("Delete Layer")) {
-			if (currentLayer >= 0) {
-				int cl = currentLayer - 1;
-				currentMap.removeLayer(currentLayer);
-				setCurrentLayer(cl < 0 ? 0 : cl);
-			}
-		} else if (command.equals("Merge Down")) {
-			if (currentLayer >= 0) {
-				try {
-					int cl = currentLayer;
-					currentMap.mergeLayerDown(currentLayer);
-					setCurrentLayer(cl - 1);
-				} catch (Exception ex) {
-					System.out.println(ex.toString());
-				}
-			}
-		} else if (command.equals("Merge All")) {
+        } else if (command.equals("Duplicate Layer")) {
+            if (currentLayer >= 0) {
+                try {
+                    MapLayer clone =
+                        (MapLayer)currentMap.getLayer(currentLayer).clone();
+                    clone.setName(clone.getName() + " copy");
+                    currentMap.addLayer(clone);
+                } catch (CloneNotSupportedException ex) {
+                    ex.printStackTrace();
+                }
+                setCurrentLayer(currentMap.getTotalLayers() - 1);
+            }
+        } else if (command.equals("Move Layer Up")) {
+            if (currentLayer >= 0) {
+                try {
+                    int cl = currentLayer;
+                    currentMap.swapLayerUp(currentLayer);
+                    setCurrentLayer(cl + 1);
+                } catch (Exception ex) {
+                    System.out.println(ex.toString());
+                }
+            }
+        } else if (command.equals("Move Layer Down")) {
+            if (currentLayer >= 0) {
+                try {
+                    int cl = currentLayer;
+                    currentMap.swapLayerDown(currentLayer);
+                    setCurrentLayer(cl - 1);
+                } catch (Exception ex) {
+                    System.out.println(ex.toString());
+                }
+            }
+        } else if (command.equals("Delete Layer")) {
+            if (currentLayer >= 0) {
+                int cl = currentLayer - 1;
+                currentMap.removeLayer(currentLayer);
+                setCurrentLayer(cl < 0 ? 0 : cl);
+            }
+        } else if (command.equals("Merge Down")) {
+            if (currentLayer >= 0) {
+                try {
+                    int cl = currentLayer;
+                    currentMap.mergeLayerDown(currentLayer);
+                    setCurrentLayer(cl - 1);
+                } catch (Exception ex) {
+                    System.out.println(ex.toString());
+                }
+            }
+        } else if (command.equals("Merge All")) {
             while (currentMap.getTotalLayers() > 1) {
                 try {
                     currentMap.mergeLayerDown(
@@ -722,7 +703,7 @@ public class MapEditor implements ActionListener,
                 } catch (Exception ex) {}
             }
             setCurrentLayer(0);
-		}
+        }
 
         try {
             mlse.end(currentMap.getLayers());
@@ -816,7 +797,7 @@ public class MapEditor implements ActionListener,
         bMouseIsDown = false;
         if (paintEdit != null) {
             MapLayer layer = currentMap.getLayer(currentLayer);
-            if (layer != null) {            
+            if (layer != null) {
 	            try {
                     MapLayer endLayer = paintEdit.getStart().createDiff(layer);
                     endLayer.setId(layer.getId());
@@ -960,7 +941,7 @@ public class MapEditor implements ActionListener,
             }
         } else if (command.equals("Save")) {
             if (currentMap != null) {
-                saveMap(currentMap.getFilename(),false);
+                saveMap(currentMap.getFilename(), false);
             }
         } else if (command.equals("Save as...")) {
             if (currentMap != null) {
@@ -994,48 +975,6 @@ public class MapEditor implements ActionListener,
         } else if (command.equals("Preferences...")) {
             ConfigurationDialog d = new ConfigurationDialog(appFrame);
             d.configure();
-        } else if (src == mFlipHor) {
-            MapLayer layer = currentMap.getLayer(currentLayer);			
-            paintEdit = new MapLayerEdit(currentMap, new MapLayer(layer));
-            currentMap.getLayer(currentLayer).mirror(
-                    MapLayer.MIRROR_HORIZONTAL);
-            layer = new MapLayer(currentMap.getLayer(currentLayer));
-            paintEdit.end(layer);
-            paintEdit.setPresentationName("Flip Horizontal");
-            undoSupport.postEdit(paintEdit);
-            mapView.repaint();
-        } else if (src == mFlipVer) {
-            MapLayer layer = currentMap.getLayer(currentLayer);
-            paintEdit = new MapLayerEdit(currentMap, new MapLayer(layer));
-            paintEdit.setPresentationName("Flip Vertical");
-            layer.mirror(MapLayer.MIRROR_VERTICAL);
-            paintEdit.end(new MapLayer(layer));
-            undoSupport.postEdit(paintEdit);
-            mapView.repaint();
-        } else if (src == mRot90) {
-            MapLayer layer = currentMap.getLayer(currentLayer);
-            paintEdit = new MapLayerEdit(currentMap, new MapLayer(layer));
-            paintEdit.setPresentationName("Rotate 90");
-            layer.rotate(MapLayer.ROTATE_90);
-            paintEdit.end(new MapLayer(layer));
-            undoSupport.postEdit(paintEdit);
-            mapView.repaint();
-        } else if (src == mRot180) {
-            MapLayer layer = currentMap.getLayer(currentLayer);
-            paintEdit = new MapLayerEdit(currentMap, new MapLayer(layer));
-            paintEdit.setPresentationName("Rotate 180");
-            layer.rotate(MapLayer.ROTATE_180);
-            paintEdit.end(new MapLayer(layer));
-            undoSupport.postEdit(paintEdit);
-            mapView.repaint();
-        } else if (src == mRot270) {
-            MapLayer layer = currentMap.getLayer(currentLayer);
-            paintEdit = new MapLayerEdit(currentMap, new MapLayer(layer));
-            paintEdit.setPresentationName("Rotate 270");
-            layer.rotate(MapLayer.ROTATE_270);
-            paintEdit.end(new MapLayer(layer));
-            undoSupport.postEdit(paintEdit);
-            mapView.repaint();
         } else {
             System.out.println(event);
         }
@@ -1118,6 +1057,77 @@ public class MapEditor implements ActionListener,
         public void actionPerformed(ActionEvent evt) {
             undoStack.redo();
             updateHistory();
+            mapView.repaint();
+        }
+    }
+
+    private class LayerTransformAction extends AbstractAction {
+        private int transform;
+        public LayerTransformAction(int transform) {
+            this.transform = transform;
+            switch (transform) {
+                case MapLayer.ROTATE_90:
+                    putValue(NAME, "Rotate 90 degrees CW");
+                    putValue(SHORT_DESCRIPTION,
+                            "Rotate layer 90 degrees clockwise");
+                    putValue(SMALL_ICON,
+                            loadIcon("resources/gimp-rotate-90-16.png"));
+                    break;
+                case MapLayer.ROTATE_180:
+                    putValue(NAME, "Rotate 180 degrees CW");
+                    putValue(SHORT_DESCRIPTION,
+                            "Rotate layer 180 degrees clockwise");
+                    putValue(SMALL_ICON,
+                            loadIcon("resources/gimp-rotate-180-16.png"));
+                    break;
+                case MapLayer.ROTATE_270:
+                    putValue(NAME, "Rotate 90 degrees CCW");
+                    putValue(SHORT_DESCRIPTION,
+                            "Rotate layer 90 degrees counterclockwise");
+                    putValue(SMALL_ICON,
+                            loadIcon("resources/gimp-rotate-270-16.png"));
+                    break;
+                case MapLayer.MIRROR_VERTICAL:
+                    putValue(NAME, "Flip vertically");
+                    putValue(SHORT_DESCRIPTION, "Flip layer vertically");
+                    putValue(SMALL_ICON,
+                            loadIcon("resources/gimp-flip-vertical-16.png"));
+                    break;
+                case MapLayer.MIRROR_HORIZONTAL:
+                    putValue(NAME, "Flip horizontally");
+                    putValue(SHORT_DESCRIPTION, "Flip layer horizontalle");
+                    putValue(SMALL_ICON,
+                            loadIcon("resources/gimp-flip-horizontal-16.png"));
+                    break;
+            }
+        }
+        public void actionPerformed(ActionEvent evt) {
+            MapLayer layer = currentMap.getLayer(currentLayer);
+            paintEdit = new MapLayerEdit(currentMap, new MapLayer(layer));
+            switch (transform) {
+                case MapLayer.ROTATE_90:
+                    paintEdit.setPresentationName("Rotate");
+                    layer.rotate(MapLayer.ROTATE_90);
+                    break;
+                case MapLayer.ROTATE_180:
+                    paintEdit.setPresentationName("Rotate");
+                    layer.rotate(MapLayer.ROTATE_180);
+                    break;
+                case MapLayer.ROTATE_270:
+                    paintEdit.setPresentationName("Rotate");
+                    layer.rotate(MapLayer.ROTATE_270);
+                    break;
+                case MapLayer.MIRROR_VERTICAL:
+                    paintEdit.setPresentationName("Vertical Flip");
+                    layer.mirror(MapLayer.MIRROR_VERTICAL);
+                    break;
+                case MapLayer.MIRROR_HORIZONTAL:
+                    paintEdit.setPresentationName("Horizontal Flip");
+                    layer.mirror(MapLayer.MIRROR_HORIZONTAL);
+                    break;
+            }
+            paintEdit.end(new MapLayer(layer));
+            undoSupport.postEdit(paintEdit);
             mapView.repaint();
         }
     }
@@ -1382,10 +1392,10 @@ public class MapEditor implements ActionListener,
 
         for (int i = 0; i < recent.size(); i++) {
             String file = (String)recent.get(i);
-            if(file != null) {            
+            if (file != null) {
 	            String name =
 	                file.substring(file.lastIndexOf(File.separatorChar) + 1);
-	
+
 	            TiledConfiguration.addConfigPair("tmx.recent." + (i + 1), file);
 	            JMenuItem recentOption = createMenuItem(name, null, null);
 	            recentOption.setActionCommand("_open" + (i + 1));
@@ -1425,7 +1435,7 @@ public class MapEditor implements ActionListener,
             gridMenuItem.setState(mapView.getMode(MapView.PF_GRIDMODE));
 
             Vector tilesets = currentMap.getTilesets();
-            if (tilesets.size() > 0) {                
+            if (tilesets.size() > 0) {
                 tilePalettePanel.setTileset(tilesets);
                 TileSet first = (TileSet)tilesets.get(0);
                 setCurrentTile(first.getFirstTile());
@@ -1462,21 +1472,23 @@ public class MapEditor implements ActionListener,
         if (currentMap != null) {
             int totalLayers = currentMap.getTotalLayers();
             if (totalLayers > index && index >= 0) {
-				/*if (paintEdit != null) {
-					MapLayer layer = currentMap.getLayer(currentLayer);
-					try {
-						MapLayer endLayer =
-							paintEdit.getStart().createDiff(layer);
-						if(endLayer != null) {						
-							endLayer.setId(layer.getId());
-							endLayer.setOffset(layer.getBounds().x,layer.getBounds().y);
-						}
-						paintEdit.end(endLayer);
-						undoSupport.postEdit(paintEdit);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}*/
+                /*
+                if (paintEdit != null) {
+                    MapLayer layer = currentMap.getLayer(currentLayer);
+                    try {
+                        MapLayer endLayer =
+                            paintEdit.getStart().createDiff(layer);
+                        if (endLayer != null) {
+                            endLayer.setId(layer.getId());
+                            endLayer.setOffset(layer.getBounds().x,layer.getBounds().y);
+                        }
+                        paintEdit.end(endLayer);
+                        undoSupport.postEdit(paintEdit);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                */
                 currentLayer = index;
                 layerTable.changeSelection(totalLayers - currentLayer - 1, 0,
                         false, false);
