@@ -18,6 +18,7 @@ import javax.swing.table.AbstractTableModel;
 
 import tiled.core.Map;
 import tiled.core.MapLayer;
+import tiled.core.TileLayer;
 import tiled.core.TileSet;
 
 
@@ -90,7 +91,7 @@ public class TilesetTableModel extends AbstractTableModel
             ListIterator itr = map.getLayers();
             while (itr.hasNext()) {
                 MapLayer ml = (MapLayer)itr.next();
-                if (ml.isUsed(s.getTile(i))) {
+                if (((TileLayer)ml).isUsed(s.getTile(i))) {
                     used++;
                     break;
                 }

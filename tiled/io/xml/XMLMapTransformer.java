@@ -390,12 +390,12 @@ public class XMLMapTransformer implements MapReader
     }
 
     private MapLayer unmarshalLayer(Node t) throws Exception {
-        MapLayer ml = null;
+        TileLayer ml = null;
         Rectangle rect = new Rectangle(0, 0, map.getWidth(), map.getHeight());
 
         boolean encodedBase64 = false;
         try {
-            ml = (MapLayer)unmarshalClass(MapLayer.class, t);
+            ml = (TileLayer)unmarshalClass(TileLayer.class, t);
         } catch (Exception e) {
             e.printStackTrace();
         }

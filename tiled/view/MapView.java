@@ -175,7 +175,12 @@ public abstract class MapView extends JPanel implements Scrollable
                     } else {
                         g2d.setComposite(AlphaComposite.SrcOver);
                     }
-                    paint(g, layer, currentZoom);
+                    
+                    if(layer instanceof TileLayer) {
+                    	paintLayer(g, (TileLayer) layer, currentZoom);
+                    } else if (layer instanceof ObjectGroup){
+                    	paintLayer(g, (ObjectGroup)layer, currentZoom);
+                    }
                 }
             }
         }
@@ -192,7 +197,7 @@ public abstract class MapView extends JPanel implements Scrollable
                         g2d.setColor(
                                 ((SelectionLayer)layer).getHighlightColor());
                     }
-                    paint(g, layer, currentZoom);
+                    paintLayer(g, (TileLayer)layer, currentZoom);
                 }
             }
         }
@@ -238,8 +243,17 @@ public abstract class MapView extends JPanel implements Scrollable
         }
     }
 
+    /**
+     * Draws a TileLayer. Implemented in a subclass.
+     *
+     * @param layer the TileLayer to be drawn
+     * @param zoom  the zoom level to draw the layer on
+     */
+    protected abstract void paintLayer(Graphics g, TileLayer tl, double zoom);
+    protected abstract void paintLayer(Graphics g, ObjectGroup og, double zoom);
+    
     protected void paintEdge(Graphics g, MapLayer layer, int x, int y) {
-        Polygon grid = createGridPolygon(x, y, 0);
+        /*Polygon grid = createGridPolygon(x, y, 0);
         PathIterator itr = grid.getPathIterator(null);
         double nextPoint[] = new double[6];
         double prevPoint[], firstPoint[];
@@ -288,7 +302,7 @@ public abstract class MapView extends JPanel implements Scrollable
             g.drawLine(
                     (int)nextPoint[0], (int)nextPoint[1],
                     (int)firstPoint[0], (int)firstPoint[1]);
-        }
+        }*/
     }
 
     /**
@@ -301,15 +315,7 @@ public abstract class MapView extends JPanel implements Scrollable
      */
     public void repaintRegion(Rectangle region) {
         repaint();
-    }
-
-    /**
-     * Draws a layer. Implemented in a subclass.
-     *
-     * @param layer the layer to be drawn
-     * @param zoom  the zoom level to draw the layer on
-     */
-    protected abstract void paint(Graphics g, MapLayer layer, double zoom);
+    }    
 
     /**
      * Draws the map grid.

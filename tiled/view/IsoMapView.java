@@ -46,7 +46,7 @@ public class IsoMapView extends MapView
         }
     }
 
-    protected void paint(Graphics g, MapLayer layer, double zoom) {
+    protected void paintLayer(Graphics g, TileLayer layer, double zoom) {
         ((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                                          RenderingHints.VALUE_ANTIALIAS_ON);
 
@@ -92,6 +92,10 @@ public class IsoMapView extends MapView
         }
     }	
 
+    protected void paintLayer(Graphics g, ObjectGroup layer, double zoom) {
+
+    }
+    
     protected void paintGrid(Graphics g, double zoom) {
         Dimension tileSize = getTileSize(zoom);
         Rectangle clipRect = g.getClipBounds();

@@ -246,6 +246,16 @@ public class XMLMapWriter implements MapWriter
         }
     }
 
+    private void writeObjectGroup(ObjectGroup o, XMLWriter w) throws IOException {
+    	try {
+	    	w.startElement("objectgroup");
+	    	
+	    	w.endElement();
+    	} catch (XMLWriterException xwe) {
+    		xwe.printStackTrace();
+    	}
+    }
+    
     /**
      * Writes this layer to an XMLWriter. This should be done <b>after</b> the
      * first global ids for the tilesets are determined, in order for the right
@@ -266,8 +276,10 @@ public class XMLMapWriter implements MapWriter
 
             if (l.getClass() == SelectionLayer.class) {
                 w.startElement("selection");
+            } else if(l instanceof ObjectGroup){
+                writeObjectGroup((ObjectGroup) l, w);
             } else {
-                w.startElement("layer");
+            	w.startElement("layer");
             }
 
             w.writeAttribute("name", l.getName());
@@ -309,7 +321,7 @@ public class XMLMapWriter implements MapWriter
 
                 for (int y = 0; y < l.getHeight(); y++) {
                     for (int x = 0; x < l.getWidth(); x++) {
-                        Tile tile = l.getTileAt(x, y);
+                        Tile tile = ((TileLayer)l).getTileAt(x, y);
                         int gid = 0;
 
                         if (tile != null) {
@@ -331,7 +343,7 @@ public class XMLMapWriter implements MapWriter
             } else {
                 for (int y = 0; y < l.getHeight(); y++) {
                     for (int x = 0; x < l.getWidth(); x++) {
-                        Tile tile = l.getTileAt(x, y);
+                        Tile tile = ((TileLayer)l).getTileAt(x, y);
                         int gid = 0;
 
                         if (tile != null) {

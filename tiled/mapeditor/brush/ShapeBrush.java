@@ -51,7 +51,7 @@ public class ShapeBrush extends Brush
         for (int i = 0; i < bounds.height; i++) {
             for (int j = 0; j < bounds.width; j++) {
                 if (shape.contains(j, i)) {
-                    ml.setTileAt(j + centerx, i + centery, paintTile);
+                    ((TileLayer)ml).setTileAt(j + centerx, i + centery, paintTile);
                 }
             }
         }

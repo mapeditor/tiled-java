@@ -177,21 +177,22 @@ public class MappyMapReader implements MapReader {
 		if(c == null) {
 			throw new IOException("No BKDT block found!");
 		}
-		MapLayer ml = new MapLayer(ret, ret.getWidth(),ret.getHeight());
+		MapLayer ml = new TileLayer(ret, ret.getWidth(),ret.getHeight());
 		ml.setName("bg");
 		ret.addLayer(ml);
 		for(int i=1;i<8;i++) {
-			ml = new MapLayer(ret, ret.getWidth(),ret.getHeight());
-			ml.setName("Layer "+i);
+			//TODO: I believe this should be ObjectGroup
+			ml = new ObjectGroup(ret, ret.getWidth(),ret.getHeight());
+			ml.setName("ObjectGroup "+i);
 			ret.addLayer(ml);
 		}
-		ml = new MapLayer(ret, ret.getWidth(),ret.getHeight());
+		ml = new TileLayer(ret, ret.getWidth(),ret.getHeight());
 		ml.setName("fg 1");
 		ret.addLayer(ml);
-		ml = new MapLayer(ret, ret.getWidth(),ret.getHeight());
+		ml = new TileLayer(ret, ret.getWidth(),ret.getHeight());
 		ml.setName("fg 2");
 		ret.addLayer(ml);
-		ml = new MapLayer(ret, ret.getWidth(),ret.getHeight());
+		ml = new TileLayer(ret, ret.getWidth(),ret.getHeight());
 		ml.setName("fg 3");
 		ret.addLayer(ml);
 				
@@ -229,10 +230,10 @@ public class MappyMapReader implements MapReader {
      */
     private void readBODYChunk(Map m, InputStream in) throws IOException {
 		TileSet set = (TileSet)m.getTilesets().get(0);
-		MapLayer bg = m.getLayer(0),
-			fg0 = m.getLayer(1),
-			fg1 = m.getLayer(2),
-			fg2 = m.getLayer(3);
+		TileLayer bg = (TileLayer) m.getLayer(0),
+			fg0 = (TileLayer) m.getLayer(1),
+			fg1 = (TileLayer) m.getLayer(2),
+			fg2 = (TileLayer) m.getLayer(3);
 		for(int i=0;i<m.getHeight();i++) {
 			for(int j=0;j<m.getWidth();j++) {
 				int block = (int)((Util.readShort(in)&0x00FF)/BLKSTR_WIDTH);

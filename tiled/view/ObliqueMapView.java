@@ -48,10 +48,14 @@ public class ObliqueMapView extends MapView
 		return new Dimension(0, 0);
 	}
 
-	protected void paint(Graphics g, MapLayer layer, double zoom) {
+	protected void paintLayer(Graphics g, TileLayer layer, double zoom) {
 		// TODO Auto-generated method stub
 	}
     
+	protected void paintLayer(Graphics g, ObjectGroup layer, double zoom) {
+		// TODO Auto-generated method stub
+	}
+	
     protected void paintGrid(Graphics g, double zoom) {
         // TODO
     }

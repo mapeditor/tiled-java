@@ -64,7 +64,7 @@ public class OrthoMapView extends MapView
                 myMap.getHeight() * tsize.height + border);
     }
 
-    protected void paint(Graphics g, MapLayer layer, double zoom) {
+    protected void paintLayer(Graphics g, TileLayer layer, double zoom) {
         // Determine tile size and offset
         Dimension tsize = getTileSize(zoom);
         if (tsize.width <= 0 || tsize.height <= 0) return;
@@ -98,6 +98,9 @@ public class OrthoMapView extends MapView
         }
     }
 
+    protected void paintLayer(Graphics g, ObjectGroup layer, double zoom) {
+    	
+    }
     protected void paintGrid(Graphics g, double zoom) {
         // Determine tile size
         Dimension tsize = getTileSize(zoom);

@@ -862,10 +862,14 @@ public class MapEditor implements ActionListener,
         if (layer == null) {
             return;
         } else if (mouseButton == MouseEvent.BUTTON3) {
-            Tile newTile = layer.getTileAt(tile.x, tile.y);
-            if (newTile != currentMap.getNullTile()) {
-                setCurrentTile(newTile);
-            }
+        	if(layer instanceof TileLayer) {
+	            Tile newTile = ((TileLayer)layer).getTileAt(tile.x, tile.y);
+	            if (newTile != currentMap.getNullTile()) {
+	                setCurrentTile(newTile);
+	            }
+        	} else if(layer instanceof ObjectGroup) {
+        		//TODO: add support for ObjectGroups here
+        	}
         } else if (mouseButton == MouseEvent.BUTTON1) {
             switch (currentPointerState) {
                 case PS_PAINT:
@@ -876,20 +880,26 @@ public class MapEditor implements ActionListener,
                     break;
                 case PS_ERASE:
                     paintEdit.setPresentationName("Erase");
-                    layer.setTileAt(tile.x, tile.y, currentMap.getNullTile());
+                    if(layer instanceof TileLayer) {
+                    	((TileLayer)layer).setTileAt(tile.x, tile.y, currentMap.getNullTile());
+                    }
                     mapView.repaintRegion(new Rectangle(tile.x, tile.y, 1, 1));
                     break;
-                case PS_POUR:
+                case PS_POUR:												//POUR only works on TileLayers
                     paintEdit = null;
-                    Tile oldTile = layer.getTileAt(tile.x, tile.y);
-                    pour(layer, tile.x, tile.y, currentTile, oldTile);
+                    Tile oldTile = ((TileLayer)layer).getTileAt(tile.x, tile.y);
+                    pour((TileLayer) layer, tile.x, tile.y, currentTile, oldTile);
                     mapView.repaint();
                     break;
                 case PS_EYED:
-                    Tile newTile = layer.getTileAt(tile.x, tile.y);
-                    if (newTile != currentMap.getNullTile()) {
-                        setCurrentTile(newTile);
-                    }
+                	 if(layer instanceof TileLayer) {
+	                    Tile newTile = ((TileLayer)layer).getTileAt(tile.x, tile.y);
+	                    if (newTile != currentMap.getNullTile()) {
+	                        setCurrentTile(newTile);
+	                    }
+                	} else if(layer instanceof ObjectGroup) {
+                		//TODO: add support for ObjectGroups here
+                	}
                     break;
                 case PS_MOVE:
                     Point translation = new Point(
@@ -945,7 +955,7 @@ public class MapEditor implements ActionListener,
                 case PS_POUR:
                     MapLayer layer = getCurrentLayer();
                     paintEdit =
-                        new MapLayerEdit(layer, new MapLayer(layer), null);
+                        new MapLayerEdit(layer, createLayerCopy(layer), null);
                     break;
                 default:
             }
@@ -1327,7 +1337,7 @@ public class MapEditor implements ActionListener,
         public void actionPerformed(ActionEvent evt) {
             MapLayer layer = getCurrentLayer();
             MapLayerEdit transEdit;
-            transEdit = new MapLayerEdit(layer, new MapLayer(layer));
+            transEdit = new MapLayerEdit(layer, createLayerCopy(layer));
             switch (transform) {
                 case MapLayer.ROTATE_90:
                     transEdit.setPresentationName("Rotate");
@@ -1350,7 +1360,7 @@ public class MapEditor implements ActionListener,
                     layer.mirror(MapLayer.MIRROR_HORIZONTAL);
                     break;
             }
-            transEdit.end(new MapLayer(layer));
+            transEdit.end(createLayerCopy(layer));
             undoSupport.postEdit(transEdit);
             mapView.repaint();
         }
@@ -1472,8 +1482,13 @@ public class MapEditor implements ActionListener,
         }
         public void actionPerformed(ActionEvent evt) {
             if (currentMap != null && marqueeSelection != null) {
-                clipboardLayer = new MapLayer(
+            	if(getCurrentLayer() instanceof TileLayer) {
+            		clipboardLayer = new TileLayer(
                         marqueeSelection.getSelectedAreaBounds());
+            	} else if(getCurrentLayer() instanceof ObjectGroup) {
+            		clipboardLayer = new ObjectGroup(
+                            marqueeSelection.getSelectedAreaBounds());
+            	}
                 clipboardLayer.maskedCopyFrom(
                         getCurrentLayer(),
                         marqueeSelection.getSelectedArea());
@@ -1492,19 +1507,26 @@ public class MapEditor implements ActionListener,
             if (currentMap != null && marqueeSelection != null) {
                 MapLayer ml = getCurrentLayer();
 
-                clipboardLayer = new MapLayer(
+                if(getCurrentLayer() instanceof TileLayer) {
+            		clipboardLayer = new TileLayer(
                         marqueeSelection.getSelectedAreaBounds());
+            	} else if(getCurrentLayer() instanceof ObjectGroup) {
+            		clipboardLayer = new ObjectGroup(
+                            marqueeSelection.getSelectedAreaBounds());
+            	}
                 clipboardLayer.maskedCopyFrom(
                         ml, marqueeSelection.getSelectedArea());
 
                 Rectangle area = marqueeSelection.getSelectedAreaBounds();
                 Area mask = marqueeSelection.getSelectedArea();
-                for (int i = area.y; i < area.height+area.y; i++) {
-                    for (int j = area.x;j<area.width+area.x;j++){
-                        if (mask.contains(j,i)) {
-                            ml.setTileAt(j, i, currentMap.getNullTile());
-                        }
-                    }
+                if(ml instanceof TileLayer) {
+	                for (int i = area.y; i < area.height+area.y; i++) {
+	                    for (int j = area.x;j<area.width+area.x;j++){
+	                        if (mask.contains(j,i)) {
+	                            ((TileLayer)ml).setTileAt(j, i, currentMap.getNullTile());
+	                        }
+	                    }
+	                }
                 }
                 mapView.repaintRegion(area);
             }
@@ -1521,7 +1543,7 @@ public class MapEditor implements ActionListener,
         public void actionPerformed(ActionEvent evt) {
             if (currentMap != null && clipboardLayer != null) {
                 Vector layersBefore = currentMap.getLayerVector();
-                MapLayer ml = new MapLayer(clipboardLayer);
+                MapLayer ml = createLayerCopy(clipboardLayer);
                 ml.setName("Layer " + currentMap.getTotalLayers());
                 currentMap.addLayer(ml);
                 undoSupport.postEdit(
@@ -1539,13 +1561,13 @@ public class MapEditor implements ActionListener,
         }
     }
 
-    private void pour(MapLayer layer, int x, int y,
+    private void pour(TileLayer layer, int x, int y,
             Tile newTile, Tile oldTile) {
         if (newTile == oldTile) return;
 
         Rectangle area = null;
-        MapLayer before = new MapLayer(layer);
-        MapLayer after;
+        TileLayer before = new TileLayer(layer);
+        TileLayer after;
 
         if (marqueeSelection == null) {
             area = new Rectangle(new Point(x, y));
@@ -1587,7 +1609,7 @@ public class MapEditor implements ActionListener,
 
         Rectangle bounds = new Rectangle(
                 area.x, area.y, area.width + 1, area.height + 1);
-        after = new MapLayer(bounds);
+        after = new TileLayer(bounds);
         after.copyFrom(layer);
 
         MapLayerEdit mle = new MapLayerEdit(layer, before, after);
@@ -1785,6 +1807,15 @@ public class MapEditor implements ActionListener,
         }
     }
 
+    private MapLayer createLayerCopy(MapLayer layer) {
+    	if(layer instanceof TileLayer) {
+    		return new TileLayer((TileLayer)layer);
+    	} else if(layer instanceof ObjectGroup) {
+    		return new ObjectGroup((ObjectGroup)layer);
+    	}
+    	return null;
+    }
+    
     private void updateRecent(String mapFile) {
         Vector recent = new Vector();
         try {

@@ -152,13 +152,15 @@ public class SearchDialog extends JDialog implements ActionListener
 			ListIterator itr = myMap.getLayers();		
 			while(itr.hasNext()) {
 				MapLayer layer = (MapLayer) itr.next();
-				Rectangle bounds = layer.getBounds();
-				for (int y = 0; y < bounds.height; y++) {
-						for (int x = 0; x < bounds.width; x++) {
-							if(layer.getTileAt(x,y) == (Tile) searchCBox.getSelectedItem()) {
-								sl.select(x,y);
+				if(layer instanceof TileLayer) {
+					Rectangle bounds = layer.getBounds();
+					for (int y = 0; y < bounds.height; y++) {
+							for (int x = 0; x < bounds.width; x++) {
+								if(((TileLayer)layer).getTileAt(x,y) == (Tile) searchCBox.getSelectedItem()) {
+									sl.select(x,y);
+								}
 							}
-						}
+					}
 				}
 			}
 			myMap.addLayerSpecial(sl);
@@ -177,9 +179,11 @@ public class SearchDialog extends JDialog implements ActionListener
 				ListIterator itr = myMap.getLayers();		
 				while(itr.hasNext()) {
 					MapLayer layer = (MapLayer) itr.next();
-					if(layer.getTileAt(currentMatch.x,currentMatch.y) == (Tile) searchCBox.getSelectedItem()) {
-						layer.setTileAt(currentMatch.x,currentMatch.y, (Tile) replaceCBox.getSelectedItem());
-						break;
+					if(layer instanceof TileLayer) {
+						if(((TileLayer)layer).getTileAt(currentMatch.x,currentMatch.y) == (Tile) searchCBox.getSelectedItem()) {
+							((TileLayer)layer).setTileAt(currentMatch.x,currentMatch.y, (Tile) replaceCBox.getSelectedItem());
+							break;
+						}
 					}
 				}
 				//find the next instance, effectively stepping forward in our replace
@@ -194,7 +198,9 @@ public class SearchDialog extends JDialog implements ActionListener
 		ListIterator itr = myMap.getLayers();		
 		while(itr.hasNext()) {
 			MapLayer layer = (MapLayer) itr.next();
-			layer.replaceTile(f,r);
+			if(layer instanceof TileLayer) {
+				((TileLayer)layer).replaceTile(f,r);
+			}
 		}
 		myMap.touch();
 	}
@@ -218,18 +224,21 @@ public class SearchDialog extends JDialog implements ActionListener
 				ListIterator itr = myMap.getLayers();		
 				while(itr.hasNext()) {
 					MapLayer layer = (MapLayer) itr.next();
-					Rectangle bounds = layer.getBounds();
-	
-					if(layer.getTileAt(x,y) == (Tile) searchCBox.getSelectedItem()) {
-						if(currentMatch != null) {
-							if(currentMatch.equals(new Point(x,y))) {
-								continue;
+					
+					if(layer instanceof TileLayer) {
+						Rectangle bounds = layer.getBounds();
+		
+						if(((TileLayer)layer).getTileAt(x,y) == (Tile) searchCBox.getSelectedItem()) {
+							if(currentMatch != null) {
+								if(currentMatch.equals(new Point(x,y))) {
+									continue;
+								}
 							}
-						}
-						sl.select(x,y);
-						bFound = true;
-						currentMatch = new Point(x,y);
+							sl.select(x,y);
+							bFound = true;
+							currentMatch = new Point(x,y);
 						break;
+					}
 					}
 				}
 			}

@@ -116,8 +116,13 @@ public class Map extends MultilayerPlane implements Cloneable
         return l;
     }
 
+    /**
+     * Create a new empty TileLayer with the dimensions of the map. By default, the new layer's name is set to "Layer [layer index]"
+     * 
+     * @return The new TileLayer instance.
+     */
     public MapLayer addLayer() {
-        MapLayer layer = new MapLayer(this, widthInTiles, heightInTiles);
+        MapLayer layer = new TileLayer(this, widthInTiles, heightInTiles);
         layer.setName("Layer "+super.getTotalLayers());		
         super.addLayer(layer);
         fireMapChanged();
@@ -166,7 +171,9 @@ public class Map extends MultilayerPlane implements Cloneable
             Tile tile = s.getTile(i);
             while (itr.hasNext()) {
                 MapLayer ml = (MapLayer)itr.next();
-                ml.removeTile(tile);
+                if(ml instanceof TileLayer) {
+                	((TileLayer)ml).removeTile(tile);
+                }
             }
         }
 

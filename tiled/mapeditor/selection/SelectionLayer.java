@@ -19,7 +19,7 @@ import java.awt.geom.Rectangle2D;
 import tiled.core.*;
 import tiled.util.TiledConfiguration;
 
-public class SelectionLayer extends MapLayer {
+public class SelectionLayer extends TileLayer {
 	
 	private Color highlightColor;
 	private Tile selTile;

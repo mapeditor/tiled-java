@@ -89,7 +89,7 @@ public class HexMapView extends MapView
                 tsize.height / 2);
     }
 
-    protected void paint(Graphics g, MapLayer layer, double zoom) {
+    protected void paintLayer(Graphics g, TileLayer layer, double zoom) {
         // Determine area to draw from clipping rectangle
         Dimension tsize = getTileSize(zoom);
         int toffset = (((modeFlags & PF_GRIDMODE) != 0) ? 1 : 0);
@@ -137,6 +137,10 @@ public class HexMapView extends MapView
         }
     }
 
+    protected void paintLayer(Graphics g, ObjectGroup layer, double zoom) {
+    	
+    }
+    
     /**
      * Returns the distance between the centres of two horizontally adjacent
      * Hexes.
