@@ -174,6 +174,9 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
             } catch (ClassCastException e) {
             }
         }
+
+        cbCompressLayerData.setEnabled(cbBinaryEncode.isSelected());
+
         bApply.setEnabled(false);
     }
 

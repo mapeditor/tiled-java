@@ -59,23 +59,29 @@ public class TilePaletteDialog extends JDialog implements ActionListener,
         //TODO: the full functionality for multiple sets is not yet available.
         //sets.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         sets.addListSelectionListener(this);
+        JScrollPane setsSp = new JScrollPane(sets);
 
         pc = new TilePalettePanel();
         pc.addTileSelectionListener(this);
         JScrollPane paletteScrollPane = new JScrollPane(pc,
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		getContentPane().setLayout(new GridBagLayout());
+
+        JSplitPane splitPane = new JSplitPane(
+                JSplitPane.HORIZONTAL_SPLIT, true);
+        splitPane.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        splitPane.setResizeWeight(0.75);
+        splitPane.setLeftComponent(paletteScrollPane);
+        splitPane.setRightComponent(setsSp);
+
+        JPanel mainPanel = new JPanel(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
         c.fill = GridBagConstraints.BOTH;
-        c.weightx = 2;
-        c.weighty = 1;
-        c.gridx = 1;
-        c.gridy = 1;
-        getContentPane().add(paletteScrollPane, c);
-        c.weightx = 1;
-        c.gridx = 3;
-        getContentPane().add(sets, c);
+        c.weightx = 1; c.weighty = 1;
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        mainPanel.add(splitPane, c);
+
+        getContentPane().add(mainPanel);
     }
 
     public void actionPerformed(ActionEvent e) {

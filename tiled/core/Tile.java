@@ -23,7 +23,6 @@ import java.util.Properties;
 
 public class Tile
 {
-
     private Image tileImage, scaledImage = null;
     private int id = -1;
     private int stdHeight;
