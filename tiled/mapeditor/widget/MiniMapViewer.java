@@ -88,7 +88,7 @@ public class MiniMapViewer extends JPanel
             Rectangle viewArea = mainPanel.getViewport().getBounds();
             //Rectangle viewArea = mainPanel.getViewportBorderBounds();
             if (viewArea != null) {
-                System.out.println(viewArea.x+","+viewArea.y);
+                //System.out.println(viewArea.x+","+viewArea.y);
                 g.drawRect(
                         (int)((viewArea.x-1) * scale),
                         (int)((viewArea.y-1) * scale),

@@ -855,9 +855,11 @@ public class MapEditor implements ActionListener,
             switch (currentPointerState) {
                 case PS_PAINT:
                     paintEdit.setPresentationName("Paint");
-                    Rectangle affectedRegion = currentBrush.commitPaint(
-                            currentMap, tile.x, tile.y, currentLayer);
-                    mapView.repaintRegion(affectedRegion);
+                    if(!(currentMap.getLayer(currentLayer) instanceof ObjectGroup)) {
+                        Rectangle affectedRegion = currentBrush.commitPaint(
+                                currentMap, tile.x, tile.y, currentLayer);
+                        mapView.repaintRegion(affectedRegion);
+                    }
                     break;
                 case PS_ERASE:
                     paintEdit.setPresentationName("Erase");
