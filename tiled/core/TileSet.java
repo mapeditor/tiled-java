@@ -580,11 +580,7 @@ public class TileSet
             return t;
         } else {
             t = images.size();
-            String cs = checksumImage(image);
-            //System.out.print("addImage(Image): " + t + " ");
-            //System.out.println("Checksum: " + cs);
-            images.put(Integer.toString(t), cs);
-            imageCache.put(cs, image);
+            addImage(image, Integer.toString(t));
             return t;
         }
     }
@@ -594,7 +590,7 @@ public class TileSet
             return addImage(image);
         } else {
             String cs = checksumImage(image);
-            //System.out.print("addImage(Image, Object): " + key + " ");
+            //System.out.print(name+".addImage(Image, Object): " + key + " ");
             //System.out.println("Checksum: " + cs);
             images.put(key, cs);
             imageCache.put(cs, image);
@@ -603,6 +599,7 @@ public class TileSet
     }
 
     public void removeImage(Object id) {
+    	//System.out.println(name+".removeImage(Object): " + id);
         imageCache.remove(images.get(id));
         images.remove(id);
     }

@@ -124,6 +124,9 @@ public class BrushDialog extends JFrame implements ActionListener,
 
     private JPanel createCustomPanel() {
         JPanel customPanel = new JPanel();
+        
+        
+        
         return customPanel;
     }
 

@@ -16,6 +16,7 @@ package tiled.mapeditor;
 import java.awt.*;
 import java.awt.event.*;
 //import java.awt.image.BufferedImage;
+import java.util.Enumeration;
 import java.util.Vector;
 
 //import javax.imageio.ImageIO;
@@ -110,13 +111,14 @@ public class TileImageDialog extends JDialog
     }
 
     public void queryImages() {
-        Vector listData;
+        Vector listData = new Vector();
         int curSlot = 0;
 
-        int totalImages = tileset.getTotalImages();
-        listData = new Vector();
-        for (int i = 0; i < totalImages; i++) {
-            listData.add(tileset.getImageById(Integer.toString(i)));
+        Enumeration ids = tileset.getImageIds();
+        while(ids.hasMoreElements()) {
+        	Image img = tileset.getImageById(ids.nextElement());
+        	if(img != null)
+        		listData.add(img);
         }
 
         imageList.setListData(listData);

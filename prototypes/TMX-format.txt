@@ -54,4 +54,6 @@ minimum. More engine-specific data is usually defined as <property>
 tags within a <properties> element.
  The root element of a TMX file is always <map>. This map element 
 contains the definitions for all data, including layers, tilesets,
-and objects.
+and objects. There can be only one <map> tag per TMX file. 
+ Within the map element, the three distinct tags for map data are 
+<tileset>, <layer>, and <objectgroup>.

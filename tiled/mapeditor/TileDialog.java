@@ -17,6 +17,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.Vector;
@@ -337,13 +338,14 @@ public class TileDialog extends JDialog
     }
 
     public void queryImages() {
-        Vector listData;
+        Vector listData = new Vector();
         int curSlot = 0;
 
-        int totalImages = tileset.getTotalImages();
-        listData = new Vector();
-        for (int i = 0; i < totalImages; i++) {
-            listData.add(tileset.getImageById(Integer.toString(i)));
+        Enumeration ids = tileset.getImageIds();
+        while(ids.hasMoreElements()) {
+        	Image img = tileset.getImageById(ids.nextElement());
+        	if(img != null)
+        		listData.add(img);
         }
 
         imageList.setListData(listData);
@@ -514,7 +516,8 @@ public class TileDialog extends JDialog
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE);
             if (answer == JOptionPane.YES_OPTION) {
-                tileset.removeImage(Integer.toString(currentImageIndex));
+            	Image img = (Image)imageList.getSelectedValue();
+                tileset.removeImage(Integer.toString(tileset.getIdByImage(img)));
                 queryImages();
             }
         } else if (source == bDeleteAllUnusedImages) {
@@ -524,22 +527,25 @@ public class TileDialog extends JDialog
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE);
             if (answer == JOptionPane.YES_OPTION) {
-                int totalImages = tileset.getTotalImages();
-                for (int index = totalImages - 1; index >= 0; --index) {
-                    boolean image_used = false;
+           
+            	Enumeration ids = tileset.getImageIds();
+                while(ids.hasMoreElements()) {
+                	int id = Integer.parseInt((String)ids.nextElement());
+                	boolean image_used = false;
                     Iterator tileIterator = tileset.iterator();
 
                     while (tileIterator.hasNext()) {
                         Tile tile = (Tile)tileIterator.next();
-                        if (tile.getImageId() == index) {
+                        if (tile.getImageId() == id) {
                             image_used = true;
                         }
                     }
 
                     if (!image_used) {
-                        tileset.removeImage(Integer.toString(index));
+                        tileset.removeImage(Integer.toString(id));
                     }
                 }
+
                 queryImages();
             }
         }

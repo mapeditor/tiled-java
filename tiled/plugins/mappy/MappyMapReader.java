@@ -198,7 +198,7 @@ public class MappyMapReader implements MapReader
         for(int i=1;i<8;i++) {
             //TODO: I believe this should be ObjectGroup
             ml = new ObjectGroup(ret, 0, 0);
-            ml.setName("ObjectGroup "+i);
+            ml.setName("ObjectLayer "+i);
             ret.addLayer(ml);
         }
         ml = new TileLayer(ret, ret.getWidth(),ret.getHeight());

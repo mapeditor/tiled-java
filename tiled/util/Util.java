@@ -57,7 +57,7 @@ public class Util
 
         for (int i = 0; i < roots.length; i++) {
             try {
-                if (filename.startsWith(roots[i].getCanonicalPath())) {
+                if (filename.toLowerCase().startsWith(roots[i].getCanonicalPath().toLowerCase())) {
                     return true;
                 }
             } catch (IOException e) {

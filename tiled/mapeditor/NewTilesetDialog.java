@@ -206,7 +206,7 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
                 int spacing = tileSpacing.intValue();
                 try {
                     if (colorButton.getText().equals("None")) {
-                        newTileset.importTileBitmap((new File(file)).toURL().toString(),
+                        newTileset.importTileBitmap(file,
                                 map.getTileWidth(), map.getTileHeight(), spacing,
                                 tileAutoCheck.isSelected());
                     } else {
