@@ -760,7 +760,7 @@ public class MapEditor implements ActionListener,
             if (newTile != currentMap.getNullTile()) {
                 setCurrentTile(newTile);
             }
-        } else {
+        } else if (mouseButton == MouseEvent.BUTTON1){
             switch (currentPointerState) {
                 case PS_PAINT:
                     paintEdit.setPresentationName("Paint Tool");
@@ -809,7 +809,7 @@ public class MapEditor implements ActionListener,
         mouseButton = e.getButton();
         bMouseIsDown = true;
         mousePressLocation = mapView.screenToTileCoords(e.getX(), e.getY());
-        if (currentPointerState != PS_EYED && currentPointerState != PS_POINT)
+        if (currentPointerState != PS_EYED && currentPointerState != PS_POINT && mouseButton == MouseEvent.BUTTON1)
         {
             MapLayer layer = currentMap.getLayer(currentLayer);
             paintEdit =
