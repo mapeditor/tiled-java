@@ -178,7 +178,7 @@ public class XMLMapTransformer implements MapReader
         String source = getAttributeValue(t, "source");
         
         if (source != null) {
-            if(Util.checkRoot(source)) {
+            if (Util.checkRoot(source)) {
                 source = makeUrl(source);
             } else {
                 source = baseDir + source;
@@ -324,13 +324,13 @@ public class XMLMapTransformer implements MapReader
                     if (imgSource != null && id == null) {
                         // Not a shared image, but an entire set in one image
                         // file
-                        
+
                         // FIXME: importTileBitmap does not fully support URLs
                         String sourcePath = imgSource;
                         if (!Util.checkRoot(imgSource)) {
                             sourcePath =
                                 tilesetBaseDir.substring(
-                                        tilesetBaseDir.indexOf(':') + 1) +
+                                        tilesetBaseDir.indexOf(':') + 2) +
                                 imgSource;
                         }
 

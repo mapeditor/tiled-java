@@ -197,15 +197,6 @@ public class XMLMapWriter implements MapWriter
             }
 
             if (tilebmpFile != null) {
-                // Reference to tile bitmap
-                if (!Util.checkRoot(tilebmpFile)) {
-                    if (!tilebmpFile.startsWith(".")) {
-                        tilebmpFile = wp.substring(0,
-                                wp.lastIndexOf(File.separatorChar) + 1) +
-                            tilebmpFile;
-                    }
-                }
-                
                 w.startElement("image");
                 w.writeAttribute("source", getRelativePath(wp, tilebmpFile));
 
@@ -563,6 +554,18 @@ public class XMLMapWriter implements MapWriter
             relPath += toParents.get(i) + File.separator;
         }
         relPath += new File(to).getName();
+
+        // Turn around the slashes when path is relative
+        try {
+            String absPath = new File(relPath).getCanonicalPath();
+
+            if (!absPath.equals(relPath)) {
+                // Path is not absolute, turn slashes around
+                // Assumes: \ does not occur in filenames
+                relPath = relPath.replace('\\', '/');
+            }
+        } catch (Exception e) {
+        }
 
         return relPath;
     }
