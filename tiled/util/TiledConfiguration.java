@@ -57,8 +57,8 @@ public final class TiledConfiguration
         return (settings.get(name) != null);
     }
 
-    public static String getValue(String option) {
-        return (String)settings.get(option);
+    public static String getValue(String option) {    	
+         return (String)settings.get(option);
     }
 
     public static boolean keyHasValue(String option, String comp) {
@@ -132,5 +132,15 @@ public final class TiledConfiguration
         }
 
         bw.close();
+    }
+    
+    public static void populateDefaults() {
+		_add("tmx.save.embedImages","1");
+		_add("tmx.save.tileImagePrefix","tile");
+		_add("tmx.save.layerCompression","1");
+		_add("tmx.save.encodeLayerData","1");
+		_add("tmx.save.tileSetImages","0");
+		_add("tmx.save.embedtileSetImages","0");
+		_add("tmx.undo.depth","30");
     }
 }

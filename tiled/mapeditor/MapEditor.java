@@ -1464,6 +1464,7 @@ public class MapEditor implements ActionListener,
      */
     public static void main(String[] args) {
         try {
+        	TiledConfiguration.populateDefaults();
             TiledConfiguration.parse(
                     new BufferedReader(new FileReader("tiled.conf")));
         } catch (Exception e) {
