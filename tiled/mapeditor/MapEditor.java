@@ -88,6 +88,8 @@ public class MapEditor implements ActionListener,
     MapLayer clipboardLayer = null;
 
     // GUI components
+    JMenu       fileMenu, editMenu, selectMenu, viewMenu, helpMenu;
+    JMenu       mapMenu, layerMenu, tilesetMenu;
     JPanel      mainPanel;
     JPanel      toolPanel;
     JPanel      dataPanel;
@@ -275,14 +277,16 @@ public class MapEditor implements ActionListener,
             }
         } catch (IOException e) {
             JOptionPane.showMessageDialog(appFrame,
-                    e.getMessage() + (e.getCause() != null ? "\nCause: "+e.getCause().getMessage() : ""),
+                    e.getMessage() + (e.getCause() != null ? "\nCause: " +
+                        e.getCause().getMessage() : ""),
                     "Error while loading map",
                     JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(appFrame,
                     "Error while loading " + file + ": " +
-                    e.getMessage() + (e.getCause() != null ? "\nCause: "+e.getCause().getMessage() : ""),
+                    e.getMessage() + (e.getCause() != null ? "\nCause: " +
+                        e.getCause().getMessage() : ""),
                     "Error while loading map",
                     JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
@@ -296,10 +300,6 @@ public class MapEditor implements ActionListener,
      * assigning listeners and tooltips as well.
      */
     private void createMenuBar() {
-        JMenu m;
-
-        menuBar = new JMenuBar();
-
         JMenuItem save = createMenuItem("Save", null, "Save current map",
                 "control S");
         JMenuItem saveAs = createMenuItem("Save as...", null,
@@ -310,6 +310,7 @@ public class MapEditor implements ActionListener,
                 "control W");
         JMenuItem print =
             createMenuItem("Print...", null, "Print the map", "control P");
+
         recentMenu = new JMenu("Open Recent");
 
         mapEventAdapter.addListener(save);
@@ -318,21 +319,23 @@ public class MapEditor implements ActionListener,
         mapEventAdapter.addListener(close);
         mapEventAdapter.addListener(print);
 
-        m = new JMenu("File");
-        m.add(createMenuItem("New", null, "Start a new map", "control N"));
-        m.add(createMenuItem("Open...", null, "Open a map", "control O"));
-        m.add(recentMenu);
-        m.add(save);
-        m.add(saveAs);
-        m.add(saveAsImage);
+        fileMenu = new JMenu("File");
+        fileMenu.add(createMenuItem("New", null, "Start a new map",
+                    "control N"));
+        fileMenu.add(createMenuItem("Open...", null, "Open a map",
+                    "control O"));
+        fileMenu.add(recentMenu);
+        fileMenu.add(save);
+        fileMenu.add(saveAs);
+        fileMenu.add(saveAsImage);
         // TODO: Re-add print menuitem when printing is functional
-        //m.addSeparator();
-        //m.add(print);
+        //fileMenu.addSeparator();
+        //fileMenu.add(print);
         //mapEventAdapter.addListener(print);
-        m.addSeparator();
-        m.add(close);
-        m.add(createMenuItem("Exit", null, "Exit the map editor", "control Q"));
-        menuBar.add(m);
+        fileMenu.addSeparator();
+        fileMenu.add(close);
+        fileMenu.add(createMenuItem("Exit", null, "Exit the map editor",
+                    "control Q"));
 
         undoMenuItem = new TMenuItem(undoAction);
         redoMenuItem = new TMenuItem(redoAction);
@@ -355,33 +358,33 @@ public class MapEditor implements ActionListener,
         transformSub.add(new TMenuItem(flipVerAction, true));
         mapEventAdapter.addListener(transformSub);
 
-        m = new JMenu("Edit");
-        m.add(undoMenuItem);
-        m.add(redoMenuItem);
-        m.addSeparator();
-        m.add(copyMenuItem);
-        m.add(cutMenuItem);
-        m.add(pasteMenuItem);
-        m.addSeparator();
-        m.add(transformSub);
-        m.addSeparator();
-        m.add(createMenuItem("Preferences...",
+        editMenu = new JMenu("Edit");
+        editMenu.add(undoMenuItem);
+        editMenu.add(redoMenuItem);
+        editMenu.addSeparator();
+        editMenu.add(copyMenuItem);
+        editMenu.add(cutMenuItem);
+        editMenu.add(pasteMenuItem);
+        editMenu.addSeparator();
+        editMenu.add(transformSub);
+        editMenu.addSeparator();
+        editMenu.add(createMenuItem("Preferences...",
                     null, "Configure options of the editor", null));
+
         mapEventAdapter.addListener(undoMenuItem);
         mapEventAdapter.addListener(redoMenuItem);
         mapEventAdapter.addListener(copyMenuItem);
         mapEventAdapter.addListener(cutMenuItem);
         mapEventAdapter.addListener(pasteMenuItem);
-        menuBar.add(m);
 
 
-        m = new JMenu("Map");
-        m.add(createMenuItem("Resize", null, "Modify map dimensions"));
-        m.add(createMenuItem("Search", null, "Search for/Replace tiles"));
-        m.addSeparator();
-        m.add(createMenuItem("Properties", null, "Map properties"));
-        mapEventAdapter.addListener(m);
-        menuBar.add(m);
+        mapMenu = new JMenu("Map");
+        mapMenu.add(createMenuItem("Resize", null, "Modify map dimensions"));
+        mapMenu.add(createMenuItem("Search", null,
+                    "Search for/Replace tiles"));
+        mapMenu.addSeparator();
+        mapMenu.add(createMenuItem("Properties", null, "Map properties"));
+        mapEventAdapter.addListener(mapMenu);
 
 
         layerAdd = createMenuItem("Add Layer", null, "Add a layer");
@@ -401,50 +404,45 @@ public class MapEditor implements ActionListener,
 
         mapEventAdapter.addListener(layerAdd);
 
-        m = new JMenu("Layer");
-        m.add(layerAdd);
-        m.add(layerClone);
-        m.add(layerDel);
-        m.addSeparator();
-        m.add(layerUp);
-        m.add(layerDown);
-        m.addSeparator();
-        m.add(layerMerge);
-        m.add(layerMergeAll);
-        m.addSeparator();
-        m.add(layerProperties);
-        mapEventAdapter.addListener(m);
-        menuBar.add(m);
+        layerMenu = new JMenu("Layer");
+        layerMenu.add(layerAdd);
+        layerMenu.add(layerClone);
+        layerMenu.add(layerDel);
+        layerMenu.addSeparator();
+        layerMenu.add(layerUp);
+        layerMenu.add(layerDown);
+        layerMenu.addSeparator();
+        layerMenu.add(layerMerge);
+        layerMenu.add(layerMergeAll);
+        layerMenu.addSeparator();
+        layerMenu.add(layerProperties);
 
-        m = new JMenu("Tilesets");
-        m.add(createMenuItem("New tileset...", null,
+        tilesetMenu = new JMenu("Tilesets");
+        tilesetMenu.add(createMenuItem("New tileset...", null,
                     "Add a new internal tileset"));
-        m.add(createMenuItem("Import tileset...", null,
+        tilesetMenu.add(createMenuItem("Import tileset...", null,
                     "Import an external tileset"));
-        m.addSeparator();
-        m.add(createMenuItem("Tileset Manager", null,
+        tilesetMenu.addSeparator();
+        tilesetMenu.add(createMenuItem("Tileset Manager", null,
                     "Open the tileset manager"));
-        mapEventAdapter.addListener(m);
-        menuBar.add(m);
+
 
         /*
-        m = new JMenu("Objects");
-        m.add(createMenuItem("Add Object", null, "Add an object"));
-        mapEventAdapter.addListener(m);
-        menuBar.add(m);
+        objectMenu = new JMenu("Objects");
+        objectMenu.add(createMenuItem("Add Object", null, "Add an object"));
+        mapEventAdapter.addListener(objectMenu);
 
         JMenu modifySub = new JMenu("Modify");
         modifySub.add(createMenuItem("Expand Selection", null, ""));
         modifySub.add(createMenuItem("Contract Selection", null, ""));
         */
-        m = new JMenu("Select");
-        m.add(new TMenuItem(selectAllAction, true));
-        m.add(new TMenuItem(cancelSelectionAction, true));
-        m.add(new TMenuItem(inverseAction, true));
-        //m.addSeparator();
-        //m.add(modifySub);
-        mapEventAdapter.addListener(m);
-        menuBar.add(m);
+
+        selectMenu = new JMenu("Select");
+        selectMenu.add(new TMenuItem(selectAllAction, true));
+        selectMenu.add(new TMenuItem(cancelSelectionAction, true));
+        selectMenu.add(new TMenuItem(inverseAction, true));
+        //selectMenu.addSeparator();
+        //selectMenu.add(modifySub);
 
 
         gridMenuItem = new JCheckBoxMenuItem("Show Grid");
@@ -468,24 +466,38 @@ public class MapEditor implements ActionListener,
         //coordinatesMenuItem.addActionListener(this);
         //coordinatesMenuItem.setToolTipText("Toggle tile coordinates");
 
-        m = new JMenu("View");
-        m.add(new TMenuItem(zoomInAction));
-        m.add(new TMenuItem(zoomOutAction));
-        m.add(new TMenuItem(zoomNormalAction));
-        m.addSeparator();
-        m.add(gridMenuItem);
-        m.add(cursorMenuItem);
+        viewMenu = new JMenu("View");
+        viewMenu.add(new TMenuItem(zoomInAction));
+        viewMenu.add(new TMenuItem(zoomOutAction));
+        viewMenu.add(new TMenuItem(zoomNormalAction));
+        viewMenu.addSeparator();
+        viewMenu.add(gridMenuItem);
+        viewMenu.add(cursorMenuItem);
         // TODO: Enable when boudary drawing code finished.
-        //m.add(boundaryMenuItem);
+        //viewMenu.add(boundaryMenuItem);
         // TODO: Hook this up to coordinates drawing on tiles.
-        //m.add(coordinatesMenuItem);
-        mapEventAdapter.addListener(m);
-        menuBar.add(m);
+        //viewMenu.add(coordinatesMenuItem);
 
-        m = new JMenu("Help");
-        m.add(createMenuItem("About Plug-ins", null, "Show plugin window"));
-        m.add(createMenuItem("About Tiled", null, "Show about window"));
-        menuBar.add(m);
+        mapEventAdapter.addListener(layerMenu);
+        mapEventAdapter.addListener(tilesetMenu);
+        mapEventAdapter.addListener(selectMenu);
+        mapEventAdapter.addListener(viewMenu);
+
+        helpMenu = new JMenu("Help");
+        helpMenu.add(createMenuItem("About Plug-ins", null,
+                    "Show plugin window"));
+        helpMenu.add(createMenuItem("About Tiled", null, "Show about window"));
+
+        menuBar = new JMenuBar();
+        menuBar.add(fileMenu);
+        menuBar.add(editMenu);
+        menuBar.add(selectMenu);
+        menuBar.add(viewMenu);
+        menuBar.add(mapMenu);
+        menuBar.add(layerMenu);
+        menuBar.add(tilesetMenu);
+        //menuBar.add(objectMenu);
+        menuBar.add(helpMenu);
     }
 
     /**
@@ -862,14 +874,14 @@ public class MapEditor implements ActionListener,
         if (layer == null) {
             return;
         } else if (mouseButton == MouseEvent.BUTTON3) {
-        	if(layer instanceof TileLayer) {
-	            Tile newTile = ((TileLayer)layer).getTileAt(tile.x, tile.y);
-	            if (newTile != currentMap.getNullTile()) {
-	                setCurrentTile(newTile);
-	            }
-        	} else if(layer instanceof ObjectGroup) {
-        		//TODO: add support for ObjectGroups here
-        	}
+            if (layer instanceof TileLayer) {
+                Tile newTile = ((TileLayer)layer).getTileAt(tile.x, tile.y);
+                if (newTile != currentMap.getNullTile()) {
+                    setCurrentTile(newTile);
+                }
+            } else if(layer instanceof ObjectGroup) {
+                // TODO: Add support for ObjectGroups here
+            }
         } else if (mouseButton == MouseEvent.BUTTON1) {
             switch (currentPointerState) {
                 case PS_PAINT:
@@ -880,26 +892,28 @@ public class MapEditor implements ActionListener,
                     break;
                 case PS_ERASE:
                     paintEdit.setPresentationName("Erase");
-                    if(layer instanceof TileLayer) {
-                    	((TileLayer)layer).setTileAt(tile.x, tile.y, currentMap.getNullTile());
+                    if (layer instanceof TileLayer) {
+                        ((TileLayer)layer).setTileAt(tile.x, tile.y,
+                                                     currentMap.getNullTile());
                     }
                     mapView.repaintRegion(new Rectangle(tile.x, tile.y, 1, 1));
                     break;
-                case PS_POUR:												//POUR only works on TileLayers
+                case PS_POUR:  //POUR only works on TileLayers
                     paintEdit = null;
                     Tile oldTile = ((TileLayer)layer).getTileAt(tile.x, tile.y);
                     pour((TileLayer) layer, tile.x, tile.y, currentTile, oldTile);
                     mapView.repaint();
                     break;
                 case PS_EYED:
-                	 if(layer instanceof TileLayer) {
-	                    Tile newTile = ((TileLayer)layer).getTileAt(tile.x, tile.y);
-	                    if (newTile != currentMap.getNullTile()) {
-	                        setCurrentTile(newTile);
-	                    }
-                	} else if(layer instanceof ObjectGroup) {
-                		//TODO: add support for ObjectGroups here
-                	}
+                    if (layer instanceof TileLayer) {
+                        Tile newTile = ((TileLayer)layer).getTileAt(
+                                tile.x, tile.y);
+                        if (newTile != currentMap.getNullTile()) {
+                            setCurrentTile(newTile);
+                        }
+                    } else if(layer instanceof ObjectGroup) {
+                        // TODO: Add support for ObjectGroups here
+                    }
                     break;
                 case PS_MOVE:
                     Point translation = new Point(
@@ -1482,13 +1496,13 @@ public class MapEditor implements ActionListener,
         }
         public void actionPerformed(ActionEvent evt) {
             if (currentMap != null && marqueeSelection != null) {
-            	if(getCurrentLayer() instanceof TileLayer) {
-            		clipboardLayer = new TileLayer(
-                        marqueeSelection.getSelectedAreaBounds());
-            	} else if(getCurrentLayer() instanceof ObjectGroup) {
-            		clipboardLayer = new ObjectGroup(
+                if (getCurrentLayer() instanceof TileLayer) {
+                    clipboardLayer = new TileLayer(
                             marqueeSelection.getSelectedAreaBounds());
-            	}
+                } else if(getCurrentLayer() instanceof ObjectGroup) {
+                    clipboardLayer = new ObjectGroup(
+                            marqueeSelection.getSelectedAreaBounds());
+                }
                 clipboardLayer.maskedCopyFrom(
                         getCurrentLayer(),
                         marqueeSelection.getSelectedArea());
@@ -1507,26 +1521,27 @@ public class MapEditor implements ActionListener,
             if (currentMap != null && marqueeSelection != null) {
                 MapLayer ml = getCurrentLayer();
 
-                if(getCurrentLayer() instanceof TileLayer) {
-            		clipboardLayer = new TileLayer(
-                        marqueeSelection.getSelectedAreaBounds());
-            	} else if(getCurrentLayer() instanceof ObjectGroup) {
-            		clipboardLayer = new ObjectGroup(
+                if (getCurrentLayer() instanceof TileLayer) {
+                    clipboardLayer = new TileLayer(
                             marqueeSelection.getSelectedAreaBounds());
-            	}
+                } else if(getCurrentLayer() instanceof ObjectGroup) {
+                    clipboardLayer = new ObjectGroup(
+                            marqueeSelection.getSelectedAreaBounds());
+                }
                 clipboardLayer.maskedCopyFrom(
                         ml, marqueeSelection.getSelectedArea());
 
                 Rectangle area = marqueeSelection.getSelectedAreaBounds();
                 Area mask = marqueeSelection.getSelectedArea();
-                if(ml instanceof TileLayer) {
-	                for (int i = area.y; i < area.height+area.y; i++) {
-	                    for (int j = area.x;j<area.width+area.x;j++){
-	                        if (mask.contains(j,i)) {
-	                            ((TileLayer)ml).setTileAt(j, i, currentMap.getNullTile());
-	                        }
-	                    }
-	                }
+                if (ml instanceof TileLayer) {
+                    TileLayer tl = (TileLayer)ml;
+                    for (int i = area.y; i < area.height+area.y; i++) {
+                        for (int j = area.x; j < area.width + area.x; j++){
+                            if (mask.contains(j,i)) {
+                                tl.setTileAt(j, i, currentMap.getNullTile());
+                            }
+                        }
+                    }
                 }
                 mapView.repaintRegion(area);
             }
@@ -1812,12 +1827,12 @@ public class MapEditor implements ActionListener,
     }
 
     private MapLayer createLayerCopy(MapLayer layer) {
-    	if(layer instanceof TileLayer) {
-    		return new TileLayer((TileLayer)layer);
-    	} else if(layer instanceof ObjectGroup) {
-    		return new ObjectGroup((ObjectGroup)layer);
-    	}
-    	return null;
+        if (layer instanceof TileLayer) {
+            return new TileLayer((TileLayer)layer);
+        } else if(layer instanceof ObjectGroup) {
+            return new ObjectGroup((ObjectGroup)layer);
+        }
+        return null;
     }
     
     private void updateRecent(String mapFile) {
