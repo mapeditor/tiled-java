@@ -249,7 +249,7 @@ public class MapEditor implements ActionListener,
 
         
         m = new JMenu("Map");
-        m.add(createMenuItem("Modify Dimensions", null, "Modify map dimensions"));
+        m.add(createMenuItem("Resize", null, "Modify map dimensions"));
         m.addSeparator();
         m.add(createMenuItem("Properties", null, "Map properties"));
         mapEventAdapter.addListener(m);
@@ -648,7 +648,7 @@ public class MapEditor implements ActionListener,
         mlse.setPresentationName(command);
 
 		if (command.equals("Add Layer")) {
-            currentMap.addLayer();
+            currentMap.addLayer();            
             setCurrentLayer(currentMap.getTotalLayers() - 1);
 		} else if (command.equals("Duplicate Layer")) {
 			if (currentLayer >= 0) {
@@ -982,7 +982,7 @@ public class MapEditor implements ActionListener,
             undoStack.redo();
             updateHistory();
             mapView.repaint();
-        } else if(command.equals("Modify Dimensions")) {
+        } else if(command.equals("Resize")) {
         	ResizeDialog rd = new ResizeDialog(this);
         	rd.showDialog();
         } else if (command.equals("About")) {
@@ -1337,7 +1337,7 @@ public class MapEditor implements ActionListener,
 
         JFileChooser ch = new JFileChooser(startLocation);
 
-		ch.setFileFilter(new TiledFileFilter());
+		ch.setFileFilter(new TiledFileFilter(TiledFileFilter.FILTER_TMX));
 
         int ret = ch.showOpenDialog(appFrame);
         if (ret == JFileChooser.APPROVE_OPTION) {

@@ -116,7 +116,7 @@ public class MapLayer implements Cloneable
 	}
 
 	public void mirror(int dir) {
-		Tile [][] mirror = new Tile[heightInTiles][widthInTiles];
+		Tile [][] mirror = new Tile[heightInTiles+1][widthInTiles+1];
 		for(int y=0;y<heightInTiles;y++){		
 			for(int x=0;x<widthInTiles;x++) {
 				if(dir == MIRROR_VERTICAL) {

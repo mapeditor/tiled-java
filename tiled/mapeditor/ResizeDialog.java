@@ -21,8 +21,23 @@ import tiled.core.Map;
 
 public class ResizeDialog extends JDialog implements ActionListener {
 
-	private Map currentMap;
 
+	public static final int ANCHOR_UPPERLEFT		= 1;
+	public static final int ANCHOR_UPPERMID			= 2;
+	public static final int ANCHOR_UPPERRIGHT		= 3;
+	public static final int ANCHOR_MIDLEFT				= 4;
+	public static final int ANCHOR_MIDMID				= 5;
+	public static final int ANCHOR_MIDRIGHT			= 6;
+	public static final int ANCHOR_LOWERLEFT		= 7;
+	public static final int ANCHOR_LOWERMID			= 8;
+	public static final int ANCHOR_LOWERRIGHT		= 9;
+	
+	private Map currentMap;
+	private JTextField width,
+								height;
+	private JToggleButton ur, um, ul, mr, mm, ml, lr, lm, ll;
+	private int anchor;
+	
 	public ResizeDialog(MapEditor m) {
 		currentMap = m.getCurrentMap();
 		setTitle("Resize Map");
@@ -35,39 +50,43 @@ public class ResizeDialog extends JDialog implements ActionListener {
 		
 		/* SIZING PANEL */
 		JPanel sizing = new JPanel();
+		JLabel lWidth = new JLabel("Width:");
+		width = new JTextField();
 		
 		/* ORIENTATION PANEL */
 		JPanel orient = new JPanel();
-		JToggleButton ul = new JToggleButton("_ul");
+		ul = new JToggleButton("_ul");
 		ul.addActionListener(this);
-		JToggleButton uml = new JToggleButton("_uml");
-		uml.addActionListener(this);
-		JToggleButton ur = new JToggleButton("_ur");
+		um = new JToggleButton("_um");
+		um.addActionListener(this);
+		ur = new JToggleButton("_ur");
 		ur.addActionListener(this);
-		JToggleButton ml = new JToggleButton("_ml");
+		ml = new JToggleButton("_ml");
 		ml.addActionListener(this);
-		JToggleButton mml = new JToggleButton("_mml");
-		mml.addActionListener(this);
-		JToggleButton mr = new JToggleButton("_mr");
+		mm = new JToggleButton("_mm");
+		mm.addActionListener(this);
+		mr = new JToggleButton("_mr");
 		mr.addActionListener(this);
-		JToggleButton ll = new JToggleButton("_ll");
+		ll = new JToggleButton("_ll");
 		ll.addActionListener(this);
-		JToggleButton lml = new JToggleButton("_lml");
-		lml.addActionListener(this);
-		JToggleButton lr = new JToggleButton("_lr");
+		lm = new JToggleButton("_lm");
+		lm.addActionListener(this);
+		lr = new JToggleButton("_lr");
 		lr.addActionListener(this);
 		orient.setLayout(new GridLayout(3,3,0,0));
 		orient.add(ul);
-		orient.add(uml);
+		orient.add(um);
 		orient.add(ur);
 		orient.add(ml);
-		orient.add(mml);
+		orient.add(mm);
 		orient.add(mr);
 		orient.add(ll);
-		orient.add(lml);
+		orient.add(lm);
 		orient.add(lr);
 		
 		/* BUTTONS PANEL */
+		bResize.addActionListener(this);
+		bCancel.addActionListener(this);
 		JPanel buttons = new VerticalStaticJPanel();
 		buttons.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
 		buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
@@ -95,7 +114,54 @@ public class ResizeDialog extends JDialog implements ActionListener {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-
+		String command = e.getActionCommand();
+		if(command.equals("_ul")) {
+			anchor = ANCHOR_UPPERLEFT;
+		} else if(command.equals("_um")) {
+			anchor = ANCHOR_UPPERMID;
+		} else if(command.equals("_ur")) {
+			anchor = ANCHOR_UPPERRIGHT;
+		} else if(command.equals("_mr")) {
+			anchor = ANCHOR_MIDRIGHT;
+		} else if(command.equals("_mm")) {
+			anchor = ANCHOR_MIDMID;
+		} else if(command.equals("_ml")) {
+			anchor = ANCHOR_MIDLEFT;
+		} else if(command.equals("_lr")) {
+			anchor = ANCHOR_LOWERRIGHT;
+		} else if(command.equals("_lm")) {
+			anchor = ANCHOR_LOWERMID;
+		} else if(command.equals("_ll")) {
+			anchor = ANCHOR_LOWERLEFT;
+		} else if(command.equalsIgnoreCase("resize")) {
+			
+			try {
+				int nwidth = Integer.parseInt(width.getText());
+				int nheight = Integer.parseInt(height.getText());
+				int x=0, y=0;
+				switch(anchor) {
+					
+				}
+				currentMap.resize(nwidth,nheight,x,y);
+			} catch (NumberFormatException nfe) {
+				JOptionPane.showMessageDialog(this,"One of your dimensions is not a number", "Argh!",JOptionPane.ERROR_MESSAGE,null);
+			}
+			dispose();
+		} else if(command.equalsIgnoreCase("cancel")) {
+			dispose();
+		} else {
+			System.out.println(command);
+		}
+		
+		ul.setSelected(anchor == ANCHOR_UPPERLEFT);
+		um.setSelected(anchor == ANCHOR_UPPERMID);
+		ur.setSelected(anchor == ANCHOR_UPPERRIGHT);
+		ml.setSelected(anchor == ANCHOR_MIDLEFT);
+		mm.setSelected(anchor == ANCHOR_MIDMID);
+		mr.setSelected(anchor == ANCHOR_MIDRIGHT);
+		ll.setSelected(anchor == ANCHOR_LOWERLEFT);
+		lm.setSelected(anchor == ANCHOR_LOWERMID);
+		lr.setSelected(anchor == ANCHOR_LOWERRIGHT);
 	}
 
 }

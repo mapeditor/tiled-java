@@ -34,7 +34,14 @@ public class MultilayerPlane {
 	}
 	
 	public int getTotalLayers() {
-		return layers.size();
+		int totalLayers=0;
+		Iterator itr = layers.iterator();
+		while(itr.hasNext()) {
+			if(itr.next() != null) {
+				totalLayers++;
+			}
+		}
+		return totalLayers;
 	}
 	
 	/**

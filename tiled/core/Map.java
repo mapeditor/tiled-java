@@ -94,7 +94,8 @@ public class Map extends MultilayerPlane implements Cloneable
 	}
 
 	public MapLayer addLayer() {
-		MapLayer layer = new MapLayer(this, widthInTiles, heightInTiles);		
+		MapLayer layer = new MapLayer(this, widthInTiles, heightInTiles);
+		layer.setName("Layer "+super.getTotalLayers());		
 		super.addLayer(layer);
 		fireMapChanged();
 		return layer;

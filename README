@@ -18,7 +18,7 @@ Bugtracker:  http://www.biggeruniverse.com/projects/flyspray/
 
 - Multilayer, layers can be changed around dynamically
 - Multiple orientations (orthographic and isometric at the moment)
-- Tiles can be higher than the default tile height
+- Tiles can be taller than the default tile height
 - Easy to use drawing operations
 - Universal XML-based map and tileset file formats
 - Can embed tiles in the map or tileset file
