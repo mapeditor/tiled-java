@@ -139,7 +139,7 @@ public class PluginClassLoader extends URLClassLoader
                         monitor.setNote("Loading " + aName + "...");
                         //System.out.println(
                         //        "Added " + files[i].getCanonicalPath());
-                        super.addURL(new URL("file://" + aPath));
+                        super.addURL((new File(aPath)).toURL());
                         _add(readerClass);
                         _add(writerClass);
                     }

@@ -270,7 +270,7 @@ public class XMLMapTransformer implements MapReader
         int tileSpacing = getAttribute(t, "spacing", 0);
 
         if(set.getBaseDir() != null) {
-            tilesetBaseDir = set.getBaseDir().indexOf("://") > 0 ? set.getBaseDir() : "file://"+set.getBaseDir(); 
+            tilesetBaseDir = set.getBaseDir().indexOf("://") > 0 ? set.getBaseDir() : (new File(set.getBaseDir())).toURL().toString(); 
         }
 
         if (set.getSource() != null) {
