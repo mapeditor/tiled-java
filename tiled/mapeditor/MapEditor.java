@@ -81,11 +81,12 @@ public class MapEditor implements ActionListener,
     JPanel      statusBar;
     JMenuBar    menuBar;
     JMenuItem   zoomOut, zoomIn, zoomNormal;
-    JMenuItem   undoMenuItem,redoMenuItem;
+    JMenuItem   undoMenuItem, redoMenuItem;
     JCheckBoxMenuItem gridMenuItem;
     JMenuItem   layerAdd, layerClone, layerDel;
     JMenuItem   layerUp, layerDown;
     JMenuItem   layerMerge, layerMergeAll;
+    JMenuItem   mRot90, mRot180, mRot270, mFlipHor, mFlipVer;
     JMenu       recentMenu;
     JScrollPane mapScrollPane;
     JTable      layerTable;
@@ -196,7 +197,24 @@ public class MapEditor implements ActionListener,
 	 *
 	 */
     private void createMenuBar() {
-        JMenu m, modifySub, mapSub, transformSub;
+        ImageIcon iconRot90 = null, iconRot180 = null, iconRot270 = null;
+        ImageIcon iconFlipHor = null, iconFlipVer = null;
+        JMenu m;
+
+        try {
+            iconRot90 = new ImageIcon(loadImageResource(
+                        "resources/gimp-rotate-90-16.png"));
+            iconRot180 = new ImageIcon(loadImageResource(
+                        "resources/gimp-rotate-180-16.png"));
+            iconRot270 = new ImageIcon(loadImageResource(
+                        "resources/gimp-rotate-270-16.png"));
+            iconFlipHor = new ImageIcon(loadImageResource(
+                        "resources/gimp-flip-horizontal-16.png"));
+            iconFlipVer = new ImageIcon(loadImageResource(
+                        "resources/gimp-flip-vertical-16.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         menuBar = new JMenuBar();
 
@@ -237,19 +255,24 @@ public class MapEditor implements ActionListener,
                 "control Y");
         redoMenuItem.setEnabled(false);
 
+        mRot90 = createMenuItem("Rotate 90 degrees CW",
+                iconRot90, "Rotate 90 degrees clockwise");
+        mRot180 = createMenuItem("Rotate 180 degrees CW",
+                iconRot180, "Rotate 180 degrees clockwise");
+        mRot270 = createMenuItem("Rotate 90 degrees CCW",
+                iconRot270, "Rotate 90 degrees counterclockwise");
+        mFlipHor = createMenuItem("Flip Horizontal",
+                iconFlipHor, "Flip the map horizontally");
+        mFlipVer = createMenuItem("Flip Vertical",
+                iconFlipVer, "Flip the map vertically");
 
-        transformSub = new JMenu("Transform");
-        transformSub.add(createMenuItem("Rotate 90",
-                    null, "Rotate 90 degrees counterclockwise"));
-        transformSub.add(createMenuItem("Rotate 180",
-                    null, "Rotate 180 degrees counterclockwise"));
-        transformSub.add(createMenuItem("Rotate 270",
-                    null, "Rotate 270 degrees counterclockwise"));
+        JMenu transformSub = new JMenu("Transform");
+        transformSub.add(mRot90);
+        transformSub.add(mRot270);
+        transformSub.add(mRot180);
         transformSub.addSeparator();
-        transformSub.add(createMenuItem("Flip Horizontal",
-                    null, "Flip the map horizontally"));
-        transformSub.add(createMenuItem("Flip Vertical",
-                    null, "Flip the map vertically"));
+        transformSub.add(mFlipHor);
+        transformSub.add(mFlipVer);
         mapEventAdapter.addListener(transformSub);
 
         m = new JMenu("Edit");
@@ -318,7 +341,7 @@ public class MapEditor implements ActionListener,
         mapEventAdapter.addListener(m);
         menuBar.add(m);
 
-        modifySub = new JMenu("Modify");
+        JMenu modifySub = new JMenu("Modify");
         modifySub.add(createMenuItem("Expand Selection", null, ""));
         modifySub.add(createMenuItem("Contract Selection", null, ""));
 
@@ -901,6 +924,7 @@ public class MapEditor implements ActionListener,
 
     private void handleEvent(ActionEvent event) {
         String command = event.getActionCommand();
+        Object src = event.getSource();
 
         if (command.equals("Open...")) {
             if (checkSave()) {
@@ -1022,17 +1046,18 @@ public class MapEditor implements ActionListener,
         } else if (command.equals("Preferences...")) {
             ConfigurationDialog d = new ConfigurationDialog(appFrame);
             d.configure();
-        } else if (command.equals("Flip Horizontal")) {
+        } else if (src == mFlipHor) {
             MapLayer layer = currentMap.getLayer(currentLayer);			
             paintEdit = new MapLayerEdit(currentMap, new MapLayer(layer));
-            currentMap.getLayer(currentLayer).mirror(MapLayer.MIRROR_HORIZONTAL);
+            currentMap.getLayer(currentLayer).mirror(
+                    MapLayer.MIRROR_HORIZONTAL);
             layer = new MapLayer(currentMap.getLayer(currentLayer));
             paintEdit.end(layer);
             paintEdit.setPresentationName("Flip Horizontal");
             undoStack.addEdit(paintEdit);
             updateHistory();
             mapView.repaint();
-        } else if (command.equals("Flip Vertical")) {
+        } else if (src == mFlipVer) {
             MapLayer layer = currentMap.getLayer(currentLayer);
             paintEdit = new MapLayerEdit(currentMap, new MapLayer(layer));
             paintEdit.setPresentationName("Flip Vertical");
@@ -1041,7 +1066,7 @@ public class MapEditor implements ActionListener,
             undoStack.addEdit(paintEdit);
             updateHistory();
             mapView.repaint();
-        } else if (command.equals("Rotate 90")) {
+        } else if (src == mRot90) {
             MapLayer layer = currentMap.getLayer(currentLayer);
             paintEdit = new MapLayerEdit(currentMap, new MapLayer(layer));
             paintEdit.setPresentationName("Rotate 90");
@@ -1050,7 +1075,7 @@ public class MapEditor implements ActionListener,
             undoStack.addEdit(paintEdit);
             updateHistory();
             mapView.repaint();
-        } else if (command.equals("Rotate 180")) {
+        } else if (src == mRot180) {
             MapLayer layer = currentMap.getLayer(currentLayer);
             paintEdit = new MapLayerEdit(currentMap, new MapLayer(layer));
             paintEdit.setPresentationName("Rotate 180");
@@ -1059,7 +1084,7 @@ public class MapEditor implements ActionListener,
             undoStack.addEdit(paintEdit);
             updateHistory();
             mapView.repaint();
-        } else if (command.equals("Rotate 270")) {
+        } else if (src == mRot270) {
             MapLayer layer = currentMap.getLayer(currentLayer);
             paintEdit = new MapLayerEdit(currentMap, new MapLayer(layer));
             paintEdit.setPresentationName("Rotate 270");

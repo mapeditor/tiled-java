@@ -56,20 +56,20 @@ public class MapLayer implements Cloneable
 		setBounds(r);
 	}
 
-	public MapLayer(MapLayer ml) {
-		id = ml.id;
-		xOffset=ml.xOffset;
-		yOffset=ml.yOffset;
-		widthInTiles = ml.widthInTiles;
-		heightInTiles = ml.heightInTiles;
+    public MapLayer(MapLayer ml) {
+        id = ml.id;
+        xOffset = ml.xOffset;
+        yOffset = ml.yOffset;
+        widthInTiles = ml.widthInTiles;
+        heightInTiles = ml.heightInTiles;
 
-		map = new Tile[heightInTiles][];
-		for(int i =0; i<heightInTiles;i++){
-				map[i] = new Tile[widthInTiles];
-				System.arraycopy(ml.map[i],0,map[i],0,widthInTiles);
+        map = new Tile[heightInTiles][];
+        for (int i = 0; i < heightInTiles; i++) {
+            map[i] = new Tile[widthInTiles];
+            System.arraycopy(ml.map[i], 0, map[i], 0, widthInTiles);
+        }
+    }
 
-		}
-	}
     /**
      * @param m the map this layer is part of
      */
@@ -89,96 +89,115 @@ public class MapLayer implements Cloneable
         widthInTiles = w;
     }
 
-	public void translate(int deltaX, int deltaY) {
-		xOffset += deltaX;
-		yOffset += deltaY;
-	}
+    public void translate(int deltaX, int deltaY) {
+        xOffset += deltaX;
+        yOffset += deltaY;
+    }
 
-	public void rotate(int angle) {
-		Tile [][] trans;
-		
-		if(angle == ROTATE_90 || angle == ROTATE_270) {
-			trans = new Tile[widthInTiles][heightInTiles];
-		} else {
-			trans = new Tile[heightInTiles][widthInTiles];
-		}
-		
-		double cos_angle = Math.round(Math.cos(Math.toRadians(angle))), sin_angle = Math.round(Math.sin(Math.toRadians(angle)));
-		
-		for(int y=0;y<heightInTiles;y++){		
-			for(int x=0;x<widthInTiles;x++) {
-				int trans_x = x - widthInTiles/2;
-				int trans_y = y - heightInTiles/2;
-				trans[y][x] = getTileAt((int)(trans_x*cos_angle - trans_y * sin_angle)+widthInTiles/2,(int)(trans_x*sin_angle+trans_y*cos_angle)+heightInTiles/2);
-			}
-		}
-		map = trans;
-	}
+    public void rotate(int angle) {
+        Tile[][] trans;
+        int xtrans = 0, ytrans = 0;
 
-	public void mirror(int dir) {
-		Tile [][] mirror = new Tile[heightInTiles][widthInTiles];
-		for(int y=0;y<heightInTiles;y++){		
-			for(int x=0;x<widthInTiles;x++) {
-				if(dir == MIRROR_VERTICAL) {
-					mirror[y][x] = map[(heightInTiles-1)-y][x];
-				} else {
-					mirror[y][x] = map[y][(widthInTiles-1)-x];
-				}
-			}
-		}
-		map=mirror;
-	}
+        switch (angle) {
+            case ROTATE_90:
+                trans = new Tile[widthInTiles][heightInTiles];
+                xtrans = heightInTiles - 1;
+                break;
+            case ROTATE_180:
+                trans = new Tile[heightInTiles][widthInTiles];
+                xtrans = widthInTiles - 1;
+                ytrans = heightInTiles - 1;
+                break;
+            case ROTATE_270:
+                trans = new Tile[widthInTiles][heightInTiles];
+                ytrans = widthInTiles - 1;
+                break;
+            default:
+                System.out.println("Unsupported rotation (" + angle + ")");
+                return;
+        }
 
-	public boolean isUsed(Tile t) {
-		for(int y=0;y<heightInTiles;y++){		
-			for(int x=0;x<widthInTiles;x++) {
-				if(map[y][x] == t) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
+        double ra = Math.toRadians(angle);
+        int cos_angle = (int)Math.round(Math.cos(ra));
+        int sin_angle = (int)Math.round(Math.sin(ra));
 
-	public void setBounds(Rectangle bounds) {
-		xOffset = bounds.x;
-		yOffset = bounds.y;
-		widthInTiles = bounds.width;
-		heightInTiles = bounds.height;
-		map = new Tile[heightInTiles][widthInTiles];
-	}
+        for (int y = 0; y < heightInTiles; y++) {
+            for (int x = 0; x < widthInTiles; x++) {
+                int xrot = x * cos_angle - y * sin_angle;
+                int yrot = x * sin_angle + y * cos_angle;
+                trans[yrot + ytrans][xrot + xtrans] = getTileAt(x, y);
+            }
+        }
 
-	/**
-	 * Creates a diff of the two layers, <code>ml</code> is considered the significant diiference
-	 * 
-	 * @param ml
-	 * @return A new FiniteMapLayer the represents the difference between this layer, and the argument, or null if no difference exists
-	 */	
-	public MapLayer createDiff(MapLayer ml) {		
-		if(ml == null)
-			return null;
-		Rectangle rect = new Rectangle();
-		boolean start=false;
-		for (int i = yOffset; i < heightInTiles+yOffset; i++) {
-			for (int j = xOffset; j < widthInTiles+xOffset; j++) {
-				if(ml.getTileAt(j,i) != getTileAt(j,i)) {
-					if(start) {
-						rect.width = Math.abs(j - rect.x);
-						rect.height = Math.abs(i - rect.y);		
-					} else {
-						start = true;
-						rect.x = j;
-						rect.y = i;
-					}
-				}
-								
-			}
-		}
-		
-		MapLayer diff = new MapLayer(rect);
-		diff.copyFrom(ml);		
-		return diff;
-	}
+        widthInTiles = trans[0].length;
+        heightInTiles = trans.length;
+        map = trans;
+    }
+
+    public void mirror(int dir) {
+        Tile[][] mirror = new Tile[heightInTiles][widthInTiles];
+        for (int y = 0; y < heightInTiles; y++) {
+            for (int x = 0; x < widthInTiles; x++) {
+                if (dir == MIRROR_VERTICAL) {
+                    mirror[y][x] = map[(heightInTiles - 1) - y][x];
+                } else {
+                    mirror[y][x] = map[y][(widthInTiles - 1) - x];
+                }
+            }
+        }
+        map = mirror;
+    }
+
+    public boolean isUsed(Tile t) {
+        for (int y = 0; y < heightInTiles; y++) {
+            for (int x = 0; x < widthInTiles; x++) {
+                if (map[y][x] == t) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public void setBounds(Rectangle bounds) {
+        xOffset = bounds.x;
+        yOffset = bounds.y;
+        widthInTiles = bounds.width;
+        heightInTiles = bounds.height;
+        map = new Tile[heightInTiles][widthInTiles];
+    }
+
+    /**
+     * Creates a diff of the two layers, <code>ml</code> is considered the significant diiference
+     * 
+     * @param ml
+     * @return A new FiniteMapLayer the represents the difference between this layer, and the argument, or null if no difference exists
+     */	
+    public MapLayer createDiff(MapLayer ml) {		
+        if(ml == null)
+            return null;
+        Rectangle rect = new Rectangle();
+        boolean start=false;
+        for (int i = yOffset; i < heightInTiles + yOffset; i++) {
+            for (int j = xOffset; j < widthInTiles + xOffset; j++) {
+                if (ml.getTileAt(j, i) != getTileAt(j, i)) {
+                    if (start) {
+                        rect.width = Math.abs(j - rect.x);
+                        rect.height = Math.abs(i - rect.y);		
+                    } else {
+                        start = true;
+                        rect.x = j;
+                        rect.y = i;
+                    }
+                }
+
+            }
+        }
+
+        MapLayer diff = new MapLayer(rect);
+        diff.copyFrom(ml);		
+        return diff;
+    }
 
     /**
      * Removes any occurences of the given tile from this map layer.
@@ -228,13 +247,11 @@ public class MapLayer implements Cloneable
      * @param ti the tile object to place
      */
     public void setTileAt(int tx, int ty, Tile ti) {
-        //if (tx >= 0 && ty >= 0 && tx < widthInTiles && ty < heightInTiles) {
-        	try {        	
-           		map[ty-yOffset][tx-xOffset] = ti;
-        	} catch(Exception e) {
-        		//e.printStackTrace();
-        	}
-        //}
+        try {        	
+            map[ty - yOffset][tx - xOffset] = ti;
+        } catch (ArrayIndexOutOfBoundsException e) {
+            // Silently ignore out of bounds exception
+        }
     }
 
     /**
@@ -277,16 +294,16 @@ public class MapLayer implements Cloneable
     }
 
     public void setXOffset(int xOff) {
-	xOffset = xOff;
+        xOffset = xOff;
     }
 
     public void setYOffset(int yOff) {
-	yOffset = yOff;
+        yOffset = yOff;
     }
 
     public void setOffset(int xOff, int yOff) {
-	xOffset = xOff;
-	yOffset = yOff;
+        xOffset = xOff;
+        yOffset = yOff;
     }
 
     /**
@@ -369,26 +386,26 @@ public class MapLayer implements Cloneable
         }
     }
 
-	public void copyFrom(MapLayer other) {
-		for (int i = 0; i < heightInTiles; i++) {
-			for (int j = 0; j < widthInTiles; j++) {				
-				setTileAt(j, i, other.getTileAt(j+xOffset,i+yOffset));				
-			}
-		}
-	}
+    public void copyFrom(MapLayer other) {
+        for (int i = 0; i < heightInTiles; i++) {
+            for (int j = 0; j < widthInTiles; j++) {				
+                setTileAt(j, i, other.getTileAt(j+xOffset,i+yOffset));				
+            }
+        }
+    }
 
-	/**
-	 * Unlike mergeOnto, copyTo includes the null tile when merging
-	 * 
-	 * @param other
-	 */
-	public void copyTo(MapLayer other) {
-		for (int i = 0; i < heightInTiles; i++) {
-			for (int j = 0; j < widthInTiles; j++) {				
-				other.setTileAt(j+xOffset, i+yOffset, map[i][j]);				
-			}
-		}
-	}
+    /**
+     * Unlike mergeOnto, copyTo includes the null tile when merging
+     * 
+     * @param other
+     */
+    public void copyTo(MapLayer other) {
+        for (int i = 0; i < heightInTiles; i++) {
+            for (int j = 0; j < widthInTiles; j++) {				
+                other.setTileAt(j+xOffset, i+yOffset, map[i][j]);				
+            }
+        }
+    }
 
     /**
      * Creates a clone of this layer.
