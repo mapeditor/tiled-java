@@ -196,7 +196,7 @@ public class Tile
      */
     public Image getImage() {
         if (tileset != null) {
-            return tileset.getImageById("" + tileImageId);
+            return tileset.getImageById(Integer.toString(tileImageId));
         } else {
             return internalImage;
         }

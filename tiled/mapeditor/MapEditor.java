@@ -101,6 +101,7 @@ public class MapEditor implements ActionListener,
     JScrollPane mapScrollPane;
     JTable      layerTable;
     JList       editHistoryList;
+	MiniMapViewer miniMap;
 
     TileButton  tilePaletteButton;
     JFrame      appFrame;
@@ -210,13 +211,14 @@ public class MapEditor implements ActionListener,
     }
 
     private JPanel createContentPane() {
+
+		mapScrollPane = new JScrollPane(
+						JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+						JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+
         createToolbox();
         createData();
         createStatusBar();
-
-        mapScrollPane = new JScrollPane(
-                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-                JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
         mainPanel = new JPanel(new BorderLayout());
         mainPanel.add(toolPanel, BorderLayout.WEST);
@@ -503,6 +505,7 @@ public class MapEditor implements ActionListener,
         JButton b;
         JToolBar tabsPanel = new JToolBar();
         JTabbedPane paintPanel = new JTabbedPane();
+		JTabbedPane navOpts = new JTabbedPane();
         dataPanel = new JPanel(new BorderLayout());
 
         // Try to load the icons
@@ -512,6 +515,12 @@ public class MapEditor implements ActionListener,
         Icon imgUp = loadIcon("resources/gnome-up.png");
         Icon imgDown = loadIcon("resources/gnome-down.png");
 
+		//navigation and tool options
+		miniMap = new MiniMapViewer();
+		miniMap.setMainPanel(mapScrollPane);
+		navOpts.addTab("Navigation", miniMap);
+		navOpts.addTab("Tool Options", new JPanel());
+		
         // Layer table
         layerTable = new JTable(new LayerTableModel(currentMap));
         layerTable.getColumnModel().getColumn(0).setPreferredWidth(32);
@@ -570,6 +579,9 @@ public class MapEditor implements ActionListener,
         c.insets = new Insets(3, 0, 0, 0); c.weightx = 1; c.weighty = 0;
         c.fill = GridBagConstraints.BOTH;
         c.gridx = 0; c.gridy = 0;
+		c.weighty = 1;
+        layerPanel.add(navOpts);
+		c.weighty = 0; c.gridy += 1;
         layerPanel.add(sliderPanel, c);
         c.weighty = 1; c.gridy += 1;
         layerPanel.add(new JScrollPane(layerTable), c);
@@ -1753,6 +1765,11 @@ public class MapEditor implements ActionListener,
         if (tilePaletteDialog != null) {
             tilePaletteDialog.setMap(currentMap);
         }
+        
+        if(miniMap != null && currentMap != null) {
+        	miniMap.setView(currentMap.createView());
+        }
+        
         undoStack.discardAllEdits();
         updateLayerTable();
         updateTitle();
