@@ -21,102 +21,87 @@ import javax.swing.undo.UndoableEdit;
 import tiled.core.*;
 
 
-public class MapLayerStateEdit extends MapLayerEdit {
+public class MapLayerStateEdit extends MapLayerEdit
+{
+    Vector beforeLayerSet, afterLayerSet;
 
+    public MapLayerStateEdit(Map m, ListIterator beforeSet, ListIterator afterSet) {
+        super(m);
+        start(beforeSet);
+        afterLayerSet = new Vector();
+    }
 
-	Vector beforeLayerSet, afterLayerSet;
+    public MapLayerStateEdit(Map m) {
+        super(m);
+        start(m.getLayers());
+    }
 
-	public MapLayerStateEdit(Map m, ListIterator beforeSet, ListIterator afterSet) {
-		super(m);
-		start(beforeSet);
-		afterLayerSet = new Vector();
-	}
+    public void start(ListIterator beforeSet) {
+        inProgress = true;
+        beforeLayerSet = new Vector();
+        while (beforeSet.hasNext()) {
+            try {
+                beforeLayerSet.add(((MapLayer)beforeSet.next()).clone());
+            } catch (CloneNotSupportedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
-	public MapLayerStateEdit(Map m) {
-		super(m);
-		start(m.getLayers());
-	}
+    public void end(ListIterator afterSet) throws Exception{
+        if (!inProgress) {
+            throw new Exception("Without a beginning, there can be no end...");
+        }
+        afterLayerSet = new Vector();
+        while (afterSet.hasNext()) {
+            afterLayerSet.add(((MapLayer)afterSet.next()).clone());
+        }
+        inProgress = false;
+    }
 
-	public void start(ListIterator beforeSet) {
-		inProgress = true;
-		beforeLayerSet = new Vector();
-		while(beforeSet.hasNext()) {
-			try {
-				beforeLayerSet.add(((MapLayer)beforeSet.next()).clone());
-			} catch (CloneNotSupportedException e) {
-				e.printStackTrace();
-			}
-		}
-	}
+    /* begin inherited methods */
+    public void undo() throws CannotUndoException {
+        myMap.removeAllLayers();
+        myMap.addAllLayers(beforeLayerSet);
+    }
 
-	public void end(ListIterator afterSet) throws Exception{
-		if(!inProgress) {
-			throw new Exception("Without a beginning, there can be no end...");
-		}
-		afterLayerSet = new Vector();
-		while(afterSet.hasNext()) {
-			afterLayerSet.add(((MapLayer)afterSet.next()).clone());
-		}
-		inProgress = false;
-	}
+    public boolean canUndo() {
+        if (beforeLayerSet != null) {
+            return true;
+        }
+        return false;
+    }
 
-	/* begin inherited methods */
-	public void undo() throws CannotUndoException {
-		myMap.removeAllLayers();
-		myMap.addAllLayers(beforeLayerSet);
-	}
+    public void redo() throws CannotRedoException {
+        myMap.removeAllLayers();
+        myMap.addAllLayers(afterLayerSet);
+    }
 
-	public boolean canUndo() {
-		if(beforeLayerSet != null) {
-			return true;
-		}
-		return false;
-	}
+    public boolean canRedo() {
+        if (afterLayerSet != null) {
+            return true;
+        }
+        return false;
+    }
 
-	public void redo() throws CannotRedoException {
-		myMap.removeAllLayers();
-		myMap.addAllLayers(afterLayerSet);
-	}
+    public void die() {
+    }
 
-	public boolean canRedo() {
-		if(afterLayerSet != null) {
-			return true;
-		}
-		return false;
-	}
+    public boolean addEdit(UndoableEdit anEdit) {
+        return false;
+    }
 
-	public void die() {
+    public boolean replaceEdit(UndoableEdit anEdit) {
+        if (anEdit.getClass() == this.getClass()) {
+            beforeLayerSet = ((MapLayerStateEdit)anEdit).beforeLayerSet;
+            afterLayerSet = ((MapLayerStateEdit)anEdit).afterLayerSet;
+            //TODO: should this include the Presentation name?
+            return true;
+        }
+        return false;
+    }
 
-
-	}
-
-	public boolean addEdit(UndoableEdit anEdit) {
-		return false;
-	}
-
-	public boolean replaceEdit(UndoableEdit anEdit) {
-		if(anEdit.getClass() == this.getClass()) {
-			beforeLayerSet = ((MapLayerStateEdit)anEdit).beforeLayerSet;
-			afterLayerSet = ((MapLayerStateEdit)anEdit).afterLayerSet;
-			//TODO: should this include the Presentation name?
-			return true;
-		}
-		return false;
-	}
-
-	public boolean isSignificant() {
-		return true;
-	}
-
-	public String getPresentationName() {
-		return super.getPresentationName();
-	}
-
-	public String getUndoPresentationName() {
-		return getPresentationName();
-	}
-
-	public String getRedoPresentationName() {
-		return getPresentationName();
-	}
+    public boolean isSignificant() {
+        return true;
+    }
 }
