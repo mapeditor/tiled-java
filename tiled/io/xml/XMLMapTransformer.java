@@ -330,9 +330,6 @@ public class XMLMapTransformer implements MapReader
             e.printStackTrace();
         }
 
-        obj.setX(getAttribute(t, "x", 0));
-        obj.setY(getAttribute(t, "y", 0));
-
         NodeList children = t.getChildNodes();
 
         for (int i = 0; i < children.getLength(); i++) {
@@ -389,9 +386,29 @@ public class XMLMapTransformer implements MapReader
         return tile;
     }
 
+    private MapLayer unmarshalObjectGroup(Node t) throws Exception {
+        ObjectGroup og = null;
+        try {
+            og = (ObjectGroup)unmarshalClass(ObjectGroup.class, t);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        //Read all objects from the group, "...and in the darkness bind them."
+        NodeList children = t.getChildNodes();
+
+        for (int i = 0; i < children.getLength(); i++) {
+            Node child = children.item(i);
+            if (child.getNodeName().equalsIgnoreCase("object")) {
+                og.bindObject(unmarshalObject(child));
+            }
+        }
+        
+        return og;
+    }
+    
     private MapLayer unmarshalLayer(Node t) throws Exception {
         TileLayer ml = null;
-        Rectangle rect = new Rectangle(0, 0, map.getWidth(), map.getHeight());
 
         boolean encodedBase64 = false;
         try {
@@ -400,8 +417,11 @@ public class XMLMapTransformer implements MapReader
             e.printStackTrace();
         }
 
-        ml.setBounds(rect);
-
+        Rectangle r = ml.getBounds();
+        if(r.height == 0 && r.width == 0) {
+            ml.setBounds(map.getBounds());
+        }
+        
         NodeList children = t.getChildNodes();
 
         for (int i = 0; i < children.getLength(); i++) {
@@ -543,17 +563,26 @@ public class XMLMapTransformer implements MapReader
                 }
             }
 
-            // Load the layers
-            l = doc.getElementsByTagName("layer");
-            for (int i = 0; (item = l.item(i)) != null; i++) {
-                if (item.getParentNode() == mapNode) {
-                    MapLayer layer = unmarshalLayer(item);
-                    if (layer != null) {
-                        map.addLayer(layer);
+            // Load the layers & objectgroups
+            l = mapNode.getChildNodes();
+            for (int i = 0; i < l.getLength(); i++) {
+                Node sibs = l.item(i);
+                if (sibs.getParentNode() == mapNode) {
+                    if(sibs.getNodeName().equals("layer")) {
+	                    MapLayer layer = unmarshalLayer(sibs);
+	                    if (layer != null) {
+	                        map.addLayer(layer);
+	                    }
+                    }else if(sibs.getNodeName().equals("objectgroup")) {
+                        MapLayer layer = unmarshalObjectGroup(sibs);
+                        if (layer != null) {
+                            map.addLayer(layer);
+                        }
                     }
                 }
             }
-
+            
+            /*
             // Load the objects
             l = doc.getElementsByTagName("object");
             for (int i = 0; (item = l.item(i)) != null; i++) {
@@ -561,6 +590,7 @@ public class XMLMapTransformer implements MapReader
                     map.addObject(unmarshalObject(item));
                 }
             }
+            */
         }
     }
 

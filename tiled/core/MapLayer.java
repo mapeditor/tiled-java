@@ -167,6 +167,24 @@ public abstract class MapLayer implements Cloneable
         bounds.y = yOff;
     }
 
+    /**
+     * setWidth() should be used exclusively by the XMLMapTransformer.
+     * 
+     * @param w the new width
+     */
+    public void setWidth(int w) {
+        bounds.width = w;
+    }
+    
+    /**
+     * setHeight() should be used exclusively by the XMLMapTransformer.
+     * 
+     * @param h the new height
+     */
+    public void setHeight(int h) {
+        bounds.height = h;
+    }
+    
     public void setOffset(int xOff, int yOff) {
         bounds.x = xOff;
         bounds.y = yOff;

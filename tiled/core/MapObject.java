@@ -60,6 +60,11 @@ public class MapObject {
         sprite=s;
     }
 
+    public void translate(int x, int y) {
+        map_x += x;
+        map_y += y;
+    }
+    
     public int getId() {
         return id;
     }

@@ -14,7 +14,7 @@ package tiled.core;
 
 import java.awt.Rectangle;
 import java.awt.geom.Area;
-import java.util.LinkedList;
+import java.util.*;
 
 
 public class ObjectGroup extends MapLayer
@@ -52,7 +52,7 @@ public class ObjectGroup extends MapLayer
      */
     public ObjectGroup(ObjectGroup group) {
     }
-
+    
     /**
      * @see MapLayer#rotate(int)
      */
@@ -108,5 +108,9 @@ public class ObjectGroup extends MapLayer
 
     public void unbindAll() {
         boundObjects.clear();
+    }
+    
+    public ListIterator getObjects() {
+        return (ListIterator) boundObjects.iterator();
     }
 }

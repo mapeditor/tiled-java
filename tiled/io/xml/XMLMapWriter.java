@@ -17,6 +17,7 @@ import java.awt.Rectangle;
 import java.io.*;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.ListIterator;
 import java.util.Vector;
 import java.util.zip.GZIPOutputStream;
 
@@ -133,12 +134,6 @@ public class XMLMapWriter implements MapWriter
                 writeMapLayer(layer, w);
             }
 
-            Iterator obj = map.getObjects();
-            while (obj.hasNext()) {
-                MapObject o = (MapObject)obj.next();
-                writeObject(o, w);
-            }
-
             w.endElement();
         } catch (XMLWriterException e) {
             e.printStackTrace();
@@ -245,16 +240,14 @@ public class XMLMapWriter implements MapWriter
             e.printStackTrace();
         }
     }
-
+    
     private void writeObjectGroup(ObjectGroup o, XMLWriter w) throws IOException {
-    	try {
-	    	w.startElement("objectgroup");
-	    	
-	    	w.endElement();
-    	} catch (XMLWriterException xwe) {
-    		xwe.printStackTrace();
+    	ListIterator itr = o.getObjects();
+    	Rectangle r = o.getBounds();
+    	while(itr.hasNext()) {
+    	    writeObject((MapObject) itr.next(), o, w);
     	}
-    }
+    }    
     
     /**
      * Writes this layer to an XMLWriter. This should be done <b>after</b> the
@@ -277,7 +270,7 @@ public class XMLMapWriter implements MapWriter
             if (l.getClass() == SelectionLayer.class) {
                 w.startElement("selection");
             } else if(l instanceof ObjectGroup){
-                writeObjectGroup((ObjectGroup) l, w);
+                w.startElement("objectgroup");
             } else {
             	w.startElement("layer");
             }
@@ -308,55 +301,59 @@ public class XMLMapWriter implements MapWriter
                 w.endElement();
             }
 
-            w.startElement("data");
-            if (encodeLayerData) {
-                w.writeAttribute("encoding", "base64");
-
-                if (compressLayerData) {
-                    w.writeAttribute("compression", "gzip");
-                    out = new GZIPOutputStream(baos);
-                } else {
-                    out = baos;
-                }
-
-                for (int y = 0; y < l.getHeight(); y++) {
-                    for (int x = 0; x < l.getWidth(); x++) {
-                        Tile tile = ((TileLayer)l).getTileAt(x, y);
-                        int gid = 0;
-
-                        if (tile != null) {
-                            gid = tile.getGid();
-                        }
-
-                        out.write((gid      ) & 0x000000FF);
-                        out.write((gid >>  8) & 0x000000FF);
-                        out.write((gid >> 16) & 0x000000FF);
-                        out.write((gid >> 24) & 0x000000FF);
-                    }
-                }
-
-                if (compressLayerData) {
-                    ((GZIPOutputStream)out).finish();
-                }
-
-                w.writeCDATA(new String(Base64.encode(baos.toByteArray())));
+            if(l instanceof ObjectGroup){
+                writeObjectGroup((ObjectGroup) l, w);
             } else {
-                for (int y = 0; y < l.getHeight(); y++) {
-                    for (int x = 0; x < l.getWidth(); x++) {
-                        Tile tile = ((TileLayer)l).getTileAt(x, y);
-                        int gid = 0;
-
-                        if (tile != null) {
-                            gid = tile.getGid();
-                        }
-
-                        w.startElement("tile");
-                        w.writeAttribute("gid", ""+gid);
-                        w.endElement();
-                    }
-                }
+	            w.startElement("data");
+	            if (encodeLayerData) {
+	                w.writeAttribute("encoding", "base64");
+	
+	                if (compressLayerData) {
+	                    w.writeAttribute("compression", "gzip");
+	                    out = new GZIPOutputStream(baos);
+	                } else {
+	                    out = baos;
+	                }
+	
+	                for (int y = 0; y < l.getHeight(); y++) {
+	                    for (int x = 0; x < l.getWidth(); x++) {
+	                        Tile tile = ((TileLayer)l).getTileAt(x, y);
+	                        int gid = 0;
+	
+	                        if (tile != null) {
+	                            gid = tile.getGid();
+	                        }
+	
+	                        out.write((gid      ) & 0x000000FF);
+	                        out.write((gid >>  8) & 0x000000FF);
+	                        out.write((gid >> 16) & 0x000000FF);
+	                        out.write((gid >> 24) & 0x000000FF);
+	                    }
+	                }
+	
+	                if (compressLayerData) {
+	                    ((GZIPOutputStream)out).finish();
+	                }
+	
+	                w.writeCDATA(new String(Base64.encode(baos.toByteArray())));
+	            } else {
+	                for (int y = 0; y < l.getHeight(); y++) {
+	                    for (int x = 0; x < l.getWidth(); x++) {
+	                        Tile tile = ((TileLayer)l).getTileAt(x, y);
+	                        int gid = 0;
+	
+	                        if (tile != null) {
+	                            gid = tile.getGid();
+	                        }
+	
+	                        w.startElement("tile");
+	                        w.writeAttribute("gid", ""+gid);
+	                        w.endElement();
+	                    }
+	                }
+	            }
+	            w.endElement();
             }
-            w.endElement();
             w.endElement();
         } catch (XMLWriterException e) {
             e.printStackTrace();
@@ -438,11 +435,12 @@ public class XMLMapWriter implements MapWriter
         }
     }
 
-    private void writeObject(MapObject m, XMLWriter w) throws IOException {
+    private void writeObject(MapObject m, ObjectGroup o, XMLWriter w) throws IOException {
         try {
+            Rectangle b = o.getBounds();
             w.startElement("object");
-            w.writeAttribute("x", "" + m.getX());
-            w.writeAttribute("y", "" + m.getY());
+            w.writeAttribute("x", "" + (m.getX() + b.x));
+            w.writeAttribute("y", "" + (m.getY() + b.y));
             w.writeAttribute("type", m.getType());
             if (m.getSource() != null) {
                 w.writeAttribute("source", m.getSource());
