@@ -69,6 +69,10 @@ public class Tile
     	groundHeight = getHeight();
     }
     
+    public void setImageOrientation(int orientation) {
+    	this.tileOrientation = orientation;
+    }
+    
     public void setStandardHeight(int i) {
         stdHeight = i;
     }
@@ -131,8 +135,7 @@ public class Tile
 					mediaTracker.removeImage(scaledImage);
 					g.drawImage(scaledImage, x, y, null);
 				} else {
-		        	//TODO: drawing ids when there is no tile data should be a config option.
-		            //g.drawString("" + id, x, y);
+					g.drawImage(scaledImage, x, y, null);
 		        }
                 
             } else {
