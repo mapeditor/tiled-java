@@ -96,10 +96,19 @@ public class PluginClassLoader extends URLClassLoader
                     	writerClass = loadFromJar(jf, writer, writerClassName);
                     }
                     
-                    if (doesImplement(readerClass, "tiled.io.MapReader") ||
-                            doesImplement(writerClass, "tiled.io.MapWriter")) {
-                    	_add(readerClass);
-                    	_add(writerClass);
+                    if (doesImplement(readerClass, "tiled.io.MapReader")) {
+                                                                                
+                        _add(readerClass);
+                        bPlugin = true;
+                    }
+                                                                                
+                    if (doesImplement(writerClass, "tiled.io.MapWriter")) {
+                                                                                
+                        _add(writerClass);
+                        bPlugin = true;
+                    }
+                                                                                
+                    if (bPlugin) {
                         //System.out.println(
                         //        "Added " + files[i].getCanonicalPath());
                         super.addURL(new URL("file://" + aPath));
