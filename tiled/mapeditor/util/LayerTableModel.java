@@ -20,7 +20,7 @@ import tiled.core.MultilayerPlane;
 public class LayerTableModel extends AbstractTableModel
 {
     private MultilayerPlane map;
-    private String[] columnNames = { "Show", "Layer name" };
+    private String[] columnNames = { "Locked", "Show", "Layer name" };
 
     public LayerTableModel(MultilayerPlane map) {
         this.map = map;
@@ -62,7 +62,8 @@ public class LayerTableModel extends AbstractTableModel
     public Class getColumnClass(int col) {
         switch (col) {
             case 0: return Boolean.class;
-            case 1: return String.class;
+            case 1: return Boolean.class;
+            case 2: return String.class;
         }
         return null;
     }
@@ -73,8 +74,10 @@ public class LayerTableModel extends AbstractTableModel
         
         if (layer != null) {
             if (col == 0) {
-                return new Boolean(layer.isVisible());
+                return new Boolean(layer.getLocked());
             } else if (col == 1) {
+                return new Boolean(layer.isVisible());
+            } else if (col == 2) {
                 return layer.getName();
             } else {
                 return null;
@@ -92,6 +95,9 @@ public class LayerTableModel extends AbstractTableModel
         MapLayer layer = map.getLayer(getRowCount() - row - 1);
         if (layer != null) {
             if (col == 0) {
+                Boolean bool = (Boolean)value;
+                layer.setLocked(bool.booleanValue());
+            } else if (col == 1) {
                 Boolean bool = (Boolean)value;
                 layer.setVisible(bool.booleanValue());
             } else if (col == 1) {

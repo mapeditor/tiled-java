@@ -159,7 +159,7 @@ public class Map extends MultilayerPlane implements Cloneable
         fireMapChanged();
     }
 
-    public void removeTileset(TileSet s) {
+    public void removeTileset(TileSet s) throws Exception{
         // Sanity check
         if (tilesets.indexOf(s) != -1)
             return;

@@ -326,4 +326,8 @@ public abstract class MapLayer implements Cloneable
     public Properties getProperties() {
         return properties;
     }
+    
+    public boolean canEdit() {
+        return !getLocked() && isVisible();
+    }
 }

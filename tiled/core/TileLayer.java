@@ -68,7 +68,7 @@ public class TileLayer extends MapLayer
         Tile[][] trans;
         int xtrans = 0, ytrans = 0;
 
-        if (getLocked())
+        if (canEdit())
             return;
 
         switch (angle) {
@@ -117,7 +117,7 @@ public class TileLayer extends MapLayer
      * @param dir the axial orientation to mirror around
      */
     public void mirror(int dir) {
-        if (getLocked())
+        if (canEdit())
             return;
 
         Tile[][] mirror = new Tile[bounds.height][bounds.width];
@@ -217,13 +217,15 @@ public class TileLayer extends MapLayer
     }
 
     /**
-     * Removes any occurences of the given tile from this map layer.
+     * Removes any occurences of the given tile from this map layer. If layer
+     * is locked, an exception is thrown.
      *
      * @param tile the Tile to be removed
+     * @throws Exception
      */
-    public void removeTile(Tile tile) {
+    public void removeTile(Tile tile) throws Exception{
         if (getLocked())
-            return;
+            throw new Exception("Attempted to remove tile when this layer is locked.");
 
         for (int y = 0; y < bounds.height; y++) {
             for (int x = 0; x < bounds.width; x++) {
@@ -244,7 +246,7 @@ public class TileLayer extends MapLayer
      */
     public void setTileAt(int tx, int ty, Tile ti) {
         try {
-            if (!getLocked())
+            if (canEdit())
                 map[ty - bounds.y][tx - bounds.x] = ti;
         } catch (ArrayIndexOutOfBoundsException e) {
             // Silently ignore out of bounds exception
@@ -269,7 +271,7 @@ public class TileLayer extends MapLayer
      * Returns the first occurance (using top down, left to right search) of
      * the given tile.
      *
-     * @param t the tile to look for
+     * @param t the tile to look for`
      */
     public Point locationOf(Tile t) {
         for (int y = bounds.y; y < bounds.height + bounds.y; y++) {
@@ -290,7 +292,7 @@ public class TileLayer extends MapLayer
      * @param replace the replacement tile
      */
     public void replaceTile(Tile find, Tile replace) {
-        if (getLocked())
+        if (canEdit())
             return;
 
         for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
@@ -311,6 +313,9 @@ public class TileLayer extends MapLayer
      * @param other the insignificant layer to merge with
      */
     public void mergeOnto(MapLayer other) {
+        if(other.canEdit())
+            return;
+        
         for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
             for (int x = bounds.x; x < bounds.x + bounds.width; x++) {
                 Tile tile = getTileAt(x, y);
@@ -329,7 +334,7 @@ public class TileLayer extends MapLayer
      * @param other
      */
     public void copyFrom(MapLayer other) {
-        if (getLocked())
+        if (canEdit())
             return;
 
         for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
@@ -340,7 +345,7 @@ public class TileLayer extends MapLayer
     }
 
     public void maskedCopyFrom(MapLayer other, Area mask) {
-        if (getLocked())
+        if (canEdit())
             return;
 
         Rectangle boundBox = mask.getBounds();
@@ -362,6 +367,9 @@ public class TileLayer extends MapLayer
      * @param other the layer to copy this layer to
      */
     public void copyTo(MapLayer other) {
+        if (canEdit())
+            return;
+        
         for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
             for (int x = bounds.x; x < bounds.x + bounds.width; x++) {
                 ((TileLayer)other).setTileAt(x, y, getTileAt(x, y));
@@ -399,7 +407,7 @@ public class TileLayer extends MapLayer
      * @param dy     the shift in y direction
      */
     public void resize(int width, int height, int dx, int dy) {
-        if (getLocked())
+        if (canEdit())
             return;
 
         Tile[][] newMap = new Tile[height][width];

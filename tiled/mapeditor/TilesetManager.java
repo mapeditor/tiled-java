@@ -132,6 +132,8 @@ public class TilesetManager extends JDialog implements ActionListener,
                     updateTilesetTable();
                 }
             } catch (ArrayIndexOutOfBoundsException a) {
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, e.getMessage());
             }
         } else if (command.equals("Export...")) {
             JFileChooser ch = new JFileChooser(map.getFilename());
