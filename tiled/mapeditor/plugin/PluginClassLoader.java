@@ -63,30 +63,42 @@ public class PluginClassLoader extends URLClassLoader
                     baseURL);
         }
         
-        File [] files = dir.listFiles();
+        File[] files = dir.listFiles();
         for (int i = 0; i < files.length; i++) {
-            if (files[i].getAbsolutePath().substring(files[i].getAbsolutePath().lastIndexOf('.') + 1).equals("jar")) {
+            String aPath = files[i].getAbsolutePath();
+            if (aPath.endsWith(".jar")) {
                 try {
                     JarFile jf = new JarFile(files[i]);
-                    String readerClassName = jf.getManifest().getMainAttributes().getValue("Reader-Class");
-                    String writerClassName = jf.getManifest().getMainAttributes().getValue("Writer-Class");
-                    //verify that the jar has the necessary files to be a plugin
+                    String readerClassName =
+                        jf.getManifest().getMainAttributes().getValue(
+                                "Reader-Class");
+                    String writerClassName =
+                        jf.getManifest().getMainAttributes().getValue(
+                                "Writer-Class");
+
+                    // Verify that the jar has the necessary files to be a
+                    // plugin
                     if (readerClassName == null || writerClassName == null) {
                         continue;
                     }
                     
-                    JarEntry reader = jf.getJarEntry(readerClassName.replace('.','/')+".class");
-                    JarEntry writer = jf.getJarEntry(writerClassName.replace('.','/')+".class");
+                    JarEntry reader = jf.getJarEntry(
+                            readerClassName.replace('.', '/') + ".class");
+                    JarEntry writer = jf.getJarEntry(
+                            writerClassName.replace('.', '/') + ".class");
 
-                    Class readerClass = loadFromJar(jf, reader, readerClassName);
-                    Class writerClass = loadFromJar(jf, writer, writerClassName);
+                    Class readerClass =
+                        loadFromJar(jf, reader, readerClassName);
+                    Class writerClass =
+                        loadFromJar(jf, writer, writerClassName);
                     
-                    if (doesImplement(readerClass, "tiled.io.MapReader") 
-                            && doesImplement(writerClass, "tiled.io.MapWriter")) {
+                    if (doesImplement(readerClass, "tiled.io.MapReader") &&
+                            doesImplement(writerClass, "tiled.io.MapWriter")) {
                     	_add(readerClass);
                     	_add(writerClass);
-                        //System.out.println("Added " + files[i].getCanonicalPath());
-                        super.addURL(new URL("file://"+files[i].getAbsolutePath()));
+                        //System.out.println(
+                        //        "Added " + files[i].getCanonicalPath());
+                        super.addURL(new URL("file://" + aPath));
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -95,25 +107,27 @@ public class PluginClassLoader extends URLClassLoader
         }
     }
 
-    public MapReader [] getReaders() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-    	MapReader [] readers = new MapReader[readerFormats.size()];
+    public MapReader[] getReaders() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+    	MapReader[] readers = new MapReader[readerFormats.size()];
     	Iterator itr = readerFormats.keySet().iterator();
-    	int i=0;
-    	while(itr.hasNext()) {
+    	int i = 0;
+    	while (itr.hasNext()) {
     		Object key = itr.next();
-    		readers[i++] = (MapReader) loadClass((String) readerFormats.get(key)).newInstance();
+    		readers[i++] = (MapReader)loadClass(
+                    (String)readerFormats.get(key)).newInstance();
     	}
     	
     	return readers;
     }
     
-    public MapWriter [] getWriters() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-    	MapWriter [] writers = new MapWriter[writerFormats.size()];
+    public MapWriter[] getWriters() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+    	MapWriter[] writers = new MapWriter[writerFormats.size()];
     	Iterator itr = writerFormats.keySet().iterator();
-    	int i=0;
-    	while(itr.hasNext()) {
+    	int i = 0;
+    	while (itr.hasNext()) {
     		Object key = itr.next();
-    		writers[i++] = (MapWriter) loadClass((String) writerFormats.get(key)).newInstance();
+    		writers[i++] = (MapWriter)loadClass(
+                    (String)writerFormats.get(key)).newInstance();
     	}
     	
     	return writers;
@@ -121,13 +135,14 @@ public class PluginClassLoader extends URLClassLoader
     
     public Object getReaderFor(String ext) throws Exception {
         Iterator itr = readerFormats.keySet().iterator();
-        while(itr.hasNext()){
+        while (itr.hasNext()){
             String key = (String)itr.next();
-            if(key.endsWith(ext)) {
+            if (key.endsWith(ext)) {
                 return loadClass((String)readerFormats.get(key)).newInstance();
             }
         }
-        throw new Exception("No reader plugin exists for the extension: " + ext);
+        throw new Exception(
+                "No reader plugin exists for the extension: " + ext);
     }
 
     public Object getWriterFor(String ext) throws Exception {
@@ -135,10 +150,11 @@ public class PluginClassLoader extends URLClassLoader
         while (itr.hasNext()) {
             String key = (String)itr.next();
             if (key.endsWith(ext)) {
-                return loadClass((String) writerFormats.get(key)).newInstance();
+                return loadClass((String)writerFormats.get(key)).newInstance();
             }
         }
-        throw new Exception("No writer plugin exists for the extension: "+ext);
+        throw new Exception(
+                "No writer plugin exists for the extension: " + ext);
     }
 
     public Class loadFromJar(JarFile jf, JarEntry je, String className) throws IOException {
@@ -147,13 +163,15 @@ public class PluginClassLoader extends URLClassLoader
         
         InputStream in = jf.getInputStream(je); 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        while(( n = in.read(buffer)) > 0) {
+        while ((n = in.read(buffer)) > 0) {
         	baos.write(buffer,0,n);
         }
         buffer = baos.toByteArray();
         
-        if(buffer.length< je.getSize()) {
-        	throw new IOException("Failed to read entire entry! ("+buffer.length+"<"+je.getSize()+")");
+        if (buffer.length < je.getSize()) {
+        	throw new IOException(
+                    "Failed to read entire entry! (" + buffer.length + "<" +
+                    je.getSize() + ")");
         }
         
         return defineClass(className, buffer, 0, buffer.length);
@@ -180,7 +198,7 @@ public class PluginClassLoader extends URLClassLoader
         String clname = c.toString();
         clname = clname.substring(clname.indexOf(' ')+1);
         String filter = p.getFilter();
-        String [] ext = filter.split(",");
+        String[] ext = filter.split(",");
         
         if (isReader(c)) {
             for(int i = 0; i < ext.length; i++) {

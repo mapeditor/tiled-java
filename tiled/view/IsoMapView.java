@@ -50,8 +50,6 @@ public class IsoMapView extends MapView
         ((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                                          RenderingHints.VALUE_ANTIALIAS_ON);
 
-        boolean showGrid = ((modeFlags & PF_GRIDMODE) != 0);
-
         // Determine tile size and offset
         Dimension tileSize = getTileSize(zoom);
         int tsize_width_delta = tileSize.width / 2;

@@ -18,6 +18,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.Enumeration;
 import java.util.Properties;
+import java.util.Vector;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -66,6 +67,7 @@ public class TileDialog extends JDialog
         bNew.addActionListener(this);
 
         tileList = new JList();
+        tileList.setCellRenderer(new TileDialogListRenderer());
 
 
         // Tile properties table
@@ -196,24 +198,26 @@ public class TileDialog extends JDialog
     }
 
     public void queryTiles() {
-        Tile[] listData;
+        Vector listData;
         int curSlot = 0;
 
         if (tileset != null && tileset.getTotalTiles() > 0) {
             int totalTiles = tileset.getTotalTiles();
-            listData = new Tile[totalTiles];
+            listData = new Vector();
             for (int i = 0; i < totalTiles; i++) {
-                listData[curSlot++] = tileset.getTile(i);
+                Tile t = tileset.getTile(i);
+                if (t != null) {
+                    listData.add(t);
+                }
             }
 
             tileList.setListData(listData);
         }
+
         if (currentTile != null) {
-            tileList.setSelectedIndex(currentTile.getGid() - 1);
-            tileList.ensureIndexIsVisible(currentTile.getGid() - 1);
+            tileList.setSelectedIndex(currentTile.getId() - 1);
+            tileList.ensureIndexIsVisible(currentTile.getId() - 1);
         }
-        tileList.setCellRenderer(new TileDialogListRenderer(tileset));
-        tileList.repaint();
     }
 
     private void setCurrentTile(Tile tile) {
@@ -279,6 +283,9 @@ public class TileDialog extends JDialog
             Tile n = new Tile(currentTile);
             tileset.addNewTile(n);
             queryTiles();
+            // Select the last (cloned) tile
+            tileList.setSelectedIndex(tileset.getTotalTiles() - 1);
+            tileList.ensureIndexIsVisible(tileset.getTotalTiles() - 1);
         }
 
         repaint();

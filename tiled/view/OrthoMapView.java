@@ -13,10 +13,15 @@
 package tiled.view;
 
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.geom.Rectangle2D;
+import java.awt.font.FontRenderContext;
 import javax.swing.SwingConstants;
 
 import tiled.core.*;
@@ -77,11 +82,11 @@ public class OrthoMapView extends MapView
                 y < endY; y++, gy += tsize.height) {
             for (int x = startX, gx = startX * tsize.width + toffset;
                     x < endX; x++, gx += tsize.width) {
-                Polygon gridPoly = createGridPolygon(gx, gy, 1);
                 Tile t = layer.getTileAt(x, y);
                 
                 if (t != null && t != myMap.getNullTile()) {
                     if (SelectionLayer.class.isInstance(layer)) {
+                        Polygon gridPoly = createGridPolygon(gx, gy, 1);
                         g.fillPolygon(gridPoly);
                         paintEdge(g, layer, gx, gy);
                     } else {
@@ -112,6 +117,46 @@ public class OrthoMapView extends MapView
         for (int x = startX; x < endX; x++) {
             g.drawLine(p, clipRect.y, p, clipRect.y + clipRect.height - 1);
             p += tsize.width;
+        }
+
+        paintCoordinates(g, zoom);
+    }
+
+    protected void paintCoordinates(Graphics g, double zoom) {
+        Graphics2D g2d = (Graphics2D)g;
+        g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        // Determine tile size and offset
+        Dimension tsize = getTileSize(zoom);
+        int toffset = (((modeFlags & PF_GRIDMODE) != 0) ? 1 : 0);
+        Font font = new Font("SansSerif", Font.PLAIN, tsize.height / 4);
+        g2d.setFont(font);
+        FontRenderContext fontRenderContext = g2d.getFontRenderContext();
+
+        // Determine area to draw from clipping rectangle
+        Rectangle clipRect = g.getClipBounds();
+        int startX = clipRect.x / tsize.width;
+        int startY = clipRect.y / tsize.height;
+        int endX = (clipRect.x + clipRect.width) / tsize.width + 1;
+        int endY = (clipRect.y + clipRect.height) / tsize.height + 3;
+        // (endY +2 for high tiles, could be done more properly)
+
+        // Draw this map layer
+        int gy = startY * tsize.height + toffset;
+        for (int y = startY; y < endY; y++) {
+            int gx = startX * tsize.width + toffset;
+            for (int x = startX; x < endX; x++) {
+                String coords = "(" + x + "," + y + ")";
+                Rectangle2D textSize =
+                    font.getStringBounds(coords, fontRenderContext);
+
+                int fx = gx + (int)((tsize.width - textSize.getWidth()) / 2);
+                int fy = gy - (int)((tsize.height - textSize.getHeight()) / 2);
+                
+                g2d.drawString(coords, fx, fy);
+                gx += tsize.width;
+            }
+            gy += tsize.height;
         }
     }
 

@@ -19,86 +19,39 @@ import java.awt.Image;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.ListCellRenderer;
+import javax.swing.DefaultListCellRenderer;
 
 import tiled.core.*;
 
 
-public class TileDialogListRenderer extends JLabel
-    implements ListCellRenderer
+public class TileDialogListRenderer extends DefaultListCellRenderer
 {
-    private TileSet myTileSet;
-    private ImageIcon[] tileImages;
-    private int highestTileId = 0;
     private double zoom = 1;
 
     public TileDialogListRenderer() {
         setOpaque(true);
     }
 
-    public TileDialogListRenderer(TileSet s) {
+    public TileDialogListRenderer(double zoom) {
         this();
-        myTileSet = s;
-        loadTilesList();
-    }
-
-    public TileDialogListRenderer(TileSet s, double zoom) {
-        this(s);
         this.zoom = zoom;
     }
 
     public Component getListCellRendererComponent(JList list, Object value,
             int index,  boolean isSelected, boolean cellHasFocus) {
+        super.getListCellRendererComponent(
+                list, value, index, isSelected, cellHasFocus);
+
         Tile tile = (Tile)value;
 
-        if (tile != null && index >= 0) {
-            setIcon(tileImages[index]);
-            if (value != null) {
-                setText("Tile " + tile.getId());
-            }
-
-            // Draw the correct colors and font
-            if (isSelected) {
-                // Set the color and font for a selected item
-                setBackground(Color.blue);
-                setForeground(Color.black);
-                setFont(new Font("Roman", Font.BOLD, 12));
-            } else {
-                // Set the color and font for an unselected item
-                setBackground(Color.white);
-                setForeground(Color.black);
-                setFont(new Font("Roman", Font.PLAIN, 12 ));
-            }
+        if (tile != null) {
+            setIcon(new ImageIcon(tile.getScaledImage(zoom)));
+            setText("Tile " + tile.getId());
         } else {
             setIcon(null);
-            setText("");
+            setText("No tile?");
         }
+
         return this;
-    }
-
-    private void loadTilesList() {
-        Tile t;
-        int curSlot = 0;
-        int totalTiles = myTileSet.getTotalTiles();
-
-        if (highestTileId == totalTiles) {
-            return;
-        }
-
-        highestTileId = totalTiles;
-        tileImages = new ImageIcon[highestTileId];
-
-        for (int i = 0; i < totalTiles; i++) {
-            t = myTileSet.getTile(i);
-            if (t != null) {
-                Image img = t.getScaledImage(zoom);
-                if (img != null) {
-                    tileImages[curSlot] = new ImageIcon(img);
-                } else {
-                    tileImages[curSlot] = null;
-                }
-                curSlot++;
-            }
-        }
     }
 }

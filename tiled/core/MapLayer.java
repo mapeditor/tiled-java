@@ -85,9 +85,12 @@ public class MapLayer implements Cloneable
         setMap(m);
     }
 
-    public void translate(int deltaX, int deltaY) {
-        bounds.x += deltaX;
-        bounds.y += deltaY;
+    /**
+     * Translates this layer by (<i>dx, dy</i>).
+     */
+    public void translate(int dx, int dy) {
+        bounds.x += dx;
+        bounds.y += dy;
     }
 
     public void rotate(int angle) {

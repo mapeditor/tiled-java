@@ -26,9 +26,11 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
        ChangeListener
 {
     private JButton bOk, bApply, bCancel;
-    private JPanel layerOps, generalOps, tilesetOps;
-    private IntegerSpinner undoDepth;
+    private JPanel layerOps, generalOps, tilesetOps, gridOps;
+    private IntegerSpinner undoDepth, gridOpacity;
     private JCheckBox cbBinaryEncode, cbCompressLayerData, cbEmbedImages;
+    private JCheckBox cbGridAA;
+    private JColorChooser gridColor;
     private TiledConfiguration configuration;
 
     public ConfigurationDialog(JFrame parent) {
@@ -45,15 +47,24 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
         cbCompressLayerData = new JCheckBox("Compress layer data (gzip)");
         cbEmbedImages = new JCheckBox("Embed images (png)");
         undoDepth = new IntegerSpinner();
+        cbGridAA = new JCheckBox("Antialiasing");
+        gridOpacity = new IntegerSpinner(0, 0, 255);
+        //gridColor = new JColorChooser();
         cbBinaryEncode.addChangeListener(this);
         cbCompressLayerData.addChangeListener(this);
         cbEmbedImages.addChangeListener(this);
+        cbGridAA.addChangeListener(this);
         undoDepth.addChangeListener(this);
+        gridOpacity.addChangeListener(this);
+        //gridColor.addChangeListener(this);
 
         cbBinaryEncode.setActionCommand("tmx.save.encodeLayerData");
         cbCompressLayerData.setActionCommand("tmx.save.layerCompression");
         cbEmbedImages.setActionCommand("tmx.save.embedImages");
         undoDepth.setName("tmx.undo.depth");
+        cbGridAA.setActionCommand("tiled.grid.antialias");
+        gridOpacity.setName("tiled.grid.opacity");
+        //gridColor.setName("tiled.grid.color");
 
         bOk = new JButton("OK");
         bApply = new JButton("Apply");
@@ -86,7 +97,7 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
         c = new GridBagConstraints();
         c.anchor = GridBagConstraints.NORTH;
         c.fill = GridBagConstraints.NONE;
-        generalOps.add(new JLabel("Undo Depth: "), c);
+        generalOps.add(new JLabel("Undo Depth:  "), c);
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 1; c.weightx = 1;
         generalOps.add(undoDepth, c);
@@ -98,10 +109,25 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
                     BorderFactory.createTitledBorder("Tileset Options"),
                     BorderFactory.createEmptyBorder(0, 5, 5, 5)));
         c = new GridBagConstraints();
-        c.anchor = GridBagConstraints.EAST;
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 1; c.gridy = 0; c.weightx = 1;
         tilesetOps.add(cbEmbedImages, c);
+
+        /* GRID OPTIONS */
+        gridOps = new VerticalStaticJPanel();
+        gridOps.setLayout(new GridBagLayout());
+        gridOps.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        c = new GridBagConstraints();
+        gridOps.add(new JLabel("Opacity:  "), c);
+        c.weightx = 1; c.gridx = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        gridOps.add(gridOpacity, c);
+        c.gridwidth = 2; c.gridy = 1; c.gridx = 0;
+        gridOps.add(cbGridAA, c);
+        //c.gridy = 2; c.weightx = 0;
+        //gridOps.add(new JLabel("Color: "), c);
+        //c.gridx = 1;
+        //gridOps.add(gridColor, c);
 
         /* BUTTONS PANEL */
         JPanel buttons = new VerticalStaticJPanel();
@@ -126,12 +152,18 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
         general.setLayout(new BoxLayout(general, BoxLayout.Y_AXIS));
         general.add(generalOps);
 
+        JPanel grid = new JPanel();
+        grid.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
+        grid.setLayout(new BoxLayout(grid, BoxLayout.Y_AXIS));
+        grid.add(gridOps);
+
 
         // Put together the tabs
 
         JTabbedPane perfs = new JTabbedPane();
         perfs.addTab("General", general);
         perfs.addTab("Saving", saving);
+        perfs.addTab("Grid", grid);
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
@@ -151,46 +183,54 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
     }
 
     private void updateFromConf() {
-        undoDepth.setValue(Integer.parseInt(
-                    configuration.getValue(undoDepth.getName())));
+        undoDepth.setValue(configuration.getIntValue(undoDepth.getName(), 30));
+        gridOpacity.setValue(
+                configuration.getIntValue(gridOpacity.getName(), 255));
 
         // Handle checkboxes
-        for (int i = 0; i < layerOps.getComponentCount(); i++) {
-            try {
-                AbstractButton b = (AbstractButton)layerOps.getComponent(i);
-                if (b.getClass().equals(JCheckBox.class)) {
-                    if (configuration.keyHasValue(b.getActionCommand(), "1")) {
-                        b.setSelected(true);
-                    }
-                }
-            } catch (ClassCastException e) {
-            }
-        }
-        for (int i = 0; i < tilesetOps.getComponentCount(); i++) {
-            try {
-                AbstractButton b = (AbstractButton)tilesetOps.getComponent(i);
-                if (b.getClass().equals(JCheckBox.class)) {
-                    if (configuration.keyHasValue(b.getActionCommand(), "1")) {
-                        b.setSelected(true);
-                    }
-                }
-            } catch (ClassCastException e) {
-            }
-        }
+        updateFromConf(layerOps);
+        updateFromConf(tilesetOps);
+        updateFromConf(gridOps);
 
         cbCompressLayerData.setEnabled(cbBinaryEncode.isSelected());
 
         bApply.setEnabled(false);
     }
 
+    private void updateFromConf(Container container) {
+        for (int i = 0; i < container.getComponentCount(); i++) {
+            Component c = container.getComponent(i);
+            try {
+                AbstractButton b = (AbstractButton)c;
+                if (b.getClass().equals(JCheckBox.class)) {
+                    if (configuration.keyHasValue(b.getActionCommand(), "1")) {
+                        b.setSelected(true);
+                    }
+                }
+            } catch (ClassCastException e) {
+            }
+        }
+    }
+
     private void processOptions() {
         configuration.addConfigPair(
                 undoDepth.getName(), "" + undoDepth.intValue());
+        configuration.addConfigPair(
+                gridOpacity.getName(), "" + gridOpacity.intValue());
 
         // Handle checkboxes
-        for (int i = 0; i < layerOps.getComponentCount(); i++) {
+        processOptions(layerOps);
+        processOptions(tilesetOps);
+        processOptions(gridOps);
+
+        bApply.setEnabled(false);
+    }
+
+    private void processOptions(Container container) {
+        for (int i = 0; i < container.getComponentCount(); i++) {
+            Component c = container.getComponent(i);
             try {
-                AbstractButton b = (AbstractButton)layerOps.getComponent(i);
+                AbstractButton b = (AbstractButton)c;
                 if (b.getClass().equals(JCheckBox.class)) {
                     configuration.addConfigPair(
                             b.getActionCommand(), b.isSelected() ? "1" : "0");
@@ -198,18 +238,6 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
             } catch (ClassCastException e) {
             }
         }
-        for (int i = 0; i < tilesetOps.getComponentCount(); i++) {
-            try {
-                AbstractButton b = (AbstractButton)tilesetOps.getComponent(i);
-                if (b.getClass().equals(JCheckBox.class)) {
-                    configuration.addConfigPair(
-                            b.getActionCommand(),b.isSelected() ? "1" : "0");
-                }
-            } catch (ClassCastException e) {
-            }
-        }
-
-        bApply.setEnabled(false);
     }
 
     public void actionPerformed(ActionEvent event) {

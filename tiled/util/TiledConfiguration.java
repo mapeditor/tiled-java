@@ -169,7 +169,7 @@ public final class TiledConfiguration
             // Make sure it isn't a comment
             if (!line.trim().startsWith("#") && line.trim().length() > 0) {
                 String[] keyValue = line.split("[ ]*=[ ]*");
-				availableKeys.put(keyValue[0], "Tiled is cool");
+                availableKeys.put(keyValue[0], "Tiled is cool");
                 if (hasOption(keyValue[0])) {
                     bw.write(keyValue[0] + " = " + getValue(keyValue[0]));
                     bw.newLine();

@@ -16,18 +16,14 @@ import java.awt.Rectangle;
 
 import tiled.core.MultilayerPlane;
 
-public class CustomBrush extends Brush {
 
-	public CustomBrush() {
-		super();
-	}
-
-    public void commitPaint(MultilayerPlane mp, int x, int y, int start) {
-        // TODO Auto-generated method stub
-        
+public class CustomBrush extends Brush
+{
+    public CustomBrush() {
+        super();
     }
 
-	public Rectangle getCenteredBounds(int x, int y) {
-		return null;
-	}
+    public Rectangle commitPaint(MultilayerPlane mp, int x, int y, int start) {
+        return null;
+    }
 }

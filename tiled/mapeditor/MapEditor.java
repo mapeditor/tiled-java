@@ -44,8 +44,7 @@ import tiled.io.xml.XMLMapWriter;
  */
 public class MapEditor implements ActionListener,
     MouseListener, MouseMotionListener, MapChangeListener,
-    ListSelectionListener, ChangeListener, ComponentListener,
-    WindowListener
+    ListSelectionListener, ChangeListener, ComponentListener
 {
     // Constants and the like
     protected static final int PS_POINT   = 0;
@@ -79,6 +78,7 @@ public class MapEditor implements ActionListener,
     int currentLayer = -1;
     boolean bMouseIsDown = false;
     Point mousePressLocation, mouseInitialPressLocation;
+    Point moveDist;
     int mouseButton;
     Brush currentBrush;
     SelectionLayer marqueeSelection = null;
@@ -180,12 +180,16 @@ public class MapEditor implements ActionListener,
 
         // Create our frame
         appFrame = new JFrame("Tiled");
-        appFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        appFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        appFrame.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent event) {
+                exit();
+            }
+        });
         appFrame.setContentPane(createContentPane());
         createMenuBar();
         appFrame.setJMenuBar(menuBar);
         appFrame.setSize(600, 400);
-		appFrame.addWindowListener(this);
         setCurrentMap(null);
         updateRecent(null);
 
@@ -208,6 +212,17 @@ public class MapEditor implements ActionListener,
         mainPanel.add(statusBar, BorderLayout.SOUTH);
 
         return mainPanel;
+    }
+
+    private void exit() {
+        if (checkSave()) {
+            try {
+                configuration.write("tiled.conf");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            System.exit(0);
+        }
     }
 
     /**
@@ -771,10 +786,9 @@ public class MapEditor implements ActionListener,
             switch (currentPointerState) {
                 case PS_PAINT:
                     paintEdit.setPresentationName("Paint");
-                    currentBrush.commitPaint(
+                    Rectangle affectedRegion = currentBrush.commitPaint(
                             currentMap, tile.x, tile.y, currentLayer);
-                    mapView.repaintRegion(
-                            currentBrush.getCenteredBounds(tile.x, tile.y));
+                    mapView.repaintRegion(affectedRegion);
                     break;
                 case PS_ERASE:
                     paintEdit.setPresentationName("Erase");
@@ -794,9 +808,11 @@ public class MapEditor implements ActionListener,
                     }
                     break;
                 case PS_MOVE:
-                    layer.translate(
-                            tile.x - this.mousePressLocation.x,
+                    Point translation = new Point(
+                            tile.x - mousePressLocation.x,
                             tile.y - mousePressLocation.y);
+                    layer.translate(translation.x, translation.y);
+                    moveDist.translate(translation.x, translation.y);
                     mapView.repaint();
                     break;
                 case PS_MARQUEE:
@@ -834,22 +850,31 @@ public class MapEditor implements ActionListener,
         bMouseIsDown = true;
         mousePressLocation = mapView.screenToTileCoords(e.getX(), e.getY());
         mouseInitialPressLocation = mousePressLocation;
-        if ((currentPointerState != PS_EYED && currentPointerState != PS_POINT && currentPointerState != PS_MARQUEE)
-                && mouseButton == MouseEvent.BUTTON1)
-        {
-            MapLayer layer = currentMap.getLayer(currentLayer);
-            paintEdit =
-                new MapLayerEdit(layer, new MapLayer(layer), null);
+
+        if (mouseButton == MouseEvent.BUTTON1) {
+            switch (currentPointerState) {
+                case PS_PAINT:
+                case PS_ERASE:
+                case PS_POUR:
+                    MapLayer layer = currentMap.getLayer(currentLayer);
+                    paintEdit =
+                        new MapLayerEdit(layer, new MapLayer(layer), null);
+                    break;
+                default:
+            }
         }
 
-        // Special logic for seleciton
         if (currentPointerState == PS_MARQUEE) {
+            // Special logic for selection
             if (marqueeSelection != null) {
                 currentMap.removeLayerSpecial(marqueeSelection);
             }
             marqueeSelection = new SelectionLayer(
                     currentMap.getWidth(), currentMap.getHeight());
             currentMap.addLayerSpecial(marqueeSelection);
+        } else if (currentPointerState == PS_MOVE) {
+            // Initialize move distance to (0, 0)
+            moveDist = new Point(0, 0);
         }
 
         doMouse(e);
@@ -858,6 +883,7 @@ public class MapEditor implements ActionListener,
     public void mouseReleased(MouseEvent event) {
         mouseButton = MouseEvent.NOBUTTON;
         bMouseIsDown = false;
+        MapLayer layer = currentMap.getLayer(currentLayer);
 
        if (currentPointerState == PS_MARQUEE) {
            Point tile = mapView.screenToTileCoords(event.getX(), event.getY());
@@ -867,10 +893,13 @@ public class MapEditor implements ActionListener,
                    marqueeSelection = null;
                }
            }
+        } else if (currentPointerState == PS_MOVE) {
+            if (layer != null && moveDist.x != 0 || moveDist.x != 0) {
+                undoSupport.postEdit(new MoveLayerEdit(layer, moveDist));
+            }
         }
 
         if (paintEdit != null) {
-            MapLayer layer = currentMap.getLayer(currentLayer);
             if (layer != null) {
                 try {
                     MapLayer endLayer = paintEdit.getStart().createDiff(layer);
@@ -947,14 +976,7 @@ public class MapEditor implements ActionListener,
                 openMap();
             }
         } else if (command.equals("Exit")) {
-            if (checkSave()) {
-                try {
-                    configuration.write("tiled.conf");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                System.exit(0);
-            }
+            exit();
         } else if (command.equals("Close")) {
             if (checkSave()) {
                 setCurrentMap(null);
@@ -1448,20 +1470,18 @@ public class MapEditor implements ActionListener,
         JFileChooser ch = new JFileChooser(startLocation);
         ch.addChoosableFileFilter(new TiledFileFilter(TiledFileFilter.FILTER_TMX));
         
-		try {
-			MapReader readers[] = (MapReader[]) pluginLoader.getReaders();
-			for(int i=0;i<readers.length;i++) {
-	        	ch.addChoosableFileFilter(new TiledFileFilter(readers[i].getFilter(),readers[i].getDescription()));
-	        }
-		} catch (Throwable e) {
-			JOptionPane.showMessageDialog(appFrame,
-                    "Error while loading plugins: " + e.getMessage(),
-                    "Error while loading map",
-                    JOptionPane.ERROR_MESSAGE);
+	try {
+		MapReader readers[] = (MapReader[]) pluginLoader.getReaders();
+		for(int i=0;i<readers.length;i++) {
+			ch.addChoosableFileFilter(new TiledFileFilter(readers[i].getFilter(),readers[i].getDescription()));
+		}
+	} catch (Throwable e) {
+		JOptionPane.showMessageDialog(appFrame,
+				"Error while loading plugins: " + e.getMessage(),
+				"Error while loading map",
+				JOptionPane.ERROR_MESSAGE);
 			e.printStackTrace();
 		}
-		
-        
 
         int ret = ch.showOpenDialog(appFrame);
         if (ret == JFileChooser.APPROVE_OPTION) {
@@ -1689,47 +1709,5 @@ public class MapEditor implements ActionListener,
         if (args.length > 0) {
             editor.loadMap(args[0]);
         }
-    }
-
-    
-    public void windowClosing(WindowEvent e) {
-		if (checkSave()) {
-			try {
-				configuration.write("tiled.conf");
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		}
-        
-    }
-
-    public void windowClosed(WindowEvent e) {
-        //unused
-        
-    }
-
-    public void windowOpened(WindowEvent e) {
-        //unused
-        
-    }
-
-    public void windowIconified(WindowEvent e) {
-		//unused
-        
-    }
-
-    public void windowDeiconified(WindowEvent e) {
-		//unused
-        
-    }
-
-    public void windowActivated(WindowEvent e) {
-		//unused
-        
-    }
-
-    public void windowDeactivated(WindowEvent e) {
-		//unused
-        
     }
 }

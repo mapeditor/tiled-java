@@ -22,7 +22,6 @@
 <!ELEMENT tile (image, property+)>
 <!ATTLIST tile
     id     ID    #REQUIRED
-    name   CDATA #IMPLIED
     source CDATA #IMPLIED
 >
 

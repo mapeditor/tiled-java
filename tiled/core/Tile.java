@@ -22,7 +22,6 @@ public class Tile
     private int id = -1;
     private int stdHeight;
     private int groundHeight;          // Height above ground
-    private String name;    
     private Properties properties;
     private TileSet tileset;
 
@@ -70,14 +69,6 @@ public class Tile
 
 	public void setProperties(Properties p) {
 		properties = p;
-	}
-
-	public void setName(String n) {
-		name = n;
-	}
-
-	public String getName() {
-		return name;
 	}
 
 	public Enumeration getProperties() {
@@ -166,23 +157,11 @@ public class Tile
         return tileImage;
     }
 
-	public Image getScaledImage(double zoom) {
-		int h = (int)(tileImage.getHeight(null) * zoom);
-		scaledImage = tileImage.getScaledInstance(
-				(int)(getWidth() * zoom), h,
-				BufferedImage.SCALE_SMOOTH);
-		MediaTracker mediaTracker = new MediaTracker(new Canvas());
-		mediaTracker.addImage(scaledImage, 0);
-		try {
-			mediaTracker.waitForID(0);
-		}
-		catch (InterruptedException ie) {
-			System.err.println(ie);
-			return null;
-		}
-		mediaTracker.removeImage(scaledImage);
-		return scaledImage;
-	}
+    public Image getScaledImage(double zoom) {
+        return tileImage.getScaledInstance(
+                (int)(getWidth() * zoom), (int)(getHeight() * zoom),
+                BufferedImage.SCALE_SMOOTH);
+    }
 
     public String toString() {
         String out = "";

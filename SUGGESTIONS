@@ -32,15 +32,6 @@ Summary:    Allow tilesets with a border to be used by Tiled. Borders around
             the tileset image are used by FreeCiv for example.
 State:      To be implemented (offset attributes, task #79)
 
-- 05 --------------------------------------------------------------------------
-Suggestor:  Ahmed Mohombe <amohombe@yahoo.com>
-Suggestor:  Andreas Mross <amross@stagingconnections.com>
-Date:       08/04/04 10:44
-Summary:    File chooser should remember last place where it was opened, for
-            example when picking the tile to load into your tileset. Same goes
-            for opening map files.
-State:      To be implemented (task #81)
-
 - 06 --------------------------------------------------------------------------
 Suggestor:  Ahmed Mohombe <amohombe@yahoo.com>
 Date:       08/04/04
@@ -102,12 +93,6 @@ Suggestor:  Andreas Mross <amross@stagingconnections.com>
 Date:       09/08/04
 Summary:    Input/output plugins for map loading/saving.
 State:      Implementation in progress (task #89)
-
-- 15 --------------------------------------------------------------------------
-Suggestor:  Andreas Mross <amross@stagingconnections.com>
-Date:       09/08/04
-Summary:    Tooltips on the icons.
-State:      Still needs tooltips on the layer icons.
 
 - 16 --------------------------------------------------------------------------
 Suggestor:  Andreas Mross <amross@stagingconnections.com>

@@ -16,12 +16,18 @@ import java.awt.Rectangle;
 
 import tiled.core.MultilayerPlane;
 
-public abstract class Brush extends MultilayerPlane {
 
-	public Brush() {
-		super();
-	}
-	
-	public abstract void commitPaint(MultilayerPlane mp, int x, int y, int start);
-	public abstract Rectangle getCenteredBounds(int x, int y);
+public abstract class Brush extends MultilayerPlane
+{
+    public Brush() {
+        super();
+    }
+
+    /**
+     * Paints the given multilayer plane.
+     * 
+     * @return affected area
+     */
+    public abstract Rectangle commitPaint(MultilayerPlane mp, int x, int y,
+            int start);
 }

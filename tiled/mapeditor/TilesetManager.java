@@ -113,11 +113,8 @@ public class TilesetManager extends JDialog implements ActionListener,
             dispose();
         } else if (command.equals("Edit...")) {
             if (map != null && selectedRow >= 0) {
-                try {
-                    TileDialog tileDialog = new TileDialog(this, set);
-                    tileDialog.show();
-                } catch (ArrayIndexOutOfBoundsException a) {
-                }
+                TileDialog tileDialog = new TileDialog(this, set);
+                tileDialog.show();
             }
         } else if (command.equals("Remove")) {
             try {
