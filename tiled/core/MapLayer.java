@@ -201,6 +201,7 @@ public class MapLayer implements Cloneable
      * given id.
      *
      * @param id the new id for this layer
+     * @deprecated
      */
     public void setId(int id) {
         if (name == null || name.equalsIgnoreCase("layer " + this.id)) {
@@ -290,6 +291,8 @@ public class MapLayer implements Cloneable
 
     /**
      * Returns the id of this layer.
+     * 
+     * @deprecated
      */
     public int getId() {
         return id;
