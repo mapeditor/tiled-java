@@ -17,6 +17,7 @@ import java.awt.Rectangle;
 import java.io.*;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.Properties;
 import java.util.Vector;
 import java.util.zip.GZIPOutputStream;
 
@@ -109,12 +110,12 @@ public class XMLMapWriter implements MapWriter
             w.writeAttribute("tilewidth", "" + map.getTileWidth());
             w.writeAttribute("tileheight", "" + map.getTileHeight());
 
-            Enumeration keys = map.getProperties().keys();
-            while (keys.hasMoreElements()) {
+            Properties props = map.getProperties();
+            for (Enumeration keys = props.keys(); keys.hasMoreElements();) {
                 String key = (String)keys.nextElement();
                 w.startElement("property");
                 w.writeAttribute("name", key);
-                w.writeAttribute("value", map.getPropertyValue(key));
+                w.writeAttribute("value", props.getProperty(key));
                 w.endElement();
             }
 
@@ -216,7 +217,7 @@ public class XMLMapWriter implements MapWriter
 
                     while (tileIterator.hasNext()) {
                         Tile tile = (Tile)tileIterator.next();
-                        if (tile.getProperties().hasMoreElements()) {
+                        if (tile.getProperties().isEmpty()) {
                             needWrite = true;
                             break;
                             // As long as one has properties, they all need to
@@ -293,12 +294,12 @@ public class XMLMapWriter implements MapWriter
                 w.writeAttribute("opacity", "" + l.getOpacity());
             }
 
-            Enumeration keys = l.getProperties().keys();
-            while (keys.hasMoreElements()) {
-                String key = (String) keys.nextElement();
+            Properties props = l.getProperties();
+            for (Enumeration keys = props.keys(); keys.hasMoreElements();) {
+                String key = (String)keys.nextElement();
                 w.startElement("property");
                 w.writeAttribute("name", key);
-                w.writeAttribute("value", l.getPropertyValue(key));
+                w.writeAttribute("value", props.getProperty(key));
                 w.endElement();
             }
 
@@ -373,12 +374,12 @@ public class XMLMapWriter implements MapWriter
             //    w.writeAttribute("groundheight", "" + groundHeight);
             //}
 
-            Enumeration keys = tile.getProperties();
-            while(keys.hasMoreElements()) {
-                String key = (String) keys.nextElement();
+            Properties props = tile.getProperties();
+            for (Enumeration keys = props.keys(); keys.hasMoreElements();) {
+                String key = (String)keys.nextElement();
                 w.startElement("property");
                 w.writeAttribute("name", key);
-                w.writeAttribute("value", tile.getPropertyValue(key));
+                w.writeAttribute("value", props.getProperty(key));
                 w.endElement();
             }
 
@@ -436,7 +437,9 @@ public class XMLMapWriter implements MapWriter
         }
     }
 
-    private void writeObject(MapObject m, ObjectGroup o, XMLWriter w) throws IOException {
+    private void writeObject(MapObject m, ObjectGroup o, XMLWriter w)
+        throws IOException
+    {
         try {
             Rectangle b = o.getBounds();
             w.startElement("object");
@@ -447,12 +450,12 @@ public class XMLMapWriter implements MapWriter
                 w.writeAttribute("source", m.getSource());
             }
 
-            Enumeration keys = m.getProperties();
-            while (keys.hasMoreElements()) {
+            Properties props = m.getProperties();
+            for (Enumeration keys = props.keys(); keys.hasMoreElements();) {
                 String key = (String) keys.nextElement();
                 w.startElement("property");
                 w.writeAttribute("name", key);
-                w.writeAttribute("value", m.getPropertyValue(key));
+                w.writeAttribute("value", props.getProperty(key));
                 w.endElement();
             }
 

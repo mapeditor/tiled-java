@@ -37,16 +37,18 @@ public class LayerTableModel extends AbstractTableModel
 
     public int getRowCount() {
         if (map != null) {
-            int totalLayers=map.getTotalLayers();
-            /*for(int j=0;j<map.getTotalLayers();j++) {
-            	if(map.getLayer(j).getClass() == SelectionLayer.class) {
-            		if(TiledConfiguration.keyHasValue("tiled.layer.showselection","1")) {
-            			totalLayers++;
-            		}
-            	} else {
-            		totalLayers++;
-            	}
-            }*/
+            int totalLayers = map.getTotalLayers();
+            /*
+            for (int j = 0; j < map.getTotalLayers(); j++) {
+                if (map.getLayer(j).getClass() == SelectionLayer.class) {
+                    if (TiledConfiguration.keyHasValue("tiled.layer.showselection", "1")) {
+                        totalLayers++;
+                    }
+                } else {
+                    totalLayers++;
+                }
+            }
+            */
             return totalLayers;
         } else {
             return 0;

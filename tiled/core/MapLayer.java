@@ -319,19 +319,11 @@ public abstract class MapLayer implements Cloneable
         bLocked = lock;
     }
 
-    public void setProperty(String key, String value) {
-        properties.setProperty(key,value);
-    }
-
     public void setProperties(Properties p) {
         properties = p;
     }
 
     public Properties getProperties() {
         return properties;
-    }
-
-    public String getPropertyValue(String key) {
-        return properties.getProperty(key);
     }
 }

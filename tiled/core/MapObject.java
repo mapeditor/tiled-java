@@ -13,11 +13,11 @@
 package tiled.core;
 
 import java.awt.Rectangle;
-import java.util.Enumeration;
 import java.util.Properties;
 
-public class MapObject {
 
+public class MapObject
+{
     private Sprite sprite;
     private Properties properties;
 
@@ -25,36 +25,27 @@ public class MapObject {
     protected Rectangle bounds;
     protected boolean bVisible = true;
     protected String source, type;
-    protected int id;
 
     public MapObject() {
         bounds = new Rectangle();
         properties = new Properties();
     }
 
-    public void setProperty(String key, String value) {
-		properties.put(key,value);
+    public void setX(int x) {
+        map_x = x;
     }
 
-    public void setId(int id) {
-        this.id=id;
+    public void setY(int y) {
+        map_y = y;
     }
 
-	public void setX(int x) {
-		map_x=x;
-	}
+    public void setType(String s) {
+        type = s;
+    }
 
-	public void setY(int y) {
-		map_y=y;
-	}
-
-	public void setType(String s) {
-		type = s;
-	}
-
-	public void setSource(String s) {
-		source = s;
-	}
+    public void setSource(String s) {
+        source = s;
+    }
 
     public void setSprite(Sprite s) {
         sprite=s;
@@ -65,41 +56,27 @@ public class MapObject {
         map_y += y;
     }
     
-    public int getId() {
-        return id;
+    public int getX() {
+        return (int)map_x;
     }
 
-	public int getX() {
-		return (int)map_x;
-	}
-	
-	public int getY() {
-		return (int)map_y;
-	}
+    public int getY() {
+        return (int)map_y;
+    }
 
-	public String getType() {
-		return type;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public String getSource() {
-		return source;
-	}
+    public String getSource() {
+        return source;
+    }
 
-	public Enumeration getProperties() {
-		return properties.keys();
-	}
-
-	public String getPropertyValue(String key) {
-		return properties.getProperty(key);
-	}
-
-    public int getTotalProperties() {
-        return properties.size();
+    public Properties getProperties() {
+        return properties;
     }
 
     public String toString() {
-        String s = type+"("+id+"): ("+map_x+","+map_y+")";
-
-        return s;
+        return type + " (" + map_x + "," + map_y + ")";
     }
 }

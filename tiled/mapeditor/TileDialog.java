@@ -355,11 +355,14 @@ public class TileDialog extends JDialog
 
     private void setCurrentTile(Tile tile) {
         // Update the old current tile's properties
+        // (happens automatically as properties are changed in place now)
+        /*
         if (currentTile != null) {
             PropertiesTableModel model =
                 (PropertiesTableModel)tileProperties.getModel();
             currentTile.setProperties(model.getProperties());
         }
+        */
 
         currentTile = tile;
         updateTileInfo();
@@ -406,21 +409,26 @@ public class TileDialog extends JDialog
         }
     }
 
-    public void updateTileInfo() {
+    /**
+     * Updates the properties table with the properties of the current tile.
+     */
+    private void updateTileInfo() {
         if (currentTile == null) {
             return;
         }
 
-        tileProperties.removeAll();
+        Properties tileProps = currentTile.getProperties();
 
-        Enumeration keys = currentTile.getProperties();
-        Properties props = new Properties();
-        while(keys.hasMoreElements()) {
-            String key = (String) keys.nextElement(); 
-            props.put(key, currentTile.getPropertyValue(key));
+        // (disabled making a copy, as properties are changed in place now)
+        /*
+        Properties editProps = new Properties();
+        for (Enumeration keys = tileProps.keys(); keys.hasMoreElements();) {
+            String key = (String)keys.nextElement();
+            editProps.put(key, tileProps.getProperty(key));
         }
-        ((PropertiesTableModel)tileProperties.getModel()).update(props);
-        tileProperties.repaint();
+        */
+
+        ((PropertiesTableModel)tileProperties.getModel()).update(tileProps);
     }
 
     public void actionPerformed(ActionEvent event) {
@@ -467,7 +475,9 @@ public class TileDialog extends JDialog
                     externalBitmapCheck.setSelected(true);
                 }
             }
-        } /* else if (source == sharedImagesCheck) {
+        }
+        /*
+        else if (source == sharedImagesCheck) {
             if (sharedImagesCheck.isSelected()) {
                 tileset.enableSharedImages();
                 updateEnabledState();
@@ -489,7 +499,9 @@ public class TileDialog extends JDialog
                     sharedImagesCheck.setSelected(true);
                 }
             }
-        }*/ else if (source == bAddImage) {
+        }
+        */
+        else if (source == bAddImage) {
             Image img = loadImage();
             if (img != null) {
                 tileset.addImage(img);

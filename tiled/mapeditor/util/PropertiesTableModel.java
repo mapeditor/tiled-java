@@ -14,7 +14,9 @@ package tiled.mapeditor.util;
 
 import java.util.Enumeration;
 import java.util.Properties;
+
 import javax.swing.table.AbstractTableModel;
+
 
 public class PropertiesTableModel extends AbstractTableModel
 {
@@ -38,12 +40,16 @@ public class PropertiesTableModel extends AbstractTableModel
         return columnNames.length;
     }
 
+    /**
+     * Returns wether the given position in the table is editable. Values can
+     * only be edited when they have a name.
+     */
     public boolean isCellEditable(int row, int col) {
-        return true;
+        return col == 0 || (col == 1 && getValueAt(row, 0) != null);
     }
 
     public Object getValueAt(int rowIndex, int columnIndex) {
-        Object [] array = properties.keySet().toArray();
+        Object[] array = properties.keySet().toArray();
         if (rowIndex >= 0 && rowIndex < properties.size()) {
             if (columnIndex == 0) {
                 return array[rowIndex];
@@ -55,40 +61,43 @@ public class PropertiesTableModel extends AbstractTableModel
     }
 
     public void setValueAt(Object value, int row, int col) {
+        // TODO: When the name is set to an empty string, consider removing the
+        // property (and ignore when it happens on the last row).
         if (row >= 0) {
-            if ((row >= properties.size() && col == 0) || getValueAt(row, 0) == null) {
-                properties.put(value, "0");
+            if (row >= properties.size() && col == 0) {
+                properties.put(value, "");
+                fireTableDataChanged();
             } else {
-
                 if (col == 1) {
                     properties.setProperty(
                             (String)getValueAt(row, 0), (String)value);
+                    fireTableCellUpdated(row, col);
                 } else if (col == 0) {
                     Object val = getValueAt(row, 1);
                     if (getValueAt(row, col) != null) {
                         properties.remove(getValueAt(row, col));
                     }
                     properties.put(value, val);
+                    fireTableDataChanged();
                 }
             }
-            fireTableCellUpdated(row, col);
         }
-
     }
 
     public void remove(int row) {
-    	Enumeration e = properties.keys();
-    	for(int i=0;e.hasMoreElements(); i++) {
-    		Object key = e.nextElement();
-    		if(i==row) {
-    			properties.remove(key);
-    			break;
-    		}
-    	}
+        Enumeration e = properties.keys();
+        for (int i = 0; e.hasMoreElements(); i++) {
+            Object key = e.nextElement();
+            if (i == row) {
+                properties.remove(key);
+                break;
+            }
+        }
     }
     
     public void update(Properties props) {
         properties = props;
+        fireTableDataChanged();
     }
 
     public Properties getProperties() {

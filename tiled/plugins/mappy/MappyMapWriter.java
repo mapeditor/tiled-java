@@ -99,7 +99,7 @@ public class MappyMapWriter implements MapWriter
     private void createMPHDChunk(Map m) throws IOException {
         Chunk c = new Chunk("MPHD");
         OutputStream out = c.getOutputStream();
-        String ver = m.getPropertyValue("version");
+        String ver = m.getProperties().getProperty("version");
         if (ver == null) {
             ver = "0.3";                            // default the value
         }

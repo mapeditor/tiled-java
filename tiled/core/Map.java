@@ -13,10 +13,12 @@
 package tiled.core;
 
 import java.util.*;
+
 import javax.swing.event.EventListenerList;
 
 import tiled.mapeditor.util.*;
 import tiled.view.*;
+
 
 /**
  * The Map class is the focal point of the <code>tiled.core</code> package.
@@ -190,14 +192,6 @@ public class Map extends MultilayerPlane implements Cloneable
 
     public Iterator getObjects() {
         return objects.iterator();
-    }
-
-    public void addProperty(String key, String value) {
-        properties.put(key, value);
-    }
-
-    public String getPropertyValue(String key) {
-        return properties.getProperty(key);
     }
 
     /**

@@ -16,13 +16,14 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.*;
 
+
 public class Tile
 {
     private Image internalImage, scaledImage;
     private int id = -1;
     private int stdHeight;
     private int groundHeight;          // Height above/below ground
-    private int tileImageId=-1, tileOrientation;
+    private int tileImageId = -1, tileOrientation;
     private Properties properties;
     private TileSet tileset;
 
@@ -58,6 +59,7 @@ public class Tile
     /**
      * Changes the image of the tile as long as it is not null.
      *
+     * @param i the new image of the tile
      */
     public void setImage(Image i) {
         if (tileset != null) {
@@ -90,20 +92,12 @@ public class Tile
         groundHeight = getHeight();
     }
 
-    public void setProperty(String key, String value) {
-        properties.setProperty(key,value);
-    }
-
     public void setProperties(Properties p) {
         properties = p;
     }
 
-    public Enumeration getProperties() {
-        return properties.keys();
-    }
-
-    public String getPropertyValue(String key) {
-        return properties.getProperty(key);
+    public Properties getProperties() {
+        return properties;
     }
 
     public int getId() {
@@ -204,16 +198,16 @@ public class Tile
      * Returns a scaled instance of the tile image.
      */
     public Image getScaledImage(double zoom) {
-    	if(getImage()!=null) {
-    		if(zoom==1.0) {
-    			return getImage();
-    		}else{
-    			return getImage().getScaledInstance(
-    				(int)(getWidth() * zoom), (int)(getHeight() * zoom),
-					BufferedImage.SCALE_SMOOTH);
-    		}
-    	}
-    	return null;
+        if (getImage() != null) {
+            if (zoom == 1.0) {
+                return getImage();
+            } else {
+                return getImage().getScaledInstance(
+                        (int)(getWidth() * zoom), (int)(getHeight() * zoom),
+                        BufferedImage.SCALE_SMOOTH);
+            }
+        }
+        return null;
     }
 
     public String toString() {

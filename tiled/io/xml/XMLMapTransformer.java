@@ -23,10 +23,12 @@ import java.util.Iterator;
 import java.util.Stack;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Properties;
 import java.util.zip.GZIPInputStream;
 
 import javax.imageio.ImageIO;
 import javax.xml.parsers.*;
+
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
@@ -332,17 +334,18 @@ public class XMLMapTransformer implements MapReader
     private MapObject unmarshalObject(Node t) throws Exception {
         MapObject obj = null;
         try {
-            obj = (MapObject)unmarshalClass(MapObject.class,t);
+            obj = (MapObject)unmarshalClass(MapObject.class, t);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+        Properties objProps = obj.getProperties();
         NodeList children = t.getChildNodes();
 
         for (int i = 0; i < children.getLength(); i++) {
             Node child = children.item(i);
             if (child.getNodeName().equalsIgnoreCase("property")) {
-                obj.setProperty(getAttributeValue(child, "name"),
+                objProps.setProperty(getAttributeValue(child, "name"),
                         getAttributeValue(child, "value"));
             }
         }
@@ -358,6 +361,7 @@ public class XMLMapTransformer implements MapReader
             e.printStackTrace();
         }
 
+        Properties tileProps = tile.getProperties();
         NodeList children = t.getChildNodes();
 
         for (int i = 0; i < children.getLength(); i++) {
@@ -385,7 +389,7 @@ public class XMLMapTransformer implements MapReader
                     tile.setImageOrientation(orientation);
                 }
             } else if (child.getNodeName().equalsIgnoreCase("property")) {
-                tile.setProperty(getAttributeValue(child,"name"),
+                tileProps.setProperty(getAttributeValue(child,"name"),
                         getAttributeValue(child, "value"));
             }
         }
@@ -429,7 +433,8 @@ public class XMLMapTransformer implements MapReader
             ml.setBounds(map.getBounds());
             warnings.push("INFO: defaulting layer '"+ml.getName()+"' dimensions to map dimensions");
         }
-        
+
+        Properties mlProps = ml.getProperties();
         NodeList children = t.getChildNodes();
 
         for (int i = 0; i < children.getLength(); i++) {
@@ -494,7 +499,7 @@ public class XMLMapTransformer implements MapReader
 
 
             } else if (child.getNodeName().equalsIgnoreCase("property")) {
-                ml.setProperty(getAttributeValue(child,"name"),
+                mlProps.setProperty(getAttributeValue(child,"name"),
                         getAttributeValue(child, "value"));
             }
         }
@@ -554,51 +559,33 @@ public class XMLMapTransformer implements MapReader
                 setOrientation("orthogonal");
             }
 
-            // Load the properties
-            l = doc.getElementsByTagName("property");
-            for (int i = 0; (item = l.item(i)) != null; i++) {
-                if (item.getParentNode() == mapNode) {
-                    map.addProperty(getAttributeValue(item, "name"),
-                            getAttributeValue(item, "value"));
-                }
-            }
+            Properties mapProps = map.getProperties();
 
-            // Load the tile sets
-            l = doc.getElementsByTagName("tileset");
-            for (int i = 0; (item = l.item(i)) != null; i++) {
-                if (item.getParentNode() == mapNode) {
-                    map.addTileset(unmarshalTileset(item));
-                }
-            }
-
-            // Load the layers & objectgroups
+            // Load the tilesets, properties, layers and objectgroups
             l = mapNode.getChildNodes();
             for (int i = 0; i < l.getLength(); i++) {
                 Node sibs = l.item(i);
-                if (sibs.getParentNode() == mapNode) {
-                    if (sibs.getNodeName().equals("layer")) {
-                        MapLayer layer = unmarshalLayer(sibs);
-                        if (layer != null) {
-                            map.addLayer(layer);
-                        }
-                    }else if(sibs.getNodeName().equals("objectgroup")) {
-                        MapLayer layer = unmarshalObjectGroup(sibs);
-                        if (layer != null) {
-                            map.addLayer(layer);
-                        }
+
+                if (sibs.getNodeName().equals("tileset")) {
+                    map.addTileset(unmarshalTileset(sibs));
+                }
+                else if (sibs.getNodeName().equals("property")) {
+                    mapProps.setProperty(getAttributeValue(sibs, "name"),
+                            getAttributeValue(sibs, "value"));
+                }
+                else if (sibs.getNodeName().equals("layer")) {
+                    MapLayer layer = unmarshalLayer(sibs);
+                    if (layer != null) {
+                        map.addLayer(layer);
+                    }
+                }
+                else if (sibs.getNodeName().equals("objectgroup")) {
+                    MapLayer layer = unmarshalObjectGroup(sibs);
+                    if (layer != null) {
+                        map.addLayer(layer);
                     }
                 }
             }
-            
-            /*
-            // Load the objects
-            l = doc.getElementsByTagName("object");
-            for (int i = 0; (item = l.item(i)) != null; i++) {
-                if (item.getParentNode() == mapNode) {
-                    map.addObject(unmarshalObject(item));
-                }
-            }
-            */
         }
     }
 
