@@ -15,12 +15,11 @@ package tiled.core;
 import java.awt.Canvas;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.MediaTracker;
-import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
 
@@ -42,44 +41,37 @@ public class TileSet
     /**
      * Creates a tileset from a tile bitmap. This is a tile-cutter.
      *
-     * @param imgFile     the filename of the image to be used
+     * @param imgFilename the filename of the image to be used
      * @param tileWidth   the tile width
      * @param tileHeight  the tile height
      * @param spacing     the amount of spacing between the tiles
      */
-    public void importTileBitmap(String imgFile,
+    public void importTileBitmap(String imgFilename,
             int tileWidth, int tileHeight, int spacing) {
+        File imgFile = null;
         try {
-            tilebmpFile = new File(imgFile).getCanonicalPath();
+            imgFile = new File(imgFilename);
+            tilebmpFile = imgFile.getCanonicalPath();
         } catch (IOException e) {
-            tilebmpFile = imgFile;
+            tilebmpFile = imgFilename;
         }
-        Image tilebmp;
+
+        BufferedImage tilebmp = null;
 
         try {
-            tilebmp = Toolkit.getDefaultToolkit().getImage(tilebmpFile);
-            MediaTracker mediaTracker = new MediaTracker(new Canvas());
-            mediaTracker.addImage(tilebmp, 0);
-            try {
-                mediaTracker.waitForID(0);
-            }
-            catch (InterruptedException ie) {
-                System.err.println(ie);
-                return;
-            }
-            mediaTracker.removeImage(tilebmp);
+            tilebmp = ImageIO.read(imgFile);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e.getMessage(),
                     "Error!", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        int iw = tilebmp.getWidth(null);
-        int ih = tilebmp.getHeight(null);
+        int iw = tilebmp.getWidth();
+        int ih = tilebmp.getHeight();
 
         if (iw > 0 && ih > 0) {
-            for (int y = 0; y < ih; y += tileHeight + spacing) {
-                for (int x = 0; x < iw; x += tileWidth + spacing) {
+            for (int y = 0; y <= ih - tileHeight; y += tileHeight + spacing) {
+                for (int x = 0; x <= iw - tileWidth; x += tileWidth + spacing) {
                     BufferedImage tile = new BufferedImage(
                             tileWidth, tileHeight,
                             BufferedImage.TYPE_INT_ARGB);
