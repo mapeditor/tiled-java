@@ -597,6 +597,10 @@ public class MapEditor implements ActionListener,
 
     private void updateLayerTable() {
         int cl = currentLayer;
+        if (layerTable.isEditing()) {
+            layerTable.getCellEditor(layerTable.getEditingRow(),
+                    layerTable.getEditingColumn()).cancelCellEditing();
+        }
         ((LayerTableModel)layerTable.getModel()).setMap(currentMap);
 
         if (currentMap != null) {
