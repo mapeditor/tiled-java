@@ -98,12 +98,10 @@ public class PluginClassLoader extends URLClassLoader
 
                     boolean bPlugin = false;
                     if (doesImplement(readerClass, "tiled.io.MapReader")) {
-                        _add(readerClass);
                         bPlugin = true;
                     }
 
                     if (doesImplement(writerClass, "tiled.io.MapWriter")) {
-                        _add(writerClass);
                         bPlugin = true;
                     }
 
@@ -111,6 +109,8 @@ public class PluginClassLoader extends URLClassLoader
                         //System.out.println(
                         //        "Added " + files[i].getCanonicalPath());
                         super.addURL(new URL("file://" + aPath));
+                        _add(readerClass);
+                        _add(writerClass);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -149,7 +149,7 @@ public class PluginClassLoader extends URLClassLoader
         Iterator itr = readerFormats.keySet().iterator();
         while (itr.hasNext()){
             String key = (String)itr.next();
-            if (key.endsWith(ext)) {
+            if (key.endsWith(ext.toLowerCase())) {
                 return loadClass((String)readerFormats.get(key)).newInstance();
             }
         }
@@ -161,7 +161,7 @@ public class PluginClassLoader extends URLClassLoader
         Iterator itr = writerFormats.keySet().iterator();
         while (itr.hasNext()) {
             String key = (String)itr.next();
-            if (key.endsWith(ext)) {
+            if (key.endsWith(ext.toLowerCase())) {
                 return loadClass((String)writerFormats.get(key)).newInstance();
             }
         }
@@ -210,20 +210,25 @@ public class PluginClassLoader extends URLClassLoader
     }
 
     private void _add(Class c) throws Exception{
-        PluggableMapIO p = (PluggableMapIO) c.newInstance();
-        String clname = c.toString();
-        clname = clname.substring(clname.indexOf(' ')+1);
-        String filter = p.getFilter();
-        String[] ext = filter.split(",");
-
-        if (isReader(c)) {
-            for(int i = 0; i < ext.length; i++) {
-                readerFormats.put(ext[i], clname);
-            }
-        } else {
-            for (int i = 0; i < ext.length; i++){
-                writerFormats.put(ext[i], clname);
-            }
-        }
+    	try{
+	        PluggableMapIO p = (PluggableMapIO) c.newInstance();
+	        String clname = c.toString();
+	        clname = clname.substring(clname.indexOf(' ')+1);
+	        String filter = p.getFilter();
+	        String[] ext = filter.split(",");
+	
+	        if (isReader(c)) {
+	            for(int i = 0; i < ext.length; i++) {
+	                readerFormats.put(ext[i], clname);
+	            }
+	        } else {
+	            for (int i = 0; i < ext.length; i++){
+	                writerFormats.put(ext[i], clname);
+	            }
+	        }
+    	}catch (NoClassDefFoundError e) {
+    		System.err.println("**Failed loading plugin: "+e.toString());
+    	}
+        
     }
 }

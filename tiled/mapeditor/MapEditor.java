@@ -266,12 +266,14 @@ public class MapEditor implements ActionListener,
             JOptionPane.showMessageDialog(appFrame,
                     e.getMessage(), "Error while loading map",
                     JOptionPane.ERROR_MESSAGE);
+            		e.printStackTrace();
         } catch (Exception e) {
             //e.printStackTrace();
             JOptionPane.showMessageDialog(appFrame,
                     "Error while loading " + file + ": " +
                     e.getMessage(), "Error while loading map",
                     JOptionPane.ERROR_MESSAGE);
+            		e.printStackTrace();
         }
 
         return false;
@@ -400,17 +402,17 @@ public class MapEditor implements ActionListener,
         m.add(createMenuItem("Add Object", null, "Add an object"));
         mapEventAdapter.addListener(m);
         menuBar.add(m);
-        */
+        
         JMenu modifySub = new JMenu("Modify");
         modifySub.add(createMenuItem("Expand Selection", null, ""));
         modifySub.add(createMenuItem("Contract Selection", null, ""));
-        
+        */
         m = new JMenu("Select");
         m.add(new TMenuItem(selectAllAction, true));
         m.add(new TMenuItem(cancelSelectionAction, true));
         m.add(new TMenuItem(inverseAction, true));
         m.addSeparator();
-        m.add(modifySub);
+        //m.add(modifySub);
         mapEventAdapter.addListener(m);
         menuBar.add(m);
         

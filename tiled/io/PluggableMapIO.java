@@ -27,5 +27,5 @@ public interface PluggableMapIO
 
     public String getDescription();
     
-    /* public String getPluginPackage(); */
+    public String getPluginPackage();
 }

@@ -45,8 +45,7 @@ public class PluginDialog extends JFrame implements ActionListener {
             readers = (MapReader[]) pluginLoader.getReaders();
             String [] plugins = new String[readers.length];
 			for(int i=0;i<readers.length;i++) {
-				plugins[i] = readers[i].getName();
-				//TODO: plugins[i] = readers[i].getPluginPackage();
+				plugins[i] = readers[i].getPluginPackage();
 				  
 				//TODO: check for a writer as well, and designate the
 				//		plugins that have both
