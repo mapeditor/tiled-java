@@ -60,11 +60,11 @@ public class Tile
      *
      */
     public void setImage(Image i) {
-        //if (tileset != null) {
-        //    tileset.overlayImage("" + tileImageId, i);
-        //} else {
+        if (tileset != null) {
+            tileset.overlayImage("" + tileImageId, i);
+        } else {
             internalImage = i;
-        //}
+        }
         groundHeight = getHeight();
     }
 
@@ -164,22 +164,20 @@ public class Tile
     }
 
     public int getWidth() {
-        //if (tileset != null) {
-        //    Dimension d = tileset.getImageDimensions("" + tileImageId);
-        //    return d.width;
-        //} else if (internalImage != null){
-        if (internalImage != null) {
+        if (tileset != null) {
+            Dimension d = tileset.getImageDimensions("" + tileImageId);
+            return d.width;
+        } else if (internalImage != null){
             return internalImage.getWidth(null);
         }
         return 0;
     }
 
     public int getHeight() {
-        //if (tileset != null) {
-        //    Dimension d = tileset.getImageDimensions("" + tileImageId);
-        //    return d.height;
-        //} else if (internalImage != null) {
-        if (internalImage != null) {
+        if (tileset != null) {
+            Dimension d = tileset.getImageDimensions("" + tileImageId);
+            return d.height;
+        } else if (internalImage != null) {
             return internalImage.getHeight(null);
         }
         return 0;
@@ -197,11 +195,11 @@ public class Tile
      * Returns the tile image.
      */
     public Image getImage() {
-        //if (tileset != null) {
-        //    return tileset.getImageById("" + tileImageId);
-        //} else {
+        if (tileset != null) {
+            return tileset.getImageById("" + tileImageId);
+        } else {
             return internalImage;
-        //}
+        }
     }
 
     /**
