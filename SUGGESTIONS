@@ -4,42 +4,75 @@ SUGGESTIONS - A primitive attempt to keep track of user suggestions
 
 -------------------------------------------------------------------------------
 Suggestor:  Ahmed Mohombe <amohombe@yahoo.com>
-Date:       08/03/04 20:54
+Date:       08/03/04
 Summary:    Isometric mode by shifting every other row in y direction.
 State:      To be implemented (task #78)
 Problems:   Shift even rows or odd rows? Or how to make that an option?
+
 -------------------------------------------------------------------------------
 Suggestor:  Ahmed Mohombe <amohombe@yahoo.com>
-Date:       08/04/04 10:44
+Date:       08/04/04
 Summary:    Show tile coordinates on each tile (analoguous to Show Grid).
 State:      To be discussed
+
 -------------------------------------------------------------------------------
 Suggestor:  Ahmed Mohombe <amohombe@yahoo.com>
-Date:       08/04/04 10:44
+Date:       08/04/04
 Summary:    Coordinate translator to use when the user view on the map is not
             what Tiled uses, should especially be useful for isometric or
             hexagonal maps.
 State:      To be discussed
 Problems:   The engine the user is using will still need to understand the
             way Tiled uses the coordinates.
+
 -------------------------------------------------------------------------------
 Suggestor:  Ahmed Mohombe <amohombe@yahoo.com>
-Date:       08/04/04 10:44
+Date:       08/04/04
 Summary:    Allow tilesets with a border to be used by Tiled. Borders around
             the tileset image are used by FreeCiv for example.
 State:      To be implemented (offset attributes, task #79)
+
 -------------------------------------------------------------------------------
 Suggestor:  Ahmed Mohombe <amohombe@yahoo.com>
 Date:       08/04/04 10:44
 Summary:    File chooser should remember last place where it was opened, for
             example when picking the tile to load into your tileset.
-State:      To be implemented
+State:      To be implemented (task #81)
+
 -------------------------------------------------------------------------------
 Suggestor:  Ahmed Mohombe <amohombe@yahoo.com>
-Date:       08/04/04 10:44
+Date:       08/04/04
 Summary:    There are a lot of GUI libraries for Java to create certain common
             or complex constructions. Mentioned are l2fprod-common,
             glazedlists, gui-commands and wizard-framework from java.dev.net.
 State:      Not needed at the moment
--------------------------------------------------------------------------------
 
+-------------------------------------------------------------------------------
+Suggestor:  Nephilim <nephilim@mac.com>
+Date:       06/16/04
+Summary:    Text layers and numeric layers for adding engine-specific
+            information such as scripts, comments, numeric overlays, object
+            placements, terrain notes, etc.
+State:      Interesting, but custom tile properties and future object support
+            should suffice for now.
+
+-------------------------------------------------------------------------------
+Suggestor:  Nephilim <nephilim@mac.com>
+Date:       06/16/04
+Summary:    Keyboard shortcuts for switching between layers, to toggle
+            display of tile palette and to switch between palette sets.
+State:      Interesting, needs research.
+
+-------------------------------------------------------------------------------
+Suggestor:  Nephilim <nephilim@mac.com>
+Date:       06/16/04
+Summary:    A little window that shows all the layers in the currently pointed
+            at cell.
+State:      Sounds a bit like GUI bloat, might be interesting as an option.
+
+-------------------------------------------------------------------------------
+Suggestor:  Nephilim <nephilim@mac.com>
+Date:       06/16/04
+Summary:    Ability to drag the map around by holding spacebar a la Photoshop
+            and similar.
+State:      Needs research.
