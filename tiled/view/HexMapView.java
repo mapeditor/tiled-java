@@ -20,31 +20,34 @@ import javax.swing.SwingConstants;
 import tiled.core.*;
 import tiled.mapeditor.selection.SelectionLayer;
 
+
 /**
  * A View for displaying Hex based maps.
- * The Hexs are layed out horizontally. i.e. the pointy sides are on the sides and the flat
- * sides are on the bottom.
+ * The Hexs are layed out horizontally (i.e. the pointy sides are on the sides
+ * and the flat sides are on the bottom).
+ * <pre>
  *       ___
  * e.g. /   \
  *      \---/
+ * </pre>
  *
  * Even numbered columns are staggered downwards by half a hex.
+ * <pre>
  * e.g.
  *     1,0     3,0
  * 0,0     2,0     4,0
  *     1,1     3,1
  * 0,1     2,1     4,1
+ * </pre>
  *
- * Icon sizes.
+ * <p>The icon width (as returned by Map.getTileWidth()) refers to the total
+ * width of a hex (i.e from the left most corner to the right most corner). The
+ * actual distance between two adjacent hexes is equal to 3/4 of this figure.
  *
- * The icon width (as returned by Map.getTileWidth()) refers to the total width of a hex.
- * i.e from the left most corner to the right most corner.
- * The actual distance between two adjacent hexes is equal to 3/4 of this figure.
- *
- * The icon height (as returned by Map.getTileHeight()) refers to the total height of a hex.
- * i.e. from the bottom edge to the top edge.
- * This is equal to the distance between two adjacent hexes (in the same column)
- *
+ * <p>The icon height (as returned by Map.getTileHeight()) refers to the total
+ * height of a hex (i.e. from the bottom edge to the top edge).
+ * This is equal to the distance between two adjacent hexes (in the same
+ * column)
  */
 public class HexMapView extends MapView
 {
@@ -265,7 +268,6 @@ public class HexMapView extends MapView
      * Get the location on screen for the given tile.
      * @param x
      * @param y
-     * @param zoom
      * @return The point at the centre of the Hex.
      */
     public Point tileToScreenCoords(double x, double y) {

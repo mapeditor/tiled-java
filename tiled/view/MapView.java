@@ -271,7 +271,7 @@ public abstract class MapView extends JPanel implements Scrollable
      * @param tx
      * @param ty
      * @param border
-     * @return
+     * @return the created polygon
      */
 	protected abstract Polygon createGridPolygon(int tx, int ty, int border);
     

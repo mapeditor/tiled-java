@@ -127,7 +127,7 @@ public class TileSet
     /**
      * Sets the first global id used by this tileset.
      * 
-     * @param the first global id
+     * @param f first global id
      */
     public void setFirstGid(int f) {
         firstGid = f;
