@@ -49,6 +49,8 @@ public class ResizePanel extends JPanel implements MouseListener,
 		Dimension old = inner.getPreferredSize();
 		//TODO: get smaller dimension, zoom based on that...
 		
+		oldDim = old;
+		setSize(old);
 	}
 
 	public ResizePanel(Dimension size, Map map) {

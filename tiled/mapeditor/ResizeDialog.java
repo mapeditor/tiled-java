@@ -54,7 +54,7 @@ public class ResizeDialog extends JDialog implements ActionListener,
 		offsetX.addChangeListener(this);
 		offsetY.addChangeListener(this);
 		
-        orient = new ResizePanel(new Dimension(100, 100), currentMap);
+        orient = new ResizePanel(currentMap);
 		orient.addPropertyChangeListener(this);
 		
         // Offset panel
@@ -116,7 +116,7 @@ public class ResizeDialog extends JDialog implements ActionListener,
         c.gridy = 1;
         origSizePanel.add(new JLabel("" + currentMap.getHeight()), c);
 
-        // Putting two size panels next to eachoter
+        // Putting two size panels next to eachother
         JPanel sizePanels = new VerticalStaticJPanel(new GridBagLayout());
         c = new GridBagConstraints();
         c.fill = GridBagConstraints.BOTH;

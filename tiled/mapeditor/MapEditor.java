@@ -660,9 +660,8 @@ public class MapEditor implements ActionListener,
         } else if (command.equals("Move Layer Up")) {
             if (currentLayer >= 0) {
                 try {
-                    int cl = currentLayer;
                     currentMap.swapLayerUp(currentLayer);
-                    setCurrentLayer(cl + 1);
+                    setCurrentLayer(currentLayer + 1);
                 } catch (Exception ex) {
                     System.out.println(ex.toString());
                 }
@@ -670,25 +669,22 @@ public class MapEditor implements ActionListener,
         } else if (command.equals("Move Layer Down")) {
             if (currentLayer >= 0) {
                 try {
-                    int cl = currentLayer;
                     currentMap.swapLayerDown(currentLayer);
-                    setCurrentLayer(cl - 1);
+                    setCurrentLayer(currentLayer - 1);
                 } catch (Exception ex) {
                     System.out.println(ex.toString());
                 }
             }
         } else if (command.equals("Delete Layer")) {
             if (currentLayer >= 0) {
-                int cl = currentLayer - 1;
                 currentMap.removeLayer(currentLayer);
-                setCurrentLayer(cl < 0 ? 0 : cl);
+                setCurrentLayer(currentLayer < 0 ? 0 : currentLayer);
             }
         } else if (command.equals("Merge Down")) {
             if (currentLayer >= 0) {
                 try {
-                    int cl = currentLayer;
                     currentMap.mergeLayerDown(currentLayer);
-                    setCurrentLayer(cl - 1);
+                    setCurrentLayer(currentLayer - 1);
                 } catch (Exception ex) {
                     System.out.println(ex.toString());
                 }
@@ -790,7 +786,6 @@ public class MapEditor implements ActionListener,
             if (layer != null) {
                 try {
                     MapLayer endLayer = paintEdit.getStart().createDiff(layer);
-                    endLayer.setId(layer.getId());
                     paintEdit.end(endLayer);
                     undoSupport.postEdit(paintEdit);
                 } catch (Exception e) {
@@ -1192,7 +1187,6 @@ public class MapEditor implements ActionListener,
         Rectangle area = new Rectangle(new Point(x, y));
         Stack stack = new Stack();
         MapLayer before = new MapLayer(layer);
-        before.setId(layer.getId());
         MapLayer after;
 
         stack.push(new Point(x, y));
@@ -1219,7 +1213,6 @@ public class MapEditor implements ActionListener,
                 area.x, area.y, area.width + 1, area.height + 1);
         after = new MapLayer(bounds);
         after.copyFrom(layer);
-        after.setId(layer.getId());
 
         MapLayerEdit mle = new MapLayerEdit(layer, before, after);
         mle.setPresentationName("Fill");
