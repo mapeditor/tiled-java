@@ -431,16 +431,16 @@ public class XMLMapWriter implements MapWriter
     }
 
     public String getName() {
-        return "Default Tiled XML map writer";
+    	return
+        			"The core Tiled TMX format writer\n" +
+					"\n" +
+					"Tiled Map Editor, (c) 2004\n" +
+					"Adam Turk\n" +
+					"Bjorn Lindeijer";
     }
 
     public String getDescription() {
-        return
-            "This is the core Tiled TMX format writer\n" +
-            "\n" +
-            "Tiled Map Editor, (c) 2004\n" +
-            "Adam Turk\n" +
-            "Bjorn Lindeijer";
+        return "Default Tiled XML map writer";
     }
 
     public boolean accept(File pathname) {

@@ -27,9 +27,9 @@ public class TiledFileFilter extends FileFilter
 
     private String desc;
     private LinkedList exts;
-
+    
     public TiledFileFilter() {
-        desc = new String("Tiled (*.tmx & *.tsx) files");
+        desc = new String("Tiled files (*.tmx & *.tsx)");
         exts = new LinkedList();
         exts.add(new String("tmx"));
         exts.add(new String("tsx"));
@@ -39,15 +39,24 @@ public class TiledFileFilter extends FileFilter
         exts = new LinkedList();
         desc = "";
         if ((filter & FILTER_TMX) != 0) {
-            desc = new String("Tiled Maps (*.tmx) files ");
+            desc = new String("Tiled Maps files ");
             exts.add(new String("tmx"));
         }
         if ((filter & FILTER_TSX) != 0) {
-            desc = desc + "Tiled Tileset (*.tsx) files";
+            desc = desc + "Tiled Tileset files";
             exts.add(new String("tsx"));
         }
     }
 
+    public TiledFileFilter(String filter, String desc) {
+    	exts = new LinkedList();
+    	this.desc = desc;
+    	String [] ext = filter.split(",");
+    	for(int i=0;i<ext.length;i++) {
+    		exts.add(ext[i].substring(ext[i].indexOf('.')+1));
+    	}
+    }
+    
     public void setDescription(String d) {
         desc = d;
     }
@@ -62,12 +71,12 @@ public class TiledFileFilter extends FileFilter
                 return false;
             }
 
-            String ext = f.getAbsolutePath().substring(
-                    f.getAbsolutePath().lastIndexOf('.') + 1);
-
+            String fileName = f.getAbsolutePath().toLowerCase();
+            
             Iterator itr = exts.iterator();
             while (itr.hasNext()) {
-                if (ext.equalsIgnoreCase((String)itr.next())) {
+            	String ext = (String)itr.next();
+                if (fileName.endsWith(ext)) {
                     return true;
                 }
             }
@@ -77,6 +86,14 @@ public class TiledFileFilter extends FileFilter
     }
 
     public String getDescription() {
-        return desc;
+    	String filter = "(";
+    	Iterator itr = exts.iterator();
+        while (itr.hasNext()) {
+        	String ext = (String)itr.next();
+        	filter = filter+"*."+ext;
+        	if(itr.hasNext())
+        		filter=filter+",";
+        }
+        return desc+" "+filter+")";
     }
 }

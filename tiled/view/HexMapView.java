@@ -91,6 +91,7 @@ public class HexMapView extends MapView
         int toffset = (((modeFlags & PF_GRIDMODE) != 0) ? 1 : 0);
 
         Rectangle clipRect = g.getClipBounds();
+        Polygon gridPoly;
         Point topLeft = screenToTileCoords((int) clipRect.getMinX(), (int) clipRect.getMinY());
         Point bottomRight = screenToTileCoords((int) (clipRect.getMaxX() - clipRect.getMinX()), (int) (clipRect.getMaxY() - clipRect.getMinY()));
         int startX = (int) clipRect.x / tsize.width;
@@ -99,16 +100,23 @@ public class HexMapView extends MapView
         int endY = (int) ((clipRect.y + clipRect.height) / tsize.height)*2+1;
 
         for (int y = startY, gy = (int)(startY * tsize.height + toffset); y < endY; y++,gy += tsize.getHeight()) {
+        	gridPoly = createGridPolygon(0,y,1);
+        	gridPoly.translate(0,-(int)(tsize.getHeight()/2));
             for (int x = startX, gx = (int)((startX * tsize.width + toffset)); 
                     x < endX; x++, gx+=(tsize.getWidth()*.75)) {
                 Tile t = layer.getTileAt(x, y);
 
                 if (t != null && t != myMap.getNullTile()) {
                     if(layer.getClass() == SelectionLayer.class) {
-                        //g.fillPolygon(createGridPolygon(x, y, 1));
+                        g.fillPolygon(gridPoly);
                     }else{
                         t.draw(g, gx, (int)(gy + (tsize.getHeight()/2) * (1-x%2)), zoom);
                     }
+                }
+                if(x%2 == 0) {
+                	gridPoly.translate((int)(tsize.getWidth()*.75),-(int)(tsize.getHeight()/2));
+                }else{
+                	gridPoly.translate((int)(tsize.getWidth()*.75),(int)(tsize.getHeight()/2));
                 }
             }
         }

@@ -1379,8 +1379,21 @@ public class MapEditor implements ActionListener,
                 ch = new JFileChooser(filename);
             }
 
-            ch.setFileFilter(new TiledFileFilter(TiledFileFilter.FILTER_TMX));
+            ch.addChoosableFileFilter(new TiledFileFilter(TiledFileFilter.FILTER_TMX));
 
+            try {
+    			MapWriter writers[] = (MapWriter[]) pluginLoader.getWriters();
+    			for(int i=0;i<writers.length;i++) {
+    	        	ch.addChoosableFileFilter(new TiledFileFilter(writers[i].getFilter(),writers[i].getDescription()));
+    	        }
+    		} catch (Throwable e) {
+    			JOptionPane.showMessageDialog(appFrame,
+                        "Error while loading plugins: " + e.getMessage(),
+                        "Error while saving map",
+                        JOptionPane.ERROR_MESSAGE);
+    			e.printStackTrace();
+    		}
+            
             if (ch.showSaveDialog(appFrame) == JFileChooser.APPROVE_OPTION) {
                 filename = ch.getSelectedFile().getAbsolutePath();
                 configuration.addConfigPair("tmx.save.maplocation",
@@ -1390,12 +1403,25 @@ public class MapEditor implements ActionListener,
         }
 
         try {
-            MapWriter writer = new XMLMapWriter();
-            writer.writeMap(currentMap, filename);
-            currentMap.setFilename(filename);
-            updateRecent(filename);
-            undoStack.commitSave();
-            updateTitle();
+        	MapWriter mw = null;
+        	if (filename.endsWith("tmx")) {
+                // Override, so people can't overtake our format
+        		mw = new XMLMapWriter();
+        	} else {
+        		mw = (MapWriter)pluginLoader.getWriterFor(filename.substring(filename.lastIndexOf('.') + 1));
+        	}
+        	
+        	if (mw != null) {
+                mw.writeMap(currentMap, filename);
+                currentMap.setFilename(filename);
+                updateRecent(filename);
+                undoStack.commitSave();
+                updateTitle();
+            } else {
+                JOptionPane.showMessageDialog(appFrame,
+                        "Unsupported map format", "Error while saving map",
+                        JOptionPane.ERROR_MESSAGE);
+        	}
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(appFrame,
@@ -1415,7 +1441,22 @@ public class MapEditor implements ActionListener,
         }
 
         JFileChooser ch = new JFileChooser(startLocation);
-        ch.setFileFilter(new TiledFileFilter(TiledFileFilter.FILTER_TMX));
+        ch.addChoosableFileFilter(new TiledFileFilter(TiledFileFilter.FILTER_TMX));
+        
+		try {
+			MapReader readers[] = (MapReader[]) pluginLoader.getReaders();
+			for(int i=0;i<readers.length;i++) {
+	        	ch.addChoosableFileFilter(new TiledFileFilter(readers[i].getFilter(),readers[i].getDescription()));
+	        }
+		} catch (Throwable e) {
+			JOptionPane.showMessageDialog(appFrame,
+                    "Error while loading plugins: " + e.getMessage(),
+                    "Error while loading map",
+                    JOptionPane.ERROR_MESSAGE);
+			e.printStackTrace();
+		}
+		
+        
 
         int ret = ch.showOpenDialog(appFrame);
         if (ret == JFileChooser.APPROVE_OPTION) {

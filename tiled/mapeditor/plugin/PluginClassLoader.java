@@ -12,8 +12,10 @@
 
 package tiled.mapeditor.plugin;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Hashtable;
@@ -22,6 +24,8 @@ import java.util.Vector;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import tiled.io.MapReader;
+import tiled.io.MapWriter;
 import tiled.io.PluggableMapIO;
 import tiled.util.TiledConfiguration;
 
@@ -34,11 +38,15 @@ public class PluginClassLoader extends URLClassLoader
     public PluginClassLoader() {
         super(new URL[0]);
         plugins = new Vector();
+        readerFormats = new Hashtable();
+        writerFormats = new Hashtable();
     }
 
     public PluginClassLoader(URL[] urls) {
         super(urls);
         plugins = new Vector();
+        readerFormats = new Hashtable();
+        writerFormats = new Hashtable();
     }
 
     public void readPlugins(String base) throws Exception {
@@ -54,25 +62,31 @@ public class PluginClassLoader extends URLClassLoader
                     "Could not open directory for reading plugins: " +
                     baseURL);
         }
-
+        
         File [] files = dir.listFiles();
         for (int i = 0; i < files.length; i++) {
             if (files[i].getAbsolutePath().substring(files[i].getAbsolutePath().lastIndexOf('.') + 1).equals("jar")) {
                 try {
                     JarFile jf = new JarFile(files[i]);
+                    String readerClassName = jf.getManifest().getMainAttributes().getValue("Reader-Class");
+                    String writerClassName = jf.getManifest().getMainAttributes().getValue("Writer-Class");
                     //verify that the jar has the necessary files to be a plugin
-                    if (jf.getManifest().getMainAttributes().get("readerClass") == null || 
-                            jf.getManifest().getMainAttributes().get("writerClass") == null) {
+                    if (readerClassName == null || writerClassName == null) {
                         continue;
                     }
+                    
+                    JarEntry reader = jf.getJarEntry(readerClassName.replace('.','/')+".class");
+                    JarEntry writer = jf.getJarEntry(writerClassName.replace('.','/')+".class");
 
-                    JarEntry reader = jf.getJarEntry((String)jf.getManifest().getMainAttributes().get("readerClass"));
-                    JarEntry writer = jf.getJarEntry((String)jf.getManifest().getMainAttributes().get("writerClass"));
-
-                    if (doesImplement(loadFromJar(jf, reader), "tiled.io.MapReader") 
-                            && doesImplement(loadFromJar(jf, writer), "tiled.io.MapWriter")) {
-                        System.out.println("Added " + files[i].getCanonicalPath());
-                        super.addURL(new URL(files[i].getAbsolutePath()));
+                    Class readerClass = loadFromJar(jf, reader, readerClassName);
+                    Class writerClass = loadFromJar(jf, writer, writerClassName);
+                    
+                    if (doesImplement(readerClass, "tiled.io.MapReader") 
+                            && doesImplement(writerClass, "tiled.io.MapWriter")) {
+                    	_add(readerClass);
+                    	_add(writerClass);
+                        //System.out.println("Added " + files[i].getCanonicalPath());
+                        super.addURL(new URL("file://"+files[i].getAbsolutePath()));
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -81,36 +95,68 @@ public class PluginClassLoader extends URLClassLoader
         }
     }
 
+    public MapReader [] getReaders() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+    	MapReader [] readers = new MapReader[readerFormats.size()];
+    	Iterator itr = readerFormats.keySet().iterator();
+    	int i=0;
+    	while(itr.hasNext()) {
+    		Object key = itr.next();
+    		readers[i++] = (MapReader) loadClass((String) readerFormats.get(key)).newInstance();
+    	}
+    	
+    	return readers;
+    }
+    
+    public MapWriter [] getWriters() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+    	MapWriter [] writers = new MapWriter[writerFormats.size()];
+    	Iterator itr = writerFormats.keySet().iterator();
+    	int i=0;
+    	while(itr.hasNext()) {
+    		Object key = itr.next();
+    		writers[i++] = (MapWriter) loadClass((String) writerFormats.get(key)).newInstance();
+    	}
+    	
+    	return writers;
+    }
+    
     public Object getReaderFor(String ext) throws Exception {
-        for (int i = 0; i < plugins.size(); i++) {
-            Iterator itr = readerFormats.keySet().iterator();
-            while(itr.hasNext()){
-                String key = (String)itr.next();
-                if(key.endsWith(ext)) {
-                    return loadClass((String)readerFormats.get(key)).newInstance();
-                }
+        Iterator itr = readerFormats.keySet().iterator();
+        while(itr.hasNext()){
+            String key = (String)itr.next();
+            if(key.endsWith(ext)) {
+                return loadClass((String)readerFormats.get(key)).newInstance();
             }
         }
-        throw new Exception("No plugin exists for the extension: " + ext);
+        throw new Exception("No reader plugin exists for the extension: " + ext);
     }
 
     public Object getWriterFor(String ext) throws Exception {
-        for (int i = 0; i < plugins.size(); i++) {
-            Iterator itr = writerFormats.keySet().iterator();
-            while (itr.hasNext()) {
-                String key = (String)itr.next();
-                if (key.endsWith(ext)) {
-                    return loadClass((String) writerFormats.get(key)).newInstance();
-                }
+        Iterator itr = writerFormats.keySet().iterator();
+        while (itr.hasNext()) {
+            String key = (String)itr.next();
+            if (key.endsWith(ext)) {
+                return loadClass((String) writerFormats.get(key)).newInstance();
             }
         }
-        throw new Exception("No plugin exists for the extension: "+ext);
+        throw new Exception("No writer plugin exists for the extension: "+ext);
     }
 
-    public Class loadFromJar(JarFile jf, JarEntry je) throws IOException {
-        byte[] buffer = new byte[(int)je.getSize() + 1];
-        jf.getInputStream(je).read(buffer);
-        return defineClass(je.getName(), buffer, 0, buffer.length);
+    public Class loadFromJar(JarFile jf, JarEntry je, String className) throws IOException {
+        byte[] buffer = new byte[(int)je.getSize()];
+        int n;
+        
+        InputStream in = jf.getInputStream(je); 
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        while(( n = in.read(buffer)) > 0) {
+        	baos.write(buffer,0,n);
+        }
+        buffer = baos.toByteArray();
+        
+        if(buffer.length< je.getSize()) {
+        	throw new IOException("Failed to read entire entry! ("+buffer.length+"<"+je.getSize()+")");
+        }
+        
+        return defineClass(className, buffer, 0, buffer.length);
     }
 
     public boolean doesImplement(Class c, String interfaceName)
@@ -119,7 +165,6 @@ public class PluginClassLoader extends URLClassLoader
         for (int i = 0; i < interfaces.length; i++) {
             String name = interfaces[i].toString(); 
             if (name.substring(name.indexOf(' ') + 1).equals(interfaceName)) {
-                _add(c);
                 return true;
             }
         }
@@ -132,11 +177,11 @@ public class PluginClassLoader extends URLClassLoader
 
     private void _add(Class c) throws Exception{
         PluggableMapIO p = (PluggableMapIO) c.newInstance();
-        String clname = c.getClass().toString();
+        String clname = c.toString();
         clname = clname.substring(clname.indexOf(' ')+1);
         String filter = p.getFilter();
         String [] ext = filter.split(",");
-
+        
         if (isReader(c)) {
             for(int i = 0; i < ext.length; i++) {
                 readerFormats.put(ext[i], clname);
