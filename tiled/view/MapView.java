@@ -278,6 +278,7 @@ public abstract class MapView extends JPanel implements Scrollable
     // Conversion functions
 
     public abstract Point screenToTileCoords(int x, int y);
+	public abstract Point tileToScreenCoords(double x, double y);
 }
 
 

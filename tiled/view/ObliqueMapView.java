@@ -65,4 +65,9 @@ public class ObliqueMapView extends MapView
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+    public Point tileToScreenCoords(double x, double y) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

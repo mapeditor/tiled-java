@@ -364,7 +364,7 @@ public class MapLayer implements Cloneable
     }
 
     /**
-     * Returns layer bounds.
+     * Returns layer bounds in tiles.
      */
     public Rectangle getBounds() {
         return bounds;

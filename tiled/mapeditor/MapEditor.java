@@ -74,7 +74,7 @@ public class MapEditor implements ActionListener,
     Tile currentTile;
     int currentLayer = -1;
     boolean bMouseIsDown = false;
-    Point mousePressLocation;
+    Point mousePressLocation,mouseInitialPressLocation;
     int mouseButton;
     Brush currentBrush;
 	SelectionLayer marqueeSelection=null;
@@ -756,12 +756,13 @@ public class MapEditor implements ActionListener,
                     break;
 				case PS_MARQUEE:
 					if(marqueeSelection != null) {
-						for (int y = Math.min(mousePressLocation.y,tile.y); y < Math.max(mousePressLocation.y,tile.y); y++) {
-								for (int x = Math.min(mousePressLocation.x,tile.x); x < Math.max(mousePressLocation.x,tile.x); x++) {
+						for (int y = Math.min(mouseInitialPressLocation.y,tile.y); y < Math.max(mouseInitialPressLocation.y,tile.y); y++) {
+								for (int x = Math.min(mouseInitialPressLocation.x,tile.x); x < Math.max(mouseInitialPressLocation.x,tile.x); x++) {
 										marqueeSelection.select(x,y);
 								}
 						}
-						mapView.repaintRegion(new Rectangle(mousePressLocation.x, mousePressLocation.y, tile.x, tile.y));
+						mapView.repaintRegion(new Rectangle(Math.min(mouseInitialPressLocation.x,tile.x), Math.min(mouseInitialPressLocation.y,tile.y), 
+													Math.max(mouseInitialPressLocation.x,tile.x), Math.max(mouseInitialPressLocation.y,tile.y)));
 					}
 					break;
             }
@@ -782,6 +783,7 @@ public class MapEditor implements ActionListener,
         mouseButton = e.getButton();
         bMouseIsDown = true;
         mousePressLocation = mapView.screenToTileCoords(e.getX(), e.getY());
+        mouseInitialPressLocation = mousePressLocation;
         if ((currentPointerState != PS_EYED && currentPointerState != PS_POINT && currentPointerState != PS_MARQUEE)
                 && mouseButton == MouseEvent.BUTTON1)
         {
@@ -808,7 +810,7 @@ public class MapEditor implements ActionListener,
         
 		if(currentPointerState == PS_MARQUEE) {
 			Point tile = mapView.screenToTileCoords(event.getX(), event.getY());
-			if( tile.y - mousePressLocation.y==0 && tile.x - mousePressLocation.x ==0) {
+			if( tile.y - mouseInitialPressLocation.y==0 && tile.x - mouseInitialPressLocation.x ==0) {
 				if(marqueeSelection != null) {
 					currentMap.removeLayerSpecial(marqueeSelection.getId());
 					marqueeSelection = null;

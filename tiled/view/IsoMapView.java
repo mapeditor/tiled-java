@@ -78,12 +78,12 @@ public class IsoMapView extends MapView
 
                 Tile t = layer.getTileAt(x, y);
                 if (t != null && t != myMap.getNullTile()) {
-                    if(layer.getClass() == SelectionLayer.class) {
-                    	g.fillPolygon(gridPoly);
-                    	paintEdge(layer,gx,gy,g);
-                    } else {
+					if(layer.getClass() == SelectionLayer.class) {
+						g.fillPolygon(gridPoly);
+						paintEdge(layer,gx,gy,g);
+					} else {
 						t.draw(g, gx, gy, zoom);
-                    }
+					}
                 }
 
                 x++;
@@ -196,7 +196,7 @@ public class IsoMapView extends MapView
         return (double)myMap.getTileWidth() / (double)myMap.getTileHeight();
     }
 
-    protected Point tileToScreenCoords(double x, double y) {
+    public Point tileToScreenCoords(double x, double y) {
         Dimension tileSize = getTileSize(zoom);
         int originX = (myMap.getHeight() * tileSize.width) / 2;
         return new Point(

@@ -109,6 +109,7 @@ public class Map extends MultilayerPlane implements Cloneable
 	public void addLayerSpecial(MapLayer l) {
 		l.setMap(this);
 		specialLayers.add(l);
+		l.setId(specialLayers.indexOf(l));
 		fireMapChanged();
 	}
 	
@@ -207,8 +208,12 @@ public class Map extends MultilayerPlane implements Cloneable
     }
 
 	public MapLayer removeLayerSpecial(int index) {
-		MapLayer layer = (MapLayer) specialLayers.remove(index);
-		fireMapChanged();
+		MapLayer layer = null;
+		try {
+			layer = (MapLayer) specialLayers.remove(index);
+			fireMapChanged();
+		}catch (ArrayIndexOutOfBoundsException e) {
+		}
 		return layer;
 	}
 
