@@ -176,7 +176,7 @@ public class TileSet
         }
 
         tiles.set(t.getId(), t);
-        System.out.println("adding tile " +t.getId());
+        //System.out.println("adding tile " +t.getId());
         t.setTileSet(this);
         t.setStandardHeight(standardHeight);
         if (standardWidth < t.getWidth()) {
@@ -406,7 +406,7 @@ public class TileSet
     public Image queryImage(Image image) {
         String hash = checksumImage(image);
         if (imageCache.get(hash) != null) {
-            System.out.println("Success: " + hash);
+            //System.out.println("Success: " + hash);
         }
         return (Image)imageCache.get(hash);
     }
@@ -418,7 +418,7 @@ public class TileSet
 			while(itr.hasNext()) {
 				Object key = itr.next();
 				if(images.get(key).equals(hash)) {
-					System.out.println("Success: " + key);
+					//System.out.println("Success: " + key);
 					return key;
 				}
 			}
@@ -437,8 +437,8 @@ public class TileSet
 		} else {
 			t = images.size();
 			String cs = checksumImage(image);
-			System.out.print("addImage(Image): " + t + " ");
-			System.out.println("Checksum: " + cs);
+			//System.out.print("addImage(Image): " + t + " ");
+			//System.out.println("Checksum: " + cs);
 			images.put(Integer.toString(t), cs);
 			imageCache.put(cs, image);
 			return t;
@@ -450,8 +450,8 @@ public class TileSet
 			return addImage(image);
 		} else {
 			String cs = checksumImage(image);
-			System.out.print("addImage(Image, Object): " + key + " ");
-			System.out.println("Checksum: " + cs);
+			//System.out.print("addImage(Image, Object): " + key + " ");
+			//System.out.println("Checksum: " + cs);
 			images.put(key, cs);
 			imageCache.put(cs, image);
 			return Integer.parseInt((String)key);

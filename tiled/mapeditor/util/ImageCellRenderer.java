@@ -31,8 +31,11 @@ public class ImageCellRenderer extends DefaultListCellRenderer
                 list, value, index, isSelected, cellHasFocus);
 
         Image img = (Image)value;
-
-        setIcon(new ImageIcon(img));
+		if(img != null) {
+        	setIcon(new ImageIcon(img));
+		} else {
+			setIcon(null);
+		}
         setText(null);
 
         return this;
