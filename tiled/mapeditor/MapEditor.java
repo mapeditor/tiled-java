@@ -532,9 +532,12 @@ public class MapEditor implements ActionListener,
         Icon imgDown = loadIcon("resources/gnome-down.png");
 
         //navigation and tool options
-        miniMap = new MiniMapViewer();
+        //TODO: the minimap is prohibitively slow, need to speed this up before it can be used
+        /*miniMap = new MiniMapViewer();
         miniMap.setMainPanel(mapScrollPane);
-
+        JScrollPane miniMapSp = new JScrollPane();
+        miniMapSp.getViewport().setView(miniMap);*/
+        
         // Layer table
         layerTable = new JTable(new LayerTableModel(currentMap));
         layerTable.getColumnModel().getColumn(0).setPreferredWidth(32);
@@ -590,11 +593,10 @@ public class MapEditor implements ActionListener,
         layerPanel.setLayout(new GridBagLayout());
         layerPanel.setPreferredSize(new Dimension(120, 120));
         c = new GridBagConstraints();
-        c.insets = new Insets(3, 0, 0, 0); c.weightx = 1; c.weighty = 0;
+        c.insets = new Insets(3, 0, 0, 0); c.weightx = 1; c.weighty = 1;
         c.fill = GridBagConstraints.BOTH;
         c.gridx = 0; c.gridy = 0;
-        c.weighty = 1;
-        layerPanel.add(miniMap);
+        //layerPanel.add(miniMapSp, c);
         c.weighty = 0; c.gridy += 1;
         layerPanel.add(sliderPanel, c);
         c.weighty = 1; c.gridy += 1;

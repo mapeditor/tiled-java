@@ -30,6 +30,7 @@ import tiled.core.Tile;
 import tiled.mapeditor.brush.*;
 import tiled.mapeditor.widget.BrushBrowser;
 import tiled.mapeditor.widget.IntegerSpinner;
+import tiled.mapeditor.widget.MiniMapViewer;
 import tiled.mapeditor.widget.VerticalStaticJPanel;
 
 
@@ -124,7 +125,15 @@ public class BrushDialog extends JFrame implements ActionListener,
     }
 
     private JPanel createCustomPanel() {
-        JPanel customPanel = new JPanel();        
+        JPanel customPanel = new JPanel();
+        
+        MiniMapViewer mmv = new MiniMapViewer();
+        JScrollPane miniSp = new JScrollPane();
+        miniSp.getViewport().setView(mmv);
+        
+        
+        
+        
         return customPanel;
     }
 
