@@ -1,11 +1,16 @@
 0.4.1 - TBD
 
-* Added Search/Replace functionality
+* Added search/replace functionality
 * Added tooltips to buttons
 * Implementation of HexMapView, making Hex maps possible (Andreas Mross)
 * Removed name and version attributes from map, custom properties suffice there
+* Removed name attribute from tile for same reason
 * Stopped Tiled from adding more and more newlines to the config file
 * More intelligent starting locations for file choosers
+* Fixes to tileset editing dialog
+* Window close button now checks for changes too
+* Undo/redo is working for moving layers
+* Grid display is configurable (opacity, antialiasing)
 
 
 0.4.0 - August 4th, 2004
