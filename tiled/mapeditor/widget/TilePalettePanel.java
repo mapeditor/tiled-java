@@ -67,7 +67,6 @@ public class TilePalettePanel extends JPanel implements Scrollable,
 
     /**
      * Change the tilesets displayed by this palette panel.
-     *
      */
     public void setTilesets(Vector sets) {
         tilesets = sets;
@@ -91,29 +90,9 @@ public class TilePalettePanel extends JPanel implements Scrollable,
 
     public void paint(Graphics g) {
         Rectangle clip = g.getClipBounds();
-        
-        // Draw checkerboard background
-        int side=10;
-        int alt=1;
-        int start = Math.min(0, (clip.y+clip.height/side)*side);
-        int end = Math.max(side, (clip.y+clip.height/side)*side);
-        int xEnd = Math.max(10, (getWidth()/10)*10)+10;
-        
-        g.setColor(Color.WHITE);
-        g.fillRect(clip.x, clip.y, clip.width, clip.height);
-        
-        for(int k=start;k<=end;k++,alt++) {
-            int y = k*side;
-            for(int l=1;l<=xEnd;l+=side, alt++) {
-                if(alt%2 == 1) {
-                    g.setColor(Color.LIGHT_GRAY);
-                    g.fillRect(l,y,side,side);
-                }
-            }
-            //if(clip.width%2!=0 || clip.width == 0) alt++;
-            alt++;
-        }
 
+        paintBackground(g);
+        
         if (tilesets.size() <= 0) {
             return;
         }
@@ -145,6 +124,33 @@ public class TilePalettePanel extends JPanel implements Scrollable,
                         tileAt++;
                     }
                     gy += maxHeight;
+                }
+            }
+        }
+    }
+
+    /**
+     * Draws checkerboard background.
+     */
+    private void paintBackground(Graphics g) {
+        Rectangle clip = g.getClipBounds();
+        int side = 10;
+
+        int startX = clip.x / side;
+        int startY = clip.y / side;
+        int endX = (clip.x + clip.width) / side + 1;
+        int endY = (clip.y + clip.height) / side + 1;
+
+        // Fill with white background
+        g.setColor(Color.WHITE);
+        g.fillRect(clip.x, clip.y, clip.width, clip.height);
+
+        // Draw darker squares
+        g.setColor(Color.LIGHT_GRAY);
+        for (int y = startY; y < endY; y++) {
+            for (int x = startX; x < endX; x++) {
+                if ((y + x) % 2 == 1) {
+                    g.fillRect(x * side, y * side, side, side);
                 }
             }
         }
