@@ -112,10 +112,6 @@ public class IsoMapView extends MapView
         int endY = Math.min(myMap.getHeight(), screenToTileCoords(
                     clipRect.x, clipRect.y + clipRect.height).y);
 
-        g.setColor(Color.black);
-        ((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                                         RenderingHints.VALUE_ANTIALIAS_ON);
-
         for (int y = startY; y <= endY; y++) {
             Point start = tileToScreenCoords(startX, y);
             Point end = tileToScreenCoords(endX, y);

@@ -112,6 +112,13 @@ public final class TiledConfiguration
     }
 
     /**
+     * Returns wether a certain option equals a certain integer.
+     */
+    public boolean keyHasValue(String option, int comp) {
+        return (hasOption(option) && getIntValue(option, 0) == comp);
+    }
+
+    /**
      * Adds a config pair to the configuration.
      */
     public void addConfigPair(String key, String value) {
@@ -198,6 +205,9 @@ public final class TiledConfiguration
         addConfigPair("tmx.save.tileSetImages", "0");
         addConfigPair("tmx.save.embedtileSetImages", "0");
         addConfigPair("tmx.undo.depth", "30");
+        addConfigPair("tiled.grid.color", "0x000000");
+        addConfigPair("tiled.grid.antialias", "1");
+        addConfigPair("tiled.grid.opacity", "255");
         addConfigPair("tiled.plugins.dir", ".");
     }
 }

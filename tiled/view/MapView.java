@@ -5,7 +5,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
@@ -20,6 +20,7 @@ import javax.swing.JPanel;
 
 import tiled.core.*;
 import tiled.mapeditor.selection.SelectionLayer;
+import tiled.util.TiledConfiguration;
 
 
 /**
@@ -29,7 +30,7 @@ public abstract class MapView extends JPanel implements Scrollable
 {
     public static final int PF_GRIDMODE = 0x00000001;
     public static final int PF_BOUNDARYMODE = 0x00000002;
-	
+
     public static int ZOOM_NORMALSIZE = 3;
 
     protected Map myMap;
@@ -156,7 +157,7 @@ public abstract class MapView extends JPanel implements Scrollable
         MapLayer layer;
         Rectangle clip = g.getClipBounds();
 
-        g2d.setStroke(new BasicStroke(2.0f));		
+        g2d.setStroke(new BasicStroke(2.0f));
 
         // Do an initial fill
         g.setColor(new Color(64, 64, 64));
@@ -190,10 +191,40 @@ public abstract class MapView extends JPanel implements Scrollable
         }
 
         if (getMode(PF_GRIDMODE)) {
+            // Configure grid properties according to preferences
+            TiledConfiguration conf = TiledConfiguration.getInstance();
+
+            // Stroke
             g2d.setStroke(new BasicStroke());
-            g2d.setComposite(AlphaComposite.SrcOver);
+
+            // Color
+            try {
+                String colorString = conf.getValue("tiled.grid.color");
+                g.setColor(Color.decode(colorString));
+            } catch (NumberFormatException e) {
+                g.setColor(Color.black);
+            }
+
+            // Opacity
+            int opacity = conf.getIntValue("tiled.grid.opacity", 255);
+            if (opacity < 255) {
+                g2d.setComposite(AlphaComposite.getInstance(
+                            AlphaComposite.SRC_ATOP, (float)opacity / 255.0f));
+            } else {
+                g2d.setComposite(AlphaComposite.SrcOver);
+            }
+
+            // Antialiasing
+            if (conf.keyHasValue("tiled.grid.antialias", 1)) {
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                        RenderingHints.VALUE_ANTIALIAS_ON);
+            } else {
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                        RenderingHints.VALUE_ANTIALIAS_OFF);
+            }
+
             paintGrid(g, currentZoom);
-        }		
+        }
     }
 
     protected void paintEdge(Graphics g, MapLayer layer, int x, int y) {
@@ -273,21 +304,21 @@ public abstract class MapView extends JPanel implements Scrollable
      * Draws the map grid.
      */
     protected abstract void paintGrid(Graphics g, double zoom);
-    
+
     /**
      * Returns a Polygon that matches the grid around the specified <b>Map</b>
-     * 
+     *
      * @param tx
      * @param ty
      * @param border
      * @return the created polygon
      */
-	protected abstract Polygon createGridPolygon(int tx, int ty, int border);
-    
+    protected abstract Polygon createGridPolygon(int tx, int ty, int border);
+
     // Conversion functions
 
     public abstract Point screenToTileCoords(int x, int y);
-	public abstract Point tileToScreenCoords(double x, double y);
+    public abstract Point tileToScreenCoords(double x, double y);
 }
 
 

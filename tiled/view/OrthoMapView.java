@@ -105,7 +105,6 @@ public class OrthoMapView extends MapView
         int endY = (clipRect.y + clipRect.height) / tsize.height + 1;
         int p = startY * tsize.height;
 
-        g.setColor(Color.black);
         for (int y = startY; y < endY; y++) {
             g.drawLine(clipRect.x, p, clipRect.x + clipRect.width - 1, p);
             p += tsize.height;
