@@ -20,17 +20,9 @@ import java.util.LinkedList;
 import java.util.Properties;
 
 
-public class TileLayer extends MapLayer {
-
-    protected int id;
+public class TileLayer extends MapLayer
+{
     protected Tile map[][];
-    private String name;
-    private boolean isVisible = true;
-    private boolean bLocked = false;
-    protected Map myMap;
-    protected float opacity = 1.0f;
-    protected Rectangle bounds;
-    private Properties properties;
     private LinkedList boundObjects;
 
     public TileLayer() {
@@ -74,17 +66,6 @@ public class TileLayer extends MapLayer {
     public TileLayer(Map m, int w, int h) {
         super(w, h);
         setMap(m);
-    }
-
-    /**
-     * Performs a linear translation of this layer by (<i>dx, dy</i>).
-     *
-     * @param dx
-     * @param dy
-     */
-    public void translate(int dx, int dy) {
-        bounds.x += dx;
-        bounds.y += dy;
     }
 
     public void rotate(int angle) {
@@ -182,7 +163,7 @@ public class TileLayer extends MapLayer {
      * @param bounds
      */
     public void setBounds(Rectangle bounds) {
-        this.bounds = bounds;
+        super.setBounds(bounds);
         map = new Tile[bounds.height][bounds.width];
     }
 
@@ -246,30 +227,6 @@ public class TileLayer extends MapLayer {
     }
 
     /**
-     * Sets the id for this layer. If this layer doesn't have a name yet, or
-     * its name is currently based on its id, a new name is created with the
-     * given id.
-     *
-     * @param id the new id for this layer
-     * @deprecated
-     */
-    public void setId(int id) {
-        if (name == null || name.equalsIgnoreCase("layer " + this.id)) {
-            setName("Layer " + id);
-        }
-        this.id = id;
-    }
-
-    /**
-     * Sets the name of this layer.
-     *
-     * @param name the new name
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
      * Sets the tile at the specified position. Does nothing if (tx, ty) falls
      * outside of this layer.
      *
@@ -284,78 +241,6 @@ public class TileLayer extends MapLayer {
         } catch (ArrayIndexOutOfBoundsException e) {
             // Silently ignore out of bounds exception
         }
-    }
-
-    /**
-     * Sets the map this layer is part of.
-     *
-     * @param m the Map object
-     */
-    public void setMap(Map m) {
-        myMap = m;
-    }
-
-    /**
-     * Sets layer opacity. If it is different from the previous value and the
-     * layer is visible, a MapChangedEvent is fired.
-     *
-     * @param opacity the new opacity for this layer
-     */
-    public void setOpacity(float opacity) {
-        if (this.opacity != opacity) {
-            this.opacity = opacity;
-
-            if (isVisible() && myMap != null) {
-                myMap.fireMapChanged();
-            }
-        }
-    }
-
-    /**
-     * Sets the visibility of this map layer. If it changes from its current
-     * value, a MapChangedEvent is fired.
-     *
-     * @param visible <code>true</code> to make the layer visible;
-     *                <code>false</code> to make it invisible
-     */
-    public void setVisible(boolean visible) {
-        if (isVisible != visible) {
-            isVisible = visible;
-            if (myMap != null) {
-                myMap.fireMapChanged();
-            }
-        }
-    }
-
-    public void setXOffset(int xOff) {
-        bounds.x = xOff;
-    }
-
-    public void setYOffset(int yOff) {
-        bounds.y = yOff;
-    }
-
-    public void setOffset(int xOff, int yOff) {
-        bounds.x = xOff;
-        bounds.y = yOff;
-    }
-
-    /**
-     * Returns the id of this layer.
-     *
-     * @deprecated
-     */
-    public int getId() {
-        return id;
-    }
-
-    /**
-     * Returns the name of this layer.
-     *
-     * @return a java.lang.String of the name of the layer
-     */
-    public String getName() {
-        return name;
     }
 
     /**
@@ -407,62 +292,6 @@ public class TileLayer extends MapLayer {
                 }
             }
         }
-    }
-
-    /**
-     * Returns layer width in tiles.
-     */
-    public int getWidth() {
-        return bounds.width;
-    }
-
-    /**
-     * Returns layer height in tiles.
-     */
-    public int getHeight() {
-        return bounds.height;
-    }
-
-    /**
-     * Returns layer bounds in tiles.
-     *
-     * @return a java.awt.Rectangle object with the bounds in tiles of the
-     *         layer
-     */
-    public Rectangle getBounds() {
-        return bounds;
-    }
-
-    /**
-     * A convenience method to check if a point in tile-space is within
-     * the layer boundaries.
-     *
-     * @param x the x-coordinate of the point
-     * @param y the y-coordinate of the point
-     * @return <code>true</code> if the point (x,y) is within the layer
-     *         boundaries, <code>false</code> otherwise.
-     */
-    public boolean contains(int x, int y) {
-        return bounds.contains(x,y);
-    }
-
-    /**
-     * Returns layer opacity.
-     *
-     * @return layer opacity, ranging from 0.0 to 1.0
-     */
-    public float getOpacity() {
-        return opacity;
-    }
-
-    /**
-     * Returns whether this layer is visible.
-     *
-     * @return <code>true</code> if the layer is visible, <code>false</code>
-     * otherwise.
-     */
-    public boolean isVisible() {
-        return isVisible;
     }
 
     /**
@@ -579,49 +408,6 @@ public class TileLayer extends MapLayer {
         map = newMap;
         bounds.width = width;
         bounds.height = height;
-    }
-
-    /**
-     * Get the locked status of the layer.
-     *
-     * @see MapLayer#setLocked(boolean)
-     */
-    public boolean getLocked() {
-        return bLocked;
-    }
-
-    /**
-     * Set the locked status of the layer. A locked layer can't be edited.
-     *
-     * @param lock <code>true</code> to lock the layer, <code>false</code> to
-     *             unlock the layer
-     */
-    public void setLocked(boolean lock) {
-        bLocked = lock;
-    }
-
-    private boolean checkPermission() {
-        return (!bLocked);
-    }
-
-    public void setProperty(String key, String value) {
-        properties.setProperty(key,value);
-    }
-
-    public void setProperties(Properties p) {
-        properties = p;
-    }
-
-    public Properties getAllProperties() {
-        return properties;
-    }
-
-    public Enumeration getProperties() {
-        return properties.keys();
-    }
-
-    public String getPropertyValue(String key) {
-        return properties.getProperty(key);
     }
 
     public void bindObject(MapObject o) {

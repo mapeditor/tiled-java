@@ -253,10 +253,17 @@ public abstract class MapView extends JPanel implements Scrollable
     /**
      * Draws a TileLayer. Implemented in a subclass.
      *
-     * @param layer the TileLayer to be drawn
+     * @param tl    the TileLayer to be drawn
      * @param zoom  the zoom level to draw the layer on
      */
     protected abstract void paintLayer(Graphics g, TileLayer tl, double zoom);
+
+    /**
+     * Draws an ObjectGroup. Implemented in a subclass.
+     *
+     * @param og    the ObjectGroup to be drawn
+     * @param zoom  the zoom level to draw the layer on
+     */
     protected abstract void paintLayer(Graphics g, ObjectGroup og, double zoom);
     
     protected void paintEdge(Graphics g, MapLayer layer, int x, int y) {

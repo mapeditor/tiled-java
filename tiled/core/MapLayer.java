@@ -26,18 +26,16 @@ import java.util.Properties;
  */
 public abstract class MapLayer implements Cloneable
 {
-    
-	public static final int MIRROR_HORIZONTAL = 1;
+    public static final int MIRROR_HORIZONTAL = 1;
     public static final int MIRROR_VERTICAL   = 2;
 
     public static final int ROTATE_90  = 90;
     public static final int ROTATE_180 = 180;
     public static final int ROTATE_270 = 270;
-	
-    protected int id;
+
     protected String name;
-    private boolean isVisible = true;
-    private boolean bLocked = false;
+    protected boolean isVisible = true;
+    protected boolean bLocked = false;
     protected Map myMap;
     protected float opacity = 1.0f;
     protected Rectangle bounds;
@@ -64,10 +62,9 @@ public abstract class MapLayer implements Cloneable
 
     public MapLayer(MapLayer ml) {
         this(ml.getBounds());
-        id = ml.id;
         name = ml.getName();
         
-        //TODO: copy properties
+        // TODO: Copy properties
     }
 
     /**
@@ -91,10 +88,13 @@ public abstract class MapLayer implements Cloneable
     /**
      * Performs a linear translation of this layer by (<i>dx, dy</i>).
      *
-     * @param dx
-     * @param dy
+     * @param dx distance over x axis
+     * @param dy distance over y axis
      */
-    public abstract void translate(int dx, int dy);
+    public void translate(int dx, int dy) {
+        bounds.x += dx;
+        bounds.y += dy;
+    }
 
     public abstract void rotate(int angle);
 
@@ -107,21 +107,6 @@ public abstract class MapLayer implements Cloneable
      */
     public void setBounds(Rectangle bounds) {
         this.bounds = bounds;
-    }
-
-    /**
-     * Sets the id for this layer. If this layer doesn't have a name yet, or
-     * its name is currently based on its id, a new name is created with the
-     * given id.
-     *
-     * @param id the new id for this layer
-     * @deprecated
-     */
-    public void setId(int id) {
-        if (name == null || name.equalsIgnoreCase("layer " + this.id)) {
-            setName("Layer " + id);
-        }
-        this.id = id;
     }
 
     /**
@@ -188,15 +173,6 @@ public abstract class MapLayer implements Cloneable
     }
 
     /**
-     * Returns the id of this layer.
-     *
-     * @deprecated
-     */
-    public int getId() {
-        return id;
-    }
-
-    /**
      * Returns the name of this layer.
      *
      * @return a java.lang.String of the name of the layer
@@ -239,7 +215,7 @@ public abstract class MapLayer implements Cloneable
      *         boundaries, <code>false</code> otherwise.
      */
     public boolean contains(int x, int y) {
-        return bounds.contains(x,y);
+        return bounds.contains(x, y);
     }
 
     /**
@@ -326,7 +302,7 @@ public abstract class MapLayer implements Cloneable
         bLocked = lock;
     }
 
-    private boolean checkPermission() {
+    protected boolean checkPermission() {
         return (!bLocked);
     }
 

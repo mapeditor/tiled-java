@@ -16,72 +16,84 @@ import java.awt.Rectangle;
 import java.awt.geom.Area;
 
 
-public class ObjectGroup extends MapLayer {
+public class ObjectGroup extends MapLayer
+{
+    /**
+     * Creates an object group that is part of the given map and has the given
+     * origin.
+     *
+     * @param map    the map this layer is part of
+     * @param origx  the x origin of this layer
+     * @param origy  the y origin of this layer
+     */
+    public ObjectGroup(Map map, int origx, int origy) {
+        super(map);
+        setBounds(new Rectangle(origx, origy, 0, 0));
+    }
 
-	/**
-	 * @param ret
-	 * @param width
-	 * @param height
-	 */
-	public ObjectGroup(Map ret, int width, int height) {
-		
-	}
+    /**
+     * Creates an object group with a given area. The size of area is
+     * irrelevant, just its origin.
+     *
+     * @param area the area of the object group
+     */
+    public ObjectGroup(Rectangle area) {
+        super(area);
+    }
 
-	/**
-	 * @param rectangle
-	 */
-	public ObjectGroup(Rectangle rectangle) {
-		
-	}
+    /**
+     * Clone constructor.
+     *
+     * @param group the group to clone
+     */
+    public ObjectGroup(ObjectGroup group) {
+    }
 
-	/**
-	 * @param group
-	 */
-	public ObjectGroup(ObjectGroup group) {
-		
-		// TODO Auto-generated constructor stub
-	}
+    public void translate(int dx, int dy) {
+    }
 
-	public void translate(int dx, int dy) {
-		
-	}
+    /**
+     * @see MapLayer#translate(int)
+     */
+    public void rotate(int angle) {
+    }
 
-	public void rotate(int angle) {
-		
-	}
+    /**
+     * @see MapLayer#mirror(int)
+     */
+    public void mirror(int dir) {
+    }
 
-	public void mirror(int dir) {
-		
-	}
+    public void mergeOnto(MapLayer other) {
+    }
 
-	public void mergeOnto(MapLayer other) {
-		
-	}
+    public void copyFrom(MapLayer other) {
+    }
 
-	public void copyFrom(MapLayer other) {
-		
-	}
+    public void maskedCopyFrom(MapLayer other, Area mask) {
+    }
 
-	public void maskedCopyFrom(MapLayer other, Area mask) {
-		
-	}
+    public void copyTo(MapLayer other) {
+    }
 
-	public void copyTo(MapLayer other) {
-		
-	}
+    /**
+     * @see MapLayer#resize(int,int,int,int)
+     */
+    public void resize(int width, int height, int dx, int dy) {
+        // TODO: Translate contained objects by the change of origin
+    }
 
-	public void resize(int width, int height, int dx, int dy) {
-		
-	}
+    /**
+     * @deprecated
+     */
+    public boolean isUsed(Tile t) {
+        return false;
+    }
 
-	public boolean isUsed(Tile t) {
-
-		return false;
-	}
-
-	public MapLayer createDiff(MapLayer ml) {
-		
-		return null;
-	}
-
+    /**
+     * @deprecated
+     */
+    public MapLayer createDiff(MapLayer ml) {
+        return null;
+    }
 }
