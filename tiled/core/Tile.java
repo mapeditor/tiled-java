@@ -154,14 +154,24 @@ public class Tile
         }
     }
 
+    /**
+     * Returns the tile image.
+     */
     public Image getImage() {
         return tileImage;
     }
 
+    /**
+     * Returns a scaled instance of the tile image.
+     */
     public Image getScaledImage(double zoom) {
-        return tileImage.getScaledInstance(
-                (int)(getWidth() * zoom), (int)(getHeight() * zoom),
-                BufferedImage.SCALE_SMOOTH);
+        if (tileImage != null) {
+            return tileImage.getScaledInstance(
+                    (int)(getWidth() * zoom), (int)(getHeight() * zoom),
+                    BufferedImage.SCALE_SMOOTH);
+        } else {
+            return null;
+        }
     }
 
     public String toString() {

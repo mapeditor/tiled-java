@@ -13,6 +13,7 @@
 package tiled.mapeditor.util;
 
 import java.awt.Component;
+import java.awt.Image;
 import javax.swing.ImageIcon;
 import javax.swing.JList;
 import javax.swing.DefaultListCellRenderer;
@@ -41,7 +42,10 @@ public class TileDialogListRenderer extends DefaultListCellRenderer
         Tile tile = (Tile)value;
 
         if (tile != null) {
-            setIcon(new ImageIcon(tile.getScaledImage(zoom)));
+            Image scaledImage = tile.getScaledImage(zoom);
+            if (scaledImage != null) {
+                setIcon(new ImageIcon(scaledImage));
+            }
             setText("Tile " + tile.getId());
         } else {
             setIcon(null);
