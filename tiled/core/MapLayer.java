@@ -14,6 +14,7 @@ package tiled.core;
 
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.geom.Area;
 
 
 /**
@@ -461,6 +462,21 @@ public class MapLayer implements Cloneable
         }
     }
 
+    public void maskedCopyFrom(MapLayer other, Area mask) {
+    	if(!checkPermission())
+    		return;
+    	
+    	Rectangle boundBox = mask.getBounds();
+    	
+        for (int y = boundBox.y; y < boundBox.y + boundBox.height; y++) {
+            for (int x = boundBox.x; x < boundBox.x + boundBox.width; x++) {
+            	if(mask.contains(x,y)) {
+            		setTileAt(x, y, other.getTileAt(x, y));
+            	}
+            }
+        }
+    }
+    
     /**
      * Unlike mergeOnto, copyTo includes the null tile when merging
      *

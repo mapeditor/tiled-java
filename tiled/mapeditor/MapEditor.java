@@ -14,6 +14,7 @@ package tiled.mapeditor;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
 import java.awt.print.PrinterException;
 import java.io.*;
@@ -121,7 +122,7 @@ public class MapEditor implements ActionListener,
     Action rot90Action, rot180Action, rot270Action;
     Action flipHorAction, flipVerAction;
     Action copyAction, cutAction, pasteAction;
-
+    Action selectAllAction, inverseAction, cancelSelectionAction;
 
     public MapEditor() {
         // Create configuration class instance and try to parse existing
@@ -181,6 +182,10 @@ public class MapEditor implements ActionListener,
         flipVerAction = new LayerTransformAction(MapLayer.MIRROR_VERTICAL);
         copyAction = new CopyAction();
         pasteAction = new PasteAction();
+        cutAction = new CutAction();
+        selectAllAction = new SelectAllAction();
+        cancelSelectionAction = new CancelSelectionAction();
+        inverseAction = new InverseSelectionAction();
         
         // Create our frame
         appFrame = new JFrame("Tiled");
@@ -329,7 +334,7 @@ public class MapEditor implements ActionListener,
         m.add(redoMenuItem);
         m.addSeparator();
         m.add(new TMenuItem(copyAction, true));
-        //m.add(new TMenuItem(cutAction, true));
+        m.add(new TMenuItem(cutAction, true));
         m.add(new TMenuItem(pasteAction, true));
         m.addSeparator();
         m.add(transformSub);
@@ -394,20 +399,20 @@ public class MapEditor implements ActionListener,
         m.add(createMenuItem("Add Object", null, "Add an object"));
         mapEventAdapter.addListener(m);
         menuBar.add(m);
-
+        */
         JMenu modifySub = new JMenu("Modify");
         modifySub.add(createMenuItem("Expand Selection", null, ""));
         modifySub.add(createMenuItem("Contract Selection", null, ""));
-
+        
         m = new JMenu("Select");
-        m.add(createMenuItem("All", null, "Select entire map"));
-        m.add(createMenuItem("Deselect", null, "Cancel Selection"));
-        m.add(createMenuItem("Inverse", null, "Invert Selection"));
+        m.add(new TMenuItem(selectAllAction, true));
+        m.add(new TMenuItem(cancelSelectionAction, true));
+        m.add(new TMenuItem(inverseAction, true));
         m.addSeparator();
         m.add(modifySub);
         mapEventAdapter.addListener(m);
         menuBar.add(m);
-        */
+        
 
         gridMenuItem = new JCheckBoxMenuItem("Show Grid");
         gridMenuItem.addActionListener(this);
@@ -825,7 +830,7 @@ public class MapEditor implements ActionListener,
                     break;
                 case PS_MARQUEE:
                     if (marqueeSelection != null) {
-                        Rectangle oldArea = marqueeSelection.getSelectedArea();
+                        Rectangle oldArea = marqueeSelection.getSelectedAreaBounds();
                         int minx = Math.min(mouseInitialPressLocation.x, tile.x);
                         int miny = Math.min(mouseInitialPressLocation.y, tile.y);
 
@@ -834,7 +839,7 @@ public class MapEditor implements ActionListener,
                                 Math.max(mouseInitialPressLocation.y, tile.y)-miny));
 
                         if (oldArea != null) {
-                            oldArea.add(marqueeSelection.getSelectedArea());
+                            oldArea.add(marqueeSelection.getSelectedAreaBounds());
                             mapView.repaintRegion(oldArea);
                         }
                     }
@@ -1237,6 +1242,55 @@ public class MapEditor implements ActionListener,
         }
     }
 
+    private class CancelSelectionAction extends AbstractAction {
+    	public CancelSelectionAction() {
+    		super("Deselect");
+    		putValue(SHORT_DESCRIPTION, "Cancel selection");
+    	}
+    	
+    	public void actionPerformed(ActionEvent e) {
+    		if(currentMap != null) {
+				if(marqueeSelection != null) {
+					currentMap.removeLayerSpecial(marqueeSelection);
+				}
+				
+				marqueeSelection = null;
+    		}
+    	}
+    }
+    
+    private class SelectAllAction extends AbstractAction {
+    	public SelectAllAction() {
+    		super("Select All");
+    		putValue(SHORT_DESCRIPTION, "Select entire map");
+    	}
+
+		public void actionPerformed(ActionEvent e) {
+			if(currentMap != null) {
+				if(marqueeSelection != null) {
+					currentMap.removeLayerSpecial(marqueeSelection);
+				}
+				marqueeSelection = new SelectionLayer(currentMap.getWidth(), currentMap.getHeight());
+				marqueeSelection.selectRegion(marqueeSelection.getBounds());
+				currentMap.addLayerSpecial(marqueeSelection);
+			}
+		}
+    }
+    
+    private class InverseSelectionAction extends AbstractAction {
+    	public InverseSelectionAction() {
+    		super("Invert Selection");
+    		putValue(SHORT_DESCRIPTION, "Inverse of the current selection");
+    	}
+
+		public void actionPerformed(ActionEvent e) {
+			if(marqueeSelection != null) {
+				marqueeSelection.invert();
+				mapView.repaint();
+			}
+		}
+    }
+    
     private class ZoomInAction extends AbstractAction {
         public ZoomInAction() {
             super("Zoom In");
@@ -1296,15 +1350,42 @@ public class MapEditor implements ActionListener,
 
     private class CopyAction extends AbstractAction {
     	public CopyAction() {
-            super("Copy Selection");
+            super("Copy");
             putValue(ACCELERATOR_KEY,
                     KeyStroke.getKeyStroke("control C"));
             putValue(SHORT_DESCRIPTION, "Copy");
         }
         public void actionPerformed(ActionEvent evt) {
             if (currentMap != null && marqueeSelection != null) {
-                clipboardLayer = new MapLayer(marqueeSelection.getSelectedArea());
-                clipboardLayer.copyFrom(currentMap.getLayer(currentLayer));
+                clipboardLayer = new MapLayer(marqueeSelection.getSelectedAreaBounds());
+                clipboardLayer.maskedCopyFrom(currentMap.getLayer(currentLayer), marqueeSelection.getSelectedArea());
+            }
+        }
+    }
+    
+    private class CutAction extends AbstractAction {
+    	public CutAction() {
+            super("Cut");
+            putValue(ACCELERATOR_KEY,
+                    KeyStroke.getKeyStroke("control X"));
+            putValue(SHORT_DESCRIPTION, "Cut");
+        }
+        public void actionPerformed(ActionEvent evt) {
+            if (currentMap != null && marqueeSelection != null) {
+            	clipboardLayer = new MapLayer(marqueeSelection.getSelectedAreaBounds());
+                clipboardLayer.maskedCopyFrom(currentMap.getLayer(currentLayer), marqueeSelection.getSelectedArea());
+                
+                MapLayer ml = currentMap.getLayer(currentLayer);
+                Rectangle area = marqueeSelection.getSelectedAreaBounds();
+                Area mask = marqueeSelection.getSelectedArea();
+                for(int i = area.y; i < area.height+area.y; i++) {
+                    for(int j = area.x;j<area.width+area.x;j++){
+                    	if(mask.contains(j,i)) {
+                    		ml.setTileAt(j, i, currentMap.getNullTile());
+                    	}
+                    }
+                }
+                mapView.repaintRegion(area);
             }
         }
     }
@@ -1368,10 +1449,12 @@ public class MapEditor implements ActionListener,
             }
         } else {
             if (marqueeSelection.getSelectedArea().contains(x, y)) {
-                area = marqueeSelection.getSelectedArea();
+                area = marqueeSelection.getSelectedAreaBounds();
                 for(int i = area.y; i < area.height+area.y; i++) {
                     for(int j = area.x;j<area.width+area.x;j++){
-                        layer.setTileAt(j, i, newTile);
+                    	if(marqueeSelection.getSelectedArea().contains(j, i)){
+                    		layer.setTileAt(j, i, newTile);
+                    	}
                     }
                 }
             } else {
