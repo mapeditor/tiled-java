@@ -168,7 +168,7 @@ public class XMLMapTransformer implements MapReader
                         reflectInvokeMethod(o,methods[j],
                                 new String [] {n.getNodeValue()});
                     } else {
-                        warnings.push("WARN: Unsupported attribute '"+n.getNodeName()+"' on <"+node.getNodeName()+">");
+                        warnings.push("WARN: Unsupported attribute '"+n.getNodeName()+"' on <"+node.getNodeName()+"> tag");
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -235,7 +235,7 @@ public class XMLMapTransformer implements MapReader
             tsDoc = builder.parse(in, ".");
         } catch (FileNotFoundException fnf) {
             // TODO: Have a popup and ask the user to browse to the file...
-            warnings.push("WARN: Could not find external tileset file "+filename);
+            warnings.push("ERROR: Could not find external tileset file "+filename);
         }
 
         String xmlPathSave = xmlPath;
@@ -253,7 +253,7 @@ public class XMLMapTransformer implements MapReader
                         "WARN: Recursive external Tilesets are not supported.");
             }
             set.setSource(filename);
-            // TODO: This is a deliberate break. multiple tilesets per TSX are
+            // NOTE: This is a deliberate break. multiple tilesets per TSX are
             // not supported yet (maybe never)...
             break;
         }
@@ -283,8 +283,16 @@ public class XMLMapTransformer implements MapReader
         }
 
         if (set.getSource() != null) {
-            TileSet ext = unmarshalTilesetFile(new URL(xmlPath + set.getSource()).openStream(), 
-                                xmlPath + set.getSource());
+            
+            String filename = xmlPath + set.getSource();
+            TileSet ext = null;
+            try{
+                InputStream in = new URL(filename).openStream();
+                ext = unmarshalTilesetFile(in, filename);
+            }catch(FileNotFoundException fnf) {
+                warnings.push("ERROR: Could not find external tileset file "+filename);
+                ext = new TileSet();
+            }
             ext.setFirstGid(set.getFirstGid());
             return ext;
         } else {
@@ -319,8 +327,6 @@ public class XMLMapTransformer implements MapReader
                         set.importTileBitmap(sourcePath, tileWidth, tileHeight,
                                 tileSpacing, !hasTileTags);
 
-                        // There can be only one tileset image
-                        //break;
                     } else {
                         set.addImage(unmarshalImage(child),
                                 getAttributeValue(child, "id"));
@@ -620,7 +626,7 @@ public class XMLMapTransformer implements MapReader
         Map unmarshalledMap = unmarshal(url.openStream());
         unmarshalledMap.setFilename(filename);
         
-        //TODO: put this is a popup window, if they have tiled.
+        //TODO: put this is a popup window
         if(TiledConfiguration.getInstance().keyHasValue("tmx.load.report",1)) {
 	        Iterator itr = warnings.iterator();
 	        while(itr.hasNext()) {

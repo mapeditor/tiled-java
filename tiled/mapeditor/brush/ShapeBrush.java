@@ -20,8 +20,8 @@ import tiled.core.*;
 
 public class ShapeBrush extends Brush
 {
-    private Area shape;
-    private Tile paintTile;
+    protected Area shape;
+    protected Tile paintTile;
 
     public ShapeBrush() {
         super();
@@ -48,8 +48,8 @@ public class ShapeBrush extends Brush
 
         // TODO: This loop does not take all edges into account
 
-        for (int i = 0; i < bounds.height; i++) {
-            for (int j = 0; j < bounds.width; j++) {
+        for (int i = 0; i <= bounds.height; i++) {
+            for (int j = 0; j <= bounds.width; j++) {
                 if (shape.contains(j, i)) {
                     ((TileLayer)ml).setTileAt(j + centerx, i + centery, paintTile);
                 }

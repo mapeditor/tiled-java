@@ -24,10 +24,17 @@ public abstract class Brush extends MultilayerPlane
     }
 
     /**
-     * Paints the given multilayer plane.
+     * This is the main processing method for a Brush object. Painting starts
+     * on initLayer, and if the brush has more than one layer, then the brush  
+     * will paint deeper into the layer stack.
      * 
-     * @return affected area
+     * @see MultilayerPlane
+     * @param mp         The MultilayerPlane to be affected
+     * @param x          The x-coordinate where the user initiated the paint
+     * @param y          The y-coordinate where the user initiated the paint
+     * @param initLayer  The first layer to paint to.
+     * @return The rectangular region affected by the painting  
      */
     public abstract Rectangle commitPaint(MultilayerPlane mp, int x, int y,
-            int start);
+            int initLayer);
 }

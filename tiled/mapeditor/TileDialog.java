@@ -17,7 +17,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.Vector;
