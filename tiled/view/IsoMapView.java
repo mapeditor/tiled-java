@@ -123,18 +123,14 @@ public class IsoMapView extends MapView
                                          RenderingHints.VALUE_ANTIALIAS_ON);
 
         for (int y = startY; y <= endY; y++) {
-            Point start = mapToScreenCoords(
-                    startX * tileSize.height, y * tileSize.height);
-            Point end = mapToScreenCoords(
-                    endX * tileSize.height, y * tileSize.height);
+            Point start = tileToScreenCoords(startX, y);
+            Point end = tileToScreenCoords(endX, y);
 
             g.drawLine(start.x, start.y, end.x, end.y);
         }
         for (int x = startX; x <= endX; x++) {
-            Point start = mapToScreenCoords(
-                    x * tileSize.height, startY * tileSize.height);
-            Point end = mapToScreenCoords(
-                    x * tileSize.height, endY * tileSize.height);
+            Point start = tileToScreenCoords(x, startY);
+            Point end = tileToScreenCoords(x, endY);
 
             g.drawLine(start.x, start.y, end.x, end.y);
         }
@@ -142,17 +138,18 @@ public class IsoMapView extends MapView
 
     public void repaintRegion(Rectangle region) {
         Dimension tileSize = getTileSize(zoom);
-        int maxExtraHeight = (int)(myMap.getTileHeightMax()*zoom) - tileSize.height;
+        int maxExtraHeight =
+            (int)(myMap.getTileHeightMax() * zoom) - tileSize.height;
 
-        int mapX1 = region.x * tileSize.height;
-        int mapY1 = region.y * tileSize.height;
-        int mapX2 = mapX1 + region.width * tileSize.height;
-        int mapY2 = mapY1 + region.height * tileSize.height;
+        int mapX1 = region.x;
+        int mapY1 = region.y;
+        int mapX2 = mapX1 + region.width;
+        int mapY2 = mapY1 + region.height;
 
-        int x1 = mapToScreenCoords(mapX1, mapY2).x;
-        int y1 = mapToScreenCoords(mapX1, mapY1).y - maxExtraHeight;
-        int x2 = mapToScreenCoords(mapX2, mapY1).x;
-        int y2 = mapToScreenCoords(mapX2, mapY2).y;
+        int x1 = tileToScreenCoords(mapX1, mapY2).x;
+        int y1 = tileToScreenCoords(mapX1, mapY1).y - maxExtraHeight;
+        int x2 = tileToScreenCoords(mapX2, mapY1).x;
+        int y2 = tileToScreenCoords(mapX2, mapY2).y;
 
         repaint(new Rectangle(x1, y1, x2 - x1, y2 - y1));
     }
@@ -206,11 +203,11 @@ public class IsoMapView extends MapView
         return (double)myMap.getTileWidth() / (double)myMap.getTileHeight();
     }
 
-    protected Point mapToScreenCoords(int x, int y) {
+    protected Point tileToScreenCoords(double x, double y) {
         Dimension tileSize = getTileSize(zoom);
-        double r = getTileRatio();
         int originX = (myMap.getHeight() * tileSize.width) / 2;
-
-        return new Point(((x - y) + originX), (int)((x + y) / r));
+        return new Point(
+                (int)((x - y) * tileSize.width / 2) + originX,
+                (int)((x + y) * tileSize.height / 2));
     }
 }
