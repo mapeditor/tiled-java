@@ -82,7 +82,8 @@ public class MapEditor implements ActionListener,
     int mouseButton;
     Brush currentBrush;
     SelectionLayer marqueeSelection = null;
-
+    MapLayer clipboardLayer = null;
+    
     // GUI components
     JPanel      mainPanel;
     JPanel      toolPanel;
@@ -119,6 +120,7 @@ public class MapEditor implements ActionListener,
     Action undoAction, redoAction;
     Action rot90Action, rot180Action, rot270Action;
     Action flipHorAction, flipVerAction;
+    Action copyAction, cutAction, pasteAction;
 
 
     public MapEditor() {
@@ -177,7 +179,9 @@ public class MapEditor implements ActionListener,
         rot270Action = new LayerTransformAction(MapLayer.ROTATE_270);
         flipHorAction = new LayerTransformAction(MapLayer.MIRROR_HORIZONTAL);
         flipVerAction = new LayerTransformAction(MapLayer.MIRROR_VERTICAL);
-
+        copyAction = new CopyAction();
+        pasteAction = new PasteAction();
+        
         // Create our frame
         appFrame = new JFrame("Tiled");
         appFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -323,6 +327,10 @@ public class MapEditor implements ActionListener,
         m = new JMenu("Edit");
         m.add(undoMenuItem);
         m.add(redoMenuItem);
+        m.addSeparator();
+        m.add(new TMenuItem(copyAction, true));
+        //m.add(new TMenuItem(cutAction, true));
+        m.add(new TMenuItem(pasteAction, true));
         m.addSeparator();
         m.add(transformSub);
         m.addSeparator();
@@ -1286,6 +1294,40 @@ public class MapEditor implements ActionListener,
         }
     }
 
+    private class CopyAction extends AbstractAction {
+    	public CopyAction() {
+            super("Copy Selection");
+            putValue(ACCELERATOR_KEY,
+                    KeyStroke.getKeyStroke("control C"));
+            putValue(SHORT_DESCRIPTION, "Copy");
+        }
+        public void actionPerformed(ActionEvent evt) {
+            if (currentMap != null && marqueeSelection != null) {
+                clipboardLayer = new MapLayer(marqueeSelection.getSelectedArea());
+                clipboardLayer.copyFrom(currentMap.getLayer(currentLayer));
+            }
+        }
+    }
+    
+    private class PasteAction extends AbstractAction {
+    	public PasteAction() {
+            super("Paste");
+            putValue(ACCELERATOR_KEY,
+                    KeyStroke.getKeyStroke("control P"));
+            putValue(SHORT_DESCRIPTION, "Paste");
+        }
+        public void actionPerformed(ActionEvent evt) {
+            if (currentMap != null && clipboardLayer != null) {
+            	Vector layersBefore = currentMap.getLayerVector();
+            	MapLayer ml = new MapLayer(clipboardLayer);
+            	ml.setName("Layer " + currentMap.getTotalLayers());
+                currentMap.addLayer(ml);
+                undoSupport.postEdit(new MapLayerStateEdit(currentMap, layersBefore,
+                        new Vector(currentMap.getLayerVector()), "Paste Selection"));
+            }
+        }
+    }
+    
     private class UndoAdapter implements UndoableEditListener {
         public void undoableEditHappened(UndoableEditEvent evt) {
             undoStack.addEdit(evt.getEdit());

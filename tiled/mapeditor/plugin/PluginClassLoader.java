@@ -76,9 +76,11 @@ public class PluginClassLoader extends URLClassLoader
                         jf.getManifest().getMainAttributes().getValue(
                                 "Writer-Class");
 
+                    Class readerClass = null, writerClass = null;
+                    
                     // Verify that the jar has the necessary files to be a
                     // plugin
-                    if (readerClassName == null || writerClassName == null) {
+                    if (readerClassName == null && writerClassName == null) {
                         continue;
                     }
                     
@@ -87,12 +89,14 @@ public class PluginClassLoader extends URLClassLoader
                     JarEntry writer = jf.getJarEntry(
                             writerClassName.replace('.', '/') + ".class");
 
-                    Class readerClass =
-                        loadFromJar(jf, reader, readerClassName);
-                    Class writerClass =
-                        loadFromJar(jf, writer, writerClassName);
+                    if(readerClassName != null) {
+                    	readerClass = loadFromJar(jf, reader, readerClassName);
+                    }
+                    if(writerClassName != null) {
+                    	writerClass = loadFromJar(jf, writer, writerClassName);
+                    }
                     
-                    if (doesImplement(readerClass, "tiled.io.MapReader") &&
+                    if (doesImplement(readerClass, "tiled.io.MapReader") ||
                             doesImplement(writerClass, "tiled.io.MapWriter")) {
                     	_add(readerClass);
                     	_add(writerClass);
@@ -179,6 +183,10 @@ public class PluginClassLoader extends URLClassLoader
 
     public boolean doesImplement(Class c, String interfaceName)
         throws Exception {
+    	if(c == null) {
+    		return false;
+    	}
+    	
         Class[] interfaces = c.getInterfaces();
         for (int i = 0; i < interfaces.length; i++) {
             String name = interfaces[i].toString(); 

@@ -34,6 +34,7 @@ public class MapLayer implements Cloneable
     protected Tile map[][];
     private String name;
     private boolean isVisible = true;
+    private boolean bLocked = false;
     protected Map myMap;
     protected float opacity = 1.0f;
     protected Rectangle bounds;
@@ -97,6 +98,9 @@ public class MapLayer implements Cloneable
         Tile[][] trans;
         int xtrans = 0, ytrans = 0;
 
+        if(!checkPermission())
+    		return;
+        
         switch (angle) {
             case ROTATE_90:
                 trans = new Tile[bounds.width][bounds.height];
@@ -134,6 +138,9 @@ public class MapLayer implements Cloneable
     }
 
     public void mirror(int dir) {
+    	if(!checkPermission())
+    		return;
+    	
         Tile[][] mirror = new Tile[bounds.height][bounds.width];
         for (int y = 0; y < bounds.height; y++) {
             for (int x = 0; x < bounds.width; x++) {
@@ -146,7 +153,7 @@ public class MapLayer implements Cloneable
         }
         map = mirror;
     }
-
+    
     public boolean isUsed(Tile t) {
         for (int y = 0; y < bounds.height; y++) {
             for (int x = 0; x < bounds.width; x++) {
@@ -204,6 +211,9 @@ public class MapLayer implements Cloneable
      * @param tile the tile to be removed
      */
     public void removeTile(Tile tile) {
+    	if(!checkPermission())
+    		return;
+    	
         for (int y = 0; y < bounds.height; y++) {
             for (int x = 0; x < bounds.width; x++) {
                 if (map[y][x] == tile) {
@@ -246,8 +256,10 @@ public class MapLayer implements Cloneable
      * @param ti the tile object to place
      */
     public void setTileAt(int tx, int ty, Tile ti) {
+    	
         try {
-            map[ty - bounds.y][tx - bounds.x] = ti;
+        	if(checkPermission())
+        		map[ty - bounds.y][tx - bounds.x] = ti;
         } catch (ArrayIndexOutOfBoundsException e) {
             // Silently ignore out of bounds exception
         }
@@ -360,6 +372,9 @@ public class MapLayer implements Cloneable
      * @param replace the replacement tile
      */
     public void replaceTile(Tile find, Tile replace) {
+    	if(!checkPermission())
+    		return;
+    	
         for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
             for (int x = bounds.x; x < bounds.x + bounds.width; x++) {
                 if(getTileAt(x,y) == find) {
@@ -436,6 +451,9 @@ public class MapLayer implements Cloneable
      * Copy data from another layer onto this layer.
      */
     public void copyFrom(MapLayer other) {
+    	if(!checkPermission())
+    		return;
+    	
         for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
             for (int x = bounds.x; x < bounds.x + bounds.width; x++) {
                 setTileAt(x, y, other.getTileAt(x, y));
@@ -482,6 +500,9 @@ public class MapLayer implements Cloneable
      * @param dy     the shift in y direction
      */
     public void resize(int width, int height, int dx, int dy) {
+    	if(!checkPermission())
+    		return;
+    	
         Tile[][] newMap = new Tile[height][width];
 
         int maxX = Math.min(width, bounds.width + dx);
@@ -496,5 +517,24 @@ public class MapLayer implements Cloneable
         map = newMap;
         bounds.width = width;
         bounds.height = height;
+    }
+    
+    public boolean isLocked() {
+    	return bLocked;
+    }
+    
+    public void lock() {
+    	bLocked = true;
+    }
+    
+    public void unlock() {
+    	bLocked = false;
+    }
+    
+    private boolean checkPermission() {
+    	if(bLocked) {
+    		return false;
+    	}
+    	return true;
     }
 }

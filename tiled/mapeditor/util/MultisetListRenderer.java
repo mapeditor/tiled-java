@@ -21,7 +21,7 @@ import tiled.core.*;
 import tiled.mapeditor.MapEditor;
 import tiled.core.Map;
 
-public class MultisetListRenderer extends JLabel implements ListCellRenderer
+public class MultisetListRenderer extends DefaultListCellRenderer
 {
 	private Map myMap;
 	private ImageIcon[] tileImages;
@@ -53,16 +53,18 @@ public class MultisetListRenderer extends JLabel implements ListCellRenderer
 
 	public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 		
-
-		if(value != null && index>=0) {		
-			if(value.getClass().toString().equals(Tile.class.toString())) {		
+		super.getListCellRendererComponent(
+                list, value, index, isSelected, cellHasFocus);
+		
+		if(value != null && index>=0) {
+			if(value.getClass().toString().equals(Tile.class.toString())) {
 				Tile tile = (Tile)value;
 				if (tile != null) {
 					setIcon(tileImages[index]);
 					setText("Tile " + tile.getId());
 				} else {
 					setIcon(null);
-					setText("");
+					setText("No tile");
 				}
 			} else {
 				//Assume it's a set
@@ -108,7 +110,7 @@ public class MultisetListRenderer extends JLabel implements ListCellRenderer
 		tileImages = new ImageIcon[totalSlots];
 		
 		itr = sets.iterator();
-		while(itr.hasNext()) {		
+		while(itr.hasNext()) {
 			TileSet ts = (TileSet) itr.next();
 			tileImages[curSlot++] = new ImageIcon(setImage);
 			for (int i = 0; i < ts.getTotalTiles(); i++) {
@@ -121,6 +123,8 @@ public class MultisetListRenderer extends JLabel implements ListCellRenderer
 						tileImages[curSlot] = null;
 					}
 					curSlot++;
+				} else {
+					tileImages[curSlot++] = null;
 				}
 			}
 		}

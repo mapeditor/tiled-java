@@ -86,17 +86,17 @@ public class SearchDialog extends JDialog implements ActionListener
 		replaceCBox.setEditable(false);
 		searchPanel.add(replaceCBox,c);
 		queryTiles(searchCBox);
-		replaceCBox.addItem(null);
+		//replaceCBox.addItem(null);
 		queryTiles(replaceCBox);
 		mainPanel.add(searchPanel, BorderLayout.NORTH);
 		
 		/* SCOPE PANEL */
-		scopePanel.setBorder(BorderFactory.createCompoundBorder(
+		/*scopePanel.setBorder(BorderFactory.createCompoundBorder(
 							BorderFactory.createTitledBorder("Scope"),
 							BorderFactory.createEmptyBorder(0, 5, 5, 5)));
 		
 		mainPanel.add(scopePanel);
-		mainPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+		mainPanel.add(Box.createRigidArea(new Dimension(0, 5)));*/
 		
 		/* BUTTONS PANEL */
 		buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
