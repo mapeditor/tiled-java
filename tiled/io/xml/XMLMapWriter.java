@@ -337,16 +337,17 @@ public class XMLMapWriter implements MapWriter
                     w.endElement();
                     w.endElement();	
                 } else if(conf.keyHasValue("tmx.save.tileSetImages", "1")) {
-                	w.startElement("image");
-                	w.writeAttribute("id", ""+tile.getImageId());
-                	w.endElement();
+                    w.startElement("image");
+                    w.writeAttribute("id", "" + tile.getImageId());
+                    w.endElement();
                 } else {
                     String prefix = conf.getValue("tmx.save.tileImagePrefix");
                     String filename = conf.getValue("tmx.save.maplocation") +
                         prefix + tileId + ".png";
                     w.startElement("image");
                     w.writeAttribute("source", prefix + tileId + ".png");
-                    FileOutputStream fw = new FileOutputStream(new File(filename));
+                    FileOutputStream fw = new FileOutputStream(
+                            new File(filename));
                     byte[] data = ImageHelper.imageToPNG(tileImage);
                     fw.write(data, 0, data.length);
                     fw.close();
