@@ -180,21 +180,23 @@ public abstract class MapView extends JPanel implements Scrollable
             }
         }
 
-		if(!getMode(PF_NOSPECIAL)) {
-	        li = myMap.getLayersSpecial();
-	
-	        while (li.hasNext()) {
-	            layer = (MapLayer) li.next();
-	            if(layer.isVisible()) {
-	            	if (layer.getClass() == SelectionLayer.class) {
-	                	((Graphics2D)g).setComposite(AlphaComposite.getInstance(
-	                    	                AlphaComposite.SRC_ATOP, 0.3f));
-	                	g.setColor(((SelectionLayer)layer).getHighlightColor());
-	            	}
-	            	paint(g, layer, currentZoom);
-	            }
-	        }
-		}
+        if (!getMode(PF_NOSPECIAL)) {
+            li = myMap.getLayersSpecial();
+
+            while (li.hasNext()) {
+                layer = (MapLayer) li.next();
+                if (layer.isVisible()) {
+                    if (layer.getClass() == SelectionLayer.class) {
+                        g2d.setComposite(AlphaComposite.getInstance(
+                                    AlphaComposite.SRC_ATOP, 0.3f));
+                        g2d.setColor(
+                                ((SelectionLayer)layer).getHighlightColor());
+                    }
+                    paint(g, layer, currentZoom);
+                }
+            }
+        }
+
         if (getMode(PF_GRIDMODE)) {
             // Configure grid properties according to preferences
             TiledConfiguration conf = TiledConfiguration.getInstance();

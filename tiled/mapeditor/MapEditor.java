@@ -1033,12 +1033,14 @@ public class MapEditor implements ActionListener,
     private void updateCursorHighlight(Point tile) {
         if (configuration.keyHasValue("tiled.cursorhighlight", 1)) {
             Rectangle redraw = cursorHighlight.getBounds();
-            cursorHighlight.setOffset(tile.x, tile.y);
-            mapView.repaintRegion(new Rectangle(
-                        Math.min(tile.x, redraw.x) - 1,
-                        Math.min(tile.y, redraw.y) - 1,
-                        Math.max(tile.x, redraw.x) + 1,
-                        Math.max(tile.y, redraw.y) + 1));
+
+            if (redraw.x != tile.x || redraw.y != tile.y) {
+                Rectangle r1 = new Rectangle(tile.x, tile.y, 1, 1);
+                Rectangle r2 = new Rectangle(redraw.x, redraw.y, 1, 1);
+                cursorHighlight.setOffset(tile.x, tile.y);
+                mapView.repaintRegion(r1);
+                mapView.repaintRegion(r2);
+            }
         }
     }
 
