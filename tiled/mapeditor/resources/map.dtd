@@ -32,7 +32,13 @@
    opacity CDATA #IMPLIED
 >
 
-<!ELEMENT object (#PCDATA)>
+<!ELEMENT object (property+)>
+<!ATTLIST object
+  name     CDATA #REQUIRED
+  x        CDATA #REQUIRED
+  y        CDATA #REQUIRED
+  source   CDATA #REQUIRED
+>
 
 <!ELEMENT image (data)>
 <!ATTLIST image

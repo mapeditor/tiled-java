@@ -350,6 +350,29 @@ public class XMLMapWriter implements MapWriter
         }
     }
 
+	private void writeObject(MapObject m, XMLWriter w) throws IOException {
+		try {
+			w.startElement("object");
+			w.writeAttribute("name", m.getName());
+			w.writeAttribute("x", "" + m.getX());
+			w.writeAttribute("y", "" + m.getY());
+			w.writeAttribute("source", m.getSource());
+			
+			Enumeration keys = m.getProperties();
+			while(keys.hasMoreElements()) {
+				String key = (String) keys.nextElement();
+				w.startElement("property");
+				w.writeAttribute("name", key);
+				w.writeAttribute("value", m.getPropertyValue(key));
+				w.endElement();
+			}
+			
+			w.endElement();
+		} catch (XMLWriterException e) {
+			e.printStackTrace();
+		}
+	}
+
     public static String getRelativePath(String from, String to) {
         // Make the two paths absolute and unique
         try {

@@ -13,34 +13,48 @@
 package tiled.core;
 
 import java.awt.Rectangle;
-import java.util.HashMap;
+import java.util.Enumeration;
+import java.util.Properties;
 
 public class MapObject {
 
-    protected Sprite sprite;
-    protected HashMap attributeList;
+    private Sprite sprite;
+    private Properties properties;
 
     protected float map_x, map_y;
     protected Rectangle bounds;
     protected boolean bVisible = true;
-    protected String name;
-    protected int type,id;
+    protected String name, source;
+    protected int id;
 
     MapObject() {
-        map_x=map_y=0;
-        name=null;
-        id=-1;
         bounds = new Rectangle();
-        attributeList = new HashMap();
+        properties = new Properties();
     }
 
     public void addAttribute(String key, String value) {
-		attributeList.put(key,value);
+		properties.put(key,value);
     }
 
     public void setId(int id) {
         this.id=id;
     }
+
+	public void setX(int x) {
+		map_x=x;
+	}
+
+	public void setY(int y) {
+		map_y=y;
+	}
+
+	public void setName(String s) {
+		name = s;
+	}
+
+	public void setSource(String s) {
+		source = s;
+	}
 
     public void setSprite(Sprite s) {
         sprite=s;
@@ -50,8 +64,32 @@ public class MapObject {
         return id;
     }
 
+	public int getX() {
+		return (int)map_x;
+	}
+	
+	public int getY() {
+		return (int)map_y;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String getSource() {
+		return source;
+	}
+
+	public Enumeration getProperties() {
+		return properties.keys();
+	}
+
+	public String getPropertyValue(String key) {
+		return properties.getProperty(key);
+	}
+
     public int getTotalAttributes() {
-        return attributeList.size();
+        return properties.size();
     }
 
     public String toString() {
