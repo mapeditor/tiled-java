@@ -29,12 +29,17 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import tiled.core.Tile;
+import tiled.io.MapHelper;
+import tiled.io.MapReader;
 import tiled.mapeditor.brush.*;
+import tiled.mapeditor.plugin.PluginClassLoader;
 import tiled.mapeditor.util.LayerTableModel;
+import tiled.mapeditor.util.TiledFileFilter;
 import tiled.mapeditor.widget.BrushBrowser;
 import tiled.mapeditor.widget.IntegerSpinner;
 import tiled.mapeditor.widget.MiniMapViewer;
 import tiled.mapeditor.widget.VerticalStaticJPanel;
+import tiled.util.TiledConfiguration;
 
 
 public class BrushDialog extends JFrame implements ActionListener,
@@ -49,7 +54,9 @@ public class BrushDialog extends JFrame implements ActionListener,
     private JSlider sRandomAmount;
     private JButton bOk, bApply, bCancel;
     private BrushBrowser brushes;
-
+    private MiniMapViewer mmv;
+    private JTable layerTable;
+    
     public BrushDialog(MapEditor editor, JFrame parent,
             AbstractBrush currentBrush)
     {
@@ -68,7 +75,7 @@ public class BrushDialog extends JFrame implements ActionListener,
         JPanel opts = new JPanel();
         JLabel size = new JLabel("Brush size: ");
 
-        brushSize = new IntegerSpinner();
+        brushSize = new IntegerSpinner(1, 1);
         if (myBrush != null)
             brushSize.setValue(myBrush.getBounds().width);
         brushSize.addChangeListener(this);
@@ -107,8 +114,7 @@ public class BrushDialog extends JFrame implements ActionListener,
                 "The amount of area to fill with randomness");
         sRandomAmount.addChangeListener(this);
         JLabel affected = new JLabel("Affected layers");
-        affectLayers = new IntegerSpinner();
-        affectLayers.setValue(myBrush.getAffectedLayers());
+        affectLayers = new IntegerSpinner(myBrush.getAffectedLayers(),1);
         affectLayers.addChangeListener(this);
 
         optionsPanel.setLayout(new GridBagLayout());
@@ -131,7 +137,7 @@ public class BrushDialog extends JFrame implements ActionListener,
     private JPanel createCustomPanel() {
         JPanel customPanel = new JPanel();
         
-        MiniMapViewer mmv = new MiniMapViewer();
+        mmv = new MiniMapViewer();
         if(myBrush instanceof CustomBrush) {
             //mmv.setView(((CustomBrush)myBrush));
         }
@@ -141,9 +147,11 @@ public class BrushDialog extends JFrame implements ActionListener,
         miniSp.setPreferredSize(new Dimension(100,100));
         JButton bCreate = new JButton("Create...");
         bCreate.addActionListener(this);
+        //TODO: create functionality is not available yet
+        bCreate.setEnabled(false);
         JButton bLoad = new JButton("Load...");
         bLoad.addActionListener(this);
-        JTable layerTable = new JTable(new LayerTableModel(myBrush));
+        layerTable = new JTable(new LayerTableModel(myBrush));
         layerTable.getColumnModel().getColumn(0).setPreferredWidth(32);
         layerTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         layerTable.getSelectionModel().addListSelectionListener(this);
@@ -169,7 +177,7 @@ public class BrushDialog extends JFrame implements ActionListener,
         JTabbedPane tabs = new JTabbedPane(JTabbedPane.TOP);
         tabs.add("Shape", createShapePanel());
         tabs.add("Options", createOptionsPanel());
-        tabs.add("Custom", createCustomPanel());
+        //tabs.add("Custom", createCustomPanel());
 
         bOk = new JButton("OK");
         bApply = new JButton("Apply");
@@ -213,11 +221,15 @@ public class BrushDialog extends JFrame implements ActionListener,
             t = ((ShapeBrush)myBrush).getTile();
 
         if (cbRandomBrush.isSelected()) {
-            myBrush = new RandomBrush((AbstractBrush)brushes.getSelectedBrush());
+            ShapeBrush sel = (ShapeBrush)brushes.getSelectedBrush();
+            sel.setSize(((Integer)brushSize.getValue()).intValue());
+            myBrush = new RandomBrush(sel);
             ((RandomBrush)myBrush).setRatio(sRandomAmount.getValue() / (double)sRandomAmount.getMaximum());
             ((ShapeBrush)myBrush).setTile(t);
         } else {
-            myBrush = new ShapeBrush((AbstractBrush)brushes.getSelectedBrush());
+            ShapeBrush sel = (ShapeBrush)brushes.getSelectedBrush();
+            sel.setSize(((Integer)brushSize.getValue()).intValue());
+            myBrush = new ShapeBrush(sel);
             ((ShapeBrush)myBrush).setTile(t);
         }
 
@@ -262,6 +274,18 @@ public class BrushDialog extends JFrame implements ActionListener,
         else if (source == cbRandomBrush) {
             sRandomAmount.setEnabled(cbRandomBrush.isSelected());
         }
+        else if(e.getActionCommand().equals("Load...")) {
+            try {
+                openMap();
+                //mmv.setView(((CustomBrush)myBrush));
+            } catch (Exception e1) {
+                e1.printStackTrace();
+                JOptionPane.showMessageDialog(this,
+                        e1.toString(), "Load Brush",
+                        JOptionPane.WARNING_MESSAGE);
+            }
+            repaint();
+        }
     }
 
     public void stateChanged(ChangeEvent e) {
@@ -298,5 +322,39 @@ public class BrushDialog extends JFrame implements ActionListener,
     public void valueChanged(ListSelectionEvent e) {
         // TODO Auto-generated method stub
         
+    }
+    
+    private void openMap() throws Exception {
+        String startLocation = "";
+        TiledConfiguration configuration = TiledConfiguration.getInstance();
+        
+        // Start at the location of the most recently loaded map file
+        if (configuration.hasOption("tiled.recent.1")) {
+            startLocation = configuration.getValue("tiled.recent.1");
+        }
+
+        JFileChooser ch = new JFileChooser(startLocation);
+
+        try {
+            MapReader readers[] = (MapReader[]) PluginClassLoader.getInstance().getReaders();
+            for(int i = 0; i < readers.length; i++) {
+                ch.addChoosableFileFilter(new TiledFileFilter(
+                            readers[i].getFilter(), readers[i].getName()));
+            }
+        } catch (Throwable e) {
+            JOptionPane.showMessageDialog(this,
+                    "Error while loading plugins: " + e.getMessage(),
+                    "Error while loading map",
+                    JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+
+        ch.addChoosableFileFilter(
+                new TiledFileFilter(TiledFileFilter.FILTER_TMX));
+        
+        int ret = ch.showOpenDialog(this);
+        if (ret == JFileChooser.APPROVE_OPTION) {
+            myBrush = new CustomBrush(MapHelper.loadMap(ch.getSelectedFile().getAbsolutePath()));
+        }
     }
 }

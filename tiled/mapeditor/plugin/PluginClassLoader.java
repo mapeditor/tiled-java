@@ -33,11 +33,12 @@ import tiled.io.PluggableMapIO;
 import tiled.util.TiledConfiguration;
 
 
-public class PluginClassLoader extends URLClassLoader
+public final class PluginClassLoader extends URLClassLoader
 {
     private Vector plugins;
     private Hashtable readerFormats, writerFormats;
-
+    private static PluginClassLoader instance;
+    
     public PluginClassLoader() {
         super(new URL[0]);
         plugins = new Vector();
@@ -52,6 +53,13 @@ public class PluginClassLoader extends URLClassLoader
         writerFormats = new Hashtable();
     }
 
+    public static PluginClassLoader getInstance() {
+        if (instance == null) {
+            instance = new PluginClassLoader();
+        }
+        return instance;
+    }
+    
     public void readPlugins(String base, JFrame parent) throws Exception {
         String baseURL = base;
         ProgressMonitor monitor;

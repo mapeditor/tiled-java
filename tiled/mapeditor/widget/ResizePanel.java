@@ -44,7 +44,7 @@ public class ResizePanel extends JPanel implements MouseListener,
 
     public ResizePanel(Map map) {
         this();
-        inner = map.createView();
+        inner = MapView.createViewforMap(map);
         inner.addMouseListener(this);
         inner.addMouseMotionListener(this);
         add(inner);

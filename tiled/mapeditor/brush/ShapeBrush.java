@@ -64,6 +64,16 @@ public class ShapeBrush extends AbstractBrush
         
     }
     
+    public void setSize(int s) {
+        if (shape.isRectangular()) {
+            makeQuadBrush(new Rectangle(0,0,s,s));
+        } else if (!shape.isPolygonal()) {
+            makeCircleBrush(s/2);
+        }else{
+            //TODO: scale the polygon brush
+        }
+    }
+    
     /**
      * Paints the entire area of the brush with the set tile. This brush can
      * affect several layers. 
@@ -108,6 +118,10 @@ public class ShapeBrush extends AbstractBrush
     
     public Rectangle getBounds() {
         return shape.getBounds();
+    }
+
+    public boolean isRectangular() {
+        return shape.isRectangular();
     }
     
     public void paint(Graphics g, int x, int y) {

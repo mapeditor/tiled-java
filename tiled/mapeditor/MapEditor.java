@@ -18,7 +18,6 @@ import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
 import java.awt.print.PrinterException;
 import java.io.*;
-import java.util.Iterator;
 import java.util.Stack;
 import java.util.Vector;
 
@@ -37,10 +36,10 @@ import tiled.mapeditor.widget.*;
 import tiled.mapeditor.undo.*;
 import tiled.util.TiledConfiguration;
 import tiled.util.Util;
+import tiled.io.MapHelper;
 import tiled.io.MapReader;
 import tiled.io.MapWriter;
 import tiled.io.xml.XMLMapTransformer;
-import tiled.io.xml.XMLMapWriter;
 
 
 /**
@@ -214,7 +213,7 @@ public class MapEditor implements ActionListener,
         appFrame.setVisible(true);
 
         // Load plugins
-        pluginLoader  = new PluginClassLoader();
+        pluginLoader  = PluginClassLoader.getInstance();
         try {
             pluginLoader.readPlugins(null, appFrame);
         } catch (Exception e) {
@@ -223,6 +222,7 @@ public class MapEditor implements ActionListener,
                     e.toString(), "Plugin loader",
                     JOptionPane.WARNING_MESSAGE);
         }
+        MapHelper.init(pluginLoader);
     }
 
     private JPanel createContentPane() {
@@ -501,8 +501,9 @@ public class MapEditor implements ActionListener,
         toolBar.add(eyedButton);
         toolBar.add(marqueeButton);
         toolBar.add(Box.createRigidArea(new Dimension(0, 5)));
-        toolBar.add(objectMoveButton);
-        toolBar.add(Box.createRigidArea(new Dimension(0, 5)));
+        //TODO: put this back when working...
+        //toolBar.add(objectMoveButton);
+        //toolBar.add(Box.createRigidArea(new Dimension(0, 5)));
         toolBar.add(new TButton(zoomInAction));
         toolBar.add(new TButton(zoomOutAction));
 
@@ -1662,24 +1663,6 @@ public class MapEditor implements ActionListener,
         return (currentMap != null && undoStack.canUndo() &&
                 !undoStack.isAllSaved());
     }
-
-    private void reportPluginMessages(Stack s) {
-        // TODO: maybe have a nice dialog with a scrollbar, in case there are a
-        // lot of messages...
-        if (configuration.keyHasValue("tiled.report.io", 1)) {
-            if (s.size() > 0) {
-                Iterator itr = s.iterator();
-                String warnings = "";
-                while (itr.hasNext()) {
-                    String warn = (String) itr.next();
-                    warnings = warnings + warn + "\n";
-                }
-                JOptionPane.showMessageDialog(appFrame,  warnings,
-                        "Loading Messages",
-                        JOptionPane.INFORMATION_MESSAGE);
-            }
-        }
-    }
     
     /**
      * Loads a map.
@@ -1690,20 +1673,12 @@ public class MapEditor implements ActionListener,
      */
     public boolean loadMap(String file) {
         try {
-            MapReader mr = null;
-            if (file.endsWith(".tmx")) {
-                // Override, so people can't overtake our format
-                mr = new XMLMapTransformer();
-            } else {
-                mr = (MapReader)pluginLoader.getReaderFor(
-                        file.substring(file.lastIndexOf('.') + 1));
-            }
+            
 
-            if (mr != null) {
-                Stack errors = new Stack();
-                mr.setErrorStack(errors);
-                setCurrentMap(mr.readMap(file));
-                reportPluginMessages(errors);
+            Map m = MapHelper.loadMap(file);
+            
+            if (m != null) {                
+                setCurrentMap(m);
                 updateRecent(file);
                 return true;
             } else {
@@ -1711,13 +1686,6 @@ public class MapEditor implements ActionListener,
                         "Unsupported map format", "Error while loading map",
                         JOptionPane.ERROR_MESSAGE);
             }
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(appFrame,
-                    e.getMessage() + (e.getCause() != null ? "\nCause: " +
-                        e.getCause().getMessage() : ""),
-                    "Error while loading map",
-                    JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(appFrame,
                     "Error while loading " + file + ": " +
@@ -1736,6 +1704,7 @@ public class MapEditor implements ActionListener,
      * <code>filename</code> is <code>null</code> or <code>bSaveAs</code> is
      * passed <code>true</code>, a "Save As" dialog is opened.
      *
+     * @see MapHelper#saveMap(Map, String)
      * @param filename Filename to save the current map to.
      * @param bSaveAs  Pass <code>true</code> to ask for a new filename using
      *                 a "Save As" dialog.
@@ -1788,29 +1757,12 @@ public class MapEditor implements ActionListener,
                 }
             }
 
-            MapWriter mw = null;
-            if (filename.endsWith("tmx")) {
-                // Override, so people can't overtake our format
-                mw = new XMLMapWriter();
-            } else {
-                mw = (MapWriter)pluginLoader.getWriterFor(
-                        filename.substring(filename.lastIndexOf('.') + 1));
-            }
-
-            if (mw != null) {
-                Stack errors = new Stack();
-                mw.setErrorStack(errors);
-                mw.writeMap(currentMap, filename);
-                currentMap.setFilename(filename);
-                updateRecent(filename);
-                undoStack.commitSave();
-                updateTitle();
-                reportPluginMessages(errors);
-            } else {
-                JOptionPane.showMessageDialog(appFrame,
-                        "Unsupported map format", "Error while saving map",
-                        JOptionPane.ERROR_MESSAGE);
-            }
+            MapHelper.saveMap(currentMap, filename);
+            currentMap.setFilename(filename);
+            updateRecent(filename);
+            undoStack.commitSave();
+            updateTitle();
+            
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(appFrame,
@@ -1831,7 +1783,8 @@ public class MapEditor implements ActionListener,
         }
 
         if (filename != null) {
-            MapView myView = currentMap.createView();
+            MapView myView = MapView.createViewforMap(currentMap);
+            //MapView myView = currentMap.createView();
             if (mapView.getMode(MapView.PF_GRIDMODE))
                 myView.enableMode(MapView.PF_GRIDMODE);
             myView.enableMode(MapView.PF_NOSPECIAL);
@@ -1967,7 +1920,7 @@ public class MapEditor implements ActionListener,
             setCurrentTile(null);
         } else {
             mapEventAdapter.fireEvent(MapEventAdapter.ME_MAPACTIVE);
-            mapView = currentMap.createView();
+            mapView = MapView.createViewforMap(currentMap);
             mapView.addMouseListener(this);
             mapView.addMouseMotionListener(this);
             mapView.addComponentListener(this);
@@ -2012,7 +1965,7 @@ public class MapEditor implements ActionListener,
         }
 
         if (miniMap != null && currentMap != null) {
-            miniMap.setView(currentMap.createView());
+            miniMap.setView(MapView.createViewforMap(currentMap));
         }
 
         if (currentMap != null) {

@@ -17,7 +17,6 @@ import java.util.*;
 import javax.swing.event.EventListenerList;
 
 import tiled.mapeditor.util.*;
-import tiled.view.*;
 
 
 /**
@@ -414,26 +413,6 @@ public class Map extends MultilayerPlane implements Cloneable
      */
     public int getTotalObjects() {
         return totalObjects;
-    }
-
-    /**
-     * Creates a MapView instance that will render the map in the right
-     * orientation.
-     */
-    public MapView createView() {
-        MapView mapView = null;
-
-        if (orientation == MDO_ISO) {
-            mapView = new IsoMapView(this);
-        } else if (orientation == MDO_ORTHO) {
-            mapView = new OrthoMapView(this);
-        } else if (orientation == MDO_HEX) {
-            mapView = new HexMapView(this);
-        } else if (orientation == MDO_OBLIQUE) {
-            mapView = new ObliqueMapView(this);
-        }
-
-        return mapView;
     }
 
     /**

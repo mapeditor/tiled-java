@@ -147,14 +147,42 @@ public abstract class MapView extends JPanel implements Scrollable
     public abstract int getScrollableUnitIncrement(Rectangle visibleRect,
             int orientation, int direction);
 
+    /**
+     * Creates a MapView instance that will render the map in the right
+     * orientation.
+     * 
+     * @param p the Map to create a view for
+     * @return a suitable instance of a MapView for the given Map
+     * @see Map#getOrientation()
+     */
+    public static MapView createViewforMap(Map p) {
+        MapView mapView = null;
+
+        int orientation = p.getOrientation();
+        
+        if (orientation == Map.MDO_ISO) {
+            mapView = new IsoMapView(p);
+        } else if (orientation == Map.MDO_ORTHO) {
+            mapView = new OrthoMapView(p);
+        } else if (orientation == Map.MDO_HEX) {
+            mapView = new HexMapView(p);
+        } else if (orientation == Map.MDO_OBLIQUE) {
+            mapView = new ObliqueMapView(p);
+        }
+
+        return mapView;
+    }
 
     // Painting
 
     /**
-     * Draws all the visible layers of the map.
+     * Draws all the visible layers of the map. Takes several flags into account when drawing,
+     * and will also draw the grid, and any 'special' layers.
      * 
      * @param g the Graphics2D object to paint to
      * @see JComponent#paint(java.awt.Graphics)
+     * @see MapLayer
+     * @see SelectionLayer
      */
     public void paint(Graphics g) {
         TiledConfiguration conf = TiledConfiguration.getInstance();
