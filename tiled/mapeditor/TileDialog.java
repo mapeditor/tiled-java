@@ -476,11 +476,11 @@ public class TileDialog extends JDialog
             if (!externalBitmapCheck.isSelected()) {
                 int answer = JOptionPane.showConfirmDialog(
                         this,
-                        "Warning: this operation cannot be reversed.  Disable "
-                        + "the use of an external bitmap?",
+                        "Warning: this operation cannot currently be reversed.\n" +
+                        "Disable the use of an external bitmap?",
                        "Are you sure?",
                         JOptionPane.YES_NO_OPTION,
-                        JOptionPane.QUESTION_MESSAGE);
+                        JOptionPane.WARNING_MESSAGE);
                 if (answer == JOptionPane.YES_OPTION) {
                     tileset.setTilesetImageFilename(null);
                     updateEnabledState();

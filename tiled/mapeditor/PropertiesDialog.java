@@ -29,7 +29,7 @@ public class PropertiesDialog extends JDialog implements ActionListener,
        ListSelectionListener
 {
     private JTable mapProperties;
-    private JButton bOk, bCancel;
+    private JButton bOk, bCancel, bDel;
     private Properties properties;
     private PropertiesTableModel tableModel;
 
@@ -50,10 +50,23 @@ public class PropertiesDialog extends JDialog implements ActionListener,
 
         bOk = new JButton("OK");
         bCancel = new JButton("Cancel");
-
+        try {
+            bDel = new JButton(new ImageIcon(MapEditor.loadImageResource("resources/gnome-delete.png")));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
         bOk.addActionListener(this);
         bCancel.addActionListener(this);
-
+        bDel.addActionListener(this);
+       
+        JPanel user = new VerticalStaticJPanel();
+        user.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
+        user.setLayout(new BoxLayout(user, BoxLayout.X_AXIS));
+        user.add(Box.createGlue());
+        user.add(Box.createRigidArea(new Dimension(5, 0)));
+        user.add(bDel);
+        
         JPanel buttons = new VerticalStaticJPanel();
         buttons.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
         buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
@@ -66,6 +79,7 @@ public class PropertiesDialog extends JDialog implements ActionListener,
         mainPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.add(propScrollPane);
+        mainPanel.add(user);
         mainPanel.add(buttons);
 
         getContentPane().add(mainPanel);
@@ -107,6 +121,9 @@ public class PropertiesDialog extends JDialog implements ActionListener,
             dispose();
         } else if (source == bCancel) {
             dispose();
+        } else if (source == bDel) {
+    	    ((PropertiesTableModel)mapProperties.getModel()).remove(mapProperties.getSelectedRow());
+    	    repaint();
         }
     }
 

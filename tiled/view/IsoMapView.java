@@ -53,7 +53,7 @@ public class IsoMapView extends MapView
         // Determine tile size and offset
         Dimension tileSize = getTileSize(zoom);
         int tsize_width_delta = tileSize.width / 2;
-        int tsize_height_delta = tileSize.height / 2;
+        int tsize_height_delta = tileSize.height / 2 == 0 ? 1 : tileSize.height / 2;
 
 
         // Determine area to draw from clipping rectangle

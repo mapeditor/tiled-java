@@ -195,7 +195,7 @@ public class MappyMapReader implements MapReader
         MapLayer ml = new TileLayer(ret, ret.getWidth(),ret.getHeight());
         ml.setName("bg");
         ret.addLayer(ml);
-        for(int i=1;i<8;i++) {
+        for(int i=1;i<7;i++) {
             //TODO: I believe this should be ObjectGroup
             ml = new ObjectGroup(ret, 0, 0);
             ml.setName("ObjectLayer "+i);
@@ -246,9 +246,9 @@ public class MappyMapReader implements MapReader
     private void readBODYChunk(Map m, InputStream in) throws IOException {
         TileSet set = (TileSet)m.getTilesets().get(0);
         TileLayer bg = (TileLayer)m.getLayer(0),
-                  fg0 = (TileLayer)m.getLayer(1),
-                  fg1 = (TileLayer)m.getLayer(2),
-                  fg2 = (TileLayer)m.getLayer(3);
+                  fg0 = (TileLayer)m.getLayer(7),
+                  fg1 = (TileLayer)m.getLayer(8),
+                  fg2 = (TileLayer)m.getLayer(9);
 
         for (int i = 0; i < m.getHeight(); i++) {
             for (int j = 0; j < m.getWidth(); j++) {
