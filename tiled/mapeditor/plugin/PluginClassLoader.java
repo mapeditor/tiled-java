@@ -25,6 +25,7 @@ import java.util.jar.JarFile;
 import tiled.io.PluggableMapIO;
 import tiled.util.TiledConfiguration;
 
+
 public class PluginClassLoader extends URLClassLoader
 {
     private Vector plugins;
@@ -43,7 +44,8 @@ public class PluginClassLoader extends URLClassLoader
     public void readPlugins(String base) throws Exception {
         String baseURL = base;
         if (base == null) {
-            baseURL = TiledConfiguration.getValue("tiled.plugins.dir");
+            baseURL = TiledConfiguration.getInstance().getValue(
+                    "tiled.plugins.dir");
         }
 
         File dir = new File(baseURL);
@@ -54,8 +56,8 @@ public class PluginClassLoader extends URLClassLoader
         }
 
         File [] files = dir.listFiles();
-        for (int i = 0; i < files.length; i++){
-            if (files[i].getAbsolutePath().substring(files[i].getAbsolutePath().lastIndexOf('.') + 1).equals("jar")){
+        for (int i = 0; i < files.length; i++) {
+            if (files[i].getAbsolutePath().substring(files[i].getAbsolutePath().lastIndexOf('.') + 1).equals("jar")) {
                 try {
                     JarFile jf = new JarFile(files[i]);
                     //verify that the jar has the necessary files to be a plugin
@@ -64,12 +66,12 @@ public class PluginClassLoader extends URLClassLoader
                         continue;
                     }
 
-                    JarEntry reader = jf.getJarEntry((String) jf.getManifest().getMainAttributes().get("readerClass"));
-                    JarEntry writer = jf.getJarEntry((String) jf.getManifest().getMainAttributes().get("writerClass"));
+                    JarEntry reader = jf.getJarEntry((String)jf.getManifest().getMainAttributes().get("readerClass"));
+                    JarEntry writer = jf.getJarEntry((String)jf.getManifest().getMainAttributes().get("writerClass"));
 
-                    if (doesImplement(loadFromJar(jf, reader),"tiled.io.MapReader") 
-                            && doesImplement(loadFromJar(jf, writer),"tiled.io.MapWriter")) {
-                        System.out.println("Added "+files[i].getCanonicalPath());
+                    if (doesImplement(loadFromJar(jf, reader), "tiled.io.MapReader") 
+                            && doesImplement(loadFromJar(jf, writer), "tiled.io.MapWriter")) {
+                        System.out.println("Added " + files[i].getCanonicalPath());
                         super.addURL(new URL(files[i].getAbsolutePath()));
                     }
                 } catch (IOException e) {
@@ -106,14 +108,15 @@ public class PluginClassLoader extends URLClassLoader
     }
 
     public Class loadFromJar(JarFile jf, JarEntry je) throws IOException {
-        byte [] buffer = new byte[(int)je.getSize()+1]; 
+        byte[] buffer = new byte[(int)je.getSize() + 1];
         jf.getInputStream(je).read(buffer);
-        return defineClass(je.getName(),buffer,0,buffer.length);
+        return defineClass(je.getName(), buffer, 0, buffer.length);
     }
 
-    public boolean doesImplement(Class c, String interfaceName) throws Exception {
+    public boolean doesImplement(Class c, String interfaceName)
+        throws Exception {
         Class[] interfaces = c.getInterfaces();
-        for (int i = 0; i < interfaces.length; i++){
+        for (int i = 0; i < interfaces.length; i++) {
             String name = interfaces[i].toString(); 
             if (name.substring(name.indexOf(' ') + 1).equals(interfaceName)) {
                 _add(c);

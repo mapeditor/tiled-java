@@ -64,20 +64,20 @@ public class MapEditor implements ActionListener,
 
     public static final String version = "0.4.1 WIP";
 
-    // Basic stuff for the Applet
-    Map currentMap;
-    MapView mapView;
-    UndoStack undoStack;
-    UndoableEditSupport undoSupport;
+    private Map currentMap;
+    private MapView mapView;
+    private UndoStack undoStack;
+    private UndoableEditSupport undoSupport;
     private MapEventAdapter mapEventAdapter;
     private PluginClassLoader pluginLoader;
+    private TiledConfiguration configuration;
     
     
     int currentPointerState;
     Tile currentTile;
     int currentLayer = -1;
     boolean bMouseIsDown = false;
-    Point mousePressLocation,mouseInitialPressLocation;
+    Point mousePressLocation, mouseInitialPressLocation;
     int mouseButton;
     Brush currentBrush;
 	SelectionLayer marqueeSelection = null;
@@ -121,6 +121,15 @@ public class MapEditor implements ActionListener,
 
 
     public MapEditor() {
+        // Create configuration class instance and try to parse existing
+        // configuration.
+        configuration = TiledConfiguration.getOrCreateInstance();
+        try {
+            configuration.parse("tiled.conf");
+        } catch (Exception e) {
+            System.out.println("Warning: could not load configuration file.");
+        }
+
         /*
         try {
             Image imgPaintCursor = loadImageResource(
@@ -926,7 +935,7 @@ public class MapEditor implements ActionListener,
         } else if (command.equals("Exit")) {
             if (checkSave()) {
             	try {
-                    TiledConfiguration.write("tiled.conf");
+                    configuration.write("tiled.conf");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -1018,7 +1027,7 @@ public class MapEditor implements ActionListener,
             aboutDialog.show();
         } else if (command.substring(0, command.length() < 5 ? command.length() : 5).equals("_open")) {
             try {
-                loadMap(TiledConfiguration.getValue(
+                loadMap(configuration.getValue(
                             "tmx.recent." + command.substring(5)));
             } catch (Exception e) {
                 e.printStackTrace();
@@ -1365,7 +1374,7 @@ public class MapEditor implements ActionListener,
 
             if (ch.showSaveDialog(appFrame) == JFileChooser.APPROVE_OPTION) {
                 filename = ch.getSelectedFile().getAbsolutePath();
-                TiledConfiguration.addConfigPair("tmx.save.maplocation",
+                configuration.addConfigPair("tmx.save.maplocation",
                         filename.substring(0, filename.lastIndexOf(
                                 File.separatorChar) + 1));
             }
@@ -1385,7 +1394,7 @@ public class MapEditor implements ActionListener,
                     "Error while saving map",
                     JOptionPane.ERROR_MESSAGE);
         }
-        TiledConfiguration.remove("tmx.save.maplocation");
+        configuration.remove("tmx.save.maplocation");
     }
 
     private void openMap() {
@@ -1415,10 +1424,10 @@ public class MapEditor implements ActionListener,
     private void updateRecent(String mapFile) {
         Vector recent = new Vector();
         try {
-            recent.add(TiledConfiguration.getValue("tmx.recent.1"));
-            recent.add(TiledConfiguration.getValue("tmx.recent.2"));
-            recent.add(TiledConfiguration.getValue("tmx.recent.3"));
-            recent.add(TiledConfiguration.getValue("tmx.recent.4"));
+            recent.add(configuration.getValue("tmx.recent.1"));
+            recent.add(configuration.getValue("tmx.recent.2"));
+            recent.add(configuration.getValue("tmx.recent.3"));
+            recent.add(configuration.getValue("tmx.recent.4"));
         } catch (Exception e) {
         }
 
@@ -1448,7 +1457,7 @@ public class MapEditor implements ActionListener,
 	            String name =
 	                file.substring(file.lastIndexOf(File.separatorChar) + 1);
 
-	            TiledConfiguration.addConfigPair("tmx.recent." + (i + 1), file);
+	            configuration.addConfigPair("tmx.recent." + (i + 1), file);
 	            JMenuItem recentOption = createMenuItem(name, null, null);
 	            recentOption.setActionCommand("_open" + (i + 1));
 	            recentMenu.add(recentOption);
@@ -1599,7 +1608,8 @@ public class MapEditor implements ActionListener,
         }
     }
 
-    public static BufferedImage loadImageResource(String fname) throws IOException {
+    public static BufferedImage loadImageResource(String fname)
+        throws IOException {
         return ImageIO.read(MapEditor.class.getResourceAsStream(fname));
     }
 
@@ -1615,22 +1625,9 @@ public class MapEditor implements ActionListener,
     /**
      * Starts Tiled.
      *
-     * @param args The first argument may be map file.
+     * @param args the first argument may be map file
      */
     public static void main(String[] args) {
-        try {
-            TiledConfiguration.populateDefaults();
-            TiledConfiguration.parse(
-                    new BufferedReader(new FileReader("tiled.conf")));
-        } catch (Exception e) {
-            /*
-            JOptionPane.showMessageDialog(null,
-                    "Could not load configuration file - " +
-                    "some functions may not work correctly.",
-                    "Warning", JOptionPane.WARNING_MESSAGE);
-            */
-        }
-
         MapEditor editor = new MapEditor();
 
         if (args.length > 0) {

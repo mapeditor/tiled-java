@@ -21,6 +21,7 @@ import javax.swing.event.ChangeEvent;
 import tiled.util.TiledConfiguration;
 import tiled.mapeditor.widget.*;
 
+
 public class ConfigurationDialog extends JDialog implements ActionListener,
        ChangeListener
 {
@@ -28,9 +29,11 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
     private JPanel layerOps, generalOps, tilesetOps;
     private IntegerSpinner undoDepth;
     private JCheckBox cbBinaryEncode, cbCompressLayerData, cbEmbedImages;
+    private TiledConfiguration configuration;
 
     public ConfigurationDialog(JFrame parent) {
         super(parent, "Preferences", true);
+        configuration = TiledConfiguration.getInstance();
         init();
         setLocationRelativeTo(parent);
     }
@@ -149,14 +152,14 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
 
     private void updateFromConf() {
         undoDepth.setValue(Integer.parseInt(
-                    TiledConfiguration.getValue(undoDepth.getName())));
+                    configuration.getValue(undoDepth.getName())));
 
         // Handle checkboxes
         for (int i = 0; i < layerOps.getComponentCount(); i++) {
             try {
                 AbstractButton b = (AbstractButton)layerOps.getComponent(i);
                 if (b.getClass().equals(JCheckBox.class)) {
-                    if (TiledConfiguration.keyHasValue(b.getActionCommand(), "1")) {
+                    if (configuration.keyHasValue(b.getActionCommand(), "1")) {
                         b.setSelected(true);
                     }
                 }
@@ -167,7 +170,7 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
             try {
                 AbstractButton b = (AbstractButton)tilesetOps.getComponent(i);
                 if (b.getClass().equals(JCheckBox.class)) {
-                    if (TiledConfiguration.keyHasValue(b.getActionCommand(), "1")) {
+                    if (configuration.keyHasValue(b.getActionCommand(), "1")) {
                         b.setSelected(true);
                     }
                 }
@@ -181,7 +184,7 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
     }
 
     private void processOptions() {
-        TiledConfiguration.addConfigPair(
+        configuration.addConfigPair(
                 undoDepth.getName(), "" + undoDepth.intValue());
 
         // Handle checkboxes
@@ -189,7 +192,7 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
             try {
                 AbstractButton b = (AbstractButton)layerOps.getComponent(i);
                 if (b.getClass().equals(JCheckBox.class)) {
-                    TiledConfiguration.addConfigPair(
+                    configuration.addConfigPair(
                             b.getActionCommand(), b.isSelected() ? "1" : "0");
                 }
             } catch (ClassCastException e) {
@@ -199,7 +202,7 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
             try {
                 AbstractButton b = (AbstractButton)tilesetOps.getComponent(i);
                 if (b.getClass().equals(JCheckBox.class)) {
-                    TiledConfiguration.addConfigPair(
+                    configuration.addConfigPair(
                             b.getActionCommand(),b.isSelected() ? "1" : "0");
                 }
             } catch (ClassCastException e) {

@@ -23,7 +23,8 @@ public class UndoStack extends UndoManager
     UndoableEdit savedAt;
 
     public UndoStack() {
-        setLimit(TiledConfiguration.getIntValue("tmx.undo.depth", 30));
+        setLimit(TiledConfiguration.getInstance().getIntValue(
+                    "tmx.undo.depth", 30));
     }
 
     public boolean isAllSaved() {

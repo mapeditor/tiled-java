@@ -148,10 +148,11 @@ public class XMLMapWriter implements MapWriter
                 // Embedded tileset
                 /*
                 if (setImage != null) {
+                    TiledConfiguration conf = TiledConfiguration.getInstance();
                     w.startElement("image");
-                    if (TiledConfiguration.keyHasValue(
+                    if (conf.keyHasValue(
                                 "tmx.save.tileSetImages", "1") &&
-                            TiledConfiguration.keyHasValue(
+                            conf.keyHasValue(
                                 "tmx.save.embedtileSetImages", "1")) {
                         w.writeAttribute("format", "png");
                         w.startElement("data");
@@ -161,11 +162,11 @@ public class XMLMapWriter implements MapWriter
                         w.endElement();
                     } else {
                         if (externalImageSource == null ) {
-                            String source =	TiledConfiguration.getValue(
+                            String source =	conf.getValue(
                                     "tmx.save.tileImagePrefix") + "set.png";
                             w.writeAttribute("source", source);
                             FileOutputStream fw = new FileOutputStream(new File(
-                                        TiledConfiguration.getValue(
+                                        conf.getValue(
                                             "tmx.save.maplocation") + source));
                             byte[] data = ImageHelper.imageToPNG(setImage);
                             fw.write(data, 0, data.length);
@@ -201,11 +202,12 @@ public class XMLMapWriter implements MapWriter
      */
     private void writeMapLayer(MapLayer l, XMLWriter w) throws IOException {
         try {
+            TiledConfiguration conf = TiledConfiguration.getInstance();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             OutputStream out;
-            boolean encodeLayerData = TiledConfiguration.keyHasValue(
+            boolean encodeLayerData = conf.keyHasValue(
                     "tmx.save.encodeLayerData", "1");
-            boolean compressLayerData = TiledConfiguration.keyHasValue(
+            boolean compressLayerData = conf.keyHasValue(
                     "tmx.save.layerCompression", "1") && encodeLayerData;
 
 
@@ -313,11 +315,12 @@ public class XMLMapWriter implements MapWriter
 
             Image tileImage = tile.getImage();
 
+            TiledConfiguration conf = TiledConfiguration.getInstance();
+
             // Write encoded data
-            if (tileImage != null && !TiledConfiguration.getValue(
-                        "tmx.save.tileSetImages").equals("1")) {		
-                if (TiledConfiguration.keyHasValue(
-                            "tmx.save.embedImages", "1")) {
+            if (tileImage != null && !conf.keyHasValue(
+                        "tmx.save.tileSetImages", "1")) {
+                if (conf.keyHasValue("tmx.save.embedImages", "1")) {
                     w.startElement("image");
                     w.writeAttribute("format", "png");
                     w.startElement("data");
@@ -327,10 +330,9 @@ public class XMLMapWriter implements MapWriter
                     w.endElement();
                     w.endElement();	
                 } else {
-                    String prefix = TiledConfiguration.getValue(
-                            "tmx.save.tileImagePrefix");
-                    String filename = TiledConfiguration.getValue(
-                            "tmx.save.maplocation") + prefix + tileId + ".png";
+                    String prefix = conf.getValue("tmx.save.tileImagePrefix");
+                    String filename = conf.getValue("tmx.save.maplocation") +
+                        prefix + tileId + ".png";
                     w.startElement("image");
                     w.writeAttribute("source", prefix + tileId + ".png");
                     FileOutputStream fw = new FileOutputStream(

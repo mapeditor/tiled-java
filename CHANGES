@@ -4,6 +4,7 @@
 * Added tooltips to tool buttons
 * Implementation of HexMapView, making Hex maps possible (Andreas Mross)
 * Removed name and version attributes from map, custom properties suffice there
+* Stopped Tiled from adding more and more newlines to the config file
 
 0.4.0 - August 4th, 2004
 
