@@ -73,8 +73,8 @@ public class OrthoMapView extends MapView
         Rectangle clipRect = g.getClipBounds();
         int startX = clipRect.x / (tsize.width > 0 ? tsize.width : 1);
         int startY = clipRect.y / (tsize.height > 0 ? tsize.height : 1);
-        int endX = (clipRect.x + clipRect.width) / tsize.width + 1;
-        int endY = (clipRect.y + clipRect.height) / tsize.height + 3;
+        int endX = (clipRect.x + clipRect.width) / (tsize.width > 0 ? tsize.width : 1) + 1;
+        int endY = (clipRect.y + clipRect.height) / (tsize.height > 0 ? tsize.height : 1) + 3;
         // (endY +2 for high tiles, could be done more properly)
 
         // Draw this map layer

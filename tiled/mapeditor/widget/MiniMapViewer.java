@@ -50,8 +50,8 @@ public class MiniMapViewer extends JPanel {
 	}
 	
 	public void paint(Graphics g) {
-		if(myView != null)
-			myView.paint(g);
+		//if(myView != null)
+		//	myView.paint(g);
 		if(mainPanel!=null) {
 			g.setColor(Color.red);
 			Rectangle viewArea = mainPanel.getGraphics().getClipBounds();
