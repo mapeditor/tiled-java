@@ -460,7 +460,7 @@ public class TileDialog extends JDialog
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.QUESTION_MESSAGE);
                 if (answer == JOptionPane.YES_OPTION) {
-                    //tileset.setTilebmpFile(null);
+                    tileset.setTilesetImageFilename(null);
                     updateEnabledState();
                 } else {
                     externalBitmapCheck.setSelected(true);

@@ -89,7 +89,7 @@ public class TileSet
                             tileWidth, tileHeight,
                             x, y, x + tileWidth, y + tileHeight,
                             null);
-
+					
                     Tile newTile = new Tile();
                     newTile.setImage(tile);
                     addNewTile(newTile);
@@ -135,6 +135,10 @@ public class TileSet
     public void setSource(String source) {
         externalSource = source;
     }
+
+	public void setTilesetImageFilename(String name) {
+		tilebmpFile = name;
+	}
 
     /**
      * Sets the first global id used by this tileset.
@@ -392,7 +396,7 @@ public class TileSet
     public Image queryImage(Image image) {
         String hash = checksumImage(image);
         if (imageCache.get(hash) != null) {
-            System.out.println("Success");
+            System.out.println("Success: " + hash);
         }
         return (Image)imageCache.get(hash);
     }
@@ -404,7 +408,7 @@ public class TileSet
 			while(itr.hasNext()) {
 				Object key = itr.next();
 				if(images.get(key).equals(hash)) {
-					System.out.println("Success");
+					System.out.println("Success: " + key);
 					return key;
 				}
 			}
@@ -423,6 +427,7 @@ public class TileSet
 		} else {
 			t = images.size();
 			String cs = checksumImage(image);
+			System.out.print("addImage(Image): " + t + " ");
 			System.out.println("Checksum: " + cs);
 			images.put(Integer.toString(t), cs);
 			imageCache.put(cs, image);
@@ -435,6 +440,7 @@ public class TileSet
 			return addImage(image);
 		} else {
 			String cs = checksumImage(image);
+			System.out.print("addImage(Image, Object): " + key + " ");
 			System.out.println("Checksum: " + cs);
 			images.put(key, cs);
 			imageCache.put(cs, image);
@@ -461,7 +467,7 @@ public class TileSet
 	public Object generateImageWithOrientation(Image src,
 		int orientation) {
 		if (orientation == 0) {
-			return src;
+			return queryImageId(src);
 		} else {
 			int w = src.getWidth(null), h = src.getHeight(null);
 			int[] old_pixels = new int[w * h];

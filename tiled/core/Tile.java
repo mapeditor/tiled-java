@@ -121,7 +121,7 @@ public class Tile
     }
 
     public void drawRaw(Graphics g, int x, int y, double zoom) {
-        if (zoom != 1.0) {
+        //if (zoom != 1.0) {
             int h = (int)(getHeight() * zoom);
             if (scaledImage == null || scaledImage.getHeight(null) != h) {
                 scaledImage = getScaledImage(zoom);
@@ -143,9 +143,9 @@ public class Tile
             } else {
                 g.drawImage(scaledImage, x, y, null);
             }
-        } else {
-            g.drawImage(getImage(), x, y, null);
-        }
+        //} else {
+        //    g.drawImage(getImage(), x, y, null);
+        //}
     }
 
     public void draw(Graphics g, int x, int y, double zoom) {
