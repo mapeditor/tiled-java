@@ -25,6 +25,7 @@ import javax.swing.event.*;
 
 import tiled.core.*;
 import tiled.view.*;
+import tiled.mapeditor.brush.*;
 import tiled.mapeditor.util.*;
 import tiled.mapeditor.undo.*;
 import tiled.util.TiledConfiguration;
@@ -71,6 +72,7 @@ public class MapEditor implements ActionListener,
     boolean bMouseIsDown = false;
     Point mousePressLocation;
     int mouseButton;
+	Brush currentBrush;
 	
     // GUI components
     JPanel      mainPanel;
@@ -126,6 +128,8 @@ public class MapEditor implements ActionListener,
 
         undoStack = new UndoStack(this);
         mapEventAdapter = new MapEventAdapter();
+		currentBrush = new ShapeBrush();
+		((ShapeBrush)currentBrush).makeQuadBrush(new Rectangle(0,0,1,1));
 
         // Create our frame
         appFrame = new JFrame("Tiled");
@@ -757,8 +761,8 @@ public class MapEditor implements ActionListener,
             switch (currentPointerState) {
                 case PS_PAINT:
                     paintEdit.setPresentationName("Paint Tool");
-                    layer.setTileAt(tile.x, tile.y, currentTile);
-                    mapView.repaintRegion(new Rectangle(tile.x, tile.y, 1, 1));
+                    currentBrush.commitPaint(currentMap, tile.x, tile.y, currentLayer);
+                    mapView.repaintRegion(currentBrush.getCenteredBounds(tile.x,tile.y));
                     break;
                 case PS_ERASE:
                     paintEdit.setPresentationName("Erase Tool");
@@ -1508,6 +1512,9 @@ public class MapEditor implements ActionListener,
      */
     public void setCurrentTile(Tile tile) {
         currentTile = tile;
+        if(currentBrush.getClass().toString().equals(ShapeBrush.class.toString())) {
+        	((ShapeBrush)currentBrush).setTile(tile);
+        }
         updateTilePaletteButton();
     }
 

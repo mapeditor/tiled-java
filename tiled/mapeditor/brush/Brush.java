@@ -12,6 +12,8 @@
 
 package tiled.mapeditor.brush;
 
+import java.awt.Rectangle;
+
 import tiled.core.MultilayerPlane;
 
 public abstract class Brush extends MultilayerPlane {
@@ -20,5 +22,6 @@ public abstract class Brush extends MultilayerPlane {
 		super();
 	}
 	
-	public abstract void commitPaint(int x, int y);
+	public abstract void commitPaint(MultilayerPlane mp, int x, int y, int start);
+	public abstract Rectangle getCenteredBounds(int x, int y);
 }
