@@ -13,6 +13,7 @@
 * An Ant build target for tiled-core.jar, for use in Java engines
 * Support for other than 2:1 isometric tile ratios (2:1 and 1:1 tested)
 * Fixed redo for painting operations (paint, fill, erase)
+* Improved undo/redo of layer organisation changes
 
 
 0.3.1 - June 17th, 2004
