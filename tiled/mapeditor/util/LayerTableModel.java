@@ -16,8 +16,6 @@ import javax.swing.table.AbstractTableModel;
 
 import tiled.core.Map;
 import tiled.core.MapLayer;
-import tiled.mapeditor.selection.SelectionLayer;
-import tiled.util.TiledConfiguration;
 
 public class LayerTableModel extends AbstractTableModel
 {

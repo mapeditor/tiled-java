@@ -69,9 +69,8 @@ public class TilePalettePanel extends JPanel implements Scrollable,
     /**
      * Change the tilesets displayed by this palette panel.
      *
-     * TODO: Rename to setTilesets
      */
-    public void setTileset(Vector sets) {
+    public void setTilesets(Vector sets) {
         tilesets = sets;
         repaint();
     }

@@ -44,7 +44,8 @@ import tiled.io.xml.XMLMapWriter;
  */
 public class MapEditor implements ActionListener,
     MouseListener, MouseMotionListener, MapChangeListener,
-    ListSelectionListener, ChangeListener, ComponentListener
+    ListSelectionListener, ChangeListener, ComponentListener,
+    WindowListener
 {
     // Constants and the like
     protected static final int PS_POINT   = 0;
@@ -184,7 +185,7 @@ public class MapEditor implements ActionListener,
         createMenuBar();
         appFrame.setJMenuBar(menuBar);
         appFrame.setSize(600, 400);
-
+		appFrame.addWindowListener(this);
         setCurrentMap(null);
         updateRecent(null);
 
@@ -1533,7 +1534,7 @@ public class MapEditor implements ActionListener,
             tileCoordsLabel.setPreferredSize(null);
             tileCoordsLabel.setText(" ");
             zoomLabel.setText(" ");
-            tilePalettePanel.setTileset(null);
+            tilePalettePanel.setTilesets(null);
             setCurrentTile(null);
         } else {
             mapEventAdapter.fireEvent(MapEventAdapter.ME_MAPACTIVE);
@@ -1552,11 +1553,11 @@ public class MapEditor implements ActionListener,
 
             Vector tilesets = currentMap.getTilesets();
             if (tilesets.size() > 0) {
-                tilePalettePanel.setTileset(tilesets);
+                tilePalettePanel.setTilesets(tilesets);
                 TileSet first = (TileSet)tilesets.get(0);
                 setCurrentTile(first.getFirstTile());
             } else {
-                tilePalettePanel.setTileset(null);
+                tilePalettePanel.setTilesets(null);
                 setCurrentTile(null);
             }
 
@@ -1688,5 +1689,47 @@ public class MapEditor implements ActionListener,
         if (args.length > 0) {
             editor.loadMap(args[0]);
         }
+    }
+
+    
+    public void windowClosing(WindowEvent e) {
+		if (checkSave()) {
+			try {
+				configuration.write("tiled.conf");
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+        
+    }
+
+    public void windowClosed(WindowEvent e) {
+        //unused
+        
+    }
+
+    public void windowOpened(WindowEvent e) {
+        //unused
+        
+    }
+
+    public void windowIconified(WindowEvent e) {
+		//unused
+        
+    }
+
+    public void windowDeiconified(WindowEvent e) {
+		//unused
+        
+    }
+
+    public void windowActivated(WindowEvent e) {
+		//unused
+        
+    }
+
+    public void windowDeactivated(WindowEvent e) {
+		//unused
+        
     }
 }

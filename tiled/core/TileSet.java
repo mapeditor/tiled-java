@@ -22,7 +22,7 @@ import javax.imageio.ImageIO;
 
 public class TileSet
 {
-    private Vector tiles;  // TODO: Change to a LinkedList or HashMap...
+    private Vector tiles;
     private int id;
     private int firstGid;
     private int standardHeight;

@@ -48,7 +48,7 @@ public class TilePaletteDialog extends JDialog implements ActionListener,
         if (currentMap != null) {
             tilesets = currentMap.getTilesets();
         }
-        pc.setTileset(tilesets);
+        pc.setTilesets(tilesets);
         sets.setListData(tilesets);
     }
 
@@ -98,6 +98,6 @@ public class TilePaletteDialog extends JDialog implements ActionListener,
         for (int i = 0; i < setlist.length; i++) {
             add.add(setlist[i]);
         }
-        pc.setTileset(add);
+        pc.setTilesets(add);
     }
 }

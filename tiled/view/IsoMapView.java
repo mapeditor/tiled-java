@@ -47,7 +47,6 @@ public class IsoMapView extends MapView
     }
 
     protected void paint(Graphics g, MapLayer layer, double zoom) {
-        // TODO: Do this right so there is no overdraw.
         ((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                                          RenderingHints.VALUE_ANTIALIAS_ON);
 
