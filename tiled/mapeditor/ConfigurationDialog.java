@@ -14,6 +14,7 @@ package tiled.mapeditor;
 
 import java.awt.*;
 import java.awt.event.*;
+
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
@@ -23,7 +24,7 @@ import tiled.mapeditor.widget.*;
 
 
 public class ConfigurationDialog extends JDialog implements ActionListener,
-       ChangeListener
+       ChangeListener, ItemListener
 {
     private JButton bOk, bApply, bCancel;
     private JPanel layerOps, generalOps, tilesetOps, gridOps;
@@ -58,11 +59,11 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
         cbGridAA = new JCheckBox("Antialiasing");
         gridOpacity = new IntegerSpinner(0, 0, 255);
         //gridColor = new JColorChooser();
-        cbBinaryEncode.addChangeListener(this);
-        cbCompressLayerData.addChangeListener(this);
-        cbEmbedImages.addChangeListener(this);
-        cbReportIOWarnings.addChangeListener(this);
-        cbGridAA.addChangeListener(this);
+        cbBinaryEncode.addItemListener(this);
+        cbCompressLayerData.addItemListener(this);
+        cbEmbedImages.addItemListener(this);
+        cbReportIOWarnings.addItemListener(this);
+        cbGridAA.addItemListener(this);
         undoDepth.addChangeListener(this);
         gridOpacity.addChangeListener(this);
         //gridColor.addChangeListener(this);
@@ -283,19 +284,23 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
     }
 
     public void stateChanged(ChangeEvent event) {
-        // TODO: Check state change relevance (don't enable apply when it's
-        // just a hover event)
+        bApply.setEnabled(true);
+    }
 
-        Object source = event.getSource();
+    public void itemStateChanged(ItemEvent event) {
+        Object source = event.getItemSelectable();
 
         if (source == cbBinaryEncode) {
             cbCompressLayerData.setEnabled(cbBinaryEncode.isSelected());
         } else if (source == cbEmbedImages) {
-            rbEmbedInTiles.setSelected(cbEmbedImages.isSelected() && rbEmbedInTiles.isSelected());
+            rbEmbedInTiles.setSelected(
+                    cbEmbedImages.isSelected() && rbEmbedInTiles.isSelected());
             rbEmbedInTiles.setEnabled(cbEmbedImages.isSelected());
-            rbEmbedInSet.setSelected(cbEmbedImages.isSelected() && rbEmbedInSet.isSelected());
+            rbEmbedInSet.setSelected(
+                    cbEmbedImages.isSelected() && rbEmbedInSet.isSelected());
             rbEmbedInSet.setEnabled(cbEmbedImages.isSelected());
         }
+
         bApply.setEnabled(true);
     }
 }

@@ -14,7 +14,6 @@ Suggestor:  Ahmed Mohombe <amohombe@yahoo.com>
 Date:       08/04/04
 Summary:    Show tile coordinates on each tile (analoguous to Show Grid).
 State:      Implementation in progress (task #82).
-            This will be included in the 0.5.0 release.
 
 - 03 --------------------------------------------------------------------------
 Suggestor:  Ahmed Mohombe <amohombe@yahoo.com>
@@ -100,13 +99,12 @@ Suggestor:  Rainer Deyke <root@rainerdeyke.com>
 Date:       24/09/04
 Summary:    The ability to flip and rotate individual and blocks of tiles.
 State:      Selections maybe, not the tile images for now.
-            This will be included in a 0.5.0 release.
 
 - 18 --------------------------------------------------------------------------
 Suggestor:  Rainer Deyke <root@rainerdeyke.com>
 Date:       24/09/04
 Summary:    A random brush that randomly picks one of several tiles to draw.
-State:      This will be included in a 0.5.x release.
+State:      To be implemented.
 
 - 19 --------------------------------------------------------------------------
 Suggestor:  Rainer Deyke <root@rainerdeyke.com>
@@ -114,7 +112,7 @@ Date:       24/09/04
 Summary:    A block tool that lets me draw blocks of tiles with a single mouse
             drag. I can fake this with select-and-pour, but a block tool would
             be much more convenient.
-State:      This will be included in the 0.5.0 release.
+State:      Can be implemented using a special brush.
 
 - 20 --------------------------------------------------------------------------
 Suggestor:  Rainer Deyke <root@rainerdeyke.com>
@@ -133,20 +131,20 @@ State:      Flyspray task #62
 Suggestor:  Rainer Deyke <root@rainerdeyke.com>
 Date:       24/09/04
 Summary:    "Deep" brushes that affect more than one layer.
-State:      This will be included in the 0.5.0 release.
+State:      Implemented.
 
 - 23 --------------------------------------------------------------------------
 Suggestor:  Rainer Deyke <root@rainerdeyke.com>
 Date:       24/09/04
 Summary:    The ability to set properties for individual layers.
-State:      This will be included in the 0.5.0 release.
+State:      Implemented.
 
 - 24 --------------------------------------------------------------------------
 Suggestor:  Radomir Dopieralski <sheep@atos.wmid.amu.edu.pl>
 Date:	    29/10/04
 Summary:    Tileset should allow a base directory attribute for relative image
             paths.
-State:      This will be included in the 0.5.0 release
+State:      Implemented.
 
 - 25 --------------------------------------------------------------------------
 Suggestor:  Radomir Dopieralski <sheep@atos.wmid.amu.edu.pl>
@@ -159,5 +157,5 @@ Suggestor:  Marc <public@adaran.net>
 Date:	    13/11/04
 Summary:    Should be able to save the map as an image, for printing or use
             elsewhere.
-State:      This will be included in the 0.5.0 release
+State:      Implemented.
 
