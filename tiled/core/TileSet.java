@@ -12,9 +12,7 @@
 
 package tiled.core;
 
-import java.awt.Canvas;
-import java.awt.Graphics2D;
-import java.awt.Image;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -47,7 +45,7 @@ public class TileSet
      * @param spacing     the amount of spacing between the tiles
      */
     public void importTileBitmap(String imgFilename,
-            int tileWidth, int tileHeight, int spacing) {
+            int tileWidth, int tileHeight, int spacing) throws Exception{
         File imgFile = null;
         try {
             imgFile = new File(imgFilename);
@@ -58,13 +56,11 @@ public class TileSet
 
         BufferedImage tilebmp = null;
 
-        try {
-            tilebmp = ImageIO.read(imgFile);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, e.getMessage(),
-                    "Error!", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+	tilebmp = ImageIO.read(imgFile);
+
+	if(tilebmp == null) {
+		throw new Exception("Failed to load " + tilebmpFile);
+	}
 
         int iw = tilebmp.getWidth();
         int ih = tilebmp.getHeight();
@@ -83,12 +79,7 @@ public class TileSet
                             null);
 
                     Tile newTile = new Tile();
-                    try {
-                        newTile.setImage(tile);
-                    } catch (Exception e) {
-                        JOptionPane.showMessageDialog(null, e.getMessage(),
-                                "Error!", JOptionPane.ERROR_MESSAGE);
-                    }
+                    newTile.setImage(tile);
                     addNewTile(newTile);
                 }
             }

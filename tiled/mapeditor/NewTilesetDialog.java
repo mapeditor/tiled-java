@@ -179,8 +179,15 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
             if (tilebmpCheck.isSelected()) {
                 String file = tilebmpFile.getText();
                 int spacing = Integer.parseInt(tileSpacing.getText());
-                newTileset.importTileBitmap(file,
-                        map.getTileWidth(), map.getTileHeight(), spacing);
+                try {
+                    newTileset.importTileBitmap(file,
+                            map.getTileWidth(), map.getTileHeight(), spacing);
+                } catch (Exception e) {
+		    JOptionPane.showMessageDialog(this,
+                        e.getMessage(), "Error while importing tileset",
+                        JOptionPane.ERROR_MESSAGE);
+                    newTileset = null;
+                }
             }
 
             dispose();
