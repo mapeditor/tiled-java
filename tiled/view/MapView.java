@@ -180,30 +180,30 @@ public abstract class MapView extends JPanel implements Scrollable
      * and will also draw the grid, and any 'special' layers.
      * 
      * @param g the Graphics2D object to paint to
-     * @see JComponent#paint(java.awt.Graphics)
+     * @see JComponent#paintComponent(java.awt.Graphics)
      * @see MapLayer
      * @see SelectionLayer
      */
-    public void paint(Graphics g) {
+    public void paintComponent(Graphics g) {
+        Graphics2D g2d = (Graphics2D)g.create();
         TiledConfiguration conf = TiledConfiguration.getInstance();
 
         double currentZoom = zoom;
-        Graphics2D g2d = (Graphics2D)g;
         Iterator li = myMap.getLayers();
         MapLayer layer;
-        Rectangle clip = g.getClipBounds();
+        Rectangle clip = g2d.getClipBounds();
 
         g2d.setStroke(new BasicStroke(2.0f));
 
         // Do an initial fill with the background color
         try {
             String colorString = conf.getValue("tiled.background.color");
-            g.setColor(Color.decode(colorString));
+            g2d.setColor(Color.decode(colorString));
         } catch (NumberFormatException e) {
-            g.setColor(new Color(64, 64, 64));
+            g2d.setColor(new Color(64, 64, 64));
         }
 
-        g.fillRect(clip.x, clip.y, clip.width, clip.height);
+        g2d.fillRect(clip.x, clip.y, clip.width, clip.height);
 
         while (li.hasNext()) {
             if ((layer = (MapLayer)li.next()) != null) {
@@ -217,9 +217,9 @@ public abstract class MapView extends JPanel implements Scrollable
                     }
                     
                     if (layer instanceof TileLayer) {
-                        paintLayer(g, (TileLayer)layer, currentZoom);
+                        paintLayer(g2d, (TileLayer)layer, currentZoom);
                     } else if (layer instanceof ObjectGroup) {
-                        paintLayer(g, (ObjectGroup)layer, currentZoom);
+                        paintLayer(g2d, (ObjectGroup)layer, currentZoom);
                     }
                 }
             }
@@ -237,7 +237,7 @@ public abstract class MapView extends JPanel implements Scrollable
                         g2d.setColor(
                                 ((SelectionLayer)layer).getHighlightColor());
                     }
-                    paintLayer(g, (TileLayer)layer, currentZoom);
+                    paintLayer(g2d, (TileLayer)layer, currentZoom);
                 }
             }
         }
@@ -245,9 +245,9 @@ public abstract class MapView extends JPanel implements Scrollable
         // Grid color (also used for coordinates)
         try {
             String colorString = conf.getValue("tiled.grid.color");
-            g.setColor(Color.decode(colorString));
+            g2d.setColor(Color.decode(colorString));
         } catch (NumberFormatException e) {
-            g.setColor(Color.black);
+            g2d.setColor(Color.black);
         }
 
         if (getMode(PF_GRIDMODE)) {
@@ -270,7 +270,7 @@ public abstract class MapView extends JPanel implements Scrollable
             }
 
             g2d.setStroke(new BasicStroke());
-            paintGrid(g, currentZoom);
+            paintGrid(g2d, currentZoom);
         }
 
         if (getMode(PF_COORDINATES)) {
@@ -285,7 +285,8 @@ public abstract class MapView extends JPanel implements Scrollable
      * @param tl    the TileLayer to be drawn
      * @param zoom  the zoom level to draw the layer on
      */
-    protected abstract void paintLayer(Graphics g, TileLayer tl, double zoom);
+    protected abstract void paintLayer(Graphics2D g2d, TileLayer tileLayer,
+            double zoom);
 
     /**
      * Draws an ObjectGroup. Implemented in a subclass.
@@ -293,9 +294,10 @@ public abstract class MapView extends JPanel implements Scrollable
      * @param og    the ObjectGroup to be drawn
      * @param zoom  the zoom level to draw the layer on
      */
-    protected abstract void paintLayer(Graphics g, ObjectGroup og, double zoom);
+    protected abstract void paintLayer(Graphics2D g2d, ObjectGroup og,
+            double zoom);
     
-    protected void paintEdge(Graphics g, MapLayer layer, int x, int y) {
+    protected void paintEdge(Graphics2D g2d, MapLayer layer, int x, int y) {
         /*
         Polygon grid = createGridPolygon(x, y, 0);
         PathIterator itr = grid.getPathIterator(null);
@@ -365,7 +367,7 @@ public abstract class MapView extends JPanel implements Scrollable
     /**
      * Draws the map grid.
      */
-    protected abstract void paintGrid(Graphics g, double zoom);
+    protected abstract void paintGrid(Graphics2D g2d, double zoom);
 
     /**
      * Draws the coordinates on each tile.

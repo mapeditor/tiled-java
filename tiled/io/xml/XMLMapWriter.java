@@ -14,6 +14,7 @@ package tiled.io.xml;
 
 import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.Color;
 import java.io.*;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -171,14 +172,22 @@ public class XMLMapWriter implements MapWriter
                             source.lastIndexOf(File.separatorChar) + 1));
             } else if (tilebmpFile != null) {
                 // Reference to tile bitmap
-                if(!Util.checkRoot(tilebmpFile)) {
-                    if(!tilebmpFile.startsWith(".")) {
-                        tilebmpFile = wp.substring(0, wp.lastIndexOf(File.separatorChar) + 1) + tilebmpFile;
+                if (!Util.checkRoot(tilebmpFile)) {
+                    if (!tilebmpFile.startsWith(".")) {
+                        tilebmpFile = wp.substring(0,
+                                wp.lastIndexOf(File.separatorChar) + 1) +
+                            tilebmpFile;
                     }
                 }
                 
                 w.startElement("image");
                 w.writeAttribute("source", getRelativePath(wp, tilebmpFile));
+
+                Color trans = set.getTransparentColor();
+                if (trans != null) {
+                    w.writeAttribute("trans", Integer.toHexString(
+                                trans.getRGB()).substring(2));
+                }
                 w.endElement();
             } else {
                 // Embedded tileset

@@ -27,6 +27,10 @@ import tiled.core.*;
 import tiled.mapeditor.util.TransparentImageFilter;
 import tiled.mapeditor.widget.*;
 
+
+/**
+ * A dialog for creating a new tileset.
+ */
 public class NewTilesetDialog extends JDialog implements ActionListener,
        ChangeListener
 {
@@ -37,19 +41,21 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
     private JTextField tilesetName;
     private JTextField tilebmpFile;
     private JLabel nameLabel, tileWidthLabel, tileHeightLabel, spacingLabel;
-    private JLabel tilebmpFileLabel,tileSafeColorLabel;
-    private JCheckBox tilebmpCheck, tileAutoCheck;
+    private JLabel tilebmpFileLabel;
+    private JCheckBox tilebmpCheck, tileAutoCheck, transCheck;
     private JRadioButton importRadio;
     private JRadioButton referenceRadio;
-    private JButton okButton, cancelButton, browseButton, colorButton;
+    private JButton okButton, cancelButton, browseButton;
+    private ColorButton colorButton;
+    private String path;
 
     public NewTilesetDialog(JFrame parent, Map map) {
-        super(parent, "New tileset");
+        super(parent, "New Tileset", true);
         this.map = map;
+        path = map.getFilename();
         init();
         pack();
         setLocationRelativeTo(parent);
-        setModal(true);
     }
 
     private void init() {
@@ -60,7 +66,6 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
         tileHeightLabel = new JLabel("Tile height: ");
         spacingLabel = new JLabel("Tile spacing: ");
         tilebmpFileLabel = new JLabel("Tile image: ");
-        tileSafeColorLabel = new JLabel("Transparent color: ");
 
         tilesetName = new JTextField("Untitled");
         tileWidth = new JTextField("" + map.getTileWidth(), 3);
@@ -81,10 +86,13 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
                 true);
         tileAutoCheck.setEnabled(false);
 
+        transCheck = new JCheckBox("Use transparent color");
+        transCheck.addChangeListener(this);
+
         okButton = new JButton("OK");
         cancelButton = new JButton("Cancel");
         browseButton = new JButton("Browse...");
-        colorButton = new JButton("None");
+        colorButton = new ColorButton(new Color(255, 0, 255));
         okButton.addActionListener(this);
         cancelButton.addActionListener(this);
         browseButton.addActionListener(this);
@@ -102,13 +110,13 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
         c.insets = new Insets(0, 5, 0, 0);
         tilebmpPathPanel.add(browseButton, c);
 
-        // Separate panel for safe color label and button
+        // Combine transparent color label and button
 
         JPanel tileColorPanel = new JPanel(new GridBagLayout());
         c = new GridBagConstraints();
         c.gridx = 0; c.gridy = 0; c.weightx = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
-        tileColorPanel.add(tileSafeColorLabel, c);
+        tileColorPanel.add(transCheck, c);
         c.gridx = 1;
         tileColorPanel.add(colorButton);
 
@@ -205,23 +213,37 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
                 String file = tilebmpFile.getText();
                 int spacing = tileSpacing.intValue();
                 try {
-                    if (colorButton.getText().equals("None")) {
+                    if (!transCheck.isSelected()) {
                         newTileset.importTileBitmap(file,
-                                map.getTileWidth(), map.getTileHeight(), spacing,
+                                map.getTileWidth(), map.getTileHeight(),
+                                spacing,
                                 tileAutoCheck.isSelected());
                     } else {
-
                         try {
+                            Toolkit tk = Toolkit.getDefaultToolkit();
                             Image orig = ImageIO.read(new File(file));
-                            Image trans = Toolkit.getDefaultToolkit().createImage(new FilteredImageSource(orig.getSource(),new TransparentImageFilter(colorButton.getBackground().getRGB())));
-                            BufferedImage img = new BufferedImage(trans.getWidth(null), trans.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+                            Image trans = tk.createImage(
+                                    new FilteredImageSource(orig.getSource(),
+                                        new TransparentImageFilter(
+                                            colorButton.getColor().getRGB())));
+                            BufferedImage img = new BufferedImage(
+                                    trans.getWidth(null),
+                                    trans.getHeight(null),
+                                    BufferedImage.TYPE_INT_ARGB);
 
                             img.getGraphics().drawImage(trans, 0, 0, null);
 
                             newTileset.importTileBitmap(img,
-                                    map.getTileWidth(), map.getTileHeight(), spacing,
+                                    map.getTileWidth(),
+                                    map.getTileHeight(),
+                                    spacing,
                                     tileAutoCheck.isSelected());
-                        }catch(Exception e) {
+
+                            newTileset.setTransparentColor(
+                                    colorButton.getColor());
+
+                            newTileset.setTilesetImageFilename(file);
+                        } catch (Exception e) {
                         }
                     }
                 } catch (Exception e) {
@@ -234,20 +256,21 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
 
             dispose();
         } else if (source == browseButton) {
-            JFileChooser ch = new JFileChooser();
+            JFileChooser ch = new JFileChooser(path);
 
             int ret = ch.showOpenDialog(this);
             if (ret == JFileChooser.APPROVE_OPTION) {
-                tilebmpFile.setText(ch.getSelectedFile().getAbsolutePath());
+                path = ch.getSelectedFile().getAbsolutePath();
+                tilebmpFile.setText(path);
             }
         } else if (source == colorButton) {
             ImageColorDialog icd;
             try {
-                icd = new ImageColorDialog(ImageIO.read(new File(tilebmpFile.getText())));
+                icd = new ImageColorDialog(
+                        ImageIO.read(new File(tilebmpFile.getText())));
                 Color c = icd.showDialog();
                 if (c != null) {
-                    colorButton.setBackground(c);
-                    colorButton.setText(Integer.toHexString(colorButton.getBackground().getRGB()).substring(2));
+                    colorButton.setColor(c);
                 }
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(getOwner(),
@@ -266,6 +289,10 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
         if (source == tilebmpCheck) {
             setUseTileBitmap(tilebmpCheck.isSelected());
         }
+        else if (source == transCheck) {
+            colorButton.setEnabled(tilebmpCheck.isSelected() &&
+                    transCheck.isSelected());
+        }
     }
 
     private void setUseTileBitmap(boolean value) {
@@ -275,7 +302,7 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
         tileSpacing.setEnabled(value);
         spacingLabel.setEnabled(value);
         tileAutoCheck.setEnabled(value);
-        tileSafeColorLabel.setEnabled(value);
-        colorButton.setEnabled(value);
+        transCheck.setEnabled(value);
+        colorButton.setEnabled(value && transCheck.isSelected());
     }
 }

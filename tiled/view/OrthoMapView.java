@@ -15,7 +15,6 @@ package tiled.view;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Polygon;
@@ -67,14 +66,14 @@ public class OrthoMapView extends MapView
                 myMap.getHeight() * tsize.height + border);
     }
 
-    protected void paintLayer(Graphics g, TileLayer layer, double zoom) {
+    protected void paintLayer(Graphics2D g2d, TileLayer layer, double zoom) {
         // Determine tile size and offset
         Dimension tsize = getTileSize(zoom);
         if (tsize.width <= 0 || tsize.height <= 0) return;
         int toffset = (((modeFlags & PF_GRIDMODE) != 0) ? 1 : 0);
 
         // Determine area to draw from clipping rectangle
-        Rectangle clipRect = g.getClipBounds();
+        Rectangle clipRect = g2d.getClipBounds();
         int startX = clipRect.x / tsize.width;
         int startY = clipRect.y / tsize.height;
         int endX = (clipRect.x + clipRect.width) / tsize.width + 1;
@@ -86,45 +85,45 @@ public class OrthoMapView extends MapView
                 y < endY; y++, gy += tsize.height) {
             for (int x = startX, gx = startX * tsize.width + toffset;
                     x < endX; x++, gx += tsize.width) {
-                Tile t = layer.getTileAt(x, y);
+                Tile tile = layer.getTileAt(x, y);
 
-                if (t != null && t != myMap.getNullTile()) {
-                    if (SelectionLayer.class.isInstance(layer)) {
+                if (tile != null && tile != myMap.getNullTile()) {
+                    if (layer instanceof SelectionLayer) {
                         Polygon gridPoly = createGridPolygon(gx, gy, 0);
-                        g.fillPolygon(gridPoly);
+                        g2d.fillPolygon(gridPoly);
                         //paintEdge(g, layer, gx, gy);
                     } else {
-                        t.draw(g, gx, gy, zoom);
+                        tile.draw(g2d, gx, gy, zoom);
                     }
                 }
             }
         }
     }
 
-    protected void paintLayer(Graphics g, ObjectGroup layer, double zoom) {
-    	Iterator itr = layer.getObjects();
-    	
-    	while(itr.hasNext()) {
-    		MapObject mo = (MapObject) itr.next();
-    		double ox = mo.getX()*zoom;
-    		double oy = mo.getY()*zoom;
-    		
-    		g.setColor(Color.black);
-    		g.fillOval((int)ox, (int)oy, (int)(10*zoom), (int)(10*zoom));
-    		if(zoom>0.0625) {
-    		    g.setColor(Color.white);
-    			g.drawString(mo.getType(),(int)(ox-12),(int)(oy-5));
-    		}
-    	}
+    protected void paintLayer(Graphics2D g, ObjectGroup layer, double zoom) {
+        Iterator itr = layer.getObjects();
+
+        while (itr.hasNext()) {
+            MapObject mo = (MapObject) itr.next();
+            double ox = mo.getX()*zoom;
+            double oy = mo.getY()*zoom;
+
+            g.setColor(Color.black);
+            g.fillOval((int)ox, (int)oy, (int)(10 * zoom), (int)(10 * zoom));
+            if (zoom > 0.0625) {
+                g.setColor(Color.white);
+                g.drawString(mo.getType(),(int)(ox - 12),(int)(oy - 5));
+            }
+        }
     }
     
-    protected void paintGrid(Graphics g, double zoom) {
+    protected void paintGrid(Graphics2D g2d, double zoom) {
         // Determine tile size
         Dimension tsize = getTileSize(zoom);
         if (tsize.width <= 0 || tsize.height <= 0) return;
 
         // Determine lines to draw from clipping rectangle
-        Rectangle clipRect = g.getClipBounds();
+        Rectangle clipRect = g2d.getClipBounds();
         int startX = clipRect.x / tsize.width;
         int startY = clipRect.y / tsize.height;
         int endX = (clipRect.x + clipRect.width) / tsize.width + 1;
@@ -132,12 +131,12 @@ public class OrthoMapView extends MapView
         int p = startY * tsize.height;
 
         for (int y = startY; y < endY; y++) {
-            g.drawLine(clipRect.x, p, clipRect.x + clipRect.width - 1, p);
+            g2d.drawLine(clipRect.x, p, clipRect.x + clipRect.width - 1, p);
             p += tsize.height;
         }
         p = startX * tsize.width;
         for (int x = startX; x < endX; x++) {
-            g.drawLine(p, clipRect.y, p, clipRect.y + clipRect.height - 1);
+            g2d.drawLine(p, clipRect.y, p, clipRect.y + clipRect.height - 1);
             p += tsize.width;
         }
     }

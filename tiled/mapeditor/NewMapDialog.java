@@ -28,7 +28,7 @@ public class NewMapDialog extends JDialog implements ActionListener
     private JComboBox mapTypeChooser;
 
     public NewMapDialog(JFrame parent) {
-        super(parent, "New map", true);
+        super(parent, "New Map", true);
         init();
         pack();
         setResizable(false);
@@ -103,7 +103,7 @@ public class NewMapDialog extends JDialog implements ActionListener
         mapTypeChooser.addItem("Isometric");
         // TODO: Enable when view is implemented
         //mapTypeChooser.addItem("Oblique");
-        mapTypeChooser.addItem("Hexagonal");
+        mapTypeChooser.addItem("Hexagonal (experimental)");
 
         JPanel miscPropPanel = new VerticalStaticJPanel();
         miscPropPanel.setLayout(new GridBagLayout());
@@ -156,7 +156,7 @@ public class NewMapDialog extends JDialog implements ActionListener
                 orientation = Map.MDO_ISO;
             } else if (mapTypeString.equals("Oblique")) {
                 orientation = Map.MDO_OBLIQUE;
-            } else if (mapTypeString.equals("Hexagonal")) {
+            } else if (mapTypeString.equals("Hexagonal (experimental)")) {
                 orientation = Map.MDO_HEX;
             }
 

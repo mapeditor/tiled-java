@@ -13,7 +13,6 @@
 package tiled.view;
 
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Polygon;
@@ -24,56 +23,54 @@ import tiled.core.*;
 
 public class ObliqueMapView extends MapView
 {
-	public ObliqueMapView(Map m) {
-		super(m);
-	}
-	
-	public int getScrollableBlockIncrement(
-		Rectangle visibleRect,
-		int orientation,
-		int direction) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+    public ObliqueMapView(Map m) {
+        super(m);
+    }
 
-	public int getScrollableUnitIncrement(
-		Rectangle visibleRect,
-		int orientation,
-		int direction) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+    public int getScrollableBlockIncrement(
+            Rectangle visibleRect, int orientation, int direction)
+    {
+        // TODO Auto-generated method stub
+        return 0;
+    }
 
-	public Dimension getPreferredSize() {
-		// TODO Auto-generated method stub
-		return new Dimension(0, 0);
-	}
+    public int getScrollableUnitIncrement(
+            Rectangle visibleRect, int orientation, int direction)
+    {
+        // TODO Auto-generated method stub
+        return 0;
+    }
 
-	protected void paintLayer(Graphics g, TileLayer layer, double zoom) {
-		// TODO Auto-generated method stub
-	}
-    
-	protected void paintLayer(Graphics g, ObjectGroup layer, double zoom) {
-		// TODO Auto-generated method stub
-	}
-	
-    protected void paintGrid(Graphics g, double zoom) {
-        // TODO
+    public Dimension getPreferredSize() {
+        // TODO Auto-generated method stub
+        return new Dimension(0, 0);
+    }
+
+    protected void paintLayer(Graphics2D g2d, TileLayer layer, double zoom) {
+        // TODO Auto-generated method stub
+    }
+
+    protected void paintLayer(Graphics2D g2d, ObjectGroup og, double zoom) {
+        // TODO Auto-generated method stub
+    }
+
+    protected void paintGrid(Graphics2D g2d, double zoom) {
+        // TODO: Implement paintGrid for ObliqueMapView
     }
 
     protected void paintCoordinates(Graphics2D g2d, double zoom) {
         // TODO: Implement paintCoordinates for ObliqueMapView
     }
 
-	public Point screenToTileCoords(int x, int y) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public Point screenToTileCoords(int x, int y) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	protected Polygon createGridPolygon(int tx, int ty, int border) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    protected Polygon createGridPolygon(int tx, int ty, int border) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
     public Point tileToScreenCoords(double x, double y) {
         // TODO Auto-generated method stub

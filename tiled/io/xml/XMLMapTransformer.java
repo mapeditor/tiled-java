@@ -13,10 +13,14 @@
 package tiled.io.xml;
 
 import java.awt.Canvas;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Image;
 import java.awt.MediaTracker;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
+import java.awt.image.FilteredImageSource;
 import java.io.*;
 import java.lang.reflect.*;
 import java.util.Stack;
@@ -34,6 +38,7 @@ import org.xml.sax.SAXException;
 import tiled.core.*;
 import tiled.io.ImageHelper;
 import tiled.io.MapReader;
+import tiled.mapeditor.util.TransparentImageFilter;
 import tiled.util.*;
 
 
@@ -336,19 +341,48 @@ public class XMLMapTransformer implements MapReader
                     set.addTile(unmarshalTile(child, tilesetBaseDir));
                 } else if (child.getNodeName().equalsIgnoreCase("image")) {
                     String source = getAttributeValue(child, "source");
+                    String id = getAttributeValue(child, "id");
+                    String transStr = getAttributeValue(child, "trans");
 
-                    if (source != null && getAttributeValue(child, "id") == null) {
+                    if (source != null && id == null) {
                         // Not a shared image, but an entire set in one image
                         // file
                         
-                        //FIXME: importTileBitmap does not fully support URLs
+                        // FIXME: importTileBitmap does not fully support URLs
                         String sourcePath = source;
                         if (!Util.checkRoot(source)) {
-                            sourcePath = tilesetBaseDir.substring(tilesetBaseDir.indexOf(':')+1) + source;
+                            sourcePath = tilesetBaseDir.substring(
+                                    tilesetBaseDir.indexOf(':') + 1) + source;
                         }
-                        
-                        set.importTileBitmap(sourcePath, tileWidth, tileHeight,
-                                tileSpacing, !hasTileTags);
+
+                        if (transStr != null) {
+                            Color color = new Color(
+                                    Integer.parseInt(transStr, 16));
+                            Toolkit tk = Toolkit.getDefaultToolkit();
+                            Image orig = ImageIO.read(new File(sourcePath));
+                            Image trans = tk.createImage(
+                                    new FilteredImageSource(orig.getSource(),
+                                        new TransparentImageFilter(
+                                            color.getRGB())));
+                            BufferedImage img = new BufferedImage(
+                                    trans.getWidth(null),
+                                    trans.getHeight(null),
+                                    BufferedImage.TYPE_INT_ARGB);
+
+                            img.getGraphics().drawImage(trans, 0, 0, null);
+
+                            set.importTileBitmap(img,
+                                    tileWidth,
+                                    tileHeight,
+                                    tileSpacing,
+                                    !hasTileTags);
+
+                            set.setTransparentColor(color);
+                            set.setTilesetImageFilename(sourcePath);
+                        } else {
+                            set.importTileBitmap(sourcePath, tileWidth,
+                                    tileHeight, tileSpacing, !hasTileTags);
+                        }
 
                     } else {
                         set.addImage(unmarshalImage(child, tilesetBaseDir),

@@ -89,23 +89,10 @@ public class PropertiesTableModel extends AbstractTableModel
     }
 
     public void remove(Object key) {
-        
         properties.remove(key);
         fireTableDataChanged();
     }
-    
-    public void remove(int row) {
-        Enumeration e = properties.keys();
-        for (int i = 0; e.hasMoreElements(); i++) {
-            Object key = e.nextElement();
-            if (i == row) {
-                properties.remove(key);
-                break;
-            }
-        }
-        fireTableDataChanged();
-    }
-    
+
     public void update(Properties props) {
         properties = props;
         fireTableDataChanged();

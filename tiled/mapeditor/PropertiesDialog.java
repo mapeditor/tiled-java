@@ -122,21 +122,19 @@ public class PropertiesDialog extends JDialog implements ActionListener,
         } else if (source == bCancel) {
             dispose();
         } else if (source == bDel) {
-
             int total = tProperties.getSelectedRowCount();
-            Object [] keys = new Object[total];
-            int [] selRows = tProperties.getSelectedRows();
+            Object[] keys = new Object[total];
+            int[] selRows = tProperties.getSelectedRows();
             
-            for(int i=0;i<total;i++) {
-                keys[i] = tProperties.getValueAt(selRows[i],0);
+            for(int i = 0; i < total; i++) {
+                keys[i] = tProperties.getValueAt(selRows[i], 0);
             }
             
-            for(int i=0;i<total;i++) {
-                if(keys[i]!=null) {
+            for (int i = 0; i < total; i++) {
+                if (keys[i] != null) {
                     tableModel.remove(keys[i]);
                 }
-            }
-            
+            }            
         }
     }
 

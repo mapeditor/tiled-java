@@ -50,6 +50,7 @@
 <!ATTLIST image
     format   CDATA #IMPLIED
     source   CDATA #IMPLIED
+    trans    CDATA #IMPLIED
 >
 
 <!ELEMENT property EMPTY>

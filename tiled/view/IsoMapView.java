@@ -48,12 +48,12 @@ public class IsoMapView extends MapView
         }
     }
 
-    protected void paintLayer(Graphics g, TileLayer layer, double zoom) {
+    protected void paintLayer(Graphics2D g2d, TileLayer layer, double zoom) {
         // Turn anti alias on for selection drawing
-        ((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                                         RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
 
-        Rectangle clipRect = g.getClipBounds();
+        Rectangle clipRect = g2d.getClipBounds();
         Dimension tileSize = getTileSize(zoom);
         int tileStepY = (tileSize.height / 2 == 0) ? 1 : tileSize.height / 2;
 
@@ -78,10 +78,10 @@ public class IsoMapView extends MapView
                     if (layer instanceof SelectionLayer) {
                         Polygon gridPoly = createGridPolygon(
                                 drawLoc.x, drawLoc.y, 0);
-                        g.fillPolygon(gridPoly);
-                        //paintEdge(g, layer, drawLoc.x, drawLoc.y);
+                        g2d.fillPolygon(gridPoly);
+                        //paintEdge(g2d, layer, drawLoc.x, drawLoc.y);
                     } else {
-                        tile.draw(g, drawLoc.x, drawLoc.y, zoom);
+                        tile.draw(g2d, drawLoc.x, drawLoc.y, zoom);
                     }
                 }
 
@@ -104,13 +104,13 @@ public class IsoMapView extends MapView
         }
     }	
 
-    protected void paintLayer(Graphics g, ObjectGroup layer, double zoom) {
+    protected void paintLayer(Graphics2D g2d, ObjectGroup og, double zoom) {
         // TODO: Implement objectgroup painting for IsoMapView
     }
     
-    protected void paintGrid(Graphics g, double zoom) {
+    protected void paintGrid(Graphics2D g2d, double zoom) {
         Dimension tileSize = getTileSize(zoom);
-        Rectangle clipRect = g.getClipBounds();
+        Rectangle clipRect = g2d.getClipBounds();
 
         clipRect.x -= tileSize.width / 2;
         clipRect.width += tileSize.width;
@@ -128,12 +128,12 @@ public class IsoMapView extends MapView
         for (int y = startY; y <= endY; y++) {
             Point start = tileToScreenCoords(startX, y);
             Point end = tileToScreenCoords(endX, y);
-            g.drawLine(start.x, start.y, end.x, end.y);
+            g2d.drawLine(start.x, start.y, end.x, end.y);
         }
         for (int x = startX; x <= endX; x++) {
             Point start = tileToScreenCoords(x, startY);
             Point end = tileToScreenCoords(x, endY);
-            g.drawLine(start.x, start.y, end.x, end.y);
+            g2d.drawLine(start.x, start.y, end.x, end.y);
         }
     }
 

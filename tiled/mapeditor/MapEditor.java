@@ -66,7 +66,7 @@ public class MapEditor implements ActionListener,
     private Cursor curEyed    = null;
     private Cursor curMarquee = null;
 
-    public static final String version = "0.5.0 WIP";
+    public static final String version = "0.5.0";
 
     private Map currentMap;
     private MapView mapView;
@@ -535,7 +535,7 @@ public class MapEditor implements ActionListener,
         //navigation and tool options
         //TODO: the minimap is prohibitively slow, need to speed this up before it can be used
         miniMap = new MiniMapViewer();
-        miniMap.setMainPanel(mapScrollPane);
+        //miniMap.setMainPanel(mapScrollPane);
         JScrollPane miniMapSp = new JScrollPane();
         miniMapSp.getViewport().setView(miniMap);
         miniMapSp.setMinimumSize(new Dimension(0, 120));
@@ -598,7 +598,7 @@ public class MapEditor implements ActionListener,
         c.insets = new Insets(3, 0, 0, 0); c.weightx = 1; c.weighty = 0;
         c.fill = GridBagConstraints.BOTH;
         c.gridx = 0; c.gridy = 0;
-        layerPanel.add(miniMapSp, c);
+        //layerPanel.add(miniMapSp, c);
         c.weighty = 0; c.gridy += 1;
         layerPanel.add(sliderPanel, c);
         c.weighty = 1; c.gridy += 1;
@@ -849,7 +849,7 @@ public class MapEditor implements ActionListener,
                 if (newTile != currentMap.getNullTile()) {
                     setCurrentTile(newTile);
                 }
-            } else if(layer instanceof ObjectGroup) {
+            } else if (layer instanceof ObjectGroup) {
                 // TODO: Add support for ObjectGroups here
             }
         } else if (mouseButton == MouseEvent.BUTTON1) {
@@ -885,7 +885,7 @@ public class MapEditor implements ActionListener,
                         if (newTile != currentMap.getNullTile()) {
                             setCurrentTile(newTile);
                         }
-                    } else if(layer instanceof ObjectGroup) {
+                    } else if (layer instanceof ObjectGroup) {
                         // TODO: Add support for ObjectGroups here
                     }
                     break;
@@ -1487,7 +1487,7 @@ public class MapEditor implements ActionListener,
                 if (getCurrentLayer() instanceof TileLayer) {
                     clipboardLayer = new TileLayer(
                             marqueeSelection.getSelectedAreaBounds());
-                } else if(getCurrentLayer() instanceof ObjectGroup) {
+                } else if (getCurrentLayer() instanceof ObjectGroup) {
                     clipboardLayer = new ObjectGroup(
                             marqueeSelection.getSelectedAreaBounds());
                 }
@@ -1512,7 +1512,7 @@ public class MapEditor implements ActionListener,
                 if (getCurrentLayer() instanceof TileLayer) {
                     clipboardLayer = new TileLayer(
                             marqueeSelection.getSelectedAreaBounds());
-                } else if(getCurrentLayer() instanceof ObjectGroup) {
+                } else if (getCurrentLayer() instanceof ObjectGroup) {
                     clipboardLayer = new ObjectGroup(
                             marqueeSelection.getSelectedAreaBounds());
                 }
@@ -1853,7 +1853,7 @@ public class MapEditor implements ActionListener,
     private MapLayer createLayerCopy(MapLayer layer) {
         if (layer instanceof TileLayer) {
             return new TileLayer((TileLayer)layer);
-        } else if(layer instanceof ObjectGroup) {
+        } else if (layer instanceof ObjectGroup) {
             return new ObjectGroup((ObjectGroup)layer);
         }
         return null;
@@ -1964,9 +1964,11 @@ public class MapEditor implements ActionListener,
             tilePaletteDialog.setMap(currentMap);
         }
 
+        /*
         if (miniMap != null && currentMap != null) {
             miniMap.setView(MapView.createViewforMap(currentMap));
         }
+        */
 
         if (currentMap != null) {
             currentMap.addLayerSpecial(cursorHighlight);

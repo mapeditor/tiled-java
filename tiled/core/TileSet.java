@@ -63,6 +63,7 @@ public class TileSet
     private String externalSource, tilebmpFile;
     private String name;
     private Map map;
+    private Color transparentColor;
 
     public TileSet() {
         tiles = new Vector();
@@ -226,10 +227,10 @@ public class TileSet
     }
 
     /**
-     * Returns the map this tileset is part of.
+     * Sets the transparent color in the tileset image.
      */
-    public Map getMap() {
-        return map;
+    public void setTransparentColor(Color color) {
+        transparentColor = color;
     }
 
     /**
@@ -426,6 +427,21 @@ public class TileSet
      */
     public String getName() {
         return name;
+    }
+
+    /**
+     * Returns the map this tileset is part of.
+     */
+    public Map getMap() {
+        return map;
+    }
+
+    /**
+     * Returns the transparent color of the tileset image, or <code>null</code>
+     * if none is set.
+     */
+    public Color getTransparentColor() {
+        return transparentColor;
     }
 
     /**

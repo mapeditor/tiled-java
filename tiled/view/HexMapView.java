@@ -89,12 +89,12 @@ public class HexMapView extends MapView
                 tsize.height / 2);
     }
 
-    protected void paintLayer(Graphics g, TileLayer layer, double zoom) {
+    protected void paintLayer(Graphics2D g2d, TileLayer layer, double zoom) {
         // Determine area to draw from clipping rectangle
         Dimension tsize = getTileSize(zoom);
         int toffset = (((modeFlags & PF_GRIDMODE) != 0) ? 1 : 0);
 
-        Rectangle clipRect = g.getClipBounds();
+        Rectangle clipRect = g2d.getClipBounds();
         Polygon gridPoly;
         Point topLeft = screenToTileCoords(
                 (int)clipRect.getMinX(), (int)clipRect.getMinY());
@@ -108,26 +108,26 @@ public class HexMapView extends MapView
 
         int gy = (int)(startY * tsize.height + toffset);
         for (int y = startY; y < endY; y++) {
-        	gridPoly = createGridPolygon(0, y, 1);
-        	gridPoly.translate(0, -(int)(tsize.getHeight() / 2));
+            gridPoly = createGridPolygon(0, y, 1);
+            gridPoly.translate(0, -(int)(tsize.getHeight() / 2));
             int gx = (int)(startX * tsize.width + toffset);
             for (int x = startX; x < endX; x++) {
                 Tile t = layer.getTileAt(x, y);
 
                 if (t != null && t != myMap.getNullTile()) {
                     if (layer.getClass() == SelectionLayer.class) {
-                        g.fillPolygon(gridPoly);
+                        g2d.fillPolygon(gridPoly);
                     } else {
-                        t.draw(g, gx, (int)(gy + (tsize.getHeight() / 2) *
+                        t.draw(g2d, gx, (int)(gy + (tsize.getHeight() / 2) *
                                     (1 - x % 2)), zoom);
                     }
                 }
                 if (x % 2 == 0) {
-                	gridPoly.translate(
+                    gridPoly.translate(
                             (int)(tsize.getWidth() * .75),
                             -(int)(tsize.getHeight() / 2));
                 } else {
-                	gridPoly.translate(
+                    gridPoly.translate(
                             (int)(tsize.getWidth() * .75),
                             (int)(tsize.getHeight() / 2));
                 }
@@ -137,8 +137,7 @@ public class HexMapView extends MapView
         }
     }
 
-    protected void paintLayer(Graphics g, ObjectGroup layer, double zoom) {
-    	
+    protected void paintLayer(Graphics2D g2d, ObjectGroup og, double zoom) {
     }
     
     /**
@@ -155,11 +154,11 @@ public class HexMapView extends MapView
                 (int)(myMap.getTileHeight() * zoom));
     }
 
-    protected void paintGrid(Graphics g, double zoom) {
-        g.setColor(Color.black);
+    protected void paintGrid(Graphics2D g2d, double zoom) {
+        g2d.setColor(Color.black);
         Dimension tileSize = getTileSize(zoom);
         // Determine area to draw from clipping rectangle
-        Rectangle clipRect = g.getClipBounds();
+        Rectangle clipRect = g2d.getClipBounds();
         Point topLeft = screenToTileCoords(
                 (int)clipRect.getMinX(), (int)clipRect.getMinY());
         Point bottomRight = screenToTileCoords(
@@ -177,7 +176,7 @@ public class HexMapView extends MapView
             for (int x = startX; x < endX; x++) {
                 grid.translate(0,
                         (int)((tileSize.getHeight() / 2) * (1 - x % 2)));
-                g.drawPolygon(grid);
+                g2d.drawPolygon(grid);
                 grid.translate((int)(tileSize.getWidth() * .75), 0);
                 grid.translate(0,
                         -(int)((tileSize.getHeight() / 2) * (1 - x % 2)));

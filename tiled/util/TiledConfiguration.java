@@ -22,11 +22,11 @@ import java.io.*;
 public final class TiledConfiguration
 {
     private static TiledConfiguration instance = null;
-    private HashMap settings;
+    private Properties settings;
     private boolean changed;
 
     private TiledConfiguration() {
-        settings = new HashMap();
+        settings = new Properties();
         populateDefaults();
         changed = false;
     }
@@ -68,9 +68,9 @@ public final class TiledConfiguration
         while ((line = br.readLine()) != null) {
             // Make sure it isn't a comment
             if (!line.trim().startsWith("#") && line.trim().length() > 0){
-                String [] keyValue = line.split("[ ]*=[ ]*");
+                String[] keyValue = line.split("[ ]*=[ ]*");
                 if (keyValue.length > 1) {
-                    settings.put(keyValue[0],keyValue[1]);
+                    settings.put(keyValue[0], keyValue[1]);
                 }
             }
         }
@@ -212,6 +212,6 @@ public final class TiledConfiguration
         addConfigPair("tiled.grid.color", "0x000000");
         addConfigPair("tiled.grid.antialias", "1");
         addConfigPair("tiled.grid.opacity", "255");
-        addConfigPair("tiled.plugins.dir", ".");
+        addConfigPair("tiled.plugins.dir", "plugins");
     }
 }
