@@ -31,7 +31,7 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
     private JTextField tilebmpFile;
     private JLabel nameLabel, tileWidthLabel, tileHeightLabel, spacingLabel;
     private JLabel tilebmpFileLabel;
-    private JCheckBox tilebmpCheck;
+    private JCheckBox tilebmpCheck, tileAutoCheck;
     private JRadioButton importRadio;
     private JRadioButton referenceRadio;
     private JButton okButton, cancelButton, browseButton;
@@ -69,6 +69,9 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
         tilebmpCheck = new JCheckBox("Reference tileset image", false);
         tilebmpCheck.addChangeListener(this);
 
+		tileAutoCheck = new JCheckBox("Auto-create tiles for tile images", false);
+		tileAutoCheck.setEnabled(false);
+
         okButton = new JButton("OK");
         cancelButton = new JButton("Cancel");
         browseButton = new JButton("Browse...");
@@ -103,15 +106,17 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridwidth = 2;
         tilebmpPanel.add(tilebmpCheck, c);
-        c.gridy = 1; c.gridwidth = 1;
+		c.gridy = 1;
+		tilebmpPanel.add(tileAutoCheck, c);
+        c.gridy = 2; c.gridwidth = 1;
         c.fill = GridBagConstraints.NONE;
         tilebmpPanel.add(tilebmpFileLabel, c);
-        c.gridy = 2;
+        c.gridy = 3;
         tilebmpPanel.add(spacingLabel, c);
-        c.gridx = 1; c.gridy = 1; c.weightx = 1;
+        c.gridx = 1; c.gridy = 2; c.weightx = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
         tilebmpPanel.add(tilebmpPathPanel, c);
-        c.gridy = 2;
+        c.gridy = 3;
         tilebmpPanel.add(tileSpacing, c);
         c.gridwidth = 1;
 
@@ -182,7 +187,7 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
                 int spacing = tileSpacing.intValue();
                 try {
                     newTileset.importTileBitmap(file,
-                            map.getTileWidth(), map.getTileHeight(), spacing);
+                            map.getTileWidth(), map.getTileHeight(), spacing, tileAutoCheck.isSelected());
                 } catch (Exception e) {
 		    JOptionPane.showMessageDialog(this,
                         e.getMessage(), "Error while importing tileset",
@@ -218,5 +223,6 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
         browseButton.setEnabled(value);
         tileSpacing.setEnabled(value);
         spacingLabel.setEnabled(value);
+        tileAutoCheck.setEnabled(value);
     }
 }

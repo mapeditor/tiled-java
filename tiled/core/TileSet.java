@@ -55,7 +55,7 @@ public class TileSet
      * @param spacing     the amount of spacing between the tiles
      */
     public void importTileBitmap(String imgFilename,
-            int tileWidth, int tileHeight, int spacing) throws Exception{
+            int tileWidth, int tileHeight, int spacing, boolean createTiles) throws Exception{
         File imgFile = null;
         try {
             imgFile = new File(imgFilename);
@@ -89,10 +89,12 @@ public class TileSet
                             tileWidth, tileHeight,
                             x, y, x + tileWidth, y + tileHeight,
                             null);
-					addImage(tile);
-                    /*Tile newTile = new Tile();
-                    newTile.setImage(tile);
-                    addNewTile(newTile);*/
+					int id = addImage(tile);
+					if(createTiles) {
+                    	Tile newTile = new Tile();
+                    	newTile.setImage(id);
+                    	addNewTile(newTile);
+                    }
                 }
             }
         }

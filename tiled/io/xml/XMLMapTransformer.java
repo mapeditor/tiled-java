@@ -249,7 +249,8 @@ public class XMLMapTransformer implements MapReader
 
     private TileSet unmarshalTileset(Node t) throws Exception {
         TileSet set = null;
-
+		boolean hasTileTags=false;
+		
         try {
             set = (TileSet)unmarshalClass(TileSet.class, t);
         } catch (Exception e) {
@@ -266,7 +267,15 @@ public class XMLMapTransformer implements MapReader
             return ext;
         } else {
             NodeList children = t.getChildNodes();
-
+			
+			//do an initial pass to see if any tile tags are specified
+			for (int i = 0; i < children.getLength(); i++) {
+				Node child = children.item(i);
+				if (child.getNodeName().equalsIgnoreCase("tile")) {
+					hasTileTags = true;
+				}
+			}
+			
             for (int i = 0; i < children.getLength(); i++) {
                 Node child = children.item(i);
                 if (child.getNodeName().equalsIgnoreCase("tile")) {
@@ -286,7 +295,7 @@ public class XMLMapTransformer implements MapReader
 	                    }
 	
 	                    set.importTileBitmap(sourcePath,
-	                            tileWidth, tileHeight, tileSpacing);
+	                            tileWidth, tileHeight, tileSpacing, !hasTileTags);
 	
 	                    // There can be only one tileset image
 	                    //break;

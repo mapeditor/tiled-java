@@ -1,9 +1,12 @@
-0.5.0 - Pending
+0.5.0 - TBD
 
 * Added width and height attributes to layer element (can be different from map
   width and height)
 * Added layer properties, analoguous to tile and map properties
+* Added Rainer's shared images code
+* Added support for object placement
 * Fixed determining the relative path to tileset images
+* New tilesets can have tiles auto-created from images
 
 0.4.2 - October 14th, 2004
 
