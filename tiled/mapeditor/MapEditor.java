@@ -1692,8 +1692,6 @@ public class MapEditor implements ActionListener,
      */
     public boolean loadMap(String file) {
         try {
-            
-
             Map m = MapHelper.loadMap(file);
             
             if (m != null) {                
@@ -1805,10 +1803,10 @@ public class MapEditor implements ActionListener,
 
         if (filename != null) {
             MapView myView = MapView.createViewforMap(currentMap);
-            //MapView myView = currentMap.createView();
             if (mapView.getMode(MapView.PF_GRIDMODE))
                 myView.enableMode(MapView.PF_GRIDMODE);
             myView.enableMode(MapView.PF_NOSPECIAL);
+            myView.setZoom(mapView.getZoom());
             Dimension d = myView.getPreferredSize();
             BufferedImage i = new BufferedImage(d.width, d.height,
                     BufferedImage.TYPE_INT_ARGB);

@@ -14,9 +14,7 @@ package tiled.io.xml;
 
 import java.awt.Canvas;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Image;
-//import java.awt.MediaTracker;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
@@ -45,13 +43,10 @@ import tiled.util.*;
 public class XMLMapTransformer implements MapReader
 {
     private Map map = null;
-    private Document doc;
-    private Component mediaComponent;
     private String xmlPath = null;
     private Stack warnings;
     
     public XMLMapTransformer() {
-        mediaComponent = new Canvas();
         warnings = new Stack();
     }
 
@@ -67,7 +62,6 @@ public class XMLMapTransformer implements MapReader
     
     private int reflectFindMethodByName(Class c, String methodName) {
         Method[] methods = c.getMethods();
-        //System.out.println("Searching for " + methodName);
         for (int i = 0; i < methods.length; i++) {
             if (methods[i].getName().equalsIgnoreCase(methodName)) {
                 return i;
@@ -77,7 +71,8 @@ public class XMLMapTransformer implements MapReader
     }
 
     private void reflectInvokeMethod(Object invokeVictim, Method method,
-            String[] args) throws InvocationTargetException, Exception {
+            String[] args) throws InvocationTargetException, Exception
+    {
         Class[] parameterTypes = method.getParameterTypes();
         Object[] conformingArguments = new Object[parameterTypes.length];
 
@@ -138,19 +133,6 @@ public class XMLMapTransformer implements MapReader
         }
     }
 
-    private Node getChildNode(Node n, String name) {
-        NodeList children = n.getChildNodes();
-        Node child = null;
-        for (int i = 0; i < children.getLength(); i++) {
-             child = children.item(i);
-            if (child.getNodeName().equalsIgnoreCase(name)) {
-                break;
-            }
-        }
-
-        return child;
-    }
-
     private Object unmarshalClass(Class reflector, Node node)
         throws InstantiationException, IllegalAccessException,
                InvocationTargetException {
@@ -208,7 +190,7 @@ public class XMLMapTransformer implements MapReader
             for (int i = 0; i < nl.getLength(); i++) {
                 Node n = nl.item(i);
                 if (n.getNodeName().equals("data")) {
-                    Node cdata = n.getChildNodes().item(0);
+                    Node cdata = n.getFirstChild();
                     if (cdata == null) {
                         warnings.push("WARN: image <data> tag enclosed no data. (empty data tag)");
                     } else {
@@ -276,32 +258,24 @@ public class XMLMapTransformer implements MapReader
     }
 
     private TileSet unmarshalTileset(Node t) throws Exception {
-        TileSet set = null;
-        boolean hasTileTags = false;
+        String source = getAttributeValue(t, "source");
+        String basedir = getAttributeValue(t, "basedir");
+        int firstGid = getAttribute(t, "firstgid", 1);
 
         String tilesetBaseDir = xmlPath;
 
-        try {
-            set = (TileSet)unmarshalClass(TileSet.class, t);
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (basedir != null) {
+            tilesetBaseDir = makeUrl(basedir);
         }
 
-        int tileWidth = getAttribute(t, "tilewidth", 0);
-        int tileHeight = getAttribute(t, "tileheight", 0);
-        int tileSpacing = getAttribute(t, "spacing", 0);
-
-        if (set.getBaseDir() != null) {
-            tilesetBaseDir = makeUrl(set.getBaseDir()); 
-        }
-
-        if (set.getSource() != null) {
-            String filename = tilesetBaseDir + set.getSource();
-            if (Util.checkRoot(set.getSource())) {
-                filename = makeUrl(set.getSource());
+        if (source != null) {
+            String filename = tilesetBaseDir + source;
+            if (Util.checkRoot(source)) {
+                filename = makeUrl(source);
             }
             
-            TileSet ext = null;
+            TileSet ext;
+
             try {
                 InputStream in = new URL(filename).openStream();
                 ext = unmarshalTilesetFile(in, filename);
@@ -310,37 +284,54 @@ public class XMLMapTransformer implements MapReader
                         filename);
                 ext = new TileSet();
             }
-            ext.setFirstGid(set.getFirstGid());
+
+            ext.setFirstGid(firstGid);
             return ext;
-        } else {
+        }
+        else {
+            int tileWidth = getAttribute(t, "tilewidth", map.getTileWidth());
+            int tileHeight = getAttribute(t, "tileheight", map.getTileHeight());
+            int tileSpacing = getAttribute(t, "spacing", 0);
+
+            TileSet set = new TileSet();
+
+            set.setName(getAttributeValue(t, "name"));
+            set.setBaseDir(basedir);
+            set.setFirstGid(firstGid);
+
+            boolean hasTileElements = false;
             NodeList children = t.getChildNodes();
 
-            // Do an initial pass to see if any tile tags are specified
+            // Do an initial pass to see if any tile elements are specified
             for (int i = 0; i < children.getLength(); i++) {
                 Node child = children.item(i);
                 if (child.getNodeName().equalsIgnoreCase("tile")) {
-                    hasTileTags = true;
+                    hasTileElements = true;
                 }
             }
 
             for (int i = 0; i < children.getLength(); i++) {
                 Node child = children.item(i);
+
                 if (child.getNodeName().equalsIgnoreCase("tile")) {
                     set.addTile(unmarshalTile(child, tilesetBaseDir));
-                } else if (child.getNodeName().equalsIgnoreCase("image")) {
-                    String source = getAttributeValue(child, "source");
+                }
+                else if (child.getNodeName().equalsIgnoreCase("image")) {
+                    String imgSource = getAttributeValue(child, "source");
                     String id = getAttributeValue(child, "id");
                     String transStr = getAttributeValue(child, "trans");
 
-                    if (source != null && id == null) {
+                    if (imgSource != null && id == null) {
                         // Not a shared image, but an entire set in one image
                         // file
                         
                         // FIXME: importTileBitmap does not fully support URLs
-                        String sourcePath = source;
-                        if (!Util.checkRoot(source)) {
-                            sourcePath = tilesetBaseDir.substring(
-                                    tilesetBaseDir.indexOf(':') + 1) + source;
+                        String sourcePath = imgSource;
+                        if (!Util.checkRoot(imgSource)) {
+                            sourcePath =
+                                tilesetBaseDir.substring(
+                                        tilesetBaseDir.indexOf(':') + 1) +
+                                imgSource;
                         }
 
                         if (transStr != null) {
@@ -360,16 +351,14 @@ public class XMLMapTransformer implements MapReader
                             img.getGraphics().drawImage(trans, 0, 0, null);
 
                             set.importTileBitmap(img,
-                                    tileWidth,
-                                    tileHeight,
-                                    tileSpacing,
-                                    !hasTileTags);
+                                    tileWidth, tileHeight, tileSpacing,
+                                    !hasTileElements);
 
                             set.setTransparentColor(color);
                             set.setTilesetImageFilename(sourcePath);
                         } else {
                             set.importTileBitmap(sourcePath, tileWidth,
-                                    tileHeight, tileSpacing, !hasTileTags);
+                                    tileHeight, tileSpacing, !hasTileElements);
                         }
 
                     } else {
@@ -378,8 +367,9 @@ public class XMLMapTransformer implements MapReader
                     }
                 }
             }
+
+            return set;
         }
-        return set;
     }
 
     private MapObject unmarshalObject(Node t) throws Exception {
@@ -468,33 +458,38 @@ public class XMLMapTransformer implements MapReader
         
         return og;
     }
-    
+
+    /**
+     * Loads a map layer from a layer node.
+     */
     private MapLayer unmarshalLayer(Node t) throws Exception {
-        TileLayer ml = null;
+        int layerWidth = getAttribute(t, "width", map.getWidth());
+        int layerHeight = getAttribute(t, "height", map.getHeight());
 
-        boolean encodedBase64 = false;
-        try {
-            ml = (TileLayer)unmarshalClass(TileLayer.class, t);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        TileLayer ml = new TileLayer(layerWidth, layerHeight);
 
-        Rectangle r = ml.getBounds();
-        if (r.height == 0 && r.width == 0) {
-            ml.setBounds(map.getBounds());
-            warnings.push("INFO: defaulting layer '"+ml.getName()+"' dimensions to map dimensions");
+        int offsetX = getAttribute(t, "x", 0);
+        int offsetY = getAttribute(t, "y", 0);
+        String opacity = getAttributeValue(t, "opacity");
+
+        ml.setXOffset(offsetX);
+        ml.setYOffset(offsetY);
+        ml.setName(getAttributeValue(t, "name"));
+
+        if (opacity != null) {
+            ml.setOpacity(Float.parseFloat(opacity));
         }
 
         Properties mlProps = ml.getProperties();
-        NodeList children = t.getChildNodes();
 
-        for (int i = 0; i < children.getLength(); i++) {
-            Node child = children.item(i);
+        for (Node child = t.getFirstChild(); child != null;
+                child = child.getNextSibling())
+        {
             if (child.getNodeName().equalsIgnoreCase("data")) {
                 String encoding = getAttributeValue(child, "encoding");
 
                 if (encoding != null && encoding.equalsIgnoreCase("base64")) {
-                    Node cdata = child.getChildNodes().item(0);
+                    Node cdata = child.getFirstChild();
                     if (cdata == null) {
                         warnings.push("WARN: layer <data> tag enclosed no data. (empty data tag)");
                     } else {
@@ -531,10 +526,10 @@ public class XMLMapTransformer implements MapReader
                     }
                 } else {
                     int x = 0, y = 0;
-                    NodeList dataChilds = child.getChildNodes();
-                    NodeList tilelist = doc.getElementsByTagName("tile");
-                    for (int j = 0; j < dataChilds.getLength(); j++) {
-                        Node dataChild = dataChilds.item(j);
+                    for (Node dataChild = child.getFirstChild();
+                            dataChild != null;
+                            dataChild = dataChild.getNextSibling())
+                    {
                         if (dataChild.getNodeName().equalsIgnoreCase("tile")) {
                             int tileId = getAttribute(dataChild, "gid", -1);
                             TileSet ts = map.findTileSetForTileGID(tileId);
@@ -546,7 +541,9 @@ public class XMLMapTransformer implements MapReader
                             }
 
                             x++;
-                            if (x == ml.getWidth()) { x = 0; y++; }
+                            if (x == ml.getWidth()) {
+                                x = 0; y++;
+                            }
                             if (y == ml.getHeight()) { break; }
                         }
                     }
@@ -562,81 +559,80 @@ public class XMLMapTransformer implements MapReader
 
     private void buildMap(Document doc) throws Exception {
         Node item, mapNode;
-        NodeList l, mapNodeList;
-        NamedNodeMap nnm;
         Tile tile;
-        mapNodeList = doc.getElementsByTagName("map");
 
+        mapNode = doc.getDocumentElement();
 
-        for (int itr = 0; (mapNode = mapNodeList.item(itr)) != null; itr++) {
-            // Get the map dimensions and create the map
-            int mapWidth = getAttribute(mapNode, "width", 0);
-            int mapHeight = getAttribute(mapNode, "height", 0);
+        if (!mapNode.getNodeName().equals("map")) {
+            throw new Exception("Not a valid tmx map file.");
+        }
 
-            if (mapWidth > 0 && mapHeight > 0) {
-                map = new Map(mapWidth, mapHeight);
-            } else {
-                // Maybe this map is still using the dimensions element
-                l = doc.getElementsByTagName("dimensions");
-                for (int i = 0; (item = l.item(i)) != null; i++) {
-                    if (item.getParentNode() == mapNode) {
-                        mapWidth = getAttribute(item, "width", 0);
-                        mapHeight = getAttribute(item, "height", 0);
+        // Get the map dimensions and create the map
+        int mapWidth = getAttribute(mapNode, "width", 0);
+        int mapHeight = getAttribute(mapNode, "height", 0);
 
-                        if (mapWidth > 0 && mapHeight > 0) {
-                            map = new Map(mapWidth, mapHeight);
-                        }
+        if (mapWidth > 0 && mapHeight > 0) {
+            map = new Map(mapWidth, mapHeight);
+        } else {
+            // Maybe this map is still using the dimensions element
+            NodeList l = doc.getElementsByTagName("dimensions");
+            for (int i = 0; (item = l.item(i)) != null; i++) {
+                if (item.getParentNode() == mapNode) {
+                    mapWidth = getAttribute(item, "width", 0);
+                    mapHeight = getAttribute(item, "height", 0);
+
+                    if (mapWidth > 0 && mapHeight > 0) {
+                        map = new Map(mapWidth, mapHeight);
                     }
                 }
             }
+        }
 
-            if (map == null) {
-                throw new Exception("Couldn't locate map dimensions.");
+        if (map == null) {
+            throw new Exception("Couldn't locate map dimensions.");
+        }
+
+        // Load other map attributes
+        String orientation = getAttributeValue(mapNode, "orientation");
+        int tileWidth = getAttribute(mapNode, "tilewidth", 0);
+        int tileHeight = getAttribute(mapNode, "tileheight", 0);
+
+        if (tileWidth > 0) {
+            map.setTileWidth(tileWidth);
+        }
+        if (tileHeight > 0) {
+            map.setTileHeight(tileHeight);
+        }
+
+        if (orientation != null) {
+            setOrientation(orientation);
+        } else {
+            setOrientation("orthogonal");
+        }
+
+        Properties mapProps = map.getProperties();
+
+        // Load the tilesets, properties, layers and objectgroups
+        for (Node sibs = mapNode.getFirstChild(); sibs != null;
+                sibs = sibs.getNextSibling())
+        {
+            if (sibs.getNodeName().equals("tileset")) {
+                map.addTileset(unmarshalTileset(sibs));
             }
-
-            // Load other map attributes
-            String orientation = getAttributeValue(mapNode, "orientation");
-            int tileWidth = getAttribute(mapNode, "tilewidth", 0);
-            int tileHeight = getAttribute(mapNode, "tileheight", 0);
-
-            if (tileWidth > 0) {
-                map.setTileWidth(tileWidth);
+            else if (sibs.getNodeName().equals("property")) {
+                mapProps.setProperty(getAttributeValue(sibs, "name"),
+                        getAttributeValue(sibs, "value"));
             }
-            if (tileHeight > 0) {
-                map.setTileHeight(tileHeight);
-            }
-
-            if (orientation != null) {
-                setOrientation(orientation);
-            } else {
-                setOrientation("orthogonal");
-            }
-
-            Properties mapProps = map.getProperties();
-
-            // Load the tilesets, properties, layers and objectgroups
-            l = mapNode.getChildNodes();
-            for (int i = 0; i < l.getLength(); i++) {
-                Node sibs = l.item(i);
-
-                if (sibs.getNodeName().equals("tileset")) {
-                    map.addTileset(unmarshalTileset(sibs));
+            else if (sibs.getNodeName().equals("layer")) {
+                MapLayer layer = unmarshalLayer(sibs);
+                if (layer != null) {
+                    map.addLayer(layer);
                 }
-                else if (sibs.getNodeName().equals("property")) {
-                    mapProps.setProperty(getAttributeValue(sibs, "name"),
-                            getAttributeValue(sibs, "value"));
-                }
-                else if (sibs.getNodeName().equals("layer")) {
-                    MapLayer layer = unmarshalLayer(sibs);
-                    if (layer != null) {
-                        map.addLayer(layer);
-                    }
-                }
-                else if (sibs.getNodeName().equals("objectgroup")) {
-                    MapLayer layer = unmarshalObjectGroup(sibs);
-                    if (layer != null) {
-                        map.addLayer(layer);
-                    }
+            }
+            else if (sibs.getNodeName().equals("objectgroup")) {
+                MapLayer layer = unmarshalObjectGroup(sibs);
+                if (layer != null) {
+                    map.addLayer(layer);
                 }
             }
         }
@@ -644,7 +640,11 @@ public class XMLMapTransformer implements MapReader
 
     private Map unmarshal(InputStream in) throws IOException, Exception {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        Document doc;
         try {
+            factory.setIgnoringComments(true);
+            factory.setIgnoringElementContentWhitespace(true);
+            factory.setExpandEntityReferences(false);
             DocumentBuilder builder = factory.newDocumentBuilder();
             doc = builder.parse(in, xmlPath);
         } catch (SAXException e) {
@@ -653,7 +653,6 @@ public class XMLMapTransformer implements MapReader
         }
 
         buildMap(doc);
-        
         return map;
     }
 
@@ -673,8 +672,6 @@ public class XMLMapTransformer implements MapReader
         Map unmarshalledMap = unmarshal(url.openStream());
         unmarshalledMap.setFilename(filename);
         
-        
-        
         return unmarshalledMap;
     }
 
@@ -683,7 +680,7 @@ public class XMLMapTransformer implements MapReader
         
         Map unmarshalledMap = unmarshal(in);
         
-        //unmarshalledMap.setFilename(xmlFile):w
+        //unmarshalledMap.setFilename(xmlFile)
         //
         return unmarshalledMap;
     }
