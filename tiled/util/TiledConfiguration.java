@@ -75,19 +75,24 @@ public final class TiledConfiguration
         settings.remove(key);
     }
 
-	public static void write(String filename) throws IOException, Exception{
-        BufferedReader br = new BufferedReader(new FileReader(filename));
+	public static void write(String filename) throws IOException, Exception{        
         BufferedWriter bw;
         Vector inputLines = new Vector();
         HashMap availableKeys = new HashMap();
         String line;
 
-        while((line = br.readLine()) != null) {
-            inputLines.add(line);
-        }
-
-        br.close();
-
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(filename));
+		    while((line = br.readLine()) != null) {
+		        inputLines.add(line);
+		    }
+		
+		    br.close();
+		} catch (IOException ioe) {
+			//although it's nice, it's not necessary to have a config file in existence when we go to write
+			//the config
+		}
+		
         bw = new BufferedWriter(new FileWriter(filename));
 
         Iterator lineItr = inputLines.iterator();

@@ -90,19 +90,14 @@ public class XMLMapWriter implements MapWriter
             w.writeAttribute("height", "" + map.getHeight());
             w.endElement();
 
-            /*
-            if (properties.size() > 0) {
-                w.startElement("properties");
-                Iterator propItr = properties.keySet().iterator();
-                while (propItr.hasNext()) {
-                    String key = (String)propItr.next();
-                    w.startElement("property");
-                    w.writeAttribute(key,(String)properties.get(key));
-                    w.endElement();
-                }
-                w.endElement();
-            }
-            */
+			Enumeration keys = map.getProperties();
+			while(keys.hasMoreElements()) {
+				String key = (String) keys.nextElement();
+				w.startElement("property");
+				w.writeAttribute("name", key);
+				w.writeAttribute("value", map.getPropertyValue(key));
+				w.endElement();
+			}
 
             int firstgid = 1;
             Iterator itr = map.getTilesets().iterator();

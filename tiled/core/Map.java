@@ -35,7 +35,7 @@ public class Map extends TiledEntity implements Cloneable
     int lit = 1;
     int orientation = MDO_ORTHO;
     EventListenerList mapChangeListeners;
-    HashMap properties;
+    Properties properties;
     String filename;
     String name;
 
@@ -52,7 +52,7 @@ public class Map extends TiledEntity implements Cloneable
     private void init() {
         mapChangeListeners = new EventListenerList();
         layers = new Vector();
-        properties = new HashMap();
+        properties = new Properties();
         tilesets = new Vector();
     }
 
@@ -184,6 +184,14 @@ public class Map extends TiledEntity implements Cloneable
     public void addProperty(String key, String value) {
         properties.put(key, value);
     }
+
+	public Enumeration getProperties() {
+		return properties.keys();
+	}
+	
+	public String getPropertyValue(String key) {
+		return properties.getProperty(key);
+	}
 
     /**
      * Removes the map layer at the specified index. Layers above this layer

@@ -12,27 +12,37 @@
 
 package tiled.mapeditor;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JDialog;
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import tiled.core.*;
 
 
-public class PropertiesDialog extends JDialog implements ActionListener
+public class PropertiesDialog extends JDialog implements ActionListener, ListSelectionListener
 {
-    Map currentMap;
-
+    private Map currentMap;
+	private JTable mapProperties;
+	
     public PropertiesDialog(MapEditor m) {
         currentMap = m.getCurrentMap();
-        setSize(550,200);
-        setLocation(100,250);
+        setSize(150,200);
+		setLocationRelativeTo(getOwner());
         setTitle("Map Properties");
         setModal(true);
     }
 
     private void init() {
+		mapProperties = new JTable(new PropertiesTableModel());
+		mapProperties.getSelectionModel().addListSelectionListener(this);
+		JScrollPane propScrollPane = new JScrollPane(mapProperties);
+		propScrollPane.setPreferredSize(new Dimension(150, 150));
+		
+		pack();
     }
 
 
@@ -41,9 +51,10 @@ public class PropertiesDialog extends JDialog implements ActionListener
         show();
     }
 
-    /**
-     * @see java.awt.event.ActionListener#actionPerformed(ActionEvent)
-     */
     public void actionPerformed(ActionEvent e) {
     }
+
+	public void valueChanged(ListSelectionEvent e) {
+		
+	}
 }
