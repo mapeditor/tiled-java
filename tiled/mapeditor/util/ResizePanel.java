@@ -14,29 +14,48 @@ package tiled.mapeditor.util;
 
 import java.awt.Dimension;
 import java.awt.event.*;
+
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 
-public class ResizePanel extends JPanel implements MouseListener{
+import tiled.core.Map;
+import tiled.view.MapView;
+
+public class ResizePanel extends JPanel implements MouseListener, MouseMotionListener{
 	
-	private JButton inner;
+	private MapView inner;
+	private Map currentMap;
 	private Dimension oldDim, newDim;
-	private int edge;
+	private int offsetX, offsetY;
+	private int pressX, pressY;
+	private double zoom;
 	
 	public ResizePanel() {
 		super();
-		inner = new JButton();
-		inner.addMouseListener(this);
-		inner.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
-		add(inner);
 		setLayout(new OverlayLayout(this));
 		setBorder(BorderFactory.createLoweredBevelBorder());
 	}
-
-	public ResizePanel(Dimension size, int edge) {
+	
+	public ResizePanel(Map map) {
 		this();
+		inner = map.createView();
+		inner.addMouseListener(this);
+		inner.addMouseMotionListener(this);
+		inner.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
+		add(inner);
+		zoom = 0.1;
+		inner.setZoom(zoom);
+		currentMap = map;
+	}
+
+	public ResizePanel(Dimension size, Map map) {
+		this(map);
 		oldDim = newDim = size;
 		setSize(size);
+	}
+
+	public void moveMap(int x, int y) {
+		inner.setLocation((int)(x*(currentMap.getTileWidth()*zoom)), (int) (y*(currentMap.getTileHeight()*zoom)));
 	}
 
 	public void setNewDimensions(Dimension n) {
@@ -45,17 +64,40 @@ public class ResizePanel extends JPanel implements MouseListener{
 	}
 
 	public Dimension getPreferredSize() {
-		return oldDim;
+		return inner.getPreferredSize();
 	}
 
 	public void mouseClicked(MouseEvent e) {
 	}
 
+	public void mouseDragged(MouseEvent e) {		
+		int newOffsetX=e.getX() - pressX, newOffsetY=e.getY() - pressY;
+		
+		//snap!
+		inner.setLocation((int) (newOffsetX - newOffsetX%(currentMap.getTileWidth()*zoom)), (int) (newOffsetY - newOffsetY%(currentMap.getTileHeight()*zoom)));
+		
+		newOffsetX /= (currentMap.getTileWidth()*zoom);
+		newOffsetY /= (currentMap.getTileHeight()*zoom);
+		
+		if(newOffsetX != offsetX) {		
+			firePropertyChange("offsetX", offsetX, newOffsetX);
+			offsetX = newOffsetX;
+		}
+		
+		if(newOffsetY != offsetY) {		
+			firePropertyChange("offsetY", offsetY, newOffsetY);
+			offsetY = newOffsetY;
+		}
+	}
+
 	public void mousePressed(MouseEvent e) {
-		System.out.println("Yay!");
+		pressX = e.getX();
+		pressY = e.getY();
 	}
 
 	public void mouseReleased(MouseEvent e) {
+		pressX=0;
+		pressY=0;
 	}
 
 	public void mouseEntered(MouseEvent e) {
@@ -63,4 +105,9 @@ public class ResizePanel extends JPanel implements MouseListener{
 
 	public void mouseExited(MouseEvent e) {
 	}
+
+    public void mouseMoved(MouseEvent e) {
+        
+    }
+    
 }

@@ -14,28 +14,25 @@ package tiled.mapeditor;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import tiled.core.Map;
 import tiled.mapeditor.util.ResizePanel;
 
-public class ResizeDialog extends JDialog implements ActionListener
+public class ResizeDialog extends JDialog implements ActionListener, PropertyChangeListener, 
+			ChangeListener
 {
-    public static final int ANCHOR_UPPERLEFT  = 1;
-    public static final int ANCHOR_UPPERMID   = 2;
-    public static final int ANCHOR_UPPERRIGHT = 3;
-    public static final int ANCHOR_MIDLEFT    = 4;
-    public static final int ANCHOR_MIDMID     = 5;
-    public static final int ANCHOR_MIDRIGHT   = 6;
-    public static final int ANCHOR_LOWERLEFT  = 7;
-    public static final int ANCHOR_LOWERMID   = 8;
-    public static final int ANCHOR_LOWERRIGHT = 9;
 
     private Map currentMap;
     private JSpinner width, height, offsetX, offsetY;
-    private int anchor;
     private JButton bOk, bCancel;
-
+	private ResizePanel orient;
+	
     public ResizeDialog(JFrame parent, MapEditor m) {
         super(parent, "Resize Map", true);
         currentMap = m.getCurrentMap();
@@ -63,11 +60,15 @@ public class ResizeDialog extends JDialog implements ActionListener
                 new Dimension(60, height.getPreferredSize().height));
         offsetX.setPreferredSize(
                 new Dimension(60, offsetX.getPreferredSize().height));
-        offsetX.setPreferredSize(
-                new Dimension(60, offsetX.getPreferredSize().height));
+        offsetY.setPreferredSize(
+                new Dimension(60, offsetY.getPreferredSize().height));
 
-        ResizePanel orient = new ResizePanel(new Dimension(100, 100), 100);
-
+		offsetX.addChangeListener(this);
+		offsetY.addChangeListener(this);
+		
+        orient = new ResizePanel(new Dimension(100, 100), currentMap);
+		orient.addPropertyChangeListener(this);
+		
         // Offset panel
         JPanel offsetPanel = new VerticalStaticJPanel();
         offsetPanel.setBorder(BorderFactory.createCompoundBorder(
@@ -182,6 +183,21 @@ public class ResizeDialog extends JDialog implements ActionListener
             dispose();
         } else {
             System.out.println(e.getActionCommand());
+        }
+    }
+
+    public void propertyChange(PropertyChangeEvent evt) {
+        if(evt.getPropertyName().equalsIgnoreCase("offsetX")) {
+        	offsetX.setValue((Integer)evt.getNewValue());
+        } else if(evt.getPropertyName().equalsIgnoreCase("offsetY")) {
+			offsetY.setValue((Integer)evt.getNewValue());
+        }
+        repaint();
+    }
+    
+    public void stateChanged(ChangeEvent e) {
+        if(e.getSource() == offsetX || e.getSource() == offsetY) {
+        	orient.moveMap(((Integer)(offsetX.getValue())).intValue(),((Integer)(offsetY.getValue())).intValue());
         }
     }
 }
