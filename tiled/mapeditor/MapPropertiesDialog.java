@@ -30,40 +30,45 @@ public class MapPropertiesDialog extends JDialog implements ActionListener,
 {
     private Map currentMap;
     private JTable mapProperties;
+    private JButton bOk, bCancel;
 
-    public MapPropertiesDialog(MapEditor m) {
+    public MapPropertiesDialog(JFrame parent, MapEditor m) {
+        super(parent, "Map Properties", true);
         currentMap = m.getCurrentMap();
+        init();
         pack();
         setLocationRelativeTo(getOwner());
-        setTitle("Map Properties");
-        setModal(true);
     }
 
     private void init() {
-        JPanel buttonPanel = new JPanel();
         mapProperties = new JTable(new PropertiesTableModel());
         mapProperties.getSelectionModel().addListSelectionListener(this);
         JScrollPane propScrollPane = new JScrollPane(mapProperties);
         propScrollPane.setPreferredSize(new Dimension(150, 150));
 
-        JButton bOk = new JButton("OK");
-        bOk.addActionListener(this);
+        bOk = new JButton("OK");
+        bCancel = new JButton("Cancel");
 
-        JButton bCancel = new JButton("Cancel");
+        bOk.addActionListener(this);
         bCancel.addActionListener(this);
 
-        buttonPanel.setLayout(new BoxLayout(buttonPanel,BoxLayout.X_AXIS));
-        buttonPanel.add(bOk);
-        buttonPanel.add(bCancel);
+        JPanel buttons = new VerticalStaticJPanel();
+        buttons.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
+        buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
+        buttons.add(Box.createGlue());
+        buttons.add(bOk);
+        buttons.add(Box.createRigidArea(new Dimension(5, 0)));
+        buttons.add(bCancel);
 
-        Container cp = getContentPane();
-        cp.setLayout(new BoxLayout(cp, BoxLayout.Y_AXIS));
-        cp.add(propScrollPane);
-        cp.add(buttonPanel);
+        JPanel mainPanel = new JPanel();
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        mainPanel.add(propScrollPane);
+        mainPanel.add(buttons);
 
-        updateInfo();
+        getContentPane().add(mainPanel);
+        getRootPane().setDefaultButton(bOk);
 
-        pack();
     }
 
     private void updateInfo() {
@@ -71,7 +76,7 @@ public class MapPropertiesDialog extends JDialog implements ActionListener,
 
         Enumeration keys = currentMap.getProperties();
         Properties props = new Properties();
-        while(keys.hasMoreElements()) {
+        while (keys.hasMoreElements()) {
             String key = (String) keys.nextElement(); 
             props.put(key, currentMap.getPropertyValue(key));
         }
@@ -80,15 +85,17 @@ public class MapPropertiesDialog extends JDialog implements ActionListener,
     }
 
     public void getProps() {
-        init();
+        updateInfo();
         show();
     }
 
-    public void actionPerformed(ActionEvent e) {
-        if(e.getActionCommand().equalsIgnoreCase("ok")) {
+    public void actionPerformed(ActionEvent event) {
+        Object source = event.getSource();
+
+        if (source == bOk) {
             currentMap.setProperties(((PropertiesTableModel)mapProperties.getModel()).getProperties());
             dispose();
-        } else if (e.getActionCommand().equalsIgnoreCase("cancel")) {
+        } else if (source == bCancel) {
             dispose();
         }
     }

@@ -68,16 +68,6 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
         tilebmpCheck = new JCheckBox("Reference tile bitmap", false);
         tilebmpCheck.addChangeListener(this);
 
-        /*
-        importRadio = new JRadioButton("Import tile bitmap");
-        referenceRadio = new JRadioButton("Reference tile bitmap");
-
-        ButtonGroup tilebmpRadios = new ButtonGroup();
-        tilebmpRadios.add(referenceRadio);
-        tilebmpRadios.add(importRadio);
-        tilebmpRadios.setSelected(referenceRadio.getModel(), true);
-        */
-
         okButton = new JButton("OK");
         cancelButton = new JButton("Cancel");
         browseButton = new JButton("Browse...");
@@ -122,14 +112,6 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
         tilebmpPanel.add(tilebmpPathPanel, c);
         c.gridy = 2;
         tilebmpPanel.add(tileSpacing, c);
-        /*
-        c.gridy = 3; c.gridx = 0; c.gridwidth = 2;
-        c.weightx = 0;
-        tilebmpPanel.add(referenceRadio, c);
-        c.gridy = 4;
-        c.insets = new Insets(0, 0, 0, 0);
-        tilebmpPanel.add(importRadio, c);
-        */
         c.gridwidth = 1;
 
 

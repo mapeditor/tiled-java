@@ -957,7 +957,7 @@ public class MapEditor implements ActionListener,
             	saveMap(currentMap.getFilename(), true);
             }
         } else if (command.equals("Properties")) {
-            MapPropertiesDialog pd = new MapPropertiesDialog(this);
+            MapPropertiesDialog pd = new MapPropertiesDialog(appFrame, this);
             pd.getProps();
         } else if (command.equals("Zoom In")) {
             zoomIn();
