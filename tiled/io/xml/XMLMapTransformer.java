@@ -289,7 +289,7 @@ public class XMLMapTransformer implements MapReader
 	                            tileWidth, tileHeight, tileSpacing);
 	
 	                    // There can be only one tileset image
-	                    break;
+	                    //break;
 					} else {
 						set.addImage(unmarshalImage(child), getAttributeValue(child, "id"));
 					}

@@ -87,6 +87,7 @@ public class Tile
             tileImageId = set.addImage(internalImage);
 			internalImage = null;
         }
+		groundHeight = getHeight();
     }
 
     public void setProperty(String key, String value) {

@@ -89,10 +89,10 @@ public class TileSet
                             tileWidth, tileHeight,
                             x, y, x + tileWidth, y + tileHeight,
                             null);
-					
-                    Tile newTile = new Tile();
+					addImage(tile);
+                    /*Tile newTile = new Tile();
                     newTile.setImage(tile);
-                    addNewTile(newTile);
+                    addNewTile(newTile);*/
                 }
             }
         }
@@ -174,6 +174,7 @@ public class TileSet
         }
 
         tiles.set(t.getId(), t);
+        System.out.println("adding tile " +t.getId());
         t.setTileSet(this);
         t.setStandardHeight(standardHeight);
         if (standardWidth < t.getWidth()) {
@@ -370,6 +371,9 @@ public class TileSet
     }
 
     public Image getImageById(Object key) {
+    	if(images.get(key) == null) {
+    		return null;
+    	}
         return (Image)imageCache.get(images.get(key));
     }
 
