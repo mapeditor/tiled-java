@@ -23,7 +23,8 @@ import java.util.Properties;
 /**
  * A layer of a map.
  *
- * @see Map
+ * @see tiled.core.Map
+ * @see tiled.core.MultilayerPlane
  */
 public class MapLayer implements Cloneable
 {
@@ -96,7 +97,10 @@ public class MapLayer implements Cloneable
     }
 
     /**
-     * Translates this layer by (<i>dx, dy</i>).
+     * Performs a linear translation of this layer by (<i>dx, dy</i>).
+     * 
+     * @param dx
+     * @param dy
      */
     public void translate(int dx, int dy) {
         bounds.x += dx;
@@ -146,6 +150,15 @@ public class MapLayer implements Cloneable
         map = trans;
     }
 
+	/**
+	 * Performs a mirroring function on the layer data. Two orientations are allowed 
+	 * - vertical and horizontal.
+	 * 
+	 * Example: <code>layer.mirror(MapLayer.MIRROR_VERTICAL);</code> will mirror the
+	 * layer data around a horizontal axis.
+	 * 
+	 * @param dir the axial orientation to mirror around
+	 */
     public void mirror(int dir) {
     	if(!checkPermission())
     		return;
@@ -163,6 +176,12 @@ public class MapLayer implements Cloneable
         map = mirror;
     }
     
+    /**
+     * Checks to see if the give Tile is used anywhere in the layer
+     * 
+     * @param t a Tile object to check for
+     * @return <code>true</code> if the Tile is used at least once, <code>false</code> otherwise.
+     */
     public boolean isUsed(Tile t) {
         for (int y = 0; y < bounds.height; y++) {
             for (int x = 0; x < bounds.width; x++) {
@@ -174,6 +193,12 @@ public class MapLayer implements Cloneable
         return false;
     }
 
+	/**
+	 * Sets the bounds (in tiles) to the specified Rectangle. <b>Caution:</b> this causes
+	 * a reallocation of the data array, and all previous data is lost.
+	 * 
+	 * @param bounds
+	 */
     public void setBounds(Rectangle bounds) {
         this.bounds = bounds;
         map = new Tile[bounds.height][bounds.width];
@@ -184,8 +209,8 @@ public class MapLayer implements Cloneable
      * significant difference.
      *
      * @param ml
-     * @return A new FiniteMapLayer the represents the difference between this
-     *         layer, and the argument, or null if no difference exists.
+     * @return A new MapLayer that represents the difference between this
+     *         layer, and the argument, or <b>null</b> if no difference exists.
      */
     public MapLayer createDiff(MapLayer ml) {
         if (ml == null) { return null; }
@@ -217,7 +242,7 @@ public class MapLayer implements Cloneable
     /**
      * Removes any occurences of the given tile from this map layer.
      *
-     * @param tile the tile to be removed
+     * @param tile the Tile to be removed
      */
     public void removeTile(Tile tile) {
     	if(!checkPermission())
@@ -276,6 +301,8 @@ public class MapLayer implements Cloneable
 
     /**
      * Sets the map this layer is part of.
+     * 
+     * @param m the Map object
      */
     public void setMap(Map m) {
         myMap = m;
@@ -337,6 +364,8 @@ public class MapLayer implements Cloneable
 
     /**
      * Returns the name of this layer.
+     * 
+     * @return a java.lang.String of the name of the layer
      */
     public String getName() {
         return name;
@@ -409,18 +438,20 @@ public class MapLayer implements Cloneable
 
     /**
      * Returns layer bounds in tiles.
+     * 
+     * @return a java.awt.Rectangle object with the bounds in tiles of the layer
      */
     public Rectangle getBounds() {
         return bounds;
     }
 
     /**
-     * A convenience method to check if a point in tile space is within
+     * A convenience method to check if a point in tile-space is within
      * the layer boundaries.
      * 
-     * @param x
-     * @param y
-     * @return <code>true</code> if the point (x,y) is within the layer boundaries.
+     * @param x the x-coordinate of the point
+     * @param y the y-coordinate of the point
+     * @return <code>true</code> if the point (x,y) is within the layer boundaries, <code>false</code> otherwise.
      */
     public boolean contains(int x, int y) {
         return bounds.contains(x,y);
@@ -436,14 +467,20 @@ public class MapLayer implements Cloneable
     }
 
     /**
-     * Returns wether this layer is visible.
+     * Returns whether this layer is visible.
+     * 
+     * @return <code>true</code> if the layer is visible, <code>false</code> otherwise.
      */
     public boolean isVisible() {
         return isVisible;
     }
 
     /**
-     * Merges this layer onto another layer.
+     * Merges the tile data of this layer with the specified layer. The calling layer is
+     * considered the significant layer, and will overwrite the data of the argument layer.
+     * At cells where the calling layer has no data, the argument layer data is preserved.
+     * 
+     * @param other the insignificant layer to merge with
      */
     public void mergeOnto(MapLayer other) {
         for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
@@ -457,7 +494,11 @@ public class MapLayer implements Cloneable
     }
 
     /**
-     * Copy data from another layer onto this layer.
+     * Copy data from another layer onto this layer. Unlike mergeOnto, copyFrom() copies
+     * the empty cells as well.
+     * 
+     * @see tiled.core.MapLayer#mergeOnto
+     * @param other
      */
     public void copyFrom(MapLayer other) {
     	if(!checkPermission())
@@ -488,6 +529,8 @@ public class MapLayer implements Cloneable
     /**
      * Unlike mergeOnto, copyTo includes the null tile when merging
      *
+     * @see tiled.core.MapLayer#copyFrom
+     * @see tiled.core.MapLayer#mergeOnto
      * @param other the layer to copy this layer to
      */
     public void copyTo(MapLayer other) {
@@ -499,7 +542,11 @@ public class MapLayer implements Cloneable
     }
 
     /**
-     * Creates a clone of this layer.
+     * Creates a copy of this layer.
+     * 
+     * @see java.lang.Object#clone
+     * @return a clone of this layer, as complete as possible
+     * @exception CloneNotSupportedException
      */
     public Object clone() throws CloneNotSupportedException {
         MapLayer clone = null;

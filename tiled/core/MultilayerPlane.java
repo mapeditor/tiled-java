@@ -15,7 +15,10 @@ package tiled.core;
 import java.awt.Rectangle;
 import java.util.*;
 
-
+/**
+ * MultilayerPlane makes up the core functionality of both Maps and Brushes.
+ * This class handles the order of layers as a group.
+ */
 public class MultilayerPlane
 {
     private Vector layers;
@@ -33,17 +36,26 @@ public class MultilayerPlane
 
     /**
      * Returns the total number of layers.
+     * @return the size of the layer vector
      */
     public int getTotalLayers() {
         return layers.size();
     }
 	
+	
+	/**
+	 * Returns a <code>Rectangle</code> representing the maximum bounds in tiles.
+	 * 
+	 * @return a Rectangle
+	 */
     public Rectangle getBounds() {
         return new Rectangle(0, 0, widthInTiles, heightInTiles);
     }
 	
 	/**
 	 * Adds a layer to the map.
+	 * 
+	 * @return the layer passed to the function
 	 */
 	public MapLayer addLayer(MapLayer l) {
 		layers.add(l);
@@ -53,8 +65,8 @@ public class MultilayerPlane
 	/**
 	 * Adds the MapLayer <code>l</code> after the MapLayer <code>after</code>.
 	 * 
-	 * @param l
-	 * @param after
+	 * @param l the layer to add
+	 * @param after specifies the layer to add <code>l</code> after 
 	 */
 	public void addLayerAfter(MapLayer l, MapLayer after) {
 		layers.add(layers.indexOf(after)+1,l);
@@ -62,6 +74,9 @@ public class MultilayerPlane
 
     /**
      * Add a layer at the specified index, which should be a valid.
+     * 
+     * @param index
+     * @param layer
      */
     public void addLayer(int index, MapLayer layer) {
         layers.add(index, layer);
@@ -94,6 +109,12 @@ public class MultilayerPlane
         this.layers = layers;
     }
 
+	/**
+	 * Moves the layer at <code>index</code> up one in the vector
+	 * 
+	 * @param index
+	 * @throws Exception
+	 */
 	public void swapLayerUp(int index) throws Exception {
 		if (index + 1 == layers.size()) {
 			throw new Exception(
@@ -105,6 +126,12 @@ public class MultilayerPlane
 		layers.set(index, hold);
 	}
 
+	/**
+	 * Moves the layer at <code>index</code> down one in the vector
+	 * 
+	 * @param index
+	 * @throws Exception
+	 */
 	public void swapLayerDown(int index) throws Exception {
 		if (index - 1 < 0) {
 			throw new Exception(
@@ -116,6 +143,13 @@ public class MultilayerPlane
 		layers.set(index, hold);
 	}
 
+	/**
+	 * Merges the layer at <code>index</code> with the layer below it
+	 * 
+	 * @see tiled.core.MapLayer#mergeOnto
+	 * @param index
+	 * @throws Exception
+	 */
 	public void mergeLayerDown(int index) throws Exception {
 		if (index - 1 < 0) {
 			throw new Exception(
@@ -127,7 +161,7 @@ public class MultilayerPlane
 	}
 	
 	/**
-	 * Get a MapLayer by its id. 
+	 * Get a MapLayer by its id.
 	 * 
 	 * @deprecated
 	 * @param i the id to search for
@@ -146,6 +180,12 @@ public class MultilayerPlane
 		return temp;
 	}
 
+	/**
+	 * Returns the layer at the specified vector index
+	 * 
+	 * @param i the index of the layer to return
+	 * @return the layer at the specified index, or null if the index is out of bounds
+	 */
 	public MapLayer getLayer(int i) {
 		try {
 			return (MapLayer)layers.get(i);
@@ -154,6 +194,11 @@ public class MultilayerPlane
 		return null;
 	}
 
+	/**
+	 * Gets a listIterator of all layers
+	 * 
+	 * @return a listIterator
+	 */
 	public ListIterator getLayers() {
 		return layers.listIterator();
 	}

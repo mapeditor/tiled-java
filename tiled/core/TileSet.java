@@ -28,6 +28,24 @@ import tiled.util.Util;
 import java.util.zip.CRC32;
 import java.util.zip.Checksum;
 
+/**
+ * <p>TileSet handles operations on tiles as a set, or group. It has several advanced internal
+ * functions aimed at reducing unnecessary data replication. A 'tile' is represented internally
+ * as three distinct pieces of data. The first and most important is a tiled.core.Tile object, 
+ * and these are held in a java.util.Vector.</p>
+ * <p>Tile objects contain an id that can be used to look up the second piece of data, the tile
+ * image hash. The tile image hash is a unique CRC32 checksum. A checksum is generated for each
+ * image that is added to the set. A java.util.Hashtable keeps the key-value pair of id and
+ * checksum. A second java.util.Hashtable (the imageCache) maintains a key-value pair with the
+ * checksum as key and the actual java.awt.Image as value.</p>
+ * 
+ * <p>When a new image is added, a checksum is created and checked against the checksums in the cache.
+ * If the checksum does not already exist, the image is given an id, and is added to the cache.
+ * In this way, tile images are never duplicated, and multiple tiles may reference the image by id.</p>
+ * 
+ * <p>The TileSet also handles 'cutting' tile images from a tileset image, and can optionally create
+ * Tile objects that reference the images.</p>
+ */
 
 public class TileSet
 {
@@ -56,6 +74,7 @@ public class TileSet
      * @param tileHeight  the tile height
      * @param spacing     the amount of spacing between the tiles
      * @see TileSet#importTileBitmap(BufferedImage tilebmp, int tileWidth, int tileHeight, int spacing, boolean createTiles)
+     * @exception
      */
     public void importTileBitmap(String imgFilename, int tileWidth,
             int tileHeight, int spacing, boolean createTiles) throws Exception{
@@ -74,12 +93,16 @@ public class TileSet
     }
 
 	/**
-	 * Creates a tileset from a buffered image
+	 * Creates a tileset from a buffered image. This is a linear cutter that goes left to right,
+	 * top to bottom when cutting. It can optionally create tiled.core.Tile objects that reference
+	 * the images as it is cutting them.
 	 *
 	 * @param tilebmp     the image to be used
 	 * @param tileWidth   the tile width
 	 * @param tileHeight  the tile height
 	 * @param spacing     the amount of spacing between the tiles
+	 * @param createTiles set to <code>true</code> to have the function create Tiles
+	 * @exception
 	 */
 	public void importTileBitmap(BufferedImage tilebmp, int tileWidth,
 				int tileHeight, int spacing, boolean createTiles) throws Exception{
@@ -117,6 +140,8 @@ public class TileSet
     /**
      * Sets the standard width of the tiles in this tileset. Tiles in this
      * tileset are not recommended to have any other width.
+     * 
+     * @param width the width in pixels to use as the standard tile width
      */
     public void setStandardWidth(int width) {
         standardWidth = width;
@@ -146,7 +171,7 @@ public class TileSet
      * Sets the URI path of the external source of this tile set. By setting
      * this, the set is implied to be external in all other operations.
      *
-     * @param source
+     * @param source a URI of the tileset image file
      */
     public void setSource(String source) {
         externalSource = source;
@@ -213,7 +238,8 @@ public class TileSet
 
     /**
      * This method takes a new Tile object as argument, and in addition to
-     * the functionality of <code>addTile()</code>, sets the id of the tile.
+     * the functionality of <code>addTile()</code>, sets the id of the tile
+     * to -1.
      *
      * @see TileSet#addTile(Tile)
      * @param t the new tile to add.
@@ -225,7 +251,10 @@ public class TileSet
 
     /**
      * Removes a tile from this tileset. Does not invalidate other tile
-     * indices.
+     * indices. Removal is simply setting the reference at the specified
+     * index to <b>null</b>
+     * 
+     * @param i the index to remove
      */
     public void removeTile(int i) {
         tiles.set(i, null);
@@ -248,6 +277,9 @@ public class TileSet
     /**
      * Returns the standard width of tiles in this tileset. All tiles in a
      * tileset should be the same width.
+     * 
+     * @return the standard width as previously set with a call to
+     *         TileSet#setStandardWidth
      */
     public int getStandardWidth() {
         return standardWidth;
@@ -484,6 +516,12 @@ public class TileSet
         return (Image)imageCache.get(hash);
     }
 
+	/**
+	 * Find the id fo the given image in the image cache.
+	 * 
+	 * @param image the java.awt.Image to find the id for.
+	 * @return an java.lang.Object that represents the id of the image
+	 */
     public Object queryImageId(Image image) {
         String hash = checksumImage(image);
         if (imageCache.get(hash) != null) {
@@ -500,8 +538,12 @@ public class TileSet
     }
 
     /**
-     * @param internalImage
-     * @return
+     * Adds the specified image to the image cache. If the image already exists
+     * in the cache, returns the id of the existing image. If it does not exist,
+     * this function adds the image and returns the new id.
+     * 
+     * @param image the java.awt.Image to add to the image cache
+     * @return the id as an <code>int</code> of the image in the cache
      */
     public int addImage(Image image) {
         int t;
