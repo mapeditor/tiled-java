@@ -241,7 +241,7 @@ public class XMLMapWriter implements MapWriter
                     
                     String tilesetFilename = (wp.substring(0,
                             wp.lastIndexOf(File.separatorChar) + 1)
-                            + source);
+                            + imgSource);
                     FileOutputStream fw = new FileOutputStream(new File(
                                 tilesetFilename));
                     //byte[] data = ImageHelper.imageToPNG(setImage);
