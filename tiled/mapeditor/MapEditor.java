@@ -537,6 +537,7 @@ public class MapEditor implements ActionListener,
         miniMap.setMainPanel(mapScrollPane);
         JScrollPane miniMapSp = new JScrollPane();
         miniMapSp.getViewport().setView(miniMap);
+        miniMapSp.setMinimumSize(new Dimension(0, 120));
         
         // Layer table
         layerTable = new JTable(new LayerTableModel(currentMap));
@@ -593,7 +594,7 @@ public class MapEditor implements ActionListener,
         layerPanel.setLayout(new GridBagLayout());
         layerPanel.setPreferredSize(new Dimension(120, 120));
         c = new GridBagConstraints();
-        c.insets = new Insets(3, 0, 0, 0); c.weightx = 1; c.weighty = 1;
+        c.insets = new Insets(3, 0, 0, 0); c.weightx = 1; c.weighty = 0;
         c.fill = GridBagConstraints.BOTH;
         c.gridx = 0; c.gridy = 0;
         layerPanel.add(miniMapSp, c);
@@ -1661,11 +1662,11 @@ public class MapEditor implements ActionListener,
     private void reportPluginMessages(Stack s) {
         // TODO: maybe have a nice dialog with a scrollbar, in case there are a
         // lot of messages...
-        if (TiledConfiguration.getInstance().keyHasValue("tiled.report.io",1)) {
+        if (configuration.keyHasValue("tiled.report.io", 1)) {
             if (s.size() > 0) {
                 Iterator itr = s.iterator();
                 String warnings = "";
-                while(itr.hasNext()) {
+                while (itr.hasNext()) {
                     String warn = (String) itr.next();
                     warnings = warnings + warn + "\n";
                 }
@@ -1818,6 +1819,7 @@ public class MapEditor implements ActionListener,
     public void saveMapImage(String filename) {
         if (filename == null) {
             JFileChooser ch = new JFileChooser();
+            ch.setDialogTitle("Save as image");
 
             if (ch.showSaveDialog(appFrame) == JFileChooser.APPROVE_OPTION) {
                 filename = ch.getSelectedFile().getAbsolutePath();
