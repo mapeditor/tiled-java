@@ -1,4 +1,11 @@
-0.4.2 -	October 14th, 2004
+0.5.0 - Pending
+
+* Added width and height attributes to layer element (can be different from map
+  width and height)
+* Added layer properties, analoguous to tile and map properties
+* Fixed determining the relative path to tileset images
+
+0.4.2 - October 14th, 2004
 
 * Added a JNLP for WebStart, contributed by Chris Hazen
 * Added a simple plugin for the Mappy FMAP format maps
@@ -6,7 +13,7 @@
 * Added plugin target for building bundled plugins
 * Removed API usage deprecated by Java 5.0
 * Fixed a NullPointerException when loading plugins
-* Fixed Issue #75 (layer naming on undo)
+* Fixed layer naming on undo (issue #75)
 
 0.4.1 - September 24th, 2004
 
