@@ -209,7 +209,7 @@ public class XMLMapTransformer implements MapReader
         return img;
     }
 
-    private TileSet unmarshalTilesetFile(InputStream in) throws Exception {
+    private TileSet unmarshalTilesetFile(InputStream in, String filename) throws Exception {
         TileSet set = null;
         Node tsNode;
         Document tsDoc = null;
@@ -224,7 +224,10 @@ public class XMLMapTransformer implements MapReader
         }
 
         String xmlPathSave = xmlPath;
-        xmlPath = ".";
+		if (filename.indexOf(File.separatorChar) >= 0) {
+			xmlPath = filename.substring(0,
+					filename.lastIndexOf(File.separatorChar) + 1);
+		}
 
         NodeList tsNodeList = tsDoc.getElementsByTagName("tileset");
 
@@ -234,7 +237,7 @@ public class XMLMapTransformer implements MapReader
                 throw new Exception(
                         "Recursive external Tilesets are not supported.");
             }
-            //set.setSource(filename);
+            set.setSource(filename);
             // TODO: This is a deliberate break. multiple tilesets per TSX are
             // not supported yet (maybe never)...
             break;
@@ -258,7 +261,7 @@ public class XMLMapTransformer implements MapReader
         int tileSpacing = getAttribute(t, "spacing", 0);
 
         if (set.getSource() != null) {
-            TileSet ext = unmarshalTilesetFile(new FileInputStream(xmlPath + set.getSource()));
+            TileSet ext = unmarshalTilesetFile(new FileInputStream(xmlPath + set.getSource()), xmlPath + set.getSource());
             ext.setFirstGid(set.getFirstGid());
             return ext;
         } else {
@@ -587,11 +590,12 @@ public class XMLMapTransformer implements MapReader
     }
     
     public TileSet readTileset(String filename) throws Exception {
-        return unmarshalTilesetFile(new FileInputStream(filename));
+        return unmarshalTilesetFile(new FileInputStream(filename), filename);
     }
 
     public TileSet readTileset(InputStream in) throws Exception {
-    	return unmarshalTilesetFile(in);
+    	//TODO: the MapReader interface should be changed...
+    	return unmarshalTilesetFile(in, ".");
     }
     
     /**
