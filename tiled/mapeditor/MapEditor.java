@@ -1140,7 +1140,6 @@ public class MapEditor implements ActionListener,
                     String filename = ch.getSelectedFile().getAbsolutePath();
                     try {
                         TileSet set = MapHelper.loadTileset(filename);
-                        set.setSource(null);
                         currentMap.addTileset(set);
                     } catch (Exception e) {
                         e.printStackTrace();

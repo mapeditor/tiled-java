@@ -122,6 +122,7 @@ public class MapHelper {
                 Stack errors = new Stack();
                 mr.setErrorStack(errors);
                 ret = mr.readMap(file);
+                ret.setFilename(file);
                 reportPluginMessages(errors);
             } else {
                 throw new Exception("Unsupported map format");
@@ -149,7 +150,7 @@ public class MapHelper {
     /**
      * Loads a tileset. Use the extension (.xxx) of the filename to determine
      * the plugin to use when reading the file. Throws an exception when the
-     * extension * is not supported by either the TMX writer or a plugin.
+     * extension is not supported by either the TMX writer or a plugin.
      *
      * @param file filename of map to load
      * @return A new TileSet instance, loaded from the specified file by a
@@ -172,6 +173,7 @@ public class MapHelper {
                 Stack errors = new Stack();
                 mr.setErrorStack(errors);
                 ret = mr.readTileset(file);
+                ret.setSource(file);
                 reportPluginMessages(errors);
             } else {
                 throw new Exception("Unsupported tileset format");

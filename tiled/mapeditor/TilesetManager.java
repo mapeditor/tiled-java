@@ -36,7 +36,7 @@ public class TilesetManager extends JDialog implements ActionListener,
     private Map map;
     private Vector tileSets;
 
-    private JButton exportButton, saveButton;
+    private JButton saveAsButton, saveButton, embedButton;
     private JButton removeButton, editButton, closeButton;
     private JTable tilesetTable;
 
@@ -59,12 +59,14 @@ public class TilesetManager extends JDialog implements ActionListener,
         // Create the buttons
         saveButton = new JButton("Save");
         editButton = new JButton("Edit...");
-        exportButton = new JButton("Export...");
+        saveAsButton = new JButton("Save as...");
+        embedButton = new JButton("Embed");
         removeButton = new JButton("Remove");
         closeButton = new JButton("Close");
 
-        exportButton.addActionListener(this);
+        saveAsButton.addActionListener(this);
         saveButton.addActionListener(this);
+        embedButton.addActionListener(this);
         removeButton.addActionListener(this);
         editButton.addActionListener(this);
         closeButton.addActionListener(this);
@@ -85,10 +87,11 @@ public class TilesetManager extends JDialog implements ActionListener,
         c.weighty = 0;
         c.weightx = 0;
         c.gridwidth = 1;
-        mainPanel.add(exportButton, c);
+        mainPanel.add(saveButton, c);
+        mainPanel.add(saveAsButton, c);
+        mainPanel.add(embedButton, c);
         mainPanel.add(removeButton, c);
         mainPanel.add(editButton, c);
-        mainPanel.add(saveButton, c);
         c.weightx = 1;
         mainPanel.add(Box.createGlue(), c);
         c.weightx = 0;
@@ -138,7 +141,7 @@ public class TilesetManager extends JDialog implements ActionListener,
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this, e.getMessage());
             }
-        } else if (command.equals("Export...")) {
+        } else if (command.equals("Save as...")) {
             JFileChooser ch = new JFileChooser(map.getFilename());
 
             MapWriter writers[] = PluginClassLoader.getInstance().getWriters();
@@ -157,43 +160,31 @@ public class TilesetManager extends JDialog implements ActionListener,
                 String filename = ch.getSelectedFile().getAbsolutePath();
                 File exist = new File(filename);
 
-                if ((exist.exists() && JOptionPane.showConfirmDialog(this, "The file already exists. Do you wish to overwrite it?") == JOptionPane.OK_OPTION) || !exist.exists()) {
+                if ((exist.exists()
+                      && JOptionPane.showConfirmDialog(this,
+                        "The file already exists. Do you wish to overwrite it?"
+                        ) == JOptionPane.OK_OPTION)
+                    || !exist.exists()) {
                     try {
                         MapHelper.saveTileset(set, filename);
                         set.setSource(filename);
-                        exportButton.setEnabled(false);
+                        embedButton.setEnabled(true);
+                        saveButton.setEnabled(true);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
             }
         } else if (command.equals("Save")) {
-            JFileChooser ch = new JFileChooser(map.getFilename());
-
-            MapWriter writers[]
-              = (MapWriter[]) PluginClassLoader.getInstance().getWriters();
-            for (int i = 0; i < writers.length; i++) {
-                try {
-                    ch.addChoosableFileFilter(new TiledFileFilter(
-                                writers[i].getFilter(), writers[i].getName()));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            try {
+                MapHelper.saveTileset(set, set.getSource());
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            ch.addChoosableFileFilter
-              (new TiledFileFilter(TiledFileFilter.FILTER_TSX));
-            int ret = ch.showSaveDialog(this);
-            if (ret == JFileChooser.APPROVE_OPTION) {
-                String filename = ch.getSelectedFile().getAbsolutePath();
-
-                try {
-                    MapHelper.saveTileset(set, filename);
-                    set.setSource(filename);
-                    exportButton.setEnabled(false);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
+        } else if (command.equals("Embed")) {
+            set.setSource(null);
+            embedButton.setEnabled(false);
+            saveButton.setEnabled(false);
         } else {
             System.out.println("Unimplemented command: " + command);
         }
@@ -237,9 +228,9 @@ public class TilesetManager extends JDialog implements ActionListener,
         } catch (IndexOutOfBoundsException e) {
         }
 
-        exportButton.setEnabled(set != null && set.getSource() == null);
         editButton.setEnabled(set != null);
         removeButton.setEnabled(set != null);
         saveButton.setEnabled(set != null && set.getSource() != null);
+        embedButton.setEnabled(set != null && set.getSource() != null);
     }
 }
