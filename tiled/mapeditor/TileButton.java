@@ -18,21 +18,21 @@ import javax.swing.*;
 import javax.swing.event.EventListenerList;
 
 import tiled.core.*;
+import tiled.mapeditor.util.*;
 
-public class TileButton extends JComponent implements MouseListener
+
+public class TileButton extends JButton
 {
-    private String actionCommand;
-    private EventListenerList actionListeners;
     private Tile tile;
     private Dimension size;
     private boolean maintainAspect;
+    private EventListenerList tileSelectionListeners;
 
     public TileButton( Tile t, Dimension d ) {
-        tile = t;
+        setMargin(new Insets(0, 0, 0, 0));
         size = d;
         maintainAspect = false;
-        actionListeners = new EventListenerList( );
-        addMouseListener( this );
+        setTile( t );
     }
 
     public TileButton( Dimension d ) {
@@ -47,15 +47,30 @@ public class TileButton extends JComponent implements MouseListener
         this( null, null );
     }
 
-    public void setCurrentTile( Tile t ) {
+    public void setTile( Tile t ) {
         tile = t;
-        revalidate( );
-        repaint( );
+        ImageIcon icon = null;
+
+        if (tile != null) {
+            Image tileImg = tile.getImage();
+            int imgWidth = tileImg.getWidth(null);
+
+            if (imgWidth > 26) {
+                icon = new ImageIcon(tileImg.getScaledInstance(26,
+                            (int)(tileImg.getHeight(null) * (26.0 / imgWidth)),
+                            Image.SCALE_SMOOTH));
+            } else {
+                icon = new ImageIcon(tileImg);
+            }
+        }
+
+        setIcon(icon);
     }
 
     /*
      *  Methods for Size Information 
      */
+    /*
     private Dimension calculatePreferredSize( ) {
         Insets i = getInsets( );
 
@@ -102,6 +117,7 @@ public class TileButton extends JComponent implements MouseListener
         }
         return d;
     }
+    */
 
     public void setMaintainAspect( boolean v ) {
         maintainAspect = v;
@@ -114,16 +130,7 @@ public class TileButton extends JComponent implements MouseListener
     /*
      *  Methods for Mouse Events
      */
-    public void mouseEntered( MouseEvent e ) { }
-    public void mouseExited( MouseEvent e ) { }
-    public void mousePressed( MouseEvent e ) { }
-    public void mouseReleased( MouseEvent e ) { }
-
-    public void mouseClicked( MouseEvent e ) {
-        requestFocusInWindow( );
-        fireActionPerformed( new ActionEvent( this, 0, actionCommand ) );
-    }
-
+    /*
     protected void paintComponent( Graphics t ) {
         Graphics g = t.create( );
         Insets i = getInsets( );
@@ -146,31 +153,25 @@ public class TileButton extends JComponent implements MouseListener
 
         g.dispose( );
     }
+    */
 
-    /*
-     *   Action centric methods.
+    /**
+     *
      */
-    public void setActionCommand( String a ) {
-        actionCommand = a;
-    }
-    public String getActionCommand( ) {
-        return actionCommand;
+    public void addTileSelectionListener( TileSelectionListener l ) {
+        tileSelectionListeners.add( TileSelectionListener.class, l );
     }
 
-    public void addActionListener( ActionListener l ) {
-        actionListeners.add( ActionListener.class, l );
+    public void removeTileSelectionListener( TileSelectionListener l ) {
+        tileSelectionListeners.remove( TileSelectionListener.class, l );
     }
 
-    public void removeActionListener( ActionListener l ) {
-        actionListeners.remove( ActionListener.class, l );
-    }
-
-    protected void fireActionPerformed( ActionEvent e ) {
-        Object[] listeners = actionListeners.getListenerList( );
+    protected void fireActionPerformed( TileSelectionEvent e ) {
+        Object[] listeners = tileSelectionListeners.getListenerList( );
 
         for( int i = listeners.length - 2; i >= 0; i -= 2 ) {
-            if( listeners[i] == ActionListener.class ) {
-                ((ActionListener)listeners[i + 1]).actionPerformed( e );
+            if( listeners[i] == TileSelectionListener.class ) {
+                ((TileSelectionListener)listeners[i + 1]).tileSelected( e );
             }
         }
     }

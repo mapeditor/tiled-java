@@ -421,10 +421,7 @@ public class MapEditor implements ActionListener,
 
         tilePaletteButton = new TileButton(new Dimension(24, 24));
         tilePaletteButton.setActionCommand("palette");
-        //tilePaletteButton.setMargin(new Insets(0,0,0,0));
         tilePaletteButton.setMaintainAspect(true);
-        tilePaletteButton.setBorder(
-                BorderFactory.createLineBorder(Color.black));
         mapEventAdapter.addListener(tilePaletteButton);
         tilePaletteButton.addActionListener(this);
 
@@ -1236,27 +1233,6 @@ public class MapEditor implements ActionListener,
         appFrame.setTitle(title);
     }
 
-    private void updateTilePaletteButton() {
-        /*ImageIcon icon = null;
-
-        if (currentMap != null) {
-            if (currentTile != null) {
-                Image tileImg = currentTile.getImage();
-                int imgWidth = tileImg.getWidth(null);
-
-                if (imgWidth > 26) {
-                    icon = new ImageIcon(tileImg.getScaledInstance(26,
-                            (int)(tileImg.getHeight(null) * (26.0 / imgWidth)),
-                            Image.SCALE_SMOOTH));
-                } else {
-                    icon = new ImageIcon(tileImg);
-                }
-            }
-        }*/
-
-        tilePaletteButton.setCurrentTile(currentTile);
-    }
-
     private boolean checkSave() {
         if (unsavedChanges()) {
             int ret = JOptionPane.showConfirmDialog(appFrame,
@@ -1489,10 +1465,10 @@ public class MapEditor implements ActionListener,
      */
     public void setCurrentTile(Tile tile) {
         currentTile = tile;
-        if(currentBrush.getClass().toString().equals(ShapeBrush.class.toString())) {
+        if (ShapeBrush.class.isInstance(currentBrush)) {
         	((ShapeBrush)currentBrush).setTile(tile);
         }
-        updateTilePaletteButton();
+        tilePaletteButton.setTile(currentTile);
     }
 
     private void setCurrentPointerState(int state) {
