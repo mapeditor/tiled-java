@@ -22,24 +22,42 @@ import tiled.core.*;
 public class NewMapDialog extends JDialog implements ActionListener
 {
     private Map newMap;
-    private JTextField mapWidth, mapHeight;
-    private JTextField tileWidth, tileHeight;
+    private JSpinner mapWidth, mapHeight;
+    private JSpinner tileWidth, tileHeight;
     private JTextField mapName;
     private JComboBox mapTypeChooser;
 
     public NewMapDialog(JFrame parent) {
-        super(parent, "New map");
+        super(parent, "New map", true);
         init();
         pack();
+        setResizable(false);
         setLocationRelativeTo(parent);
-        setModal(true);
     }
 
     private void init() {
-        // Map size fields
+        // Create the primitives
 
-        mapWidth = new JTextField("64", 3);
-        mapHeight = new JTextField("64", 3);
+        mapWidth = new JSpinner(
+                new SpinnerNumberModel(64, 1, Integer.MAX_VALUE, 1));
+        mapHeight = new JSpinner(
+                new SpinnerNumberModel(64, 1, Integer.MAX_VALUE, 1));
+        tileWidth = new JSpinner(
+                new SpinnerNumberModel(35, 1, Integer.MAX_VALUE, 1));
+        tileHeight = new JSpinner(
+                new SpinnerNumberModel(35, 1, Integer.MAX_VALUE, 1));
+
+        mapWidth.setPreferredSize(
+                new Dimension(60, mapWidth.getPreferredSize().height));
+        mapHeight.setPreferredSize(
+                new Dimension(60, mapHeight.getPreferredSize().height));
+        tileWidth.setPreferredSize(
+                new Dimension(60, tileWidth.getPreferredSize().height));
+        tileHeight.setPreferredSize(
+                new Dimension(60, tileHeight.getPreferredSize().height));
+
+
+        // Map size fields
 
         JPanel mapSize = new VerticalStaticJPanel();
         mapSize.setLayout(new GridBagLayout());
@@ -60,9 +78,6 @@ public class NewMapDialog extends JDialog implements ActionListener
         mapSize.add(mapHeight, c);
 
         // Tile size fields
-
-        tileWidth = new JTextField("35", 3);
-        tileHeight = new JTextField("35", 3);
 
         JPanel tileSize = new VerticalStaticJPanel();
         tileSize.setLayout(new GridBagLayout());
@@ -150,10 +165,10 @@ public class NewMapDialog extends JDialog implements ActionListener
 
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand().equals("OK")) {
-            int w = Integer.parseInt(mapWidth.getText());
-            int h = Integer.parseInt(mapHeight.getText());
-            int twidth = Integer.parseInt(tileWidth.getText());
-            int theight = Integer.parseInt(tileHeight.getText());
+            int w = ((Number)mapWidth.getValue()).intValue();
+            int h = ((Number)mapHeight.getValue()).intValue();
+            int twidth = ((Number)tileWidth.getValue()).intValue();
+            int theight = ((Number)tileHeight.getValue()).intValue();
             int orientation = Map.MDO_ORTHO;
             String mapTypeString = (String)mapTypeChooser.getSelectedItem();
 

@@ -21,8 +21,10 @@ import javax.swing.border.BevelBorder;
 import tiled.core.Map;
 import tiled.view.MapView;
 
-public class ResizePanel extends JPanel implements MouseListener, MouseMotionListener{
-	
+
+public class ResizePanel extends JPanel implements MouseListener,
+       MouseMotionListener
+{
 	private MapView inner;
 	private Map currentMap;
 	private Dimension oldDim, newDim;

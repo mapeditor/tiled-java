@@ -24,15 +24,15 @@ import javax.swing.event.ChangeListener;
 import tiled.core.Map;
 import tiled.mapeditor.util.ResizePanel;
 
-public class ResizeDialog extends JDialog implements ActionListener, PropertyChangeListener, 
-			ChangeListener
-{
 
+public class ResizeDialog extends JDialog implements ActionListener,
+       PropertyChangeListener, ChangeListener
+{
     private Map currentMap;
     private JSpinner width, height, offsetX, offsetY;
     private JButton bOk, bCancel;
-	private ResizePanel orient;
-	
+    private ResizePanel orient;
+
     public ResizeDialog(JFrame parent, MapEditor m) {
         super(parent, "Resize Map", true);
         currentMap = m.getCurrentMap();
