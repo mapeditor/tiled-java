@@ -169,10 +169,6 @@ public abstract class MapView extends JPanel implements Scrollable
 	                if (opacity < 1.0f) {
 	                    g2d.setComposite(AlphaComposite.getInstance(
 	                                AlphaComposite.SRC_ATOP, opacity));
-	                } else if (layer.getClass() == SelectionLayer.class) {
-						((Graphics2D)g).setComposite(AlphaComposite.getInstance(
-																   AlphaComposite.SRC_ATOP, 0.3f));
-						g.setColor(((SelectionLayer)layer).getHighlightColor());
 	                } else {
 	                    g2d.setComposite(AlphaComposite.SrcOver);
 	                }
@@ -180,6 +176,18 @@ public abstract class MapView extends JPanel implements Scrollable
 	            }
         	}
         }
+
+		li = myMap.getLayersSpecial();
+
+		while(li.hasNext()) {
+			layer = (MapLayer) li.next();
+			if (layer.getClass() == SelectionLayer.class) {
+				((Graphics2D)g).setComposite(AlphaComposite.getInstance(
+									   AlphaComposite.SRC_ATOP, 0.3f));
+				g.setColor(((SelectionLayer)layer).getHighlightColor());
+			}
+			paint(g, layer, currentZoom);
+		}
 
         if (getMode(PF_GRIDMODE)) {
 			g2d.setStroke(new BasicStroke());
@@ -201,28 +209,28 @@ public abstract class MapView extends JPanel implements Scrollable
 		firstPoint = prevPoint=nextPoint;
 		
 		//NORTH
+		itr.next();
+		nextPoint = new double[6];
+		itr.currentSegment(nextPoint);
 		if(layer.getTileAt(tx,ty-1)==null) {
-			itr.next();			
-			nextPoint = new double[6];
-			itr.currentSegment(nextPoint);
 			g.drawLine((int)prevPoint[0],(int)prevPoint[1],(int)nextPoint[0],(int)nextPoint[1]);
 		}
 		
 		//EAST
+		itr.next();
+		prevPoint = nextPoint;
+		nextPoint = new double[6];
+		itr.currentSegment(nextPoint);
 		if(layer.getTileAt(tx+1,ty)==null) {
-			itr.next();
-			prevPoint = nextPoint;
-			nextPoint = new double[6];
-			itr.currentSegment(nextPoint);
 			g.drawLine((int)prevPoint[0],(int)prevPoint[1],(int)nextPoint[0],(int)nextPoint[1]);
 		}
 		
 		// SOUTH
+		itr.next();
+		prevPoint = nextPoint;
+		nextPoint = new double[6];
+		itr.currentSegment(nextPoint);
 		if(layer.getTileAt(tx,ty+1)==null) {
-			itr.next();
-			prevPoint = nextPoint;
-			nextPoint = new double[6];
-			itr.currentSegment(nextPoint);
 			g.drawLine((int)prevPoint[0],(int)prevPoint[1],(int)nextPoint[0],(int)nextPoint[1]);
 		}
 		

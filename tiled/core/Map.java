@@ -31,6 +31,7 @@ public class Map extends MultilayerPlane implements Cloneable
     public static final int MDO_OBLIQUE = 3;
     public static final int MDO_HEX     = 4;
 
+	private Vector specialLayers;
     private Vector tilesets;
     private LinkedList objects;
     int id;
@@ -54,12 +55,16 @@ public class Map extends MultilayerPlane implements Cloneable
         init();        
     }
 
+	/**
+	 * Internal initialization of the Map
+	 *
+	 */
     private void init() {
         mapChangeListeners = new EventListenerList();
         properties = new Properties();
         tilesets = new Vector();
+        specialLayers = new Vector();
     }
-
 
     /**
      * Adds a change listener. The listener will be notified when the map
@@ -93,10 +98,20 @@ public class Map extends MultilayerPlane implements Cloneable
         }
     }
 
+	/**
+	 * Causes a MapChangedEvent to be fired.
+	 *
+	 */
 	public void touch() {
 		fireMapChanged();
 	}
 
+	public void addLayerSpecial(MapLayer l) {
+		l.setMap(this);
+		specialLayers.add(l);
+		fireMapChanged();
+	}
+	
 	public MapLayer addLayer(MapLayer l) {		
 		l.setMap(this);
 		super.addLayer(l);
@@ -191,6 +206,12 @@ public class Map extends MultilayerPlane implements Cloneable
         return layer;
     }
 
+	public MapLayer removeLayerSpecial(int index) {
+		MapLayer layer = (MapLayer) specialLayers.remove(index);
+		fireMapChanged();
+		return layer;
+	}
+
 	/**
 	 * @see MultilayerPlane#removeAllLayers
 	 */
@@ -278,6 +299,10 @@ public class Map extends MultilayerPlane implements Cloneable
     public String getName() {
         return name;
     }
+
+	public Iterator getLayersSpecial() {
+		return specialLayers.iterator();
+	}
 
     /**
      * Returns a vector with the currently loaded tilesets.

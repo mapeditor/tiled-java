@@ -157,8 +157,7 @@ public class SearchDialog extends JDialog implements ActionListener {
 						}
 				}
 			}
-			myMap.addLayer(sl);
-			myMap.touch();
+			myMap.addLayerSpecial(sl);
 			
 		} else if(command.equalsIgnoreCase("replace all")) {
 			replaceAll((Tile) searchCBox.getSelectedItem(),(Tile) replaceCBox.getSelectedItem());

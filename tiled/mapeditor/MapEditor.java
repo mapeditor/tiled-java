@@ -793,10 +793,10 @@ public class MapEditor implements ActionListener,
         //special logic for seleciton
         if(currentPointerState == PS_MARQUEE) {
         	if(marqueeSelection != null) {
-        		currentMap.removeLayer(marqueeSelection.getId());
+        		currentMap.removeLayerSpecial(marqueeSelection.getId());
         	}
         	marqueeSelection = new SelectionLayer(currentMap.getWidth(), currentMap.getHeight());
-        	currentMap.addLayer(marqueeSelection);
+        	currentMap.addLayerSpecial(marqueeSelection);
         }
         
         doMouse(e);
@@ -810,7 +810,7 @@ public class MapEditor implements ActionListener,
 			Point tile = mapView.screenToTileCoords(event.getX(), event.getY());
 			if( tile.y - mousePressLocation.y==0 && tile.x - mousePressLocation.x ==0) {
 				if(marqueeSelection != null) {
-					currentMap.removeLayer(marqueeSelection.getId());
+					currentMap.removeLayerSpecial(marqueeSelection.getId());
 					marqueeSelection = null;
 				}	 
 			}
