@@ -64,41 +64,41 @@ public class IsoMapView extends MapView
         int tsize_height_delta = tileSize.height / 2;
 
 
-		// Determine area to draw from clipping rectangle
-		Rectangle clipRect = g.getClipBounds();
+        // Determine area to draw from clipping rectangle
+        Rectangle clipRect = g.getClipBounds();
         clipRect.height += myMap.getTileHeightMax()*zoom - tileSize.height;
-		int logical_row_max=(clipRect.y+clipRect.height)/(tsize_height_delta)+1;
-		int originx = (myMap.getHeight() - 1) * (tileSize.width / 2);
+        int logical_row_max=(clipRect.y+clipRect.height)/(tsize_height_delta)+1;
+        int originx = (myMap.getHeight() - 1) * (tileSize.width / 2);
 
         // Draw this map layer
-		for(int logical_row = Math.max(clipRect.y/tsize_height_delta-1,0); logical_row<logical_row_max;logical_row++) {
-			int x = Math.max(logical_row-(myMap.getHeight()-1),0);
-			int y = Math.min(logical_row,myMap.getHeight()-1);
-			int gx = Math.abs(originx - logical_row * tsize_width_delta);
-			int gy = (logical_row * tsize_height_delta) /*- clipRect.y*/;
+        for(int logical_row = Math.max(clipRect.y/tsize_height_delta-1,0); logical_row<logical_row_max;logical_row++) {
+            int x = Math.max(logical_row-(myMap.getHeight()-1),0);
+            int y = Math.min(logical_row,myMap.getHeight()-1);
+            int gx = Math.abs(originx - logical_row * tsize_width_delta);
+            int gy = (logical_row * tsize_height_delta) /*- clipRect.y*/;
             Polygon gridPoly = createGridPolygon(gx, gy, 1);
 
-			while (x <= Math.min(logical_row, myMap.getWidth() - 1) &&
-  					y >= Math.max(logical_row-(myMap.getWidth() - 1), 0)) {
+            while (x <= Math.min(logical_row, myMap.getWidth() - 1) &&
+                    y >= Math.max(logical_row-(myMap.getWidth() - 1), 0)) {
 
-				Tile t = layer.getTileAt(x, y);
-				if (t != null && t != myMap.getNullTile()) {
-					t.draw(g, gx, gy, zoom);
-					if (showGrid) {
-						//TODO: create a system that the user can use to highlight tiles with certain properties (search)
-						/*if ((t.getFlags() & Tile.T_IMPASSABLE) != 0) {
-							g.setColor(Color.red);
-							g.drawPolygon(gridPoly);
-						}*/
-					}
-				}
+                Tile t = layer.getTileAt(x, y);
+                if (t != null && t != myMap.getNullTile()) {
+                    t.draw(g, gx, gy, zoom);
+                    if (showGrid) {
+                        //TODO: create a system that the user can use to highlight tiles with certain properties (search)
+                        /*if ((t.getFlags() & Tile.T_IMPASSABLE) != 0) {
+                          g.setColor(Color.red);
+                          g.drawPolygon(gridPoly);
+                          }*/
+                    }
+                }
 
                 x++;
                 y--;
                 gx += tileSize.width;
                 gridPoly.translate(tileSize.width, 0);
-  			}
-		}
+                    }
+        }
     }
 
     protected void paintGrid(Graphics g, double zoom) {
@@ -169,11 +169,12 @@ public class IsoMapView extends MapView
 
     public Point screenToTileCoords(int x, int y) {
         Dimension tileSize = getTileSize(zoom);
+        double r = getTileRatio();
 
         // Translate origin to top-center
         x -= myMap.getHeight() * (tileSize.width / 2);
-        int mx = y + x / 2;
-        int my = y - x / 2;
+        int mx = y + (int)(x / r);
+        int my = y - (int)(x / r);
 
         // Calculate map coords and divide by tile size (tiles assumed to
         // be square in normal projection)
@@ -201,10 +202,15 @@ public class IsoMapView extends MapView
                 (int)(myMap.getTileHeight() * zoom));
     }
 
+    protected double getTileRatio() {
+        return (double)myMap.getTileWidth() / (double)myMap.getTileHeight();
+    }
+
     protected Point mapToScreenCoords(int x, int y) {
         Dimension tileSize = getTileSize(zoom);
+        double r = getTileRatio();
         int originX = (myMap.getHeight() * tileSize.width) / 2;
 
-        return new Point((x - y) + originX, (x + y) / 2);
+        return new Point(((x - y) + originX), (int)((x + y) / r));
     }
 }
