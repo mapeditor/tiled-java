@@ -26,110 +26,90 @@ import tiled.mapeditor.util.*;
 import tiled.mapeditor.widget.*;
 
 public class PropertiesDialog extends JDialog implements ActionListener,
-	ListSelectionListener
- {
-	private JTable mapProperties;
-	private JButton bOk, bCancel;
-	private JButton bDel, bAdd;
-	private Properties properties;
-	
-	public PropertiesDialog(JFrame parent, Properties p) {
-		super(parent, "Properties", true);
-		properties = p;
-		init();
-		pack();
-		setLocationRelativeTo(getOwner());
-	}
+       ListSelectionListener
+{
+    private JTable mapProperties;
+    private JButton bOk, bCancel;
+    private Properties properties;
+    private PropertiesTableModel tableModel;
 
-	private void init() {
-		mapProperties = new JTable(new PropertiesTableModel());
-		mapProperties.getSelectionModel().addListSelectionListener(this);
-		JScrollPane propScrollPane = new JScrollPane(mapProperties);
-		propScrollPane.setPreferredSize(new Dimension(150, 150));
+    public PropertiesDialog(JFrame parent, Properties p) {
+        super(parent, "Properties", true);
+        properties = p;
+        init();
+        pack();
+        setLocationRelativeTo(getOwner());
+    }
 
-		bOk = new JButton("OK");
-		bCancel = new JButton("Cancel");
+    private void init() {
+        tableModel = new PropertiesTableModel();
+        mapProperties = new JTable(tableModel);
+        mapProperties.getSelectionModel().addListSelectionListener(this);
+        JScrollPane propScrollPane = new JScrollPane(mapProperties);
+        propScrollPane.setPreferredSize(new Dimension(200, 150));
 
-		try {
-			bAdd = new JButton(new ImageIcon(MapEditor.loadImageResource("resources/gnome-new.png")));
-			bDel = new JButton(new ImageIcon(MapEditor.loadImageResource("resources/gnome-delete.png")));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		bOk.addActionListener(this);
-		bCancel.addActionListener(this);
-		bAdd.addActionListener(this);
-		bDel.addActionListener(this);
-		
-		JPanel buttons = new VerticalStaticJPanel();
-		buttons.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
-		buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
-		buttons.add(Box.createGlue());
-		buttons.add(bOk);
-		buttons.add(Box.createRigidArea(new Dimension(5, 0)));
-		buttons.add(bCancel);
+        bOk = new JButton("OK");
+        bCancel = new JButton("Cancel");
 
-		JPanel user = new VerticalStaticJPanel();
-		user.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
-		user.setLayout(new BoxLayout(user, BoxLayout.X_AXIS));
-		user.add(Box.createGlue());
-		user.add(bAdd);
-		user.add(Box.createRigidArea(new Dimension(5, 0)));
-		user.add(bDel);
-		
-		JPanel mainPanel = new JPanel();
-		mainPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-		mainPanel.add(propScrollPane);
-		mainPanel.add(user);
-		mainPanel.add(buttons);
+        bOk.addActionListener(this);
+        bCancel.addActionListener(this);
 
-		getContentPane().add(mainPanel);
-		getRootPane().setDefaultButton(bOk);
+        JPanel buttons = new VerticalStaticJPanel();
+        buttons.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
+        buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
+        buttons.add(Box.createGlue());
+        buttons.add(bOk);
+        buttons.add(Box.createRigidArea(new Dimension(5, 0)));
+        buttons.add(bCancel);
 
-	}
+        JPanel mainPanel = new JPanel();
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        mainPanel.add(propScrollPane);
+        mainPanel.add(buttons);
 
-	private void updateInfo() {
-		mapProperties.removeAll();
+        getContentPane().add(mainPanel);
+        getRootPane().setDefaultButton(bOk);
+    }
 
-		Enumeration keys = properties.keys();
-		Properties props = new Properties();
-		while (keys.hasMoreElements()) {
-			String key = (String) keys.nextElement(); 
-			props.put(key, properties.getProperty(key));
-		}
-		((PropertiesTableModel)mapProperties.getModel()).update(props);
-		mapProperties.repaint();
-	}
+    private void updateInfo() {
+        // Make a copy of the properties that will be changed by the
+        // properties table model.
+        Properties props = new Properties();
+        Enumeration keys = properties.keys();
+        while (keys.hasMoreElements()) {
+            String key = (String)keys.nextElement(); 
+            props.put(key, properties.getProperty(key));
+        }
+        tableModel.update(props);
+    }
 
-	public void getProps() {
-		updateInfo();
-		setVisible(true);
-	}
+    public void getProps() {
+        updateInfo();
+        setVisible(true);
+    }
 
-	public void actionPerformed(ActionEvent event) {
-		Object source = event.getSource();
+    public void actionPerformed(ActionEvent event) {
+        Object source = event.getSource();
 
-		if (source == bOk) {
-			properties.clear();
+        if (source == bOk) {
+            // Copy over the new set of properties from the properties table
+            // model.
+            properties.clear();
 
-			Properties newProps = ((PropertiesTableModel)mapProperties.getModel()).getProperties();
-			Enumeration keys = newProps.keys();
-			while (keys.hasMoreElements()) {
-				String key = (String) keys.nextElement(); 
-				properties.put(key, newProps.getProperty(key));
-			}
+            Properties newProps = tableModel.getProperties();
+            Enumeration keys = newProps.keys();
+            while (keys.hasMoreElements()) {
+                String key = (String)keys.nextElement(); 
+                properties.put(key, newProps.getProperty(key));
+            }
 
-			dispose();
-		} else if (source == bCancel) {
-			dispose();
-		} else if (source == bDel) {
-			((PropertiesTableModel)mapProperties.getModel()).remove(mapProperties.getSelectedRow());
-			repaint();
-		}
-	}
+            dispose();
+        } else if (source == bCancel) {
+            dispose();
+        }
+    }
 
-	public void valueChanged(ListSelectionEvent e) {
-	}
+    public void valueChanged(ListSelectionEvent e) {
+    }
 }

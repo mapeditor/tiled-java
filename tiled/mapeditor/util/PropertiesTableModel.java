@@ -53,7 +53,7 @@ public class PropertiesTableModel extends AbstractTableModel
         if (rowIndex >= 0 && rowIndex < properties.size()) {
             if (columnIndex == 0) {
                 return array[rowIndex];
-            } else if(columnIndex == 1) {
+            } else if (columnIndex == 1) {
                 return properties.get(array[rowIndex]);
             }
         }
@@ -65,36 +65,29 @@ public class PropertiesTableModel extends AbstractTableModel
         // property (and ignore when it happens on the last row).
         if (row >= 0) {
             if (row >= properties.size() && col == 0) {
-                properties.put(value, "");
-                fireTableDataChanged();
+                if (((String)value).length() > 0) {
+                    properties.setProperty((String)value, "");
+                    fireTableDataChanged();
+                }
             } else {
                 if (col == 1) {
                     properties.setProperty(
                             (String)getValueAt(row, 0), (String)value);
                     fireTableCellUpdated(row, col);
                 } else if (col == 0) {
-                    Object val = getValueAt(row, 1);
+                    String val = (String)getValueAt(row, 1);
                     if (getValueAt(row, col) != null) {
                         properties.remove(getValueAt(row, col));
                     }
-                    properties.put(value, val);
+                    if (((String)value).length() > 0) {
+                        properties.setProperty((String)value, val);
+                    }
                     fireTableDataChanged();
                 }
             }
         }
     }
 
-    public void remove(int row) {
-        Enumeration e = properties.keys();
-        for (int i = 0; e.hasMoreElements(); i++) {
-            Object key = e.nextElement();
-            if (i == row) {
-                properties.remove(key);
-                break;
-            }
-        }
-    }
-    
     public void update(Properties props) {
         properties = props;
         fireTableDataChanged();
