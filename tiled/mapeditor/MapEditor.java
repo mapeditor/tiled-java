@@ -304,7 +304,7 @@ public class MapEditor implements ActionListener,
                 "control S");
         JMenuItem saveAs = createMenuItem("Save as...", null,
                 "Save current map as new file", "control shift S");
-		JMenuItem saveAsImage = createMenuItem("Snapshot...", null,
+		JMenuItem saveAsImage = createMenuItem("Save as Image...", null,
 						"Save current map as an image", "control shift I");
         JMenuItem close = createMenuItem("Close", null, "Close this map",
                 "control W");
@@ -1139,7 +1139,7 @@ public class MapEditor implements ActionListener,
             if (currentMap != null) {
                 saveMap(currentMap.getFilename(), true);
             }
-        } else if (command.equals("Snapshot...")) {
+        } else if (command.equals("Save as Image...")) {
 			if (currentMap != null) {
 				saveMapImage(null);
 			}
@@ -1711,12 +1711,16 @@ public class MapEditor implements ActionListener,
 		}
 		
 		if(filename != null) {
-			int gridMod = mapView.getMode(MapView.PF_GRIDMODE) ? 1 : 0;
-			BufferedImage i = new BufferedImage(currentMap.getWidth()*(currentMap.getTileWidth()+gridMod),currentMap.getHeight()*(currentMap.getTileHeight()+gridMod),BufferedImage.TYPE_INT_ARGB);
-			//BufferedImage i = (BufferedImage) mapView.createImage(currentMap.getWidth()*(currentMap.getTileWidth()+gridMod),currentMap.getHeight()*(currentMap.getTileHeight()+gridMod));
+			MapView myView = currentMap.createView();
+			if(mapView.getMode(MapView.PF_GRIDMODE))
+				myView.enableMode(MapView.PF_GRIDMODE);
+			myView.enableMode(MapView.PF_NOSPECIAL);
+			Dimension d = myView.getPreferredSize();
+			//BufferedImage i = new BufferedImage(currentMap.getWidth()*(currentMap.getTileWidth()+gridMod),currentMap.getHeight()*(currentMap.getTileHeight()+gridMod),BufferedImage.TYPE_INT_ARGB);
+			BufferedImage i = new BufferedImage(d.width, d.height, BufferedImage.TYPE_INT_ARGB);
 			Graphics2D g = i.createGraphics();
-			g.setClip(0,0,currentMap.getWidth()*(currentMap.getTileWidth()+gridMod),currentMap.getHeight()*(currentMap.getTileHeight()+gridMod));
-			mapView.paint(g);
+			g.setClip(0,0,d.width,d.height);
+			myView.paint(g);
 			try {
 				ImageIO.write(i, filename.substring(filename.lastIndexOf('.')+1).toUpperCase(),new File(filename));
             } catch (IOException e) {

@@ -31,6 +31,7 @@ public abstract class MapView extends JPanel implements Scrollable
     public static final int PF_GRIDMODE     = 0x00000001;
     public static final int PF_BOUNDARYMODE = 0x00000002;
     public static final int PF_COORDINATES  = 0x00000004;
+	public static final int PF_NOSPECIAL    = 0x00000008;
 
     public static int ZOOM_NORMALSIZE = 3;
 
@@ -179,20 +180,21 @@ public abstract class MapView extends JPanel implements Scrollable
             }
         }
 
-        li = myMap.getLayersSpecial();
-
-        while (li.hasNext()) {
-            layer = (MapLayer) li.next();
-            if(layer.isVisible()) {
-            	if (layer.getClass() == SelectionLayer.class) {
-                	((Graphics2D)g).setComposite(AlphaComposite.getInstance(
-                    	                AlphaComposite.SRC_ATOP, 0.3f));
-                	g.setColor(((SelectionLayer)layer).getHighlightColor());
-            	}
-            	paint(g, layer, currentZoom);
-            }
-        }
-
+		if(!getMode(PF_NOSPECIAL)) {
+	        li = myMap.getLayersSpecial();
+	
+	        while (li.hasNext()) {
+	            layer = (MapLayer) li.next();
+	            if(layer.isVisible()) {
+	            	if (layer.getClass() == SelectionLayer.class) {
+	                	((Graphics2D)g).setComposite(AlphaComposite.getInstance(
+	                    	                AlphaComposite.SRC_ATOP, 0.3f));
+	                	g.setColor(((SelectionLayer)layer).getHighlightColor());
+	            	}
+	            	paint(g, layer, currentZoom);
+	            }
+	        }
+		}
         if (getMode(PF_GRIDMODE)) {
             // Configure grid properties according to preferences
             TiledConfiguration conf = TiledConfiguration.getInstance();
