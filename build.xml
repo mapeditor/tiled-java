@@ -119,6 +119,6 @@
   </target>
 
   <target name="plugins" description="Plugins for various map formats">
-	<ant antfile="${plugins}/build.xml" target="dist"/>
+	<ant dir="${plugins}" target="dist"/>
   </target>
 </project>
