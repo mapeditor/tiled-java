@@ -1663,7 +1663,7 @@ public class MapEditor implements ActionListener,
                     String warn = (String) itr.next();
                     warnings = warnings + warn + "\n";
                 }
-                JOptionPane.showMessageDialog(this.appFrame,  warnings,
+                JOptionPane.showMessageDialog(appFrame,  warnings,
                         "Loading Messages",
                         JOptionPane.INFORMATION_MESSAGE);
             }
@@ -1758,9 +1758,6 @@ public class MapEditor implements ActionListener,
             
             if (ch.showSaveDialog(appFrame) == JFileChooser.APPROVE_OPTION) {
                 filename = ch.getSelectedFile().getAbsolutePath();
-                configuration.addConfigPair("tmx.save.maplocation",
-                        filename.substring(0, filename.lastIndexOf(
-                                File.separatorChar) + 1));
             } else {
                 // User cancelled operation, do nothing
                 return;
@@ -1768,6 +1765,18 @@ public class MapEditor implements ActionListener,
         }
 
         try {
+            // Check if file exists
+            File exist = new File(filename);
+            if (exist.exists() && bSaveAs) {
+                int result = JOptionPane.showConfirmDialog(appFrame,
+                        "The file already exists. Are you sure you want to " +
+                        "overwrite it?", "Overwrite file?",
+                        JOptionPane.YES_NO_OPTION);
+                if (result != JOptionPane.OK_OPTION) {
+                    return;
+                }
+            }
+
             MapWriter mw = null;
             if (filename.endsWith("tmx")) {
                 // Override, so people can't overtake our format
@@ -1798,7 +1807,6 @@ public class MapEditor implements ActionListener,
                     "Error while saving map",
                     JOptionPane.ERROR_MESSAGE);
         }
-        configuration.remove("tmx.save.maplocation");
     }
 
     public void saveMapImage(String filename) {

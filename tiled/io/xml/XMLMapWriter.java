@@ -199,14 +199,17 @@ public class XMLMapWriter implements MapWriter
                         w.endElement();
                         w.endElement();
                     }
-                } else if (conf.keyHasValue("tmx.save.embedImages","0")) {
+                } else if (conf.keyHasValue("tmx.save.embedImages", "0")) {
                     if (source == null) {
                         String imgSource = conf.getValue(
                                 "tmx.save.tileImagePrefix") + "set.png";
                         w.writeAttribute("source", imgSource);
+                        
+                        String tilesetFilename = (wp.substring(0,
+                                wp.lastIndexOf(File.separatorChar) + 1)
+                                + source);
                         FileOutputStream fw = new FileOutputStream(new File(
-                                    conf.getValue(
-                                        "tmx.save.maplocation") + source));
+                                    tilesetFilename));
                         // TODO: external sets are broken!
                         //byte[] data = ImageHelper.imageToPNG(setImage);
                         //fw.write(data, 0, data.length);

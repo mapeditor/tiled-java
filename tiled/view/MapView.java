@@ -24,8 +24,8 @@ import tiled.util.TiledConfiguration;
 
 
 /**
- * The base class for map views. This is meant to be extended for different tile map orientations, 
- * such as orthagonal and isometric.
+ * The base class for map views. This is meant to be extended for different
+ * tile map orientations, such as orthagonal and isometric.
  */
 public abstract class MapView extends JPanel implements Scrollable
 {
