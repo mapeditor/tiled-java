@@ -427,7 +427,11 @@ public class XMLMapWriter implements MapWriter
         return "*.tmx,*.tsx";
     }
 
-    public String getName() {
+    public String getPluginPackage() {
+    	return "Tiled internal TMX reader/writer";
+    }
+    
+    public String getDescription() {
     	return
         			"The core Tiled TMX format writer\n" +
 					"\n" +
@@ -436,7 +440,7 @@ public class XMLMapWriter implements MapWriter
 					"Bjorn Lindeijer";
     }
 
-    public String getDescription() {
+    public String getName() {
         return "Default Tiled XML map writer";
     }
 

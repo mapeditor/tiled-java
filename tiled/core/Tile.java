@@ -118,7 +118,8 @@ public class Tile
                 g.drawImage(tileImage, x, y, null);
             }
         } else {
-            g.drawString("" + id, x, y);
+        	//TODO: drawing ids when there is no tile data should be a config option.
+            //g.drawString("" + id, x, y);
         }
     }
 

@@ -82,7 +82,7 @@ public class MapLayer implements Cloneable
      * @param w width in tiles
      * @param h height in tiles
      */
-    MapLayer(Map m, int w, int h) {
+    public MapLayer(Map m, int w, int h) {
         this(w, h);
         setMap(m);
     }

@@ -541,7 +541,11 @@ public class XMLMapTransformer implements MapReader
         return "*.tmx,*.tsx";
     }
 
-    public String getName() {
+    public String getPluginPackage() {
+    	return "Tiled internal TMX reader/writer";
+    }
+    
+    public String getDescription() {
         return "This is the core Tiled TMX format reader\n" +
         			"\n" +
 					"Tiled Map Editor, (c) 2004\n" +
@@ -549,7 +553,7 @@ public class XMLMapTransformer implements MapReader
 					"Bjorn Lindeijer";
     }
 
-    public String getDescription() {
+    public String getName() {
     	return "Default Tiled XML map reader";
     }
 

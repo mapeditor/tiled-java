@@ -52,7 +52,7 @@ public class TileButton extends JButton
         ImageIcon icon = null;
         Insets i = getInsets();
 
-        if (tile != null) {
+        if (tile != null && tile.getImage() != null) {
             Image tileImg = tile.getImage();
             int imgWidth = tileImg.getWidth(null);
             int w = getWidth() - i.left - i.right;
