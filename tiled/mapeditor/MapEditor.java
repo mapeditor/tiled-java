@@ -1093,7 +1093,8 @@ public class MapEditor implements ActionListener,
                 saveMap(currentMap.getFilename(), true);
             }
         } else if (command.equals("Properties")) {
-            MapPropertiesDialog pd = new MapPropertiesDialog(appFrame, this);
+            PropertiesDialog pd = new PropertiesDialog(appFrame, currentMap.getAllProperties());
+            pd.setTitle("Map Properties");
             pd.getProps();
         } else if (command.equals("Layer Properties")) {
             PropertiesDialog lpd =
@@ -1900,7 +1901,11 @@ public class MapEditor implements ActionListener,
         MapEditor editor = new MapEditor();
 
         if (args.length > 0) {
-            editor.loadMap(args[0]);
+        	String toLoad = args[0];
+        	if(!toLoad.startsWith("/") && !toLoad.startsWith("./")) {
+        		toLoad="./"+toLoad;
+        	}
+            editor.loadMap(toLoad);
         }
     }
 }

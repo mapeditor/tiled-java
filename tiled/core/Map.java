@@ -194,6 +194,13 @@ public class Map extends MultilayerPlane implements Cloneable
         return properties.getProperty(key);
     }
 
+	/**
+	 * @return
+	 */
+	public Properties getAllProperties() {
+		return properties;
+	}
+    
     public void setProperties(Properties prop) {
         properties = prop;
     }
@@ -449,4 +456,5 @@ public class Map extends MultilayerPlane implements Cloneable
         return (x >= 0 && y >= 0 &&
                 x < this.widthInTiles && y < this.heightInTiles);
     }
+
 }

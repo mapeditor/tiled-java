@@ -16,6 +16,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.Area;
 import java.util.Enumeration;
+import java.util.LinkedList;
 import java.util.Properties;
 
 
@@ -42,11 +43,13 @@ public class MapLayer implements Cloneable
     protected float opacity = 1.0f;
     protected Rectangle bounds;
     private Properties properties;
-
+    private LinkedList boundObjects;
+    
     public MapLayer() {
         bounds = new Rectangle();
         setMap(null);
 		properties = new Properties();
+		boundObjects = new LinkedList();
     }
 
     /**
@@ -54,20 +57,18 @@ public class MapLayer implements Cloneable
      * @param h height in tiles
      */
     public MapLayer(int w, int h) {
-        setBounds(new Rectangle(0, 0, w, h));
-		properties = new Properties();
+    	this(new Rectangle(0, 0, w, h));
     }
 
     public MapLayer(Rectangle r) {
+    	this();
         setBounds(r);
-		properties = new Properties();
     }
 
     public MapLayer(MapLayer ml) {
+    	this(ml.getBounds());
         id = ml.id;
         name = ml.getName();
-        bounds = new Rectangle(ml.getBounds());
-		properties = new Properties();
 
         map = new Tile[bounds.height][];
         for (int y = 0; y < bounds.height; y++) {
@@ -80,9 +81,8 @@ public class MapLayer implements Cloneable
      * @param m the map this layer is part of
      */
     MapLayer(Map m) {
-        bounds = new Rectangle();
+        this();
         setMap(m);
-		properties = new Properties();
     }
 
     /**
@@ -93,7 +93,6 @@ public class MapLayer implements Cloneable
     public MapLayer(Map m, int w, int h) {
         this(w, h);
         setMap(m);
-		properties = new Properties();
     }
 
     /**
@@ -584,5 +583,17 @@ public class MapLayer implements Cloneable
 
 	public String getPropertyValue(String key) {
 		return properties.getProperty(key);
+	}
+	
+	public void bindObject(MapObject o) {
+		boundObjects.add(o);
+	}
+	
+	public void unbindObject(MapObject o) {
+		boundObjects.remove(o);
+	}
+	
+	public void unbindAll() {
+		boundObjects.clear();
 	}
 }

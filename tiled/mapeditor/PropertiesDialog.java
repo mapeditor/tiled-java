@@ -94,7 +94,7 @@ public class PropertiesDialog extends JDialog implements ActionListener,
 	private void updateInfo() {
 		mapProperties.removeAll();
 
-		Enumeration keys = properties.elements();
+		Enumeration keys = properties.keys();
 		Properties props = new Properties();
 		while (keys.hasMoreElements()) {
 			String key = (String) keys.nextElement(); 
@@ -116,7 +116,7 @@ public class PropertiesDialog extends JDialog implements ActionListener,
 			properties.clear();
 
 			Properties newProps = ((PropertiesTableModel)mapProperties.getModel()).getProperties();
-			Enumeration keys = newProps.elements();
+			Enumeration keys = newProps.keys();
 			while (keys.hasMoreElements()) {
 				String key = (String) keys.nextElement(); 
 				properties.put(key, newProps.getProperty(key));

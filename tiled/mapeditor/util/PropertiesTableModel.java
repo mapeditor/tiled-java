@@ -77,7 +77,7 @@ public class PropertiesTableModel extends AbstractTableModel
     }
 
     public void remove(int row) {
-    	Enumeration e = properties.elements();
+    	Enumeration e = properties.keys();
     	for(int i=0;e.hasMoreElements(); i++) {
     		Object key = e.nextElement();
     		if(i==row) {
