@@ -49,7 +49,11 @@ public class LayerTableModel extends AbstractTableModel
     }
 
     public Class getColumnClass(int col) {
-        return getValueAt(0, col).getClass();
+        switch (col) {
+            case 0: return Boolean.class;
+            case 1: return String.class;
+        }
+        return null;
     }
 
     public Object getValueAt(int row, int col) {

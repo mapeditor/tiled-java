@@ -5,7 +5,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
@@ -106,6 +106,15 @@ public class XMLMapTransformer implements MapReader
         return att;
     }
 
+    private int getAttribute(Node node, String attribname, int def) {
+        String attr = getAttributeValue(node, attribname);
+        if (attr != null) {
+            return Integer.parseInt(attr);
+        } else {
+            return def;
+        }
+    }
+
     private Node getChildNode(Node n, String name) {
         NodeList children = n.getChildNodes();
 		Node child = null;
@@ -125,9 +134,9 @@ public class XMLMapTransformer implements MapReader
         Constructor cons = null;
 		try {
 			cons = reflector.getConstructor(null);
-		} catch (SecurityException e1) {			
+		} catch (SecurityException e1) {
 			e1.printStackTrace();
-		} catch (NoSuchMethodException e1) {			
+		} catch (NoSuchMethodException e1) {
 			e1.printStackTrace();
 			return null;
 		}
@@ -238,12 +247,12 @@ public class XMLMapTransformer implements MapReader
             e.printStackTrace();
         }
 
-        String tileWidthStr = getAttributeValue(t, "tilewidth");
-        String tileHeightStr = getAttributeValue(t, "tileheight");
-        String spacingStr = getAttributeValue(t, "spacing");
+        int tileWidth = getAttribute(t, "tilewidth", 0);
+        int tileHeight = getAttribute(t, "tileheight", 0);
+        int tileSpacing = getAttribute(t, "spacing", 0);
 
         if (set.getSource() != null) {
-            TileSet ext = unmarshalTilesetFile(xmlPath+set.getSource());
+            TileSet ext = unmarshalTilesetFile(xmlPath + set.getSource());
             ext.setFirstGid(set.getFirstGid());
             return ext;
         } else {
@@ -255,12 +264,6 @@ public class XMLMapTransformer implements MapReader
                     set.addTile(unmarshalTile(child));
                 } else if (child.getNodeName().equalsIgnoreCase("image")) {
                     String source = getAttributeValue(child, "source");
-                    int tileWidth, tileHeight, spacing = 0;
-                    tileWidth = Integer.parseInt(tileWidthStr);
-                    tileHeight = Integer.parseInt(tileHeightStr);
-                    if (spacingStr != null) {
-                        spacing = Integer.parseInt(spacingStr);
-                    }
 
                     File sourceFile = new File(source);
                     String sourcePath;
@@ -272,7 +275,7 @@ public class XMLMapTransformer implements MapReader
                     }
 
                     set.importTileBitmap(sourcePath,
-                            tileWidth, tileHeight, spacing);
+                            tileWidth, tileHeight, tileSpacing);
 
                     // There can be only one image element
                     break;
@@ -282,60 +285,62 @@ public class XMLMapTransformer implements MapReader
         return set;
     }
 
-	private MapObject unmarshalObject(Node t) throws Exception {
-		MapObject obj = null;
-		try {
-			obj = (MapObject)unmarshalClass(MapObject.class,t);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		NodeList children = t.getChildNodes();
+    private MapObject unmarshalObject(Node t) throws Exception {
+        MapObject obj = null;
+        try {
+            obj = (MapObject)unmarshalClass(MapObject.class,t);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-		for (int i = 0; i < children.getLength(); i++) {
-			Node child = children.item(i);
-			if(child.getNodeName().equalsIgnoreCase("property")) {
-				obj.setProperty(getAttributeValue(child,"name"),getAttributeValue(child,"value"));
-			}
-		}
-		return obj;
-	}
+        NodeList children = t.getChildNodes();
+
+        for (int i = 0; i < children.getLength(); i++) {
+            Node child = children.item(i);
+            if (child.getNodeName().equalsIgnoreCase("property")) {
+                obj.setProperty(getAttributeValue(child, "name"),
+                        getAttributeValue(child, "value"));
+            }
+        }
+        return obj;
+    }
 
     private Tile unmarshalTile(Node t) throws Exception {
         Tile tile = null;
 
         try {
-            tile = (Tile)unmarshalClass(Tile.class,t);
+            tile = (Tile)unmarshalClass(Tile.class, t);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
-		NodeList children = t.getChildNodes();
 
-		for (int i = 0; i < children.getLength(); i++) {
-			Node child = children.item(i);
-			if(child.getNodeName().equalsIgnoreCase("image")) {
-				tile.setImage(unmarshalImage(child));
-			} else if(child.getNodeName().equalsIgnoreCase("property")) {
-				tile.setProperty(getAttributeValue(child,"name"),getAttributeValue(child,"value"));
-			}
-		}
+        NodeList children = t.getChildNodes();
+
+        for (int i = 0; i < children.getLength(); i++) {
+            Node child = children.item(i);
+            if (child.getNodeName().equalsIgnoreCase("image")) {
+                tile.setImage(unmarshalImage(child));
+            } else if (child.getNodeName().equalsIgnoreCase("property")) {
+                tile.setProperty(getAttributeValue(child,"name"),
+                        getAttributeValue(child, "value"));
+            }
+        }
 
         return tile;
     }
 
-	private MapLayer unmarshalLayer(Node t) throws Exception {
-		MapLayer ml = null;
-		Rectangle rect = new Rectangle(0,0,map.getWidth(),map.getHeight());
-		
-		boolean encodedBase64=false;
-		try {
-            ml = (MapLayer)unmarshalClass(MapLayer.class,t);
+    private MapLayer unmarshalLayer(Node t) throws Exception {
+        MapLayer ml = null;
+        Rectangle rect = new Rectangle(0, 0, map.getWidth(), map.getHeight());
+
+        boolean encodedBase64 = false;
+        try {
+            ml = (MapLayer)unmarshalClass(MapLayer.class, t);
         } catch (Exception e) {
             e.printStackTrace();
         }
-		
-		ml.setBounds(rect);
+
+        ml.setBounds(rect);
 
         NodeList children = t.getChildNodes();
 
@@ -377,13 +382,13 @@ public class XMLMapTransformer implements MapReader
                         }
                     }
                 } else {
+                    int x = 0, y = 0;
+                    NodeList dataChilds = child.getChildNodes();
                     NodeList tilelist = doc.getElementsByTagName("tile");
-                    int itr = 0;
-                    for (int y = 0; y < ml.getHeight(); y++) {
-                        for (int x = 0; x < ml.getWidth(); x++) {
-                            Node tileNode = tilelist.item(itr++);
-                            Tile tile = unmarshalTile(tileNode);
-                            int tileId = tile.getGid();
+                    for (int j = 0; j < dataChilds.getLength(); j++) {
+                        Node dataChild = dataChilds.item(j);
+                        if (dataChild.getNodeName().equalsIgnoreCase("tile")) {
+                            int tileId = getAttribute(dataChild, "gid", -1);
                             TileSet ts = map.findTileSetForTileGID(tileId);
                             if (ts != null) {
                                 ml.setTileAt(x, y,
@@ -391,6 +396,10 @@ public class XMLMapTransformer implements MapReader
                             } else {
                                 ml.setTileAt(x, y, map.getNullTile());
                             }
+
+                            x++;
+                            if (x == ml.getWidth()) { x = 0; y++; }
+                            if (y == ml.getHeight()) { break; }
                         }
                     }
                 }
@@ -403,8 +412,8 @@ public class XMLMapTransformer implements MapReader
     }
 
     private void buildMap(Document doc) throws Exception {
-        Node item,mapNode;
-        NodeList l,mapNodeList;
+        Node item, mapNode;
+        NodeList l, mapNodeList;
         NamedNodeMap nnm;
         Tile tile;
         mapNodeList = doc.getElementsByTagName("map");
@@ -412,15 +421,23 @@ public class XMLMapTransformer implements MapReader
 
         for (int itr = 0; (mapNode = mapNodeList.item(itr)) != null; itr++) {
             // Get the map dimensions and create the map
-            l = doc.getElementsByTagName("dimensions");
-            for (int i = 0; (item = l.item(i)) != null; i++) {
-                if (item.getParentNode() == mapNode) {
-                    int mapWidth =
-                        Integer.parseInt(getAttributeValue(item, "width"));
-                    int mapHeight =
-                        Integer.parseInt(getAttributeValue(item, "height"));
+            int mapWidth = getAttribute(mapNode, "width", 0);
+            int mapHeight = getAttribute(mapNode, "height", 0);
 
-                    map = new Map(mapWidth, mapHeight);
+            if (mapWidth > 0 && mapHeight > 0) {
+                map = new Map(mapWidth, mapHeight);
+            } else {
+                // Maybe this map is still using the dimensions element
+                l = doc.getElementsByTagName("dimensions");
+                for (int i = 0; (item = l.item(i)) != null; i++) {
+                    if (item.getParentNode() == mapNode) {
+                        mapWidth = getAttribute(item, "width", 0);
+                        mapHeight = getAttribute(item, "height", 0);
+
+                        if (mapWidth > 0 && mapHeight > 0) {
+                            map = new Map(mapWidth, mapHeight);
+                        }
+                    }
                 }
             }
 
@@ -431,29 +448,29 @@ public class XMLMapTransformer implements MapReader
             // Load other map attributes
             map.setName(getAttributeValue(mapNode,"name"));
             String orientation = getAttributeValue(mapNode, "orientation");
-            String tileWidthString = getAttributeValue(mapNode, "tilewidth");
-            String tileHeightString = getAttributeValue(mapNode, "tileheight");
+            int tileWidth = getAttribute(mapNode, "tilewidth", 0);
+            int tileHeight = getAttribute(mapNode, "tileheight", 0);
 
-            if (tileWidthString != null) {
-                map.setTileWidth(Integer.parseInt(tileWidthString));
+            if (tileWidth > 0) {
+                map.setTileWidth(tileWidth);
             }
-            if (tileHeightString != null) {
-                map.setTileHeight(Integer.parseInt(tileHeightString));
+            if (tileHeight > 0) {
+                map.setTileHeight(tileHeight);
             }
 
             if (orientation != null) {
                 setOrientation(orientation);
             } else {
-                throw new Exception("A valid orientation must be given");
+                setOrientation("orthogonal");
             }
 
             // Load the properties
             l = doc.getElementsByTagName("property");
-			for (int i = 0; (item = l.item(i)) != null; i++) {
-				if(item.getParentNode() == mapNode) {                   
-	                map.addProperty(getAttributeValue(item, "name"),
-	                        getAttributeValue(item, "value"));
-				}
+            for (int i = 0; (item = l.item(i)) != null; i++) {
+                if (item.getParentNode() == mapNode) {
+                    map.addProperty(getAttributeValue(item, "name"),
+                            getAttributeValue(item, "value"));
+                }
             }
 
             // Load the tile sets
@@ -468,17 +485,20 @@ public class XMLMapTransformer implements MapReader
             l = doc.getElementsByTagName("layer");
             for (int i = 0; (item = l.item(i)) != null; i++) {
                 if (item.getParentNode() == mapNode) {
-                    map.addLayer(unmarshalLayer(item));
+                    MapLayer layer = unmarshalLayer(item);
+                    if (layer != null) {
+                        map.addLayer(layer);
+                    }
                 }
             }
 
-			//Load the objects
-			l = doc.getElementsByTagName("object");
-			for (int i = 0; (item = l.item(i)) != null; i++) {
-				if (item.getParentNode() == mapNode) {
-					map.addObject(unmarshalObject(item));
-				}
-			}
+            // Load the objects
+            l = doc.getElementsByTagName("object");
+            for (int i = 0; (item = l.item(i)) != null; i++) {
+                if (item.getParentNode() == mapNode) {
+                    map.addObject(unmarshalObject(item));
+                }
+            }
         }
     }
 

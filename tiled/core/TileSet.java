@@ -165,13 +165,13 @@ public class TileSet
         }
     }
 
-	/**
-	 * This method takes a new Tile object as argument, and in addition to 
-	 * the functionality of <code>addTile()</code>, sets the id of the tile. 
-	 * 
-	 * @see TileSet#addTile(Tile)
-	 * @param t the new tile to add.
-	 */
+    /**
+     * This method takes a new Tile object as argument, and in addition to 
+     * the functionality of <code>addTile()</code>, sets the id of the tile. 
+     * 
+     * @see TileSet#addTile(Tile)
+     * @param t the new tile to add.
+     */
     public void addNewTile(Tile t) {
         t.setId(-1);
         addTile(t);

@@ -57,7 +57,7 @@ public class XMLMapWriter implements MapWriter
         xmlWriter.startDocument();
         writeTileset(set, xmlWriter, filename);
         xmlWriter.endDocument();
- 
+
         writer.flush();
     }
 
@@ -82,22 +82,19 @@ public class XMLMapWriter implements MapWriter
                     w.writeAttribute("orientation", "hexagonal"); break;
             }
 
+            w.writeAttribute("width", "" + map.getWidth());
+            w.writeAttribute("height", "" + map.getHeight());
             w.writeAttribute("tilewidth", "" + map.getTileWidth());
             w.writeAttribute("tileheight", "" + map.getTileHeight());
 
-            w.startElement("dimensions");
-            w.writeAttribute("width", "" + map.getWidth());
-            w.writeAttribute("height", "" + map.getHeight());
-            w.endElement();
-
-			Enumeration keys = map.getProperties();
-			while(keys.hasMoreElements()) {
-				String key = (String) keys.nextElement();
-				w.startElement("property");
-				w.writeAttribute("name", key);
-				w.writeAttribute("value", map.getPropertyValue(key));
-				w.endElement();
-			}
+            Enumeration keys = map.getProperties();
+            while(keys.hasMoreElements()) {
+                String key = (String) keys.nextElement();
+                w.startElement("property");
+                w.writeAttribute("name", key);
+                w.writeAttribute("value", map.getPropertyValue(key));
+                w.endElement();
+            }
 
             int firstgid = 1;
             Iterator itr = map.getTilesets().iterator();
@@ -209,12 +206,12 @@ public class XMLMapWriter implements MapWriter
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             OutputStream out;
-			boolean encodeLayerData = TiledConfiguration.keyHasValue(
-											"tmx.save.encodeLayerData", "1");
+            boolean encodeLayerData = TiledConfiguration.keyHasValue(
+                    "tmx.save.encodeLayerData", "1");
             boolean compressLayerData = TiledConfiguration.keyHasValue(
                     "tmx.save.layerCompression", "1") && encodeLayerData;
-			
-								
+
+
             Rectangle bounds = l.getBounds();
 
             w.startElement("layer");
@@ -234,55 +231,57 @@ public class XMLMapWriter implements MapWriter
                 w.writeAttribute("opacity", "" + l.getOpacity());
             }            
 
-			if(encodeLayerData){
-				w.startElement("data");
-				w.writeAttribute("encoding", "base64");
-				
-	            if (compressLayerData) {
-	                w.writeAttribute("compression", "gzip");
-	                out = new GZIPOutputStream(baos);
-	            } else {
-	                out = baos;
-	            }
-	
-	            for (int y = 0; y < l.getHeight(); y++) {
-	                for (int x = 0; x < l.getWidth(); x++) {
-	                    Tile tile = l.getTileAt(x, y);
-	                    int gid = 0;
-	
-	                    if (tile != null) {
-	                        gid = tile.getGid();
-	                    }
-	
-	                    out.write((gid      ) & 0x000000FF);
-	                    out.write((gid >>  8) & 0x000000FF);
-	                    out.write((gid >> 16) & 0x000000FF);
-	                    out.write((gid >> 24) & 0x000000FF);
-	                }
-	            }
-	
-	            if (compressLayerData) {
-	                ((GZIPOutputStream)out).finish();
-	            }
-	
-	            w.writeCDATA(new String(Base64.encode(baos.toByteArray())));
-				w.endElement();
-			} else {
-				for (int y = 0; y < l.getHeight(); y++) {
-					for (int x = 0; x < l.getWidth(); x++) {
-						Tile tile = l.getTileAt(x, y);
-						int gid = 0;
+            if (encodeLayerData) {
+                w.startElement("data");
+                w.writeAttribute("encoding", "base64");
 
-						if (tile != null) {
-							gid = tile.getGid();
-						}
+                if (compressLayerData) {
+                    w.writeAttribute("compression", "gzip");
+                    out = new GZIPOutputStream(baos);
+                } else {
+                    out = baos;
+                }
 
-						w.startElement("tile");
-						w.writeAttribute("gid", ""+gid);
-						w.endElement();
-					}
-				}
-			}
+                for (int y = 0; y < l.getHeight(); y++) {
+                    for (int x = 0; x < l.getWidth(); x++) {
+                        Tile tile = l.getTileAt(x, y);
+                        int gid = 0;
+
+                        if (tile != null) {
+                            gid = tile.getGid();
+                        }
+
+                        out.write((gid      ) & 0x000000FF);
+                        out.write((gid >>  8) & 0x000000FF);
+                        out.write((gid >> 16) & 0x000000FF);
+                        out.write((gid >> 24) & 0x000000FF);
+                    }
+                }
+
+                if (compressLayerData) {
+                    ((GZIPOutputStream)out).finish();
+                }
+
+                w.writeCDATA(new String(Base64.encode(baos.toByteArray())));
+                w.endElement();
+            } else {
+                w.startElement("data");
+                for (int y = 0; y < l.getHeight(); y++) {
+                    for (int x = 0; x < l.getWidth(); x++) {
+                        Tile tile = l.getTileAt(x, y);
+                        int gid = 0;
+
+                        if (tile != null) {
+                            gid = tile.getGid();
+                        }
+
+                        w.startElement("tile");
+                        w.writeAttribute("gid", ""+gid);
+                        w.endElement();
+                    }
+                }
+                w.endElement();
+            }
             w.endElement();
         } catch (XMLWriterException e) {
             e.printStackTrace();
@@ -305,13 +304,13 @@ public class XMLMapWriter implements MapWriter
             //}
 
             Enumeration keys = tile.getProperties();
-			while(keys.hasMoreElements()) {
-				String key = (String) keys.nextElement();
-				w.startElement("property");
-				w.writeAttribute("name", key);
-				w.writeAttribute("value", tile.getPropertyValue(key));
-				w.endElement();
-			}
+            while(keys.hasMoreElements()) {
+                String key = (String) keys.nextElement();
+                w.startElement("property");
+                w.writeAttribute("name", key);
+                w.writeAttribute("value", tile.getPropertyValue(key));
+                w.endElement();
+            }
 
             Image tileImage = tile.getImage();
 
@@ -342,7 +341,7 @@ public class XMLMapWriter implements MapWriter
                     fw.close();
                     w.endElement();
                 }        
-            }
+                        }
 
             w.endElement();
         } catch (XMLWriterException e) {
@@ -350,28 +349,28 @@ public class XMLMapWriter implements MapWriter
         }
     }
 
-	private void writeObject(MapObject m, XMLWriter w) throws IOException {
-		try {
-			w.startElement("object");
-			w.writeAttribute("name", m.getName());
-			w.writeAttribute("x", "" + m.getX());
-			w.writeAttribute("y", "" + m.getY());
-			w.writeAttribute("source", m.getSource());
-			
-			Enumeration keys = m.getProperties();
-			while(keys.hasMoreElements()) {
-				String key = (String) keys.nextElement();
-				w.startElement("property");
-				w.writeAttribute("name", key);
-				w.writeAttribute("value", m.getPropertyValue(key));
-				w.endElement();
-			}
-			
-			w.endElement();
-		} catch (XMLWriterException e) {
-			e.printStackTrace();
-		}
-	}
+    private void writeObject(MapObject m, XMLWriter w) throws IOException {
+        try {
+            w.startElement("object");
+            w.writeAttribute("name", m.getName());
+            w.writeAttribute("x", "" + m.getX());
+            w.writeAttribute("y", "" + m.getY());
+            w.writeAttribute("source", m.getSource());
+
+            Enumeration keys = m.getProperties();
+            while (keys.hasMoreElements()) {
+                String key = (String) keys.nextElement();
+                w.startElement("property");
+                w.writeAttribute("name", key);
+                w.writeAttribute("value", m.getPropertyValue(key));
+                w.endElement();
+            }
+
+            w.endElement();
+        } catch (XMLWriterException e) {
+            e.printStackTrace();
+        }
+    }
 
     public static String getRelativePath(String from, String to) {
         // Make the two paths absolute and unique
@@ -413,7 +412,7 @@ public class XMLMapWriter implements MapWriter
         for (int i = shared; i < fromParents.size() - 1; i++) {
             relPath += ".." + File.separator;
         }
-        
+
         // Add the remaining part in toParents
         for (int i = shared; i < toParents.size() - 1; i++) {
             relPath += toParents.get(i) + File.separator;

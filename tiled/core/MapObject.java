@@ -27,7 +27,7 @@ public class MapObject {
     protected String name, source;
     protected int id;
 
-    MapObject() {
+    public MapObject() {
         bounds = new Rectangle();
         properties = new Properties();
     }

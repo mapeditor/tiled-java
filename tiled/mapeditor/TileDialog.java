@@ -90,6 +90,7 @@ public class TileDialog extends JDialog
         JSplitPane splitPane = new JSplitPane(
                 JSplitPane.HORIZONTAL_SPLIT, true);
         splitPane.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        splitPane.setResizeWeight(0.25);
         splitPane.setLeftComponent(sp);
         splitPane.setRightComponent(propScrollPane);
 

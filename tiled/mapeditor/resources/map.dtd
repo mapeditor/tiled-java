@@ -1,20 +1,24 @@
 <!DOCTYPE TiledMap [
 
-<!ELEMENT map (dimensions, property+, tileset+, layer+, object+)>
+<!ELEMENT map (property+, tileset+, layer+, object+)>
 <!ATTLIST map
     id          ID     #IMPLIED
     version     CDATA  #IMPLIED
-    name        CDATA  #REQUIRED
+    name        CDATA  #IMPLIED
     orientation (orthogonal | isometric | hexagonal | oblique)  #REQUIRED
-    tilewidth	CDATA  #REQUIRED
-    tileheight	CDATA  #REQUIRED
+    width       CDATA  #REQUIRED
+    height      CDATA  #REQUIRED
+    tilewidth   CDATA  #REQUIRED
+    tileheight  CDATA  #REQUIRED
 >
 
-<!ELEMENT tileset (tile+)>
+<!ELEMENT tileset (image | tile+)>
 <!ATTLIST tileset
-    name     CDATA #REQUIRED
-    source   CDATA #IMPLIED
-    firstgid CDATA #REQUIRED
+    name       CDATA #IMPLIED
+    source     CDATA #IMPLIED
+    firstgid   CDATA #REQUIRED
+    tilewidth  CDATA #IMPLIED
+    tileheight CDATA #IMPLIED
 >
 
 <!ELEMENT tile (image, property+)>
