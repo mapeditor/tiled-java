@@ -99,3 +99,49 @@ Suggestor:  Andreas Mross <amross@stagingconnections.com>
 Date:       09/09/04
 Summary:    Additional documentation on the map format.
 State:      To be written.
+
+- 17 --------------------------------------------------------------------------
+Suggestor:  Rainer Deyke <root@rainerdeyke.com>
+Date:       24/09/04
+Summary:    The ability to flip and rotate individual and blocks of tiles.
+State:      Selections maybe, not the tile images for now.
+
+- 18 --------------------------------------------------------------------------
+Suggestor:  Rainer Deyke <root@rainerdeyke.com>
+Date:       24/09/04
+Summary:    A random brush that randomly picks one of several tiles to draw.
+State:      Will eventually be implemented.
+
+- 19 --------------------------------------------------------------------------
+Suggestor:  Rainer Deyke <root@rainerdeyke.com>
+Date:       24/09/04
+Summary:    A block tool that lets me draw blocks of tiles with a single mouse
+            drag. I can fake this with select-and-pour, but a block tool would
+            be much more convenient.
+State:      Interesting.
+
+- 20 --------------------------------------------------------------------------
+Suggestor:  Rainer Deyke <root@rainerdeyke.com>
+Date:       24/09/04
+Summary:    The ability to place objects, or failing that, the ability to
+            attach properties to individual map cells.
+State:      Object support is planned for 0.5.0
+
+- 21 --------------------------------------------------------------------------
+Suggestor:  Rainer Deyke <root@rainerdeyke.com>
+Date:       24/09/04
+Summary:    Animated tiles.
+State:      Flyspray task #62
+
+- 22 --------------------------------------------------------------------------
+Suggestor:  Rainer Deyke <root@rainerdeyke.com>
+Date:       24/09/04
+Summary:    "Deep" brushes that affect more than one layer.
+State:      Something we plan to work on.
+
+- 23 --------------------------------------------------------------------------
+Suggestor:  Rainer Deyke <root@rainerdeyke.com>
+Date:       24/09/04
+Summary:    The ability to set properties for individual layers.
+State:      A necessary feature that will be added sooner or later.
+
