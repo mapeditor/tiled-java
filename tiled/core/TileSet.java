@@ -40,7 +40,7 @@ public class TileSet
     }
 
     /**
-     * Creates a tileset from a tile bitmap.
+     * Creates a tileset from a tile bitmap. This is a tile-cutter.
      *
      * @param imgFile     the filename of the image to be used
      * @param tileWidth   the tile width
@@ -105,12 +105,17 @@ public class TileSet
 
     /**
      * Sets the standard width of the tiles in this tileset. Tiles in this
-     * tileset are not supposed to have any other width.
+     * tileset are not recommended to have any other width.
      */
     public void setStandardWidth(int width) {
         standardWidth = width;
     }
 
+	/**
+	 * Sets the standard height of the tiles in this tileset. This is used
+	 * to calculate the drawing position of tiles with a height above the 
+	 * standard height.
+	 */
     public void setStandardHeight(int s) {
         standardHeight = s;
         Iterator itr = tiles.iterator();
@@ -126,12 +131,21 @@ public class TileSet
         setImage = i;
     }
 
+	/**
+	 * Sets the URI path of the external source of this tile set.
+	 * By setting this, the set is implied to be external in all 
+	 * other operations.
+	 * 
+	 * @param source
+	 */
     public void setSource(String source) {
         externalSource = source;
     }
 
     /**
      * Sets the first global id used by this tileset.
+     * 
+     * @param the first global id
      */
     public void setFirstGid(int f) {
         firstGid = f;
@@ -146,6 +160,12 @@ public class TileSet
         this.name = name;
     }
 
+	/**
+	 * Adds the tile to the setting the id of the tile only if the 
+	 * current value of id is -1.
+	 * 
+	 * @param t the tile to add
+	 */
     public void addTile(Tile t) {
         if (t.getId() < 0) {
             t.setId(this.getTotalTiles());
@@ -163,8 +183,15 @@ public class TileSet
         }
     }
 
+	/**
+	 * This method takes a new Tile object as argument, and in addition to 
+	 * the functionality of <code>addTile()</code>, sets the id of the tile. 
+	 * 
+	 * @see TileSet#addTile(Tile)
+	 * @param t the new tile to add.
+	 */
     public void addNewTile(Tile t) {
-        t.setId(tiles.size());
+        t.setId(-1);
         addTile(t);
     }
 
@@ -195,11 +222,18 @@ public class TileSet
     /**
      * Returns the standard height of tiles in this tileset. Not all tiles in
      * a tileset are required to have the same height.
+     * 
+     * @return the standard height as previously set with a call to TileSet#setStandardHeight 
      */
     public int getStandardHeight() {
         return standardHeight;
     }
 
+	/**
+	 * Iterates through the set an retrieves the larges height value.
+	 * 
+	 * @return the maximum hieght of any tile
+	 */
     public int getTileHeightMax() {
         int maxHeight = 0;
         Iterator itr = tiles.iterator();
@@ -245,17 +279,10 @@ public class TileSet
     }
 
     /**
-     * Returns the tile id.
-     */
-    public int getId() {
-        return id;
-    }
-
-    /**
      * Returns the source of this tileset.
      *
-     * @return a filename if external tileset or <code>null</code> if internal
-     *         tileset
+     * @return a filename if tileset is external or <code>null</code> if
+     *         tileset is internal.
      */
     public String getSource() {
         return externalSource;
@@ -273,6 +300,8 @@ public class TileSet
 
     /**
      * Returns the first global id connected to this tileset.
+     * 
+     * @return first global id
      */
     public int getFirstGid() {
         return firstGid;

@@ -1179,7 +1179,6 @@ public class MapEditor implements ActionListener,
         MapLayer after;
 
         stack.push(new Point(x, y));
-
         while (!stack.empty()) {
             // Remove the next tile from the stack
             Point p = (Point)stack.pop();

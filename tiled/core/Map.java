@@ -18,6 +18,12 @@ import javax.swing.event.EventListenerList;
 import tiled.mapeditor.util.*;
 import tiled.view.*;
 
+/**
+ * The Map class is the focal point of the <code>tiled.core</code> package.
+ * This class also handles notifing listeners if there is a change to any layer
+ * or object contained by the map.
+ * 
+ */
 public class Map extends MultilayerPlane implements Cloneable
 {
     public static final int MDO_ORTHO   = 1;
