@@ -2,6 +2,7 @@
 
 * Added search/replace functionality
 * Added tooltips to buttons
+* Added map save/load plugin support
 * Implementation of HexMapView, making Hex maps possible (Andreas Mross)
 * Removed name and version attributes from map, custom properties suffice there
 * Removed name attribute from tile for same reason
@@ -11,7 +12,7 @@
 * Window close button now checks for changes too
 * Undo/redo is working for moving layers
 * Grid display is configurable (opacity, antialiasing)
-
+* Added marquee selections
 
 0.4.0 - August 4th, 2004
 
