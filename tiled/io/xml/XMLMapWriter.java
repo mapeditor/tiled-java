@@ -124,7 +124,7 @@ public class XMLMapWriter implements MapWriter
             while (itr.hasNext()) {
                 TileSet tileset = (TileSet)itr.next();
                 tileset.setFirstGid(firstgid);
-                writeTileset(tileset, w, wp);
+                writeTilesetReference(tileset, w, wp);
                 firstgid += tileset.getMaxTileId() + 1;
             }
 
@@ -140,17 +140,47 @@ public class XMLMapWriter implements MapWriter
         }
     }
 
-    private void writeTileset(TileSet set, XMLWriter w, String wp)
+    /**
+     * Writes a reference to an external tileset into a XML document.  In the
+     * degenerate case where the tileset is not stored in an external file,
+     * writes the contents of the tileset instead.
+     */
+    private void writeTilesetReference(TileSet set, XMLWriter w, String wp)
         throws IOException {
 
         try {
             String source = set.getSource();
+
+            if (source == null) {
+                this.writeTileset(set, w, wp);
+            } else {
+                w.startElement("tileset");
+                try {
+                    w.writeAttribute("firstgid", "" + set.getFirstGid());
+                    w.writeAttribute("source", source.substring(
+                                source.lastIndexOf(File.separatorChar) + 1));
+                    if (set.getBaseDir() != null) {
+                        w.writeAttribute("basedir", set.getBaseDir());
+                    }
+                } finally {
+                    w.endElement();
+                }
+            }
+        } catch (XMLWriterException e) {
+            e.printStackTrace();
+        } 
+    }
+
+    private void writeTileset(TileSet set, XMLWriter w, String wp)
+        throws IOException {
+
+        try {
             String tilebmpFile = set.getTilebmpFile();
             String name = set.getName();
 
             w.startElement("tileset");
 
-            if (name != null && source == null) {
+            if (name != null) {
                 w.writeAttribute("name", name);
             }
 
@@ -166,11 +196,7 @@ public class XMLMapWriter implements MapWriter
                 w.writeAttribute("basedir", set.getBaseDir());
             }
 
-            if (source != null) {
-                // External tileset
-                w.writeAttribute("source", source.substring(
-                            source.lastIndexOf(File.separatorChar) + 1));
-            } else if (tilebmpFile != null) {
+            if (tilebmpFile != null) {
                 // Reference to tile bitmap
                 if (!Util.checkRoot(tilebmpFile)) {
                     if (!tilebmpFile.startsWith(".")) {
@@ -209,21 +235,18 @@ public class XMLMapWriter implements MapWriter
                         w.endElement();
                     }
                 } else if (conf.keyHasValue("tmx.save.embedImages", "0")) {
-                    if (source == null) {
-                        String imgSource = conf.getValue(
-                                "tmx.save.tileImagePrefix") + "set.png";
-                        w.writeAttribute("source", imgSource);
-                        
-                        String tilesetFilename = (wp.substring(0,
-                                wp.lastIndexOf(File.separatorChar) + 1)
-                                + source);
-                        FileOutputStream fw = new FileOutputStream(new File(
-                                    tilesetFilename));
-                        // TODO: external sets are broken!
-                        //byte[] data = ImageHelper.imageToPNG(setImage);
-                        //fw.write(data, 0, data.length);
-                        fw.close();
-                    }
+                    String imgSource = conf.getValue(
+                            "tmx.save.tileImagePrefix") + "set.png";
+                    w.writeAttribute("source", imgSource);
+                    
+                    String tilesetFilename = (wp.substring(0,
+                            wp.lastIndexOf(File.separatorChar) + 1)
+                            + source);
+                    FileOutputStream fw = new FileOutputStream(new File(
+                                tilesetFilename));
+                    //byte[] data = ImageHelper.imageToPNG(setImage);
+                    //fw.write(data, 0, data.length);
+                    fw.close();
                 }
                 
                 // Check to see if there is a need to write tile elements
