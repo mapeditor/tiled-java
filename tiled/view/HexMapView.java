@@ -92,19 +92,19 @@ public class HexMapView extends MapView
         Point bottomRight = screenToTileCoords((int) (clipRect.getMaxX() - clipRect.getMinX()), (int) (clipRect.getMaxY() - clipRect.getMinY()));
         int startX = (int) clipRect.x / tsize.width;
         int startY = (int) clipRect.y / tsize.height;
-        int endX = (int) (clipRect.x + clipRect.width) / tsize.width;
+        int endX = (int) (((clipRect.x + clipRect.width) / tsize.width)*1.5);
         int endY = (int) ((clipRect.y + clipRect.height) / tsize.height)*2+1;
 
-        for (int y = startY, gy = (int)(startY * tsize.height + toffset); y < endY; y++,gy += tsize.getHeight()/2) {
-            for (int x = startX, gx = (int)((startX * tsize.width + toffset) - (tsize.getWidth()*.75) * (1-y%2)); 
-            				x < endX; x++, gx+=(tsize.getWidth()*1.5)) {
+        for (int y = startY, gy = (int)(startY * tsize.height + toffset); y < endY; y++,gy += tsize.getHeight()) {
+            for (int x = startX, gx = (int)((startX * tsize.width + toffset)); 
+            				x < endX; x++, gx+=(tsize.getWidth()*.75)) {
                 Tile t = layer.getTileAt(x, y);
 
                 if (t != null && t != myMap.getNullTile()) {
 					if(layer.getClass() == SelectionLayer.class) {
 						//g.fillPolygon(createGridPolygon(x, y, 1));
 					}else{
-	                    t.draw(g, gx, gy, zoom);
+	                    t.draw(g, gx, (int)(gy + (tsize.getHeight()/2) * (1-x%2)), zoom);
 					}
                 }
             }
@@ -135,17 +135,19 @@ public class HexMapView extends MapView
         Point bottomRight = screenToTileCoords((int) clipRect.getMaxX(), (int) clipRect.getMaxY());
         int startX = (int) topLeft.getX();
         int startY = (int) topLeft.getY();
-        int endX = (int) bottomRight.getX();
+        int endX = (int) (bottomRight.getX()*1.5)+1;
         int endY = (int) bottomRight.getY()*2+1;
 		int dy = 0;
 		Polygon grid;
 
-        for (int y = startY; y < endY; y++, dy += tileSize.getHeight()/2) {
+        for (int y = startY; y < endY; y++, dy += tileSize.getHeight()) {
 			grid = createGridPolygon(0, 0, 1);
-			grid.translate(-(int) ((tileSize.getWidth()*.75) * (1-y%2)),dy);
-            for (int x = startX; x < endX; x++) {                
+			grid.translate(0,dy);
+            for (int x = startX; x < endX; x++) {
+				grid.translate(0,(int)((tileSize.getHeight()/2) * (1-x%2)));                
                 g.drawPolygon(grid);
-				grid.translate((int)(tileSize.getWidth()*1.5),0);
+				grid.translate((int)(tileSize.getWidth()*.75),0);
+				grid.translate(0,(int)-((tileSize.getHeight()/2) * (1-x%2)));
             }            
         }
     }
