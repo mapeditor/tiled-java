@@ -1,4 +1,5 @@
-/* 
+package tiled.util;
+/** 
    A C-program for MT19937, with initialization improved 2002/1/26.
    Coded by Takuji Nishimura and Makoto Matsumoto.
 
@@ -35,13 +36,14 @@
    NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-
-   Any feedback is very welcome.
-   http://www.math.keio.ac.jp/matumoto/emt.html
-   email: matumoto@math.keio.ac.jp
+<br><br><br>
+   Any feedback is very welcome.<br>
+   http://www.math.keio.ac.jp/matumoto/emt.html<br>
+   email: matumoto@math.keio.ac.jp<br>
+   
+   @author Makoto Matsumoto (matumoto@math.keio.ac.jp)
+   @author Takuji Nishimura
 */
-
-package tiled.util;
 
 public class MersenneTwister {
     public static int N = 624;

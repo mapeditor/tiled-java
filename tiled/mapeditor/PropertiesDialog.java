@@ -54,7 +54,6 @@ public class PropertiesDialog extends JDialog implements ActionListener,
 			bAdd = new JButton(new ImageIcon(MapEditor.loadImageResource("resources/gnome-new.png")));
 			bDel = new JButton(new ImageIcon(MapEditor.loadImageResource("resources/gnome-delete.png")));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -126,7 +125,6 @@ public class PropertiesDialog extends JDialog implements ActionListener,
 		} else if (source == bCancel) {
 			dispose();
 		} else if (source == bDel) {
-			System.out.println("Deleting "+mapProperties.getSelectedRow());
 			((PropertiesTableModel)mapProperties.getModel()).remove(mapProperties.getSelectedRow());
 			repaint();
 		}
