@@ -302,8 +302,6 @@ public class XMLMapWriter implements MapWriter
     private void writeMapLayer(MapLayer l, XMLWriter w) throws IOException {
         try {
             TiledConfiguration conf = TiledConfiguration.getInstance();
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            OutputStream out;
             boolean encodeLayerData = conf.keyHasValue(
                     "tmx.save.encodeLayerData", "1");
             boolean compressLayerData = conf.keyHasValue(
@@ -351,6 +349,9 @@ public class XMLMapWriter implements MapWriter
             } else {
                 w.startElement("data");
                 if (encodeLayerData) {
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    OutputStream out;
+
                     w.writeAttribute("encoding", "base64");
 
                     if (compressLayerData) {
