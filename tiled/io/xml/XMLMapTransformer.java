@@ -175,7 +175,7 @@ public class XMLMapTransformer implements MapReader
         String source = getAttributeValue(t, "source");
         
         if (source != null) {
-        	img = ImageIO.read(new URL(xmlPath + source));
+            img = ImageIO.read(new URL(xmlPath + source));
         } else {
             NodeList nl = t.getChildNodes();
 
@@ -257,7 +257,7 @@ public class XMLMapTransformer implements MapReader
         TileSet set = null;
         boolean hasTileTags = false;
 
-		String tilesetBaseDir = xmlPath;
+        String tilesetBaseDir = xmlPath;
 
         try {
             set = (TileSet)unmarshalClass(TileSet.class, t);
@@ -269,13 +269,13 @@ public class XMLMapTransformer implements MapReader
         int tileHeight = getAttribute(t, "tileheight", 0);
         int tileSpacing = getAttribute(t, "spacing", 0);
 
-		if(set.getBaseDir() != null) {
-			tilesetBaseDir = set.getBaseDir().indexOf("://") > 0 ? set.getBaseDir() : "file://"+set.getBaseDir(); 
-		}
+        if(set.getBaseDir() != null) {
+            tilesetBaseDir = set.getBaseDir().indexOf("://") > 0 ? set.getBaseDir() : "file://"+set.getBaseDir(); 
+        }
 
         if (set.getSource() != null) {
             TileSet ext = unmarshalTilesetFile(new URL(xmlPath + set.getSource()).openStream(), 
-            					xmlPath + set.getSource());
+                                xmlPath + set.getSource());
             ext.setFirstGid(set.getFirstGid());
             return ext;
         } else {
@@ -583,15 +583,13 @@ public class XMLMapTransformer implements MapReader
     // MapReader interface
 
     public Map readMap(String filename) throws Exception {
-    	String xmlFile = filename;
-    	
-    	// TODO: A problem arrises with xmlPath if the tag sources are absolute
-        // path...    	
+        String xmlFile = filename;
+        
         xmlPath = filename.substring(0,
                 filename.lastIndexOf(File.separatorChar) + 1);
         if(xmlFile.indexOf("://") == -1) {
-        	xmlFile = "file://"+xmlFile;
-			xmlPath = "file://"+xmlPath;
+            xmlFile = (new java.io.File(xmlFile)).toURL().toString();
+            xmlPath = (new java.io.File(xmlPath)).toURL().toString();
         }
         URL url = new URL(xmlFile);
         Map unmarshalledMap = unmarshal(url.openStream());
@@ -600,24 +598,23 @@ public class XMLMapTransformer implements MapReader
     }
 
     public Map readMap(InputStream in) throws Exception {
-    	xmlPath = ".";
-    	
-    	Map unmarshalledMap = unmarshal(in);
-    	
-        //unmarshalledMap.setFilename(xmlFile);
+        xmlPath = ".";
+        
+        Map unmarshalledMap = unmarshal(in);
+        
+        //unmarshalledMap.setFilename(xmlFile):w
+        //
         return unmarshalledMap;
     }
     
     public TileSet readTileset(String filename) throws Exception {
-    	String xmlFile = filename;
-    	
-    	// TODO: A problem arrises with xmlPath if the tag sources are absolute
-        // path...    	
+        String xmlFile = filename;
+        
         xmlPath = filename.substring(0,
                 filename.lastIndexOf(File.separatorChar) + 1);
         if(xmlFile.indexOf("://") == -1) {
-        	xmlFile = "file://"+xmlFile;
-        	xmlPath = "file://"+xmlPath;
+            xmlFile = (new java.io.File(xmlFile)).toURL().toString();
+            xmlPath = (new java.io.File(xmlPath)).toURL().toString();
         }
         URL url = new URL(xmlFile);
         return unmarshalTilesetFile(url.openStream(), filename);
