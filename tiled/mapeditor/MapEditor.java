@@ -1522,8 +1522,8 @@ public class MapEditor implements ActionListener,
         }
     }
 
-    private BufferedImage loadImageResource(String fname) throws IOException {
-        return ImageIO.read(getClass().getResourceAsStream(fname));
+    public static BufferedImage loadImageResource(String fname) throws IOException {
+        return ImageIO.read(MapEditor.class.getResourceAsStream(fname));
     }
 
     private ImageIcon loadIcon(String fname) {

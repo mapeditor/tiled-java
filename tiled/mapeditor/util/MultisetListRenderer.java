@@ -15,11 +15,10 @@ package tiled.mapeditor.util;
 import java.awt.*;
 import java.io.IOException;
 import java.util.*;
-
-import javax.imageio.ImageIO;
 import javax.swing.*;
 
 import tiled.core.*;
+import tiled.mapeditor.MapEditor;
 import tiled.core.Map;
 
 public class MultisetListRenderer extends JLabel implements ListCellRenderer {
@@ -33,7 +32,7 @@ public class MultisetListRenderer extends JLabel implements ListCellRenderer {
 	public MultisetListRenderer() {
 		setOpaque(true);
 		try {
-			setImage = ImageIO.read(getClass().getResourceAsStream("../resources/source.png"));
+			setImage = MapEditor.loadImageResource("resources/source.png");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
