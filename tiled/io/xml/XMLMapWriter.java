@@ -218,7 +218,7 @@ public class XMLMapWriter implements MapWriter
                 }
                 
                 // Check to see if there is a need to write tile elements
-                if (set.isOneforOne()) {
+                if (set.isOneForOne()) {
                     Iterator tileIterator = set.iterator();
                     boolean needWrite = false;
 

@@ -1,7 +1,6 @@
-<?xml version="1.0" ?>
-<map orientation="isometric" tilewidth="64" tileheight="32">
- <dimensions width="64" height="64"/>
- <tileset firstgid="1" name="">
+<?xml version="1.0"?>
+<map version="0.99a" orientation="isometric" width="64" height="64" tilewidth="64" tileheight="32">
+ <tileset name="Isotest Tileset" firstgid="1">
   <tile id="0">
    <image format="png">
     <data encoding="base64">
@@ -17,12 +16,12 @@
    </image>
   </tile>
  </tileset>
- <layer id="0" name="Layer 0">
+ <layer name="Layer 0" width="64" height="64">
   <data encoding="base64" compression="gzip">
    H4sIAAAAAAAAAO3DQQ0AAAwDoat/05OxDySsmqqqqqqqqqqqqqqqqqqqqvr6AFA+aDAAQAAA
   </data>
  </layer>
- <layer id="1" name="Layer 1">
+ <layer name="Layer 1" width="64" height="64">
   <data encoding="base64" compression="gzip">
    H4sIAAAAAAAAAO3UIRIAIAgAQQL/f7PRkWTCGdktVC5ABNzJ1wsALTLOe88yf1c7p3YDW/2LE03vBwAAAAAAAAAAAAAAgC4LhZPxJABAAAA=
   </data>

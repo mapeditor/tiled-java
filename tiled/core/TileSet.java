@@ -62,6 +62,7 @@ public class TileSet
     private Image setImage;
     private String externalSource, tilebmpFile;
     private String name;
+    private Map map;
 
     public TileSet() {
         tiles = new Vector();
@@ -218,6 +219,20 @@ public class TileSet
     }
 
     /**
+     * Sets the map this tileset is part of.
+     */
+    public void setMap(Map map) {
+        this.map = map;
+    }
+
+    /**
+     * Returns the map this tileset is part of.
+     */
+    public Map getMap() {
+        return map;
+    }
+
+    /**
      * Adds the tile to the setting the id of the tile only if the current
      * value of id is -1.
      *
@@ -327,10 +342,10 @@ public class TileSet
      */
     public int getTileHeightMax() {
         int maxHeight = 0;
-        Iterator itr = tiles.iterator();
+        Iterator itr = iterator();
         while (itr.hasNext()) {
             Tile t = (Tile)itr.next();
-            if (t != null && t.getHeight() > maxHeight) {
+            if (t.getHeight() > maxHeight) {
                 maxHeight = t.getHeight();
             }
         }
@@ -360,11 +375,10 @@ public class TileSet
      */
     public Tile getFirstTile() {
         Tile ret = null;
-        Iterator itr = tiles.iterator();
+        Iterator itr = iterator();
         while (itr.hasNext()) {
-            if ((ret = (Tile)itr.next()) != null) {
-                break;
-            }
+            ret = (Tile)itr.next();
+            break;
         }
         return ret;
     }
@@ -605,10 +619,10 @@ public class TileSet
     }
 
     private boolean isUsed(String hash) {
-        Iterator itr = tiles.iterator();
+        Iterator itr = iterator();
         while (itr.hasNext()) {
-            Tile t = (Tile) itr.next();
-            if (hash.equals(images.get(""+t.getImageId()))) {
+            Tile t = (Tile)itr.next();
+            if (hash.equals(images.get("" + t.getImageId()))) {
                 return true;
             }
         }
@@ -667,13 +681,13 @@ public class TileSet
      * @return <code>true</code> if each image is associated with one and only
      *         one tile, <code>false</code> otherwise.
      */
-    public boolean isOneforOne() {
+    public boolean isOneForOne() {
         Enumeration keys = images.keys();
 
         while (keys.hasMoreElements()) {
             int key = Integer.parseInt((String)keys.nextElement());
             int relations = 0;
-            Iterator itr = tiles.iterator();
+            Iterator itr = iterator();
 
             while (itr.hasNext()) {
                 Tile t = (Tile)itr.next();

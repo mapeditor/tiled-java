@@ -158,6 +158,7 @@ public class Map extends MultilayerPlane implements Cloneable
         s.setStandardHeight(tileHeight);
         s.setStandardWidth(tileWidth);
         tilesets.add(s);
+        s.setMap(this);
         fireMapChanged();
     }
 

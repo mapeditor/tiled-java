@@ -315,6 +315,8 @@ public class TileDialog extends JDialog
             // Find new tile images at the location of the tileset
             if (tileset.getSource() != null) {
                 location = tileset.getSource();
+            } else if (tileset.getMap() != null) {
+                location = tileset.getMap().getFilename();
             }
             tilesetNameEntry.setText(tileset.getName());
             //sharedImagesCheck.setSelected(tileset.usesSharedImages());
