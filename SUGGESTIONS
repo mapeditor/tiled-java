@@ -1,0 +1,45 @@
+===============================================================================
+SUGGESTIONS - A primitive attempt to keep track of user suggestions
+===============================================================================
+
+-------------------------------------------------------------------------------
+Suggestor:  Ahmed Mohombe <amohombe@yahoo.com>
+Date:       08/03/04 20:54
+Summary:    Isometric mode by shifting every other row in y direction.
+State:      To be implemented (task #78)
+Problems:   Shift even rows or odd rows? Or how to make that an option?
+-------------------------------------------------------------------------------
+Suggestor:  Ahmed Mohombe <amohombe@yahoo.com>
+Date:       08/04/04 10:44
+Summary:    Show tile coordinates on each tile (analoguous to Show Grid).
+State:      To be discussed
+-------------------------------------------------------------------------------
+Suggestor:  Ahmed Mohombe <amohombe@yahoo.com>
+Date:       08/04/04 10:44
+Summary:    Coordinate translator to use when the user view on the map is not
+            what Tiled uses, should especially be useful for isometric or
+            hexagonal maps.
+State:      To be discussed
+Problems:   The engine the user is using will still need to understand the
+            way Tiled uses the coordinates.
+-------------------------------------------------------------------------------
+Suggestor:  Ahmed Mohombe <amohombe@yahoo.com>
+Date:       08/04/04 10:44
+Summary:    Allow tilesets with a border to be used by Tiled. Borders around
+            the tileset image are used by FreeCiv for example.
+State:      To be implemented (offset attributes, task #79)
+-------------------------------------------------------------------------------
+Suggestor:  Ahmed Mohombe <amohombe@yahoo.com>
+Date:       08/04/04 10:44
+Summary:    File chooser should remember last place where it was opened, for
+            example when picking the tile to load into your tileset.
+State:      To be implemented
+-------------------------------------------------------------------------------
+Suggestor:  Ahmed Mohombe <amohombe@yahoo.com>
+Date:       08/04/04 10:44
+Summary:    There are a lot of GUI libraries for Java to create certain common
+            or complex constructions. Mentioned are l2fprod-common,
+            glazedlists, gui-commands and wizard-framework from java.dev.net.
+State:      Not needed at the moment
+-------------------------------------------------------------------------------
+
