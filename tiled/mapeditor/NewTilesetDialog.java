@@ -143,7 +143,6 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
         // OK and Cancel buttons
 
         JPanel buttons = new VerticalStaticJPanel();
-        buttons.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
         buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
         buttons.add(Box.createGlue());
         buttons.add(okButton);

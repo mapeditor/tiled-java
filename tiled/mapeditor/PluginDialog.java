@@ -19,103 +19,123 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.ListSelectionEvent;
 
 import tiled.io.MapReader;
 import tiled.mapeditor.plugin.PluginClassLoader;
 import tiled.mapeditor.widget.VerticalStaticJPanel;
 
-public class PluginDialog extends JFrame implements ActionListener {
 
-	private JFrame parent;
-	private PluginClassLoader pluginLoader;
-	private JList pluginList = null;
-	
-	public PluginDialog(JFrame parent, PluginClassLoader pluginLoader) {
-		super("Available Plugins");
-		this.pluginLoader = pluginLoader;
-		
-		JPanel buttonPanel;
-		JButton closeButton, infoButton, removeButton;
-		VerticalStaticJPanel mainPanel = new VerticalStaticJPanel();
-		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-		
-		/* LIST PANEL */		
-		MapReader readers[];
-		
+public class PluginDialog extends JDialog implements ActionListener,
+       ListSelectionListener
+{
+    private PluginClassLoader pluginLoader;
+    private JList pluginList = null;
+    private JButton closeButton, infoButton, removeButton;
+
+    public PluginDialog(JFrame parent, PluginClassLoader pluginLoader) {
+        super(parent, "Available Plugins", true);
+        this.pluginLoader = pluginLoader;
+
+        init();
+        pack();
+        setLocationRelativeTo(getOwner());
+    }
+
+    private void init() {
+        /* LIST PANEL */
+        MapReader readers[];
+
         try {
-            readers = (MapReader[]) pluginLoader.getReaders();
-            String [] plugins = new String[readers.length];
-			for(int i=0;i<readers.length;i++) {
-				plugins[i] = readers[i].getPluginPackage();
-				  
-				//TODO: check for a writer as well, and designate the
-				//		plugins that have both
-			}
-			pluginList = new JList(plugins);			
+            readers = pluginLoader.getReaders();
+            String[] plugins = new String[readers.length];
+            for (int i = 0; i < readers.length; i++) {
+                plugins[i] = readers[i].getPluginPackage();
+
+                // TODO: Check for a writer as well, and designate the
+                //  plugins that have both
+            }
+            pluginList = new JList(plugins);
         } catch (Throwable e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
+            pluginList = new JList();
         }
-        
-		JScrollPane pluginScrollPane = new JScrollPane(pluginList);
-		pluginScrollPane.setAutoscrolls(true);
-		pluginScrollPane.setPreferredSize(new Dimension(200, 150));
-		
-		mainPanel.add(pluginScrollPane);
-		
-		/* BUTTON PANEL */
-		buttonPanel = new JPanel();
-		buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
-		buttonPanel.setLayout(new GridLayout(2,2,0,0));
-		infoButton = new JButton("Info");
-		infoButton.addActionListener(this);
-		buttonPanel.add(infoButton);
-		removeButton = new JButton("Remove");
-		removeButton.addActionListener(this);
-		buttonPanel.add(removeButton);
-		closeButton = new JButton("Close");
-		closeButton.addActionListener(this);
-		buttonPanel.add(closeButton);
-		
-		mainPanel.add(buttonPanel);
-		setContentPane(mainPanel);
-		setResizable(false);
-		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-		pack();
-	}
 
-	public void setVisible(boolean visible) {
-		if (visible) {
-			setLocationRelativeTo(parent);
-		}
-		super.setVisible(visible);
-	}
+        pluginList.addListSelectionListener(this);
 
-    public void actionPerformed(ActionEvent e) {
-        String command = e.getActionCommand();
-        
-        if(command.equalsIgnoreCase("close")) {
-        	this.dispose();
-        }else if(command.equalsIgnoreCase("remove")) {
-        	
-        }else if(command.equalsIgnoreCase("info")) {
-        	JDialog info = new JDialog(this);
-        	JTextArea ta = new JTextArea(25,30);
-        	int index = pluginList.getSelectedIndex();
-        	
-        	MapReader[] readers;
-        	try{
-				readers = (MapReader[]) pluginLoader.getReaders();
-				ta.setText(readers[index].getDescription());
-        	}catch (Throwable t) {
-        		t.printStackTrace();
-        	}
-        	ta.setEditable(false);
-        	ta.setFont(new Font("Courier", Font.PLAIN, 12));
-        	info.getContentPane().add(ta);
-        	info.setLocationRelativeTo(this);
-        	info.pack();
-        	info.setVisible(true);
-		}
+        JScrollPane pluginScrollPane = new JScrollPane(pluginList);
+        pluginScrollPane.setAutoscrolls(true);
+        pluginScrollPane.setPreferredSize(new Dimension(200, 150));
+
+
+        /* BUTTON PANEL */
+        infoButton = new JButton("Info");
+        removeButton = new JButton("Remove");
+        closeButton = new JButton("Close");
+        infoButton.addActionListener(this);
+        removeButton.addActionListener(this);
+        closeButton.addActionListener(this);
+
+        JPanel buttonPanel = new VerticalStaticJPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+        buttonPanel.add(infoButton);
+        buttonPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+        buttonPanel.add(removeButton);
+        buttonPanel.add(Box.createGlue());
+        buttonPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+        buttonPanel.add(closeButton);
+
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        mainPanel.add(pluginScrollPane);
+        mainPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        mainPanel.add(buttonPanel);
+
+        setContentPane(mainPanel);
+        getRootPane().setDefaultButton(closeButton);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        updateButtons();
+    }
+
+    public void actionPerformed(ActionEvent event) {
+        Object source = event.getSource();
+
+        if (source == closeButton) {
+            this.dispose();
+        } else if (source == removeButton) {
+            // TODO: Implement plugin remove functionality
+        } else if (source == infoButton) {
+            JDialog info = new JDialog(this);
+            JTextArea ta = new JTextArea(25, 30);
+            int index = pluginList.getSelectedIndex();
+
+            MapReader[] readers;
+            try {
+                readers = pluginLoader.getReaders();
+                ta.setText(readers[index].getDescription());
+                info.setTitle(readers[index].getPluginPackage());
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+            ta.setEditable(false);
+            ta.setFont(new Font("Courier", Font.PLAIN, 12));
+            info.getContentPane().add(ta);
+            info.setLocationRelativeTo(this);
+            info.pack();
+            info.setVisible(true);
+        }
+    }
+
+    public void valueChanged(ListSelectionEvent event) {
+        updateButtons();
+    }
+
+    private void updateButtons() {
+        boolean validSelection = pluginList.getSelectedIndex() >= 0;
+        infoButton.setEnabled(validSelection);
+        // TODO: Enable "Remove" button when functional
+        removeButton.setEnabled(validSelection && false);
     }
 }

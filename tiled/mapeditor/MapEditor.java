@@ -119,7 +119,6 @@ public class MapEditor implements ActionListener,
     TilePalettePanel tilePalettePanel;
     TilePaletteDialog tilePaletteDialog;
     AboutDialog aboutDialog;
-    PluginDialog pluginDialog;
     MapLayerEdit paintEdit;
 
     // Actions
@@ -1185,11 +1184,10 @@ public class MapEditor implements ActionListener,
             }
             aboutDialog.setVisible(true);
         } else if (command.equals("About Plug-ins")) {
-            if (pluginDialog == null) {
-                pluginDialog = new PluginDialog(appFrame, pluginLoader);
-            }
+            PluginDialog pluginDialog =
+                new PluginDialog(appFrame, pluginLoader);
             pluginDialog.setVisible(true);
-        } else if (command.substring(0, command.length() < 5 ? command.length() : 5).equals("_open")) {
+        } else if (command.startsWith("_open")) {
             try {
                 loadMap(configuration.getValue(
                             "tmx.recent." + command.substring(5)));
