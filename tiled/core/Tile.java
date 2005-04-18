@@ -158,7 +158,8 @@ public class Tile
 
     public int getWidth() {
         if (tileset != null) {
-            Dimension d = tileset.getImageDimensions("" + tileImageId);
+            Dimension d
+              = tileset.getImageDimensions("" + tileImageId, tileOrientation);
             return d.width;
         } else if (internalImage != null){
             return internalImage.getWidth(null);
@@ -168,7 +169,8 @@ public class Tile
 
     public int getHeight() {
         if (tileset != null) {
-            Dimension d = tileset.getImageDimensions("" + tileImageId);
+            Dimension d
+              = tileset.getImageDimensions("" + tileImageId, tileOrientation);
             return d.height;
         } else if (internalImage != null) {
             return internalImage.getHeight(null);
@@ -189,7 +191,8 @@ public class Tile
      */
     public Image getImage() {
         if (tileset != null) {
-            return tileset.getImageById(Integer.toString(tileImageId));
+            return tileset.getImageByIdAndOrientation(
+                Integer.toString(tileImageId), tileOrientation);
         } else {
             return internalImage;
         }

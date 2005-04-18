@@ -165,8 +165,7 @@ public class TileImageDialog extends JDialog
     private void updateImageLabel() {
         if (imageId >= 0) {
             Image img = tileset.getImageById(Integer.toString(imageId));
-            img = tileset.getImageById(
-                tileset.generateImageWithOrientation(img, imageOrientation));
+            img = tileset.generateImageWithOrientation(img, imageOrientation);
             imageLabel.setIcon(new ImageIcon(img));
         }
     }

@@ -54,7 +54,7 @@ public class TileSet
 {
     private String base;
     private Vector tiles;
-    private Hashtable images, imageCache;
+    private Hashtable images, orientedImages, imageCache;
     private int firstGid;
     private int standardHeight;
     private int standardWidth;
@@ -533,13 +533,30 @@ public class TileSet
      *         there is no such image
      */
     public Image getImageById(Object key) {
-        return (Image)images.get(key);
+        return getImageByIdAndOrientation(key, 0);
     }
 
+    public Image getImageByIdAndOrientation(Object key, int orientation) {
+        Image[] imgs = (Image[])images.get(key);
+        if (imgs == null) return null;
+        if (imgs[orientation] == null) {
+            imgs[orientation]
+                = internImage(generateImageWithOrientation(imgs[0],
+                      orientation));
+        }
+        return imgs[orientation];
+    }
+
+    /*
+     * The following function is almost certainly incorrect, and at the very
+     * least contains a potential memory leak (because the old image is never
+     * removed from 'imageCache').  It was that way when I found it, and
+     * I don't have the patience to fix it right now. - Rainer Deyke
+     */
     public void overlayImage(Object key, Image i) {
-        String hash = checksumImage(i);
-        imageCache.put(hash, i);
-        images.put(key, i);
+        Image[] imgs = new Image[8];
+        imgs[0] = internImage(i);
+        images.put(key, imgs);
     }
 
     /**
@@ -549,8 +566,8 @@ public class TileSet
      * @param key
      * @return dimensions of image with referenced by given key
      */
-    public Dimension getImageDimensions(Object key) {
-        Image i = (Image)images.get(key);
+    public Dimension getImageDimensions(Object key, int orientation) {
+        Image i = getImageByIdAndOrientation(key, orientation);
         if (i != null) {
             return new Dimension(i.getWidth(null), i.getHeight(null));
         } else {
@@ -571,6 +588,11 @@ public class TileSet
         return (Image)imageCache.get(hash);
     }
 
+    /*
+     * Note: The following function only works for images in default
+     * orientation.
+     */
+
     /**
      * Find the id fo the given image in the image cache.
      * 
@@ -584,7 +606,8 @@ public class TileSet
             Iterator itr = images.keySet().iterator();
             while (itr.hasNext()) {
                 Object key = itr.next();
-                if (images.get(key) == image) {
+                Image[] imgs = (Image[])images.get(key);
+                if (imgs[0] == image) {
                     //System.out.println("Success: " + key);
                     return key;
                 }
@@ -618,11 +641,11 @@ public class TileSet
         if (key == null) {
             return addImage(image);
         } else {
-            String cs = checksumImage(image);
             //System.out.print(name+".addImage(Image, Object): " + key + " ");
             //System.out.println("Checksum: " + cs);
-            images.put(key, image);
-            imageCache.put(cs, image);
+            Image[] imgs = new Image[8];
+            imgs[0] = internImage(image);
+            images.put(key, imgs);
             return Integer.parseInt((String)key);
         }
     }
@@ -632,18 +655,20 @@ public class TileSet
         // This operation is siginificantly slower now that 'images' stores
         // images directly instead of storing hashes.  Fortunately this
         // operation is also extremely rare.
-        Image img = (Image)images.get(id);
+        Image[] img = (Image[])images.get(id);
         images.remove(id);
         for (Enumeration e = imageCache.keys(); e.hasMoreElements();) {
           Object key = e.nextElement();
-          if (imageCache.get(key) == img) {
-            imageCache.remove(key);
-            return;
+          for (int i = 0; i < img.length; ++i) {
+            if (imageCache.get(key) == img[i]) {
+              imageCache.remove(key);
+            }
           }
         }
     }
 
-    /* The following function is broken now that the 'images' hashtable refers
+    /*
+     * The following function is broken now that the 'images' hashtable refers
      * directly to images.  It is also completely unused, so there is no point
      * in fixing it.
      *
@@ -659,10 +684,10 @@ public class TileSet
     }
     */
 
-    public Object generateImageWithOrientation(Image src,
+    public static Image generateImageWithOrientation(Image src,
             int orientation) {
         if (orientation == 0) {
-            return queryImageId(src);
+            return src;
         } else {
             int w = src.getWidth(null), h = src.getHeight(null);
             int[] old_pixels = new int[w * h];
@@ -696,7 +721,7 @@ public class TileSet
             BufferedImage new_img = new BufferedImage(dest_w, dest_h,
                     BufferedImage.TYPE_INT_ARGB);
             new_img.setRGB(0, 0, dest_w, dest_h, new_pixels, 0, dest_w);
-            return Integer.toString(addImage(new_img));
+            return new_img;
         }
     }
 
@@ -732,4 +757,14 @@ public class TileSet
 
         return true;
     }
+
+    private Image internImage(Image img)
+    {
+      String s = checksumImage(img);
+      Image img2 = (Image)imageCache.get(s);
+      if (img2 != null) return img2;
+      imageCache.put(s, img);
+      return img;
+    }
+
 }
