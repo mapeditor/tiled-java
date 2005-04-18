@@ -38,6 +38,7 @@ public class TileImageDialog extends JDialog
     private int imageId, imageOrientation;
     private TileSet tileset;
     private JLabel imageLabel;
+    private Object[] imageIds;
 
     public TileImageDialog(Dialog parent, TileSet set) {
         this(parent, set, 0, 0);
@@ -115,10 +116,12 @@ public class TileImageDialog extends JDialog
         int curSlot = 0;
 
         Enumeration ids = tileset.getImageIds();
-        while(ids.hasMoreElements()) {
-            Image img = tileset.getImageById(ids.nextElement());
-            if(img != null)
-                listData.add(img);
+        imageIds = new Object[tileset.getTotalImages()];
+        for (int i = 0; i < imageIds.length; ++i) {
+            imageIds[i] = ids.nextElement();
+            Image img = tileset.getImageById(imageIds[i]);
+            // assert img != null;
+            listData.add(img);
         }
 
         imageList.setListData(listData);
@@ -157,13 +160,15 @@ public class TileImageDialog extends JDialog
     private void updateImageLabel() {
         if (imageId >= 0) {
             Image img = tileset.getImageById(Integer.toString(imageId));
-            img = tileset.getImageById(tileset.generateImageWithOrientation(img, imageOrientation));
+            img = tileset.getImageById(
+                tileset.generateImageWithOrientation(img, imageOrientation));
             imageLabel.setIcon(new ImageIcon(img));
         }
     }
 
     public void valueChanged(ListSelectionEvent e) {
-        imageId = imageList.getSelectedIndex();
+        imageId
+          = Integer.parseInt((String)imageIds[imageList.getSelectedIndex()]);
         updateImageLabel();
         updateEnabledState();
     }
