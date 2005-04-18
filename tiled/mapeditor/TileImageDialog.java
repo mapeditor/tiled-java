@@ -116,9 +116,9 @@ public class TileImageDialog extends JDialog
 
         Enumeration ids = tileset.getImageIds();
         while(ids.hasMoreElements()) {
-        	Image img = tileset.getImageById(ids.nextElement());
-        	if(img != null)
-        		listData.add(img);
+            Image img = tileset.getImageById(ids.nextElement());
+            if(img != null)
+                listData.add(img);
         }
 
         imageList.setListData(listData);
