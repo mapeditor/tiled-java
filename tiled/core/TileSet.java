@@ -533,16 +533,13 @@ public class TileSet
      *         there is no such image
      */
     public Image getImageById(Object key) {
-        if (images.get(key) == null) {
-            return null;
-        }
-        return (Image)imageCache.get(images.get(key));
+        return (Image)images.get(key);
     }
 
     public void overlayImage(Object key, Image i) {
         String hash = checksumImage(i);
         imageCache.put(hash, i);
-        images.put(key, hash);
+        images.put(key, i);
     }
 
     /**
@@ -553,8 +550,8 @@ public class TileSet
      * @return dimensions of image with referenced by given key
      */
     public Dimension getImageDimensions(Object key) {
-        if (images.get(key) != null) {
-            Image i = (Image)imageCache.get(images.get(key));
+        Image i = (Image)images.get(key);
+        if (i != null) {
             return new Dimension(i.getWidth(null), i.getHeight(null));
         } else {
             return new Dimension(0, 0);
@@ -582,11 +579,12 @@ public class TileSet
      */
     public Object queryImageId(Image image) {
         String hash = checksumImage(image);
-        if (imageCache.get(hash) != null) {
+        image = (Image)imageCache.get(hash);
+        if (image != null) {
             Iterator itr = images.keySet().iterator();
             while (itr.hasNext()) {
                 Object key = itr.next();
-                if (images.get(key).equals(hash)) {
+                if (images.get(key) == image) {
                     //System.out.println("Success: " + key);
                     return key;
                 }
@@ -608,7 +606,9 @@ public class TileSet
         if ((t = Integer.parseInt((String)queryImageId(image))) >= 0) {
             return t;
         } else {
-            t = images.size();
+            // New images should use the first unused image id.  This is
+            // not necessarily equal to images.size.
+            for (t = 0; images.get(Integer.toString(t)) != null; ++t) {}
             addImage(image, Integer.toString(t));
             return t;
         }
@@ -621,7 +621,7 @@ public class TileSet
             String cs = checksumImage(image);
             //System.out.print(name+".addImage(Image, Object): " + key + " ");
             //System.out.println("Checksum: " + cs);
-            images.put(key, cs);
+            images.put(key, image);
             imageCache.put(cs, image);
             return Integer.parseInt((String)key);
         }
@@ -629,10 +629,24 @@ public class TileSet
 
     public void removeImage(Object id) {
     	//System.out.println(name+".removeImage(Object): " + id);
-        imageCache.remove(images.get(id));
+        // This operation is siginificantly slower now that 'images' stores
+        // images directly instead of storing hashes.  Fortunately this
+        // operation is also extremely rare.
+        Image img = (Image)images.get(id);
         images.remove(id);
+        for (Enumeration e = imageCache.keys(); e.hasMoreElements();) {
+          Object key = e.nextElement();
+          if (imageCache.get(key) == img) {
+            imageCache.remove(key);
+            return;
+          }
+        }
     }
 
+    /* The following function is broken now that the 'images' hashtable refers
+     * directly to images.  It is also completely unused, so there is no point
+     * in fixing it.
+     *
     private boolean isUsed(String hash) {
         Iterator itr = iterator();
         while (itr.hasNext()) {
@@ -643,6 +657,7 @@ public class TileSet
         }
         return false;
     }
+    */
 
     public Object generateImageWithOrientation(Image src,
             int orientation) {
