@@ -38,7 +38,7 @@ public class TileImageDialog extends JDialog
     private int imageId, imageOrientation;
     private TileSet tileset;
     private JLabel imageLabel;
-    private Object[] imageIds;
+    private int[] imageIds;
 
     public TileImageDialog(Dialog parent, TileSet set) {
         this(parent, set, 0, 0);
@@ -114,21 +114,26 @@ public class TileImageDialog extends JDialog
     public void queryImages() {
         Vector listData = new Vector();
         int curSlot = 0;
+        int initialIndex = 0;
 
         Enumeration ids = tileset.getImageIds();
-        imageIds = new Object[tileset.getTotalImages()];
+        imageIds = new int[tileset.getTotalImages()];
         for (int i = 0; i < imageIds.length; ++i) {
-            imageIds[i] = ids.nextElement();
-            Image img = tileset.getImageById(imageIds[i]);
+            imageIds[i] = Integer.parseInt((String)ids.nextElement());
+        }
+
+        java.util.Arrays.sort(imageIds);
+
+        for (int i = 0; i < imageIds.length; ++i) {
+            if (imageIds[i] == imageId) initialIndex = i;
+            Image img = tileset.getImageById(Integer.toString(imageIds[i]));
             // assert img != null;
             listData.add(img);
         }
 
         imageList.setListData(listData);
-        if (imageId != -1) {
-            imageList.setSelectedIndex(imageId);
-            imageList.ensureIndexIsVisible(imageId);
-        }
+        imageList.setSelectedIndex(initialIndex);
+        imageList.ensureIndexIsVisible(initialIndex);
     }
 
     private void updateEnabledState() {
@@ -167,8 +172,7 @@ public class TileImageDialog extends JDialog
     }
 
     public void valueChanged(ListSelectionEvent e) {
-        imageId
-          = Integer.parseInt((String)imageIds[imageList.getSelectedIndex()]);
+        imageId = imageIds[imageList.getSelectedIndex()];
         updateImageLabel();
         updateEnabledState();
     }
