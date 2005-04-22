@@ -27,54 +27,55 @@ import tiled.util.TiledConfiguration;
 
 /**
  * A handler for saving and loading maps.
- * 
  */
 public class MapHelper {
     
     private static PluginClassLoader pluginLoader;
     
     /**
-     * Called to tell the MapHelper which {@link tiled.mapeditor.plugin.PluginClassLoader}
-     * to use when finding a suitable plugin for a filename
+     * Called to tell the MapHelper which
+     * {@link tiled.mapeditor.plugin.PluginClassLoader} to use when finding a
+     * suitable plugin for a filename.
      * 
-     * @param p The PluginClassLoader instance to use
+     * @param p the PluginClassLoader instance to use
      */
     public static void init(PluginClassLoader p) {
         pluginLoader = p;
     }
     
     /**
-     * Saves the current map. Use the extension (.xxx) of the filename to determine
-     * the plugin to use when writing the file. Throws an exception when the extension
-     * is not supported by either the TMX writer or a plugin.
+     * Saves the current map. Use the extension (.xxx) of the filename to
+     * determine the plugin to use when writing the file. Throws an exception
+     * when the extension is not supported by either the TMX writer or a
+     * plugin.
      *
-     * @param filename Filename to save the current map to.
-     * @param currentMap The {@link tiled.core.Map} instance to save to the file
+     * @param filename filename to save the current map to
+     * @param currentMap {@link tiled.core.Map} instance to save to the file
      * @see MapWriter#writeMap(Map, String)
      * @exception Exception
      */
-    public static void saveMap(Map currentMap, String filename) throws Exception {
+    public static void saveMap(Map currentMap, String filename)
+        throws Exception
+    {
+        MapWriter mw = null;
+        if (filename.endsWith("tmx")) {
+            // Override, so people can't overtake our format
+            mw = new XMLMapWriter();
+        } else {
+            mw = (MapWriter)pluginLoader.getWriterFor(filename);
+        }
 
-            MapWriter mw = null;
-            if (filename.endsWith("tmx")) {
-                // Override, so people can't overtake our format
-                mw = new XMLMapWriter();
-            } else {
-                mw = (MapWriter)pluginLoader.getWriterFor(
-                        filename.substring(filename.lastIndexOf('.') + 1));
-            }
-
-            if (mw != null) {
-                Stack errors = new Stack();
-                mw.setErrorStack(errors);
-                mw.writeMap(currentMap, filename);
-                currentMap.setFilename(filename);
-                reportPluginMessages(errors);
-            } else {
-               throw new Exception("Unsupported map format");
-            }
+        if (mw != null) {
+            Stack errors = new Stack();
+            mw.setErrorStack(errors);
+            mw.writeMap(currentMap, filename);
+            currentMap.setFilename(filename);
+            reportPluginMessages(errors);
+        } else {
+            throw new Exception("Unsupported map format");
+        }
     }
-    
+
     /**
      * Saves a tileset.  Use the extension (.xxx) of the filename to determine
      * the plugin to use when writing the file. Throws an exception when the
@@ -85,37 +86,35 @@ public class MapHelper {
      * @see MapWriter#writeTileset(TileSet, String)
      * @exception Exception
      */
-
     public static void saveTileset(TileSet set, String filename)
-      throws Exception {
+        throws Exception
+    {
+        MapWriter mw = null;
+        if (filename.endsWith(".tsx")) {
+            // Override, so people can't overtake our format
+            mw = new XMLMapWriter();
+        } else {
+            mw = (MapWriter)pluginLoader.getWriterFor(filename);
+        }
 
-            MapWriter mw = null;
-            if (filename.endsWith(".tsx")) {
-                // Override, so people can't overtake our format
-                mw = new XMLMapWriter();
-            } else {
-                mw = (MapWriter)pluginLoader.getWriterFor(
-                        filename.substring(filename.lastIndexOf('.') + 1));
-            }
-
-            if (mw != null) {
-                Stack errors = new Stack();
-                mw.setErrorStack(errors);
-                mw.writeTileset(set, filename);
-                set.setSource(filename);
-                reportPluginMessages(errors);
-            } else {
-               throw new Exception("Unsupported tileset format");
-            }
+        if (mw != null) {
+            Stack errors = new Stack();
+            mw.setErrorStack(errors);
+            mw.writeTileset(set, filename);
+            set.setSource(filename);
+            reportPluginMessages(errors);
+        } else {
+            throw new Exception("Unsupported tileset format");
+        }
     }
 
     /**
      * Loads a map. Use the extension (.xxx) of the filename to determine
-     * the plugin to use when reading the file. Throws an exception when the extension
-     * is not supported by either the TMX writer or a plugin.
+     * the plugin to use when reading the file. Throws an exception when the
+     * extension is not supported by either the TMX writer or a plugin.
      *
      * @param file filename of map to load
-     * @return A new Map instance, loaded from the specified file by a plugin
+     * @return a new Map, loaded from the specified file by a plugin
      * @throws Exception
      * @see MapReader#readMap(String)
      */
@@ -123,12 +122,11 @@ public class MapHelper {
         Map ret = null;
         try {
             MapReader mr = null;
-            if (file.endsWith(".tmx")) {
+            if (file.endsWith(".tmx") || file.endsWith(".tmx.gz")) {
                 // Override, so people can't overtake our format
                 mr = new XMLMapTransformer();
             } else {
-                mr = (MapReader)pluginLoader.getReaderFor(
-                        file.substring(file.lastIndexOf('.') + 1));
+                mr = (MapReader)pluginLoader.getReaderFor(file);
             }
 
             if (mr != null) {
@@ -166,7 +164,7 @@ public class MapHelper {
      * extension is not supported by either the TMX writer or a plugin.
      *
      * @param file filename of map to load
-     * @return A new TileSet instance, loaded from the specified file by a plugin
+     * @return A new TileSet, loaded from the specified file by a plugin
      * @throws Exception
      * @see MapReader#readTileset(String)
      */
@@ -178,8 +176,7 @@ public class MapHelper {
                 // Override, so people can't overtake our format
                 mr = new XMLMapTransformer();
             } else {
-                mr = (MapReader)pluginLoader.getReaderFor(
-                        file.substring(file.lastIndexOf('.') + 1));
+                mr = (MapReader)pluginLoader.getReaderFor(file);
             }
 
             if (mr != null) {
@@ -212,14 +209,17 @@ public class MapHelper {
     }
 
     /**
-     * Reports messages from the plugin to the user in a dialog
+     * Reports messages from the plugin to the user in a dialog.
      * 
-     * @param s A Stack which was used by the plugin to record any messages it had for the user
+     * @param s A Stack which was used by the plugin to record any messages it
+     *          had for the user
      */
     private static void reportPluginMessages(Stack s) {
         // TODO: maybe have a nice dialog with a scrollbar, in case there are a
         // lot of messages...
-        if (TiledConfiguration.getInstance().keyHasValue("tiled.report.io", 1)) {
+        TiledConfiguration config = TiledConfiguration.getInstance();
+
+        if (config.keyHasValue("tiled.report.io", 1)) {
             if (s.size() > 0) {
                 Iterator itr = s.iterator();
                 String warnings = "";

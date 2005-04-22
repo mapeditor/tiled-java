@@ -57,7 +57,7 @@ public class MapEditor implements ActionListener,
     protected static final int PS_MARQUEE = 5;
     protected static final int PS_MOVE    = 6;
     protected static final int PS_MOVEOBJ = 7;
-    
+
     private Cursor curDefault = null;
     private Cursor curPaint   = null;
     private Cursor curErase   = null;
@@ -121,7 +121,7 @@ public class MapEditor implements ActionListener,
     AbstractButton paintButton, eraseButton, pourButton;
     AbstractButton eyedButton, marqueeButton, moveButton;
     AbstractButton objectMoveButton, objectAddButton;
-    
+
     TilePalettePanel tilePalettePanel;
     TilePaletteDialog tilePaletteDialog;
     AboutDialog aboutDialog;
@@ -165,12 +165,12 @@ public class MapEditor implements ActionListener,
                     "tiled.cursorhighlight", 1));
 
         mapEventAdapter = new MapEventAdapter();
-        
+
         //Create a default brush
         ShapeBrush sb = new ShapeBrush();
         sb.makeQuadBrush(new Rectangle(0, 0, 1, 1));
         setBrush(sb);
-        
+
         // Create the actions
         zoomInAction = new ZoomInAction();
         zoomOutAction = new ZoomOutAction();
@@ -266,7 +266,7 @@ public class MapEditor implements ActionListener,
                 "control W");
         JMenuItem print =
             createMenuItem("Print...", null, "Print the map", "control P");
-        
+
         recentMenu = new JMenu("Open Recent");
 
         mapEventAdapter.addListener(save);
@@ -469,7 +469,7 @@ public class MapEditor implements ActionListener,
         Icon iconEyed = loadIcon("resources/gimp-tool-color-picker-22.png");
         Icon iconMarquee = loadIcon("resources/gimp-tool-rect-select-22.png");
         Icon iconMoveObject = loadIcon("resources/gimp-tool-object-move-22.png");
-        
+
         paintButton = createToggleButton(iconPaint, "paint", "Paint");
         eraseButton = createToggleButton(iconErase, "erase", "Erase");
         pourButton = createToggleButton(iconPour, "pour", "Fill");
@@ -477,7 +477,7 @@ public class MapEditor implements ActionListener,
         marqueeButton = createToggleButton(iconMarquee, "marquee", "Select");
         moveButton = createToggleButton(iconMove, "move", "Move layer");
         objectMoveButton = createToggleButton(iconMoveObject, "moveobject", "Move Object");
-        
+
         mapEventAdapter.addListener(moveButton);
         mapEventAdapter.addListener(paintButton);
         mapEventAdapter.addListener(eraseButton);
@@ -485,7 +485,7 @@ public class MapEditor implements ActionListener,
         mapEventAdapter.addListener(eyedButton);
         mapEventAdapter.addListener(marqueeButton);
         mapEventAdapter.addListener(objectMoveButton);
-        
+
         JToolBar toolBar = new JToolBar(JToolBar.VERTICAL);
         toolBar.setFloatable(false);
         toolBar.add(moveButton);
@@ -516,7 +516,7 @@ public class MapEditor implements ActionListener,
         JButton b;
         JToolBar tabsPanel = new JToolBar();
         JTabbedPane paintPanel = new JTabbedPane();
-        
+
         dataPanel = new JPanel(new BorderLayout());
 
         // Try to load the icons
@@ -533,7 +533,7 @@ public class MapEditor implements ActionListener,
         JScrollPane miniMapSp = new JScrollPane();
         miniMapSp.getViewport().setView(miniMap);
         miniMapSp.setMinimumSize(new Dimension(0, 120));
-        
+
         // Layer table
         layerTable = new JTable(new LayerTableModel(currentMap));
         layerTable.getColumnModel().getColumn(0).setPreferredWidth(32);
@@ -876,8 +876,8 @@ public class MapEditor implements ActionListener,
                     paintEdit = null;
                     if (layer instanceof TileLayer) {
                         Tile oldTile = ((TileLayer)layer).getTileAt(tile.x, tile.y);
-                    	pour((TileLayer) layer, tile.x, tile.y, currentTile, oldTile);
-                    	mapView.repaint();
+                        pour((TileLayer) layer, tile.x, tile.y, currentTile, oldTile);
+                        mapView.repaint();
                     }
                     break;
                 case PS_EYED:
@@ -963,11 +963,10 @@ public class MapEditor implements ActionListener,
         }
 
         if (currentPointerState == PS_MARQUEE) {
-            
             if (marqueeSelection == null) {
-		        marqueeSelection = new SelectionLayer(
-		                currentMap.getWidth(), currentMap.getHeight());
-		        currentMap.addLayerSpecial(marqueeSelection);
+                marqueeSelection = new SelectionLayer(
+                        currentMap.getWidth(), currentMap.getHeight());
+                currentMap.addLayerSpecial(marqueeSelection);
             }
         } else if (currentPointerState == PS_MOVE) {
             // Initialize move distance to (0, 0)
@@ -1359,19 +1358,19 @@ public class MapEditor implements ActionListener,
             MapLayerEdit transEdit;
             transEdit = new MapLayerEdit(currentLayer, createLayerCopy(currentLayer));
 
-		    if(marqueeSelection != null) {
-		        if (currentLayer instanceof TileLayer) {
-		            layer = new TileLayer(
-	                           marqueeSelection.getSelectedAreaBounds());
-		        } else if (currentLayer instanceof ObjectGroup) {
-	                layer = new ObjectGroup(
-	                           marqueeSelection.getSelectedAreaBounds());
-	            }
-		        
-		        layer.maskedCopyFrom(
-	                       	currentLayer,
-	                        marqueeSelection.getSelectedArea());
-		    }
+            if (marqueeSelection != null) {
+                if (currentLayer instanceof TileLayer) {
+                    layer = new TileLayer(
+                            marqueeSelection.getSelectedAreaBounds());
+                } else if (currentLayer instanceof ObjectGroup) {
+                    layer = new ObjectGroup(
+                            marqueeSelection.getSelectedAreaBounds());
+                }
+
+                layer.maskedCopyFrom(
+                        currentLayer,
+                        marqueeSelection.getSelectedArea());
+            }
 
             switch (transform) {
                 case MapLayer.ROTATE_90:
@@ -1396,9 +1395,9 @@ public class MapEditor implements ActionListener,
                     break;
             }
 
-		    if(marqueeSelection != null ) {
-		        layer.copyTo(currentLayer);
-		    }
+            if (marqueeSelection != null ) {
+                layer.copyTo(currentLayer);
+            }
 
             transEdit.end(createLayerCopy(currentLayer));
             undoSupport.postEdit(transEdit);
@@ -1707,7 +1706,7 @@ public class MapEditor implements ActionListener,
         return (currentMap != null && undoStack.canUndo() &&
                 !undoStack.isAllSaved());
     }
-    
+
     /**
      * Loads a map.
      *
@@ -1718,8 +1717,8 @@ public class MapEditor implements ActionListener,
     public boolean loadMap(String file) {
         try {
             Map m = MapHelper.loadMap(file);
-            
-            if (m != null) {                
+
+            if (m != null) {
                 setCurrentMap(m);
                 updateRecent(file);
                 return true;
@@ -1773,7 +1772,7 @@ public class MapEditor implements ActionListener,
 
             ch.addChoosableFileFilter(
                     new TiledFileFilter(TiledFileFilter.FILTER_TMX));
-            
+
             if (ch.showSaveDialog(appFrame) == JFileChooser.APPROVE_OPTION) {
                 filename = ch.getSelectedFile().getAbsolutePath();
             } else {
@@ -1800,7 +1799,6 @@ public class MapEditor implements ActionListener,
             updateRecent(filename);
             undoStack.commitSave();
             updateTitle();
-            
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(appFrame,
@@ -1879,7 +1877,7 @@ public class MapEditor implements ActionListener,
 
         ch.addChoosableFileFilter(
                 new TiledFileFilter(TiledFileFilter.FILTER_TMX));
-        
+
         int ret = ch.showOpenDialog(appFrame);
         if (ret == JFileChooser.APPROVE_OPTION) {
             loadMap(ch.getSelectedFile().getAbsolutePath());
@@ -1902,7 +1900,7 @@ public class MapEditor implements ActionListener,
         }
         return null;
     }
-    
+
     private void updateRecent(String mapFile) {
         Vector recent = new Vector();
         try {
@@ -2068,7 +2066,6 @@ public class MapEditor implements ActionListener,
     }
 
     private void setCurrentPointerState(int state) {
-        
         /*if(currentPointerState == PS_MARQUEE && state != PS_MARQUEE) {
             // Special logic for selection
             if (marqueeSelection != null) {
@@ -2076,7 +2073,7 @@ public class MapEditor implements ActionListener,
                 marqueeSelection = null;
             }
         }*/
-        
+
         currentPointerState = state;
 
         // Select the matching button
@@ -2087,7 +2084,7 @@ public class MapEditor implements ActionListener,
         marqueeButton.setSelected(state == PS_MARQUEE);
         moveButton.setSelected(state == PS_MOVE);
         objectMoveButton.setSelected(state == PS_MOVEOBJ);
-        
+
         // Set the matching cursor
         if (mapView != null) {
             switch (currentPointerState) {

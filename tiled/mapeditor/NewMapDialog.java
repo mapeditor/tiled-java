@@ -101,6 +101,7 @@ public class NewMapDialog extends JDialog implements ActionListener
         mapTypeChooser = new JComboBox();
         mapTypeChooser.addItem("Orthogonal");
         mapTypeChooser.addItem("Isometric");
+        mapTypeChooser.addItem("Shifted (iso and hex)");
         // TODO: Enable when view is implemented
         //mapTypeChooser.addItem("Oblique");
         mapTypeChooser.addItem("Hexagonal (experimental)");
@@ -158,6 +159,8 @@ public class NewMapDialog extends JDialog implements ActionListener
                 orientation = Map.MDO_OBLIQUE;
             } else if (mapTypeString.equals("Hexagonal (experimental)")) {
                 orientation = Map.MDO_HEX;
+            } else if (mapTypeString.equals("Shifted (iso and hex)")) {
+                orientation = Map.MDO_SHIFTED;
             }
 
             newMap = new Map(w, h);
@@ -165,7 +168,7 @@ public class NewMapDialog extends JDialog implements ActionListener
             newMap.setTileWidth(twidth);
             newMap.setTileHeight(theight);
             newMap.setOrientation(orientation);
-            
+
             dispose();
         } else {
             dispose();

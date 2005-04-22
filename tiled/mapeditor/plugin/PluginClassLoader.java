@@ -191,28 +191,30 @@ public final class PluginClassLoader extends URLClassLoader
         return result;
     }
 
-    public Object getReaderFor(String ext) throws Exception {
+    public Object getReaderFor(String file) throws Exception {
         Iterator itr = readerFormats.keySet().iterator();
         while (itr.hasNext()){
             String key = (String)itr.next();
-            if (key.endsWith(ext.toLowerCase())) {
+            String ext = key.substring(1);
+            if (file.toLowerCase().endsWith(ext)) {
                 return loadClass((String)readerFormats.get(key)).newInstance();
             }
         }
         throw new Exception(
-                "No reader plugin exists for the extension: " + ext);
+                "No reader plugin exists for this file type.");
     }
 
-    public Object getWriterFor(String ext) throws Exception {
+    public Object getWriterFor(String file) throws Exception {
         Iterator itr = writerFormats.keySet().iterator();
         while (itr.hasNext()) {
             String key = (String)itr.next();
-            if (key.endsWith(ext.toLowerCase())) {
+            String ext = key.substring(1);
+            if (file.toLowerCase().endsWith(ext)) {
                 return loadClass((String)writerFormats.get(key)).newInstance();
             }
         }
         throw new Exception(
-                "No writer plugin exists for the extension: " + ext);
+                "No writer plugin exists for this file type.");
     }
 
     public Class loadFromJar(JarFile jf, JarEntry je, String className)

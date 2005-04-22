@@ -45,7 +45,7 @@ public class XMLMapTransformer implements MapReader
     private Map map = null;
     private String xmlPath = null;
     private Stack warnings;
-    
+
     public XMLMapTransformer() {
         warnings = new Stack();
     }
@@ -59,7 +59,7 @@ public class XMLMapTransformer implements MapReader
         }
         return url;
     }
-    
+
     private int reflectFindMethodByName(Class c, String methodName) {
         Method[] methods = c.getMethods();
         for (int i = 0; i < methods.length; i++) {
@@ -90,7 +90,9 @@ public class XMLMapTransformer implements MapReader
             } else if (parameterTypes[i].getName().equalsIgnoreCase("boolean")) {
                 conformingArguments[i] = new Boolean(args[i]);
             } else {
-                warnings.push("INFO: Unsupported argument type "+parameterTypes[i].getName()+", defaulting to java.lang.String");
+                warnings.push("INFO: Unsupported argument type " +
+                        parameterTypes[i].getName() +
+                        ", defaulting to java.lang.String");
                 conformingArguments[i] = args[i];
             }
         }
@@ -107,8 +109,10 @@ public class XMLMapTransformer implements MapReader
             map.setOrientation(Map.MDO_HEX);
         } else if (o.equalsIgnoreCase("oblique")) {
             map.setOrientation(Map.MDO_OBLIQUE);
+        } else if (o.equalsIgnoreCase("shifted")) {
+            map.setOrientation(Map.MDO_SHIFTED);
         } else {
-            warnings.push("WARN: Unknown orientation '"+o+"'");
+            warnings.push("WARN: Unknown orientation '" + o + "'");
         }
     }
 
@@ -162,7 +166,9 @@ public class XMLMapTransformer implements MapReader
                         reflectInvokeMethod(o,methods[j],
                                 new String [] {n.getNodeValue()});
                     } else {
-                        warnings.push("WARN: Unsupported attribute '"+n.getNodeName()+"' on <"+node.getNodeName()+"> tag");
+                        warnings.push("WARN: Unsupported attribute '" +
+                                n.getNodeName() +
+                                "' on <" + node.getNodeName() + "> tag");
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -172,7 +178,9 @@ public class XMLMapTransformer implements MapReader
         return o;
     }
 
-    private Image unmarshalImage(Node t, String baseDir) throws MalformedURLException, IOException {
+    private Image unmarshalImage(Node t, String baseDir)
+        throws MalformedURLException, IOException
+    {
         Image img = null;
 
         String source = getAttributeValue(t, "source");
@@ -192,7 +200,8 @@ public class XMLMapTransformer implements MapReader
                 if (n.getNodeName().equals("data")) {
                     Node cdata = n.getFirstChild();
                     if (cdata == null) {
-                        warnings.push("WARN: image <data> tag enclosed no data. (empty data tag)");
+                        warnings.push("WARN: image <data> tag enclosed no " +
+                                "data. (empty data tag)");
                     } else {
                         String sdata = cdata.getNodeValue();
                         img = ImageHelper.bytesToImage(
@@ -645,7 +654,8 @@ public class XMLMapTransformer implements MapReader
             doc = builder.parse(in, xmlPath);
         } catch (SAXException e) {
             e.printStackTrace();
-            throw new Exception("Error while parsing map file: "+e.toString());
+            throw new Exception("Error while parsing map file: " +
+                    e.toString());
         }
 
         buildMap(doc);
@@ -656,16 +666,21 @@ public class XMLMapTransformer implements MapReader
     // MapReader interface
 
     public Map readMap(String filename) throws Exception {
-        String xmlFile = filename;
-        
         xmlPath = filename.substring(0,
                 filename.lastIndexOf(File.separatorChar) + 1);
         
-        xmlFile = makeUrl(xmlFile);
+        String xmlFile = makeUrl(filename);
         //xmlPath = makeUrl(xmlPath);
-        
+
         URL url = new URL(xmlFile);
-        Map unmarshalledMap = unmarshal(url.openStream());
+        InputStream is = url.openStream();
+
+        // Wrap with GZIP decoder for .tmx.gz files 
+        if (filename.endsWith(".gz")) {
+            is = new GZIPInputStream(is);
+        }
+
+        Map unmarshalledMap = unmarshal(is);
         unmarshalledMap.setFilename(filename);
         
         return unmarshalledMap;
@@ -703,7 +718,7 @@ public class XMLMapTransformer implements MapReader
      * @see tiled.io.MapReader#getFilter()
      */
     public String getFilter() throws Exception {
-        return "*.tmx,*.tsx";
+        return "*.tmx,*.tmx.gz,*.tsx";
     }
 
     public String getPluginPackage() {
@@ -728,7 +743,8 @@ public class XMLMapTransformer implements MapReader
     public boolean accept(File pathname) {
         try {
             String path = pathname.getCanonicalPath();
-            if (path.endsWith(".tmx") || path.endsWith(".tsx")) {
+            if (path.endsWith(".tmx") || path.endsWith(".tsx") ||
+                        path.endsWith(".tmx.gz")) {
                 return true;
             }
         } catch (IOException e) {}

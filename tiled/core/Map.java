@@ -34,6 +34,8 @@ public class Map extends MultilayerPlane implements Cloneable
     public static final int MDO_OBLIQUE = 3;
     /** hexagonal */
     public static final int MDO_HEX     = 4;
+    /** shifted (used for iso and hex) */
+    public static final int MDO_SHIFTED = 5;
 
     private Vector specialLayers;
     private Vector tilesets;
@@ -433,8 +435,8 @@ public class Map extends MultilayerPlane implements Cloneable
 
     /**
      * Returns the orientation of this map. Orientation will be one of
-     * {@link Map#MDO_ISO}, {@link Map#MDO_ORTHO}, {@link Map#MDO_HEX} and
-     * {@link Map#MDO_OBLIQUE}.
+     * {@link Map#MDO_ISO}, {@link Map#MDO_ORTHO}, {@link Map#MDO_HEX},
+     * {@link Map#MDO_OBLIQUE} and {@link Map#MDO_SHIFTED}.
      * 
      * @return The orientation from the enumerated set
      */

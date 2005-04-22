@@ -103,6 +103,8 @@ public class XMLMapWriter implements MapWriter
                     w.writeAttribute("orientation", "oblique"); break;
                 case Map.MDO_HEX:
                     w.writeAttribute("orientation", "hexagonal"); break;
+                case Map.MDO_SHIFTED:
+                    w.writeAttribute("orientation", "shifted"); break;
             }
 
             w.writeAttribute("width", "" + map.getWidth());

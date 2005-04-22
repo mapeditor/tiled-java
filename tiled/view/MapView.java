@@ -159,7 +159,7 @@ public abstract class MapView extends JPanel implements Scrollable
         MapView mapView = null;
 
         int orientation = p.getOrientation();
-        
+
         if (orientation == Map.MDO_ISO) {
             mapView = new IsoMapView(p);
         } else if (orientation == Map.MDO_ORTHO) {
@@ -168,6 +168,8 @@ public abstract class MapView extends JPanel implements Scrollable
             mapView = new HexMapView(p);
         } else if (orientation == Map.MDO_OBLIQUE) {
             mapView = new ObliqueMapView(p);
+        } else if (orientation == Map.MDO_SHIFTED) {
+            mapView = new ShiftedMapView(p);
         }
 
         return mapView;
@@ -176,9 +178,10 @@ public abstract class MapView extends JPanel implements Scrollable
     // Painting
 
     /**
-     * Draws all the visible layers of the map. Takes several flags into account when drawing,
-     * and will also draw the grid, and any 'special' layers.
-     * 
+     * Draws all the visible layers of the map. Takes several flags into
+     * account when drawing, and will also draw the grid, and any 'special'
+     * layers.
+     *
      * @param g the Graphics2D object to paint to
      * @see JComponent#paintComponent(java.awt.Graphics)
      * @see MapLayer
