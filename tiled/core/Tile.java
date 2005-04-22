@@ -50,6 +50,8 @@ public class Tile
 
     /**
      * Sets the id of the tile as long as it is at least 0.
+     * 
+     * @param i The id of the tile
      */
     public void setId(int i) {
         if (i >= 0) {
@@ -112,10 +114,27 @@ public class Tile
         return id;
     }
 
+    /**
+     * Returns the {@link tiled.core.TileSet} that this tile is
+     * part of.
+     * 
+     * @return TileSet
+     */
     public TileSet getTileSet() {
         return tileset;
     }
 
+    /**
+     * This drawing function handles drawing the tile image at the 
+     * specified zoom level. It will attempt to use a cached copy, 
+     * but will rescale if the requested zoom does not equal the 
+     * current cache zoom.
+     * 
+     * @param g Graphics instance to draw to
+     * @param x x-coord to draw tile at
+     * @param y y-coord to draw tile at
+     * @param zoom Zoom level to draw the tile
+     */
     public void drawRaw(Graphics g, int x, int y, double zoom) {
             if (scaledImage == null || zoom != myZoom) {
                 scaledImage = getScaledImage(zoom);
@@ -187,7 +206,9 @@ public class Tile
     }
 
     /**
-     * Returns the tile image.
+     * Returns the tile image for this Tile.
+     * 
+     * @return Image
      */
     public Image getImage() {
         if (tileset != null) {

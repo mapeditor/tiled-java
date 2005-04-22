@@ -68,7 +68,7 @@ public class TileLayer extends MapLayer
         Tile[][] trans;
         int xtrans = 0, ytrans = 0;
 
-        if (canEdit())
+        if (!canEdit())
             return;
 
         switch (angle) {
@@ -98,7 +98,7 @@ public class TileLayer extends MapLayer
             for (int x = 0; x < bounds.width; x++) {
                 int xrot = x * cos_angle - y * sin_angle;
                 int yrot = x * sin_angle + y * cos_angle;
-                trans[yrot + ytrans][xrot + xtrans] = getTileAt(x, y);
+                trans[yrot + ytrans][xrot + xtrans] = getTileAt(x+bounds.x, y+bounds.y);
             }
         }
 
@@ -336,6 +336,13 @@ public class TileLayer extends MapLayer
         }
     }
 
+    /**
+     * Like copyFrom, but will only copy the area specified.
+     *
+     * @see tiled.core.TileLayer#copyFrom(MapLayer)
+     * @param other
+     * @param mask
+     */
     public void maskedCopyFrom(MapLayer other, Area mask) {
         if (!canEdit())
             return;
@@ -359,7 +366,7 @@ public class TileLayer extends MapLayer
      * @param other the layer to copy this layer to
      */
     public void copyTo(MapLayer other) {
-        if (!canEdit())
+        if (!other.canEdit())
             return;
 
         for (int y = bounds.y; y < bounds.y + bounds.height; y++) {

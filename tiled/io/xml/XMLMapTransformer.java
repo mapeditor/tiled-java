@@ -289,8 +289,8 @@ public class XMLMapTransformer implements MapReader
             return ext;
         }
         else {
-            int tileWidth = getAttribute(t, "tilewidth", map.getTileWidth());
-            int tileHeight = getAttribute(t, "tileheight", map.getTileHeight());
+            int tileWidth = getAttribute(t, "tilewidth", map != null ? map.getTileWidth() : 0);
+            int tileHeight = getAttribute(t, "tileheight", map != null ? map.getTileHeight() : 0);
             int tileSpacing = getAttribute(t, "spacing", 0);
 
             TileSet set = new TileSet();

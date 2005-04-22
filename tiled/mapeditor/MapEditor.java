@@ -895,6 +895,7 @@ public class MapEditor implements ActionListener,
                     Point translation = new Point(
                             tile.x - mousePressLocation.x,
                             tile.y - mousePressLocation.y);
+
                     layer.translate(translation.x, translation.y);
                     moveDist.translate(translation.x, translation.y);
                     mapView.repaint();
@@ -1346,16 +1347,32 @@ public class MapEditor implements ActionListener,
                     break;
                 case MapLayer.MIRROR_HORIZONTAL:
                     putValue(NAME, "Flip horizontally");
-                    putValue(SHORT_DESCRIPTION, "Flip layer horizontalle");
+                    putValue(SHORT_DESCRIPTION, "Flip layer horizontally");
                     putValue(SMALL_ICON,
                             loadIcon("resources/gimp-flip-horizontal-16.png"));
                     break;
             }
         }
         public void actionPerformed(ActionEvent evt) {
-            MapLayer layer = getCurrentLayer();
+            MapLayer currentLayer = getCurrentLayer();
+            MapLayer layer = currentLayer;
             MapLayerEdit transEdit;
-            transEdit = new MapLayerEdit(layer, createLayerCopy(layer));
+            transEdit = new MapLayerEdit(currentLayer, createLayerCopy(currentLayer));
+
+		    if(marqueeSelection != null) {
+		        if (currentLayer instanceof TileLayer) {
+		            layer = new TileLayer(
+	                           marqueeSelection.getSelectedAreaBounds());
+		        } else if (currentLayer instanceof ObjectGroup) {
+	                layer = new ObjectGroup(
+	                           marqueeSelection.getSelectedAreaBounds());
+	            }
+		        
+		        layer.maskedCopyFrom(
+	                       	currentLayer,
+	                        marqueeSelection.getSelectedArea());
+		    }
+
             switch (transform) {
                 case MapLayer.ROTATE_90:
                     transEdit.setPresentationName("Rotate");
@@ -1378,7 +1395,12 @@ public class MapEditor implements ActionListener,
                     layer.mirror(MapLayer.MIRROR_HORIZONTAL);
                     break;
             }
-            transEdit.end(createLayerCopy(layer));
+
+		    if(marqueeSelection != null ) {
+		        layer.copyTo(currentLayer);
+		    }
+
+            transEdit.end(createLayerCopy(currentLayer));
             undoSupport.postEdit(transEdit);
             mapView.repaint();
         }
