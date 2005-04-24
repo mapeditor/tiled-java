@@ -25,11 +25,16 @@ import java.util.Properties;
  */
 public abstract class MapLayer implements Cloneable
 {
+    /** MIRROR_HORIZONTAL */
     public static final int MIRROR_HORIZONTAL = 1;
+    /** MIRROR_VERTICAL */
     public static final int MIRROR_VERTICAL   = 2;
 
+    /** ROTATE_90 */
     public static final int ROTATE_90  = 90;
+    /** ROTATE_180 */
     public static final int ROTATE_180 = 180;
+    /** ROTATE_270 */
     public static final int ROTATE_270 = 270;
 
     protected String name;

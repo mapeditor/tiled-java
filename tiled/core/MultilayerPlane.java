@@ -25,10 +25,20 @@ public class MultilayerPlane
     private Vector layers;
     protected int widthInTiles = 0, heightInTiles = 0;
 
+    /**
+     * Default constructor
+     *
+     */
     public MultilayerPlane() {
         layers = new Vector();
     }
 
+    /**
+     * Construct a MultilayerPlane to the specified dimensions
+     * 
+     * @param width
+     * @param height
+     */
     public MultilayerPlane(int width, int height) {
         this();
         widthInTiles = width;
@@ -57,6 +67,7 @@ public class MultilayerPlane
     /**
      * Adds a layer to the map.
      * 
+     * @param l The {@link MapLayer} to add
      * @return the layer passed to the function
      */
     public MapLayer addLayer(MapLayer l) {
@@ -84,6 +95,11 @@ public class MultilayerPlane
         layers.add(index, layer);
     }
 
+    /**
+     * Adds all the layers in a given java.util.Collection
+     * 
+     * @param c A collection of layers to add
+     */
     public void addAllLayers(Collection c) {
         layers.addAll(c);
     }
@@ -93,20 +109,35 @@ public class MultilayerPlane
      * will move down to fill the gap.
      *
      * @param index the index of the layer to be removed.
+     * @return MapLayer The layer that was removed from the list
      */
     public MapLayer removeLayer(int index) {
         MapLayer layer = (MapLayer)layers.remove(index);
         return layer;
     }
 
+    /**
+     * Clears the layer vector, thereby removing all layers from 
+     * the plane.
+     */
     public void removeAllLayers() {
         layers.removeAllElements();
     }
 
+    /**
+     * Returns the layer vector.
+     * 
+     * @return Vector The layer vector
+     */
     public Vector getLayerVector() {
         return layers;
     }
 
+    /**
+     * Sets the layer vector to the given java.util.Vector
+     * 
+     * @param layers
+     */
     public void setLayerVector(Vector layers) {
         this.layers = layers;
     }

@@ -217,7 +217,9 @@ public class Map extends MultilayerPlane implements Cloneable
     }
 
     /**
-     * @see MultilayerPlane#removeLayer
+     * Calls super method, and additionally fires a MapChangedEvent.
+     * 
+     * @see MultilayerPlane#removeLayer(int)
      */
     public MapLayer removeLayer(int index) {
         MapLayer layer = super.removeLayer(index);
@@ -241,6 +243,8 @@ public class Map extends MultilayerPlane implements Cloneable
     }
 
     /**
+     * Calls super method, and additionally fires a MapChangedEvent.
+     * 
      * @see MultilayerPlane#removeAllLayers
      */
 
@@ -329,7 +333,7 @@ public class Map extends MultilayerPlane implements Cloneable
     /**
      * Retrieves the designated "Blank" or "Null" tile
      *
-     * @return designated Null tile, or null by default
+     * @return Tile designated Null tile, or null by default
      */
     public Tile getNullTile() {
         return null;
@@ -382,6 +386,10 @@ public class Map extends MultilayerPlane implements Cloneable
     /**
      * Returns wether the given tile coordinates fall within the map
      * boundaries.
+     * 
+     * @param x The tile-space x-coordinate
+     * @param y The tile-space y-coordinate
+     * @return boolean <code>true</code> if the point lies within the bounds of the extents of the Map.
      */
     public boolean contains(int x, int y) {
         return x >= 0 && y >= 0 && x < widthInTiles && y < heightInTiles;
@@ -390,6 +398,8 @@ public class Map extends MultilayerPlane implements Cloneable
     /**
      * Returns the maximum tile height. This is the height of the highest tile
      * in all tilesets or the tile height used by this map if it's smaller.
+     * 
+     * @return int The maximum tile height
      */
     public int getTileHeightMax() {
         int maxHeight = tileHeight;

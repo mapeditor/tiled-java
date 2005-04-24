@@ -16,16 +16,24 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.Area;
 
-
+/**
+ * A TileLayer is a specialized MapLayer, used for tracking two dimensional
+ * tile data. 
+ */
 public class TileLayer extends MapLayer
 {
     protected Tile map[][];
 
+    /**
+     * Default contructor
+     */
     public TileLayer() {
         super();
     }
 
     /**
+     * Construct a TileLayer from the given width and height
+     * 
      * @param w width in tiles
      * @param h height in tiles
      */
@@ -33,10 +41,19 @@ public class TileLayer extends MapLayer
         super(w, h);
     }
 
+    /**
+     * 
+     * @param r
+     */
     public TileLayer(Rectangle r) {
         super(r);
     }
 
+    /**
+     * Copy constructor. Copies all data from given TileLayer
+     * 
+     * @param ml
+     */
     public TileLayer(TileLayer ml) {
         super(ml);
 
@@ -64,6 +81,12 @@ public class TileLayer extends MapLayer
         setMap(m);
     }
 
+    /**
+     * Rotates the layer by the given Euler angle.
+     * 
+     * @param angle The Euler angle (0-360) to rotate the layer array data by.
+     * @see MapLayer#rotate(int)
+     */
     public void rotate(int angle) {
         Tile[][] trans;
         int xtrans = 0, ytrans = 0;

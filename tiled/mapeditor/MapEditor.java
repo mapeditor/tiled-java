@@ -1366,14 +1366,14 @@ public class MapEditor implements ActionListener,
                     layer = new ObjectGroup(
                             marqueeSelection.getSelectedAreaBounds());
                 }
-
+				layer.setMap(currentMap);
                 layer.maskedCopyFrom(
                         currentLayer,
                         marqueeSelection.getSelectedArea());
             }
 
             switch (transform) {
-                case MapLayer.ROTATE_90:
+                /*case MapLayer.ROTATE_90:
                     transEdit.setPresentationName("Rotate");
                     layer.rotate(MapLayer.ROTATE_90);
                     break;
@@ -1384,19 +1384,28 @@ public class MapEditor implements ActionListener,
                 case MapLayer.ROTATE_270:
                     transEdit.setPresentationName("Rotate");
                     layer.rotate(MapLayer.ROTATE_270);
-                    break;
+                    break;*/
+            	case MapLayer.ROTATE_90:
+            	case MapLayer.ROTATE_180:
+            	case MapLayer.ROTATE_270:
+            	    transEdit.setPresentationName("Rotate");
+            		layer.rotate(transform);
+            		//if(marqueeSelection != null) marqueeSelection.rotate(transform);
+            		break;
                 case MapLayer.MIRROR_VERTICAL:
                     transEdit.setPresentationName("Vertical Flip");
                     layer.mirror(MapLayer.MIRROR_VERTICAL);
+                    //if(marqueeSelection != null) marqueeSelection.mirror(transform);
                     break;
                 case MapLayer.MIRROR_HORIZONTAL:
                     transEdit.setPresentationName("Horizontal Flip");
                     layer.mirror(MapLayer.MIRROR_HORIZONTAL);
+                    //if(marqueeSelection != null) marqueeSelection.mirror(transform);
                     break;
             }
 
             if (marqueeSelection != null ) {
-                layer.copyTo(currentLayer);
+                layer.mergeOnto(currentLayer);
             }
 
             transEdit.end(createLayerCopy(currentLayer));
