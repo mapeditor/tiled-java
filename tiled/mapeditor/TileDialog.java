@@ -409,8 +409,11 @@ public class TileDialog extends JDialog
 
             while (tileIterator.hasNext()) {
                 Tile tile = (Tile)tileIterator.next();
-                if (tile.getImageId() == currentImageIndex) {
-                    image_used = true;
+                for (int i = 0; i < tile.countAnimationFrames(); ++i) {
+                    if (tile.getAnimationFrameImageId(i)
+                            == currentImageIndex) {
+                        image_used = true;
+                    }
                 }
             }
             bDeleteImage.setEnabled(!tilebmp && currentImageIndex >= 0
@@ -543,8 +546,10 @@ public class TileDialog extends JDialog
 
                     while (tileIterator.hasNext()) {
                         Tile tile = (Tile)tileIterator.next();
-                        if (tile.getImageId() == id) {
-                            image_used = true;
+                        for (int i = 0; i < tile.countAnimationFrames(); ++i) {
+                            if (tile.getAnimationFrameImageId(i) == id) {
+                                image_used = true;
+                            }
                         }
                     }
 
