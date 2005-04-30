@@ -436,7 +436,8 @@ public class XMLMapTransformer implements MapReader
                 } else {
                     orientation = (flipped ? 1 : 0);
                 }
-                tile.setAppearance(id, orientation);
+                int duration = getAttribute(child, "duration", 1);
+                tile.addAnimationFrame(id, orientation, duration);
             } else if (child.getNodeName().equalsIgnoreCase("property")) {
                 tileProps.setProperty(getAttributeValue(child, "name"),
                         getAttributeValue(child, "value"));

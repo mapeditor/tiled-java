@@ -423,8 +423,7 @@ public class XMLMapWriter implements MapWriter
             TiledConfiguration conf = TiledConfiguration.getInstance();
 
             // Write encoded data
-            if (tileImage != null && !conf.keyHasValue(
-                        "tmx.save.tileSetImages", "1")) {
+            if (tileImage != null) {
                 if (conf.keyHasValue("tmx.save.embedImages", "1")
                         && conf.keyHasValue("tmx.save.tileSetImages", "0")) {
                     w.startElement("image");
@@ -436,21 +435,28 @@ public class XMLMapWriter implements MapWriter
                     w.endElement();
                     w.endElement();
                 } else if(conf.keyHasValue("tmx.save.tileSetImages", "1")) {
-                    w.startElement("image");
-                    w.writeAttribute("id", "" + tile.getImageId());
-                    int orientation = tile.getImageOrientation();
-                    int rotation = 0;
-                    boolean flipped =
-                        (orientation & 1) == ((orientation & 2) >> 1);
-                    if ((orientation & 4) == 4) {
-                        rotation = ((orientation & 1) == 1) ? 270 : 90;
-                    } else {
-                        rotation = ((orientation & 2) == 2) ? 180 : 0;
+                    for (int i = 0; i < tile.countAnimationFrames(); ++i) {
+                        w.startElement("image");
+                        w.writeAttribute("id",
+                            "" + tile.getAnimationFrameImageId(i));
+                        int orientation = tile.getAnimationFrameOrientation(i);
+                        int rotation = 0;
+                        boolean flipped =
+                            (orientation & 1) == ((orientation & 2) >> 1);
+                        if ((orientation & 4) == 4) {
+                            rotation = ((orientation & 1) == 1) ? 270 : 90;
+                        } else {
+                            rotation = ((orientation & 2) == 2) ? 180 : 0;
+                        }
+                        if (rotation != 0) w.writeAttribute("rotation",
+                                "" + rotation);
+                        if (flipped) w.writeAttribute("flipped", "true");
+                        int duration = tile.getAnimationFrameDuration(i);
+                        if (duration != 1) {
+                          w.writeAttribute("duration", "" + duration);
+                        }
+                        w.endElement();
                     }
-                    if (rotation != 0) w.writeAttribute("rotation",
-                            "" + rotation);
-                    if (flipped) w.writeAttribute("flipped", "true");
-                    w.endElement();
                 } else {
                     String prefix = conf.getValue("tmx.save.tileImagePrefix");
                     String filename = conf.getValue("tmx.save.maplocation") +
