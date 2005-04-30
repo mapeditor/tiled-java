@@ -222,19 +222,12 @@ public class TileDialog extends JDialog
         if (currentTile == null) {
             return;
         }
-        if (tileset.usesSharedImages()) {
-            TileImageDialog d = new TileImageDialog(this, tileset,
-                currentTile.getImageId(), currentTile.getImageOrientation());
-            d.setVisible(true);
-            if (d.getImageId() >= 0) {
-                currentTile.setImage(d.getImageId());
-                currentTile.setImageOrientation(d.getImageOrientation());
-            }
-        } else {
-            Image img = loadImage();
-            if (img != null) {
-                currentTile.setImage(img);
-            }
+        TileImageDialog d = new TileImageDialog(this, tileset,
+            currentTile.getImageId(), currentTile.getImageOrientation());
+        d.setVisible(true);
+        if (d.getImageId() >= 0) {
+            currentTile.setAppearance(d.getImageId(),
+                d.getImageOrientation());
         }
     }
 
@@ -270,8 +263,8 @@ public class TileDialog extends JDialog
             d.setVisible(true);
             if (d.getImageId() >= 0) {
                 currentTile = new Tile(tileset);
-                currentTile.setImage(d.getImageId());
-                currentTile.setImageOrientation(d.getImageOrientation());
+                currentTile.setAppearance(d.getImageId(),
+                    d.getImageOrientation());
                 tileset.addNewTile(currentTile);
                 queryTiles();
             }
@@ -297,7 +290,8 @@ public class TileDialog extends JDialog
             }
 
             Tile newTile = new Tile(tileset);
-            newTile.setImage(image);
+            int image_id = tileset.addImage(image);
+            newTile.setAppearance(image_id, 0);
             tileset.addNewTile(newTile);
         }
 

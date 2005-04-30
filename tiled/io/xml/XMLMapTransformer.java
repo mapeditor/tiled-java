@@ -323,7 +323,7 @@ public class XMLMapTransformer implements MapReader
                 Node child = children.item(i);
 
                 if (child.getNodeName().equalsIgnoreCase("tile")) {
-                    set.addTile(unmarshalTile(child, tilesetBaseDir));
+                    set.addTile(unmarshalTile(set, child, tilesetBaseDir));
                 }
                 else if (child.getNodeName().equalsIgnoreCase("image")) {
                     String imgSource = getAttributeValue(child, "source");
@@ -399,7 +399,9 @@ public class XMLMapTransformer implements MapReader
         return obj;
     }
 
-    private Tile unmarshalTile(Node t, String baseDir) throws Exception {
+    private Tile unmarshalTile(TileSet set, Node t, String baseDir)
+        throws Exception
+    {
         Tile tile = null;
 
         try {
@@ -407,6 +409,8 @@ public class XMLMapTransformer implements MapReader
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        tile.setTileSet(set);
 
         Properties tileProps = tile.getProperties();
         NodeList children = t.getChildNodes();
@@ -416,25 +420,23 @@ public class XMLMapTransformer implements MapReader
             if (child.getNodeName().equalsIgnoreCase("image")) {
                 int id = getAttribute(child, "id", -1);
                 if (id < 0) {
-                    tile.setImage(unmarshalImage(child, baseDir));
-                } else {
-                    tile.setImage(id);
-                    int rotation = getAttribute(child, "rotation", 0);
-                    String flipped_s = getAttributeValue(child, "flipped");
-                    boolean flipped = (flipped_s != null
-                        && flipped_s.equalsIgnoreCase("true"));
-                    int orientation;
-                    if (rotation == 90) {
-                        orientation = (flipped ? 6 : 4);
-                    } else if (rotation == 180) {
-                        orientation = (flipped ? 2 : 3);
-                    } else if (rotation == 270) {
-                        orientation = (flipped ? 5 : 7);
-                    } else {
-                        orientation = (flipped ? 1 : 0);
-                    }
-                    tile.setImageOrientation(orientation);
+                    id = set.addImage(unmarshalImage(child, baseDir));
                 }
+                int rotation = getAttribute(child, "rotation", 0);
+                String flipped_s = getAttributeValue(child, "flipped");
+                boolean flipped = (flipped_s != null
+                    && flipped_s.equalsIgnoreCase("true"));
+                int orientation;
+                if (rotation == 90) {
+                    orientation = (flipped ? 6 : 4);
+                } else if (rotation == 180) {
+                    orientation = (flipped ? 2 : 3);
+                } else if (rotation == 270) {
+                    orientation = (flipped ? 5 : 7);
+                } else {
+                    orientation = (flipped ? 1 : 0);
+                }
+                tile.setAppearance(id, orientation);
             } else if (child.getNodeName().equalsIgnoreCase("property")) {
                 tileProps.setProperty(getAttributeValue(child, "name"),
                         getAttributeValue(child, "value"));
