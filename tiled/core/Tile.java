@@ -190,28 +190,34 @@ public class Tile
     }
 
     public int getWidth() {
-        /*
         if (tileset != null) {
-            Dimension d
-              = tileset.getImageDimensions("" + tileImageId, tileOrientation);
-            return d.width;
+            int width = 0;
+            for (int i = 0; i < this.animation.size(); ++i) {
+                AnimationFrame frame = this.getAnimationFrame(i);
+                Dimension d = tileset.getImageDimensions("" + frame.imageId,
+                    frame.orientation);
+                if (d.width > width) width = d.width;
+            }
+            return width;
         } else if (internalImage != null){
             return internalImage.getWidth(null);
         }
-        */
         return 0;
     }
 
     public int getHeight() {
-        /*
         if (tileset != null) {
-            Dimension d
-              = tileset.getImageDimensions("" + tileImageId, tileOrientation);
-            return d.height;
+            int height = 0;
+            for (int i = 0; i < this.animation.size(); ++i) {
+                AnimationFrame frame = this.getAnimationFrame(i);
+                Dimension d = tileset.getImageDimensions("" + frame.imageId,
+                    frame.orientation);
+                if (d.height > height) height = d.height;
+            }
+            return height;
         } else if (internalImage != null) {
             return internalImage.getHeight(null);
         }
-        */
         return 0;
     }
 
@@ -296,7 +302,7 @@ public class Tile
             (new AnimationFrame(imageId, orientation, d), n);
     }
 
-    public void appendAnimationFrame(int imageId, int orientation, int d)
+    public void addAnimationFrame(int imageId, int orientation, int d)
     {
         this.animation.addElement(new AnimationFrame(imageId, orientation, d));
     }
