@@ -31,13 +31,14 @@ import tiled.mapeditor.util.*;
 import tiled.mapeditor.widget.*;
 
 
+
 public class TileDialog extends JDialog
     implements ActionListener, ListSelectionListener
 {
     private Tile currentTile;
     private TileSet tileset;
     private JList tileList, imageList;
-    private JTable tileProperties;
+    private JTable tileProperties, tileAnimation;
     private JComboBox tLinkList;
     private JButton bOk, bNew, bDelete, bChangeI, bDuplicate;
     private JButton bAddImage, bDeleteImage, bDeleteAllUnusedImages;
@@ -82,6 +83,12 @@ public class TileDialog extends JDialog
         JScrollPane propScrollPane = new JScrollPane(tileProperties);
         propScrollPane.setPreferredSize(new Dimension(150, 150));
 
+        // Tile animation table
+
+        tileAnimation = new JTable(new AnimationTableModel());
+        tileAnimation.getSelectionModel().addListSelectionListener(this);
+        JScrollPane animScrollPane = new JScrollPane(tileAnimation);
+        animScrollPane.setPreferredSize(new Dimension(64, 150));
 
         // Tile list
 
@@ -97,7 +104,8 @@ public class TileDialog extends JDialog
         splitPane.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         splitPane.setResizeWeight(0.25);
         splitPane.setLeftComponent(sp);
-        splitPane.setRightComponent(propScrollPane);
+        // splitPane.setRightComponent(propScrollPane);
+        splitPane.setRightComponent(animScrollPane);
 
 
         // The buttons
