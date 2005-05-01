@@ -17,6 +17,12 @@ public class AnimationTableModel extends javax.swing.table.AbstractTableModel
 {
     private tiled.core.Tile tile;
 
+    public void setTile(tiled.core.Tile t)
+    {
+        this.tile = t;
+        this.fireTableDataChanged();
+    }
+
     public int getRowCount()
     {
         if (this.tile == null) return 0;
@@ -37,7 +43,8 @@ public class AnimationTableModel extends javax.swing.table.AbstractTableModel
     public Object getValueAt(int row, int col)
     {
         if (col == 0) {
-            return this.tile.getAnimationFrameImage(row);
+            return new javax.swing.ImageIcon
+                (this.tile.getAnimationFrameImage(row));
         } else {
             return this.tile.getAnimationFrameDuration(row);
         }
@@ -56,6 +63,13 @@ public class AnimationTableModel extends javax.swing.table.AbstractTableModel
             ((Integer)value).intValue());
         this.fireTableCellUpdated(row, col);
     }
-    
+
+    public Class getColumnClass(int c) {
+        if (c == 0) {
+            return javax.swing.ImageIcon.class;
+        } else {
+            return Integer.class;
+        }
+    }
 }
 

@@ -292,7 +292,7 @@ public class Tile
 
     public int getAnimationFrameDuration(int n)
     {
-        return this.getAnimationFrame(n).orientation;
+        return this.getAnimationFrame(n).duration;
     }
 
     public void insertAnimationFrame(int n, int imageId, int orientation,

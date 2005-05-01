@@ -39,6 +39,7 @@ public class TileDialog extends JDialog
     private TileSet tileset;
     private JList tileList, imageList;
     private JTable tileProperties, tileAnimation;
+    private AnimationTableModel animationModel;
     private JComboBox tLinkList;
     private JButton bOk, bNew, bDelete, bChangeI, bDuplicate;
     private JButton bAddImage, bDeleteImage, bDeleteAllUnusedImages;
@@ -85,7 +86,8 @@ public class TileDialog extends JDialog
 
         // Tile animation table
 
-        tileAnimation = new JTable(new AnimationTableModel());
+        animationModel = new AnimationTableModel();
+        tileAnimation = new JTable(animationModel);
         tileAnimation.getSelectionModel().addListSelectionListener(this);
         JScrollPane animScrollPane = new JScrollPane(tileAnimation);
         animScrollPane.setPreferredSize(new Dimension(64, 150));
@@ -323,6 +325,8 @@ public class TileDialog extends JDialog
             tilesetNameEntry.setText(tileset.getName());
             //sharedImagesCheck.setSelected(tileset.usesSharedImages());
             externalBitmapCheck.setSelected(tileset.getTilebmpFile() != null);
+
+            tileAnimation.setRowHeight(tileset.getStandardHeight());
         }
 
         queryTiles();
@@ -382,6 +386,7 @@ public class TileDialog extends JDialog
         */
 
         currentTile = tile;
+        animationModel.setTile(currentTile);
         updateTileInfo();
         updateEnabledState();
     }
