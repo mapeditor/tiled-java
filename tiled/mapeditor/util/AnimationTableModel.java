@@ -46,7 +46,7 @@ public class AnimationTableModel extends javax.swing.table.AbstractTableModel
             return new javax.swing.ImageIcon
                 (this.tile.getAnimationFrameImage(row));
         } else {
-            return this.tile.getAnimationFrameDuration(row);
+            return new Integer(this.tile.getAnimationFrameDuration(row));
         }
     }
 
