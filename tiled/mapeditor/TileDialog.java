@@ -51,6 +51,7 @@ public class TileDialog extends JDialog
     //private JCheckBox sharedImagesCheck;
     private JTabbedPane tabs;
     private int currentImageIndex = -1;
+    private int currentFrame = -1;
 
     public TileDialog(Dialog parent, TileSet s) {
         super(parent, "Edit Tileset '" + s.getName() + "'", true);
@@ -433,12 +434,18 @@ public class TileDialog extends JDialog
     private void setCurrentTile(Tile tile) {
         currentTile = tile;
         animationModel.setTile(currentTile);
+        currentFrame = tileAnimation.getSelectedRow();
         updateTileInfo();
         updateEnabledState();
     }
 
     private void setImageIndex(int i) {
         currentImageIndex = i;
+        updateEnabledState();
+    }
+
+    private void setCurrentFrame(int n) {
+        currentFrame = n;
         updateEnabledState();
     }
 
@@ -478,6 +485,15 @@ public class TileDialog extends JDialog
             bDeleteImage.setEnabled(!tilebmp && currentImageIndex >= 0
                 && !image_used);
         }
+
+        // Update animation buttons
+        frameAddButton.setEnabled(currentTile != null);
+        frameCloneButton.setEnabled(currentTile != null && currentFrame >= 0);
+        frameDelButton.setEnabled(currentTile != null && currentFrame >= 0
+            && currentTile.countAnimationFrames() > 1);
+        frameUpButton.setEnabled(currentTile != null && currentFrame > 0);
+        frameDownButton.setEnabled(currentTile != null
+            && currentFrame < currentTile.countAnimationFrames() - 1);
     }
 
     /**
@@ -619,6 +635,26 @@ public class TileDialog extends JDialog
 
                 queryImages();
             }
+        } else if (source == frameAddButton) {
+            // TODO
+        } else if (source == frameDelButton) {
+            this.currentTile.removeAnimationFrame(this.currentFrame);
+        } else if (source == frameCloneButton) {
+            this.currentTile.insertAnimationFrame(this.currentFrame,
+                this.currentTile.getAnimationFrameImageId(this.currentFrame),
+                this.currentTile.getAnimationFrameOrientation
+                    (this.currentFrame),
+                this.currentTile.getAnimationFrameDuration(this.currentFrame));
+        } else if (source == frameUpButton) {
+            this.currentTile.swapAnimationFrames(this.currentFrame,
+                this.currentFrame - 1);
+            --this.currentFrame;
+            // TO DO: change selected row
+        } else if (source == frameDownButton) {
+            this.currentTile.swapAnimationFrames(this.currentFrame,
+                this.currentFrame + 1);
+            ++this.currentFrame;
+            // TO DO: change selected row
         }
 
         repaint();
@@ -629,6 +665,8 @@ public class TileDialog extends JDialog
             setCurrentTile((Tile)tileList.getSelectedValue());
         } else if (e.getSource() == imageList) {
             setImageIndex(imageList.getSelectedIndex());
+        } else if (e.getSource() == tileAnimation) {
+            setCurrentFrame(tileAnimation.getSelectedRow());
         }
     }
 
