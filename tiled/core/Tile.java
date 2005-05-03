@@ -330,4 +330,11 @@ public class Tile
             frame.orientation);
     }
 
+    public void swapAnimationFrames(int n0, int n1)
+    {
+      Object tmp = this.animation.elementAt(n0);
+      this.animation.set(n0, this.animation.elementAt(n1));
+      this.animation.set(n1, tmp);
+    }
+
 }

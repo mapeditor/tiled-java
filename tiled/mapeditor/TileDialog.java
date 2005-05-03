@@ -31,7 +31,6 @@ import tiled.mapeditor.util.*;
 import tiled.mapeditor.widget.*;
 
 
-
 public class TileDialog extends JDialog
     implements ActionListener, ListSelectionListener
 {
@@ -43,6 +42,9 @@ public class TileDialog extends JDialog
     private JComboBox tLinkList;
     private JButton bOk, bNew, bDelete, bChangeI, bDuplicate;
     private JButton bAddImage, bDeleteImage, bDeleteAllUnusedImages;
+    private AbstractButton frameAddButton, frameCloneButton, frameDelButton;
+    private AbstractButton frameUpButton, frameDownButton;
+
     private String location;
     private JTextField tilesetNameEntry;
     private JCheckBox externalBitmapCheck;
@@ -58,6 +60,28 @@ public class TileDialog extends JDialog
         setCurrentTile(null);
         pack();
         setLocationRelativeTo(getOwner());
+    }
+
+    // The following function was taken verbatim from MapEditor.java.  Beware
+    // the unnecessary code duplication.
+    private ImageIcon loadIcon(String fname) {
+        try {
+            return new ImageIcon
+              (ImageIO.read(MapEditor.class.getResourceAsStream(fname)));
+        } catch (java.io.IOException e) {
+            System.out.println("Failed to load icon: " + fname);
+            return null;
+        }
+    }
+
+    private AbstractButton createButton(Icon icon, String command) {
+        AbstractButton button;
+        button = new JButton("", icon);
+        button.setMargin(new Insets(0, 0, 0, 0));
+        button.setActionCommand(command);
+        button.addActionListener(this);
+        button.setToolTipText(command);
+        return button;
     }
 
     private JPanel createTilePanel() {
@@ -88,9 +112,42 @@ public class TileDialog extends JDialog
 
         animationModel = new AnimationTableModel();
         tileAnimation = new JTable(animationModel);
-        tileAnimation.getSelectionModel().addListSelectionListener(this);
+        // tileAnimation.getSelectionModel().addListSelectionListener(this);
         JScrollPane animScrollPane = new JScrollPane(tileAnimation);
         animScrollPane.setPreferredSize(new Dimension(64, 150));
+
+        // Tile animation buttons
+
+        Icon imgAdd = loadIcon("resources/gnome-new.png");
+        Icon imgDel = loadIcon("resources/gnome-delete.png");
+        Icon imgDup = loadIcon("resources/gimp-duplicate-16.png");
+        Icon imgUp = loadIcon("resources/gnome-up.png");
+        Icon imgDown = loadIcon("resources/gnome-down.png");
+
+        frameAddButton = createButton(imgAdd, "Add Frame");
+        frameDelButton = createButton(imgDel, "Delete Frame");
+        frameCloneButton = createButton(imgDup, "Duplicate Frame");
+        frameUpButton = createButton(imgUp, "Move Frame Up");
+        frameDownButton = createButton(imgDown, "Move Frame Down");
+
+        JPanel animationButtons = new JPanel();
+        animationButtons.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        c.fill = GridBagConstraints.BOTH;
+        c.weightx = 1;
+        animationButtons.add(frameAddButton, c);
+        animationButtons.add(frameUpButton, c);
+        animationButtons.add(frameDownButton, c);
+        animationButtons.add(frameCloneButton, c);
+        animationButtons.add(frameDelButton, c);
+        animationButtons.setMaximumSize(new Dimension(Integer.MAX_VALUE,
+                    animationButtons.getPreferredSize().height));
+
+        JPanel animationPanel = new JPanel();
+        animationPanel.setLayout
+            (new BoxLayout(animationPanel, BoxLayout.Y_AXIS));
+        animationPanel.add(animScrollPane);
+        animationPanel.add(animationButtons);
 
         // Tile list
 
@@ -107,7 +164,7 @@ public class TileDialog extends JDialog
         splitPane.setResizeWeight(0.25);
         splitPane.setLeftComponent(sp);
         // splitPane.setRightComponent(propScrollPane);
-        splitPane.setRightComponent(animScrollPane);
+        splitPane.setRightComponent(animationPanel);
 
 
         // The buttons
@@ -131,7 +188,6 @@ public class TileDialog extends JDialog
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new GridBagLayout());
         mainPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        GridBagConstraints c = new GridBagConstraints();
         c.fill = GridBagConstraints.BOTH;
         c.weightx = 1; c.weighty = 1;
         mainPanel.add(splitPane, c);
@@ -375,16 +431,6 @@ public class TileDialog extends JDialog
     }
 
     private void setCurrentTile(Tile tile) {
-        // Update the old current tile's properties
-        // (happens automatically as properties are changed in place now)
-        /*
-        if (currentTile != null) {
-            PropertiesTableModel model =
-                (PropertiesTableModel)tileProperties.getModel();
-            currentTile.setProperties(model.getProperties());
-        }
-        */
-
         currentTile = tile;
         animationModel.setTile(currentTile);
         updateTileInfo();
@@ -585,4 +631,5 @@ public class TileDialog extends JDialog
             setImageIndex(imageList.getSelectedIndex());
         }
     }
+
 }
