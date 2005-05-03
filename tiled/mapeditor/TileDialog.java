@@ -113,7 +113,8 @@ public class TileDialog extends JDialog
 
         animationModel = new AnimationTableModel();
         tileAnimation = new JTable(animationModel);
-        // tileAnimation.getSelectionModel().addListSelectionListener(this);
+        tileAnimation.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tileAnimation.getSelectionModel().addListSelectionListener(this);
         JScrollPane animScrollPane = new JScrollPane(tileAnimation);
         animScrollPane.setPreferredSize(new Dimension(64, 150));
 
@@ -492,7 +493,7 @@ public class TileDialog extends JDialog
         frameDelButton.setEnabled(currentTile != null && currentFrame >= 0
             && currentTile.countAnimationFrames() > 1);
         frameUpButton.setEnabled(currentTile != null && currentFrame > 0);
-        frameDownButton.setEnabled(currentTile != null
+        frameDownButton.setEnabled(currentTile != null && currentFrame >= 0
             && currentFrame < currentTile.countAnimationFrames() - 1);
     }
 
@@ -639,22 +640,33 @@ public class TileDialog extends JDialog
             // TODO
         } else if (source == frameDelButton) {
             this.currentTile.removeAnimationFrame(this.currentFrame);
+            // TODO: update tileAnimation widget
+            // TODO: update enabled state
+            // TODO: update currentFrame
         } else if (source == frameCloneButton) {
             this.currentTile.insertAnimationFrame(this.currentFrame,
                 this.currentTile.getAnimationFrameImageId(this.currentFrame),
                 this.currentTile.getAnimationFrameOrientation
                     (this.currentFrame),
                 this.currentTile.getAnimationFrameDuration(this.currentFrame));
+            // TODO: update tileAnimation widget
+            // TODO: update enabled state
         } else if (source == frameUpButton) {
             this.currentTile.swapAnimationFrames(this.currentFrame,
                 this.currentFrame - 1);
             --this.currentFrame;
-            // TO DO: change selected row
+            this.tileAnimation.setRowSelectionInterval(this.currentFrame,
+                this.currentFrame);
+            // TODO: update tileAnimation widget
+            // TODO: update enabled state
         } else if (source == frameDownButton) {
             this.currentTile.swapAnimationFrames(this.currentFrame,
                 this.currentFrame + 1);
             ++this.currentFrame;
-            // TO DO: change selected row
+            this.tileAnimation.setRowSelectionInterval(this.currentFrame,
+                this.currentFrame);
+            // TODO: update tileAnimation widget
+            // TODO: update enabled state
         }
 
         repaint();
@@ -665,7 +677,7 @@ public class TileDialog extends JDialog
             setCurrentTile((Tile)tileList.getSelectedValue());
         } else if (e.getSource() == imageList) {
             setImageIndex(imageList.getSelectedIndex());
-        } else if (e.getSource() == tileAnimation) {
+        } else if (e.getSource() == tileAnimation.getSelectionModel()) {
             setCurrentFrame(tileAnimation.getSelectedRow());
         }
     }
