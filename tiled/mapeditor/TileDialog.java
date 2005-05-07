@@ -160,13 +160,17 @@ public class TileDialog extends JDialog
 
         // The split pane
 
+        JSplitPane subSplitPane = new JSplitPane(
+                JSplitPane.HORIZONTAL_SPLIT, true);
+        subSplitPane.setLeftComponent(propScrollPane);
+        subSplitPane.setRightComponent(animationPanel);
+
         JSplitPane splitPane = new JSplitPane(
                 JSplitPane.HORIZONTAL_SPLIT, true);
         splitPane.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         splitPane.setResizeWeight(0.25);
         splitPane.setLeftComponent(sp);
-        // splitPane.setRightComponent(propScrollPane);
-        splitPane.setRightComponent(animationPanel);
+        splitPane.setRightComponent(subSplitPane);
 
 
         // The buttons
@@ -432,6 +436,17 @@ public class TileDialog extends JDialog
         }
     }
 
+    private void updateAnimation()
+    {
+        animationModel.setTile(currentTile);
+        if (currentFrame >= 0) {
+            this.tileAnimation.changeSelection(this.currentFrame, 0, false,
+                false);
+        }
+        currentFrame = tileAnimation.getSelectedRow();
+        updateEnabledState();
+    }
+
     private void setCurrentTile(Tile tile) {
         currentTile = tile;
         animationModel.setTile(currentTile);
@@ -640,33 +655,25 @@ public class TileDialog extends JDialog
             // TODO
         } else if (source == frameDelButton) {
             this.currentTile.removeAnimationFrame(this.currentFrame);
-            // TODO: update tileAnimation widget
-            // TODO: update enabled state
-            // TODO: update currentFrame
+            this.updateAnimation();
         } else if (source == frameCloneButton) {
             this.currentTile.insertAnimationFrame(this.currentFrame,
                 this.currentTile.getAnimationFrameImageId(this.currentFrame),
                 this.currentTile.getAnimationFrameOrientation
                     (this.currentFrame),
                 this.currentTile.getAnimationFrameDuration(this.currentFrame));
-            // TODO: update tileAnimation widget
-            // TODO: update enabled state
+            ++this.currentFrame;
+            this.updateAnimation();
         } else if (source == frameUpButton) {
             this.currentTile.swapAnimationFrames(this.currentFrame,
                 this.currentFrame - 1);
             --this.currentFrame;
-            this.tileAnimation.setRowSelectionInterval(this.currentFrame,
-                this.currentFrame);
-            // TODO: update tileAnimation widget
-            // TODO: update enabled state
+            this.updateAnimation();
         } else if (source == frameDownButton) {
             this.currentTile.swapAnimationFrames(this.currentFrame,
                 this.currentFrame + 1);
             ++this.currentFrame;
-            this.tileAnimation.setRowSelectionInterval(this.currentFrame,
-                this.currentFrame);
-            // TODO: update tileAnimation widget
-            // TODO: update enabled state
+            this.updateAnimation();
         }
 
         repaint();

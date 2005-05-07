@@ -64,12 +64,20 @@ public class AnimationTableModel extends javax.swing.table.AbstractTableModel
         this.fireTableCellUpdated(row, col);
     }
 
-    public Class getColumnClass(int c) {
+    public Class getColumnClass(int c)
+    {
         if (c == 0) {
             return javax.swing.ImageIcon.class;
         } else {
             return Integer.class;
         }
     }
+
+    public void removeAnimationFrame(int n)
+    {
+        this.tile.removeAnimationFrame(n);
+        this.fireTableRowsDeleted(n, n);
+    }
+
 }
 
