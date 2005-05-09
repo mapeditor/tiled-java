@@ -40,10 +40,11 @@ public class TileDialog extends JDialog
     private JTable tileProperties, tileAnimation;
     private AnimationTableModel animationModel;
     private JComboBox tLinkList;
-    private JButton bOk, bNew, bDelete, bChangeI, bDuplicate;
+    private JButton bOk, bNew, bDelete, bDuplicate;
     private JButton bAddImage, bDeleteImage, bDeleteAllUnusedImages;
     private AbstractButton frameAddButton, frameCloneButton, frameDelButton;
     private AbstractButton frameUpButton, frameDownButton;
+    private AbstractButton frameChangeImageButton;
 
     private String location;
     private JTextField tilesetNameEntry;
@@ -89,12 +90,12 @@ public class TileDialog extends JDialog
         // Create the buttons
 
         bDelete = new JButton("Delete Tile");
-        bChangeI = new JButton("Change Image");
+        // bChangeI = new JButton("Change Image");
         bDuplicate = new JButton("Duplicate Tile");
         bNew = new JButton("Add Tile");
 
         bDelete.addActionListener(this);
-        bChangeI.addActionListener(this);
+        // bChangeI.addActionListener(this);
         bDuplicate.addActionListener(this);
         bNew.addActionListener(this);
 
@@ -131,6 +132,7 @@ public class TileDialog extends JDialog
         frameCloneButton = createButton(imgDup, "Duplicate Frame");
         frameUpButton = createButton(imgUp, "Move Frame Up");
         frameDownButton = createButton(imgDown, "Move Frame Down");
+        frameChangeImageButton = createButton(imgAdd, "Change Image");
 
         JPanel animationButtons = new JPanel();
         animationButtons.setLayout(new GridBagLayout());
@@ -141,6 +143,7 @@ public class TileDialog extends JDialog
         animationButtons.add(frameUpButton, c);
         animationButtons.add(frameDownButton, c);
         animationButtons.add(frameCloneButton, c);
+        animationButtons.add(frameChangeImageButton, c);
         animationButtons.add(frameDelButton, c);
         animationButtons.setMaximumSize(new Dimension(Integer.MAX_VALUE,
                     animationButtons.getPreferredSize().height));
@@ -181,8 +184,8 @@ public class TileDialog extends JDialog
         buttons.add(bNew);
         buttons.add(Box.createRigidArea(new Dimension(5, 0)));
         buttons.add(bDelete);
-        buttons.add(Box.createRigidArea(new Dimension(5, 0)));
-        buttons.add(bChangeI);
+        // buttons.add(Box.createRigidArea(new Dimension(5, 0)));
+        // buttons.add(bChangeI);
         buttons.add(Box.createRigidArea(new Dimension(5, 0)));
         buttons.add(bDuplicate);
         buttons.add(Box.createRigidArea(new Dimension(5, 0)));
@@ -291,15 +294,17 @@ public class TileDialog extends JDialog
     }
 
     private void changeImage() {
-        if (currentTile == null) {
+        if (currentTile == null || currentFrame < 0) {
             return;
         }
         TileImageDialog d = new TileImageDialog(this, tileset,
             currentTile.getImageId(), currentTile.getImageOrientation());
         d.setVisible(true);
         if (d.getImageId() >= 0) {
-            currentTile.setAppearance(d.getImageId(),
-                d.getImageOrientation());
+            currentTile.setAnimationFrame(currentFrame,
+                d.getImageId(),
+                d.getImageOrientation(),
+                currentTile.getAnimationFrameDuration(currentFrame));
         }
     }
 
@@ -475,8 +480,8 @@ public class TileDialog extends JDialog
 
         bNew.setEnabled(atLeastOneSharedImage || !tilebmp);
         bDelete.setEnabled((sharedImages || !tilebmp) && tileSelected);
-        bChangeI.setEnabled((atLeastOneSharedImage || !tilebmp)
-            && tileSelected);
+        // bChangeI.setEnabled((atLeastOneSharedImage || !tilebmp)
+        //     && tileSelected);
         bDuplicate.setEnabled((sharedImages || !tilebmp) && tileSelected);
         tileProperties.setEnabled((sharedImages || !tilebmp) && tileSelected);
         externalBitmapCheck.setEnabled(tilebmp); // Can't turn this off yet
@@ -504,6 +509,8 @@ public class TileDialog extends JDialog
 
         // Update animation buttons
         frameAddButton.setEnabled(currentTile != null);
+        frameChangeImageButton.setEnabled(currentTile != null
+            && currentFrame >= 0 && atLeastOneSharedImage);
         frameCloneButton.setEnabled(currentTile != null && currentFrame >= 0);
         frameDelButton.setEnabled(currentTile != null && currentFrame >= 0
             && currentTile.countAnimationFrames() > 1);
@@ -551,8 +558,8 @@ public class TileDialog extends JDialog
                 }
                 queryTiles();
             }
-        } else if (source == bChangeI) {
-            changeImage();
+//        } else if (source == bChangeI) {
+//            changeImage();
         } else if (source == bNew) {
             newTile();
         } else if (source == bDuplicate) {
@@ -674,6 +681,8 @@ public class TileDialog extends JDialog
                 this.currentFrame + 1);
             ++this.currentFrame;
             this.updateAnimation();
+        } else if (source == frameChangeImageButton) {
+            changeImage();
         }
 
         repaint();

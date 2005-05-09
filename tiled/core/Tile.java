@@ -295,34 +295,6 @@ public class Tile
         return this.getAnimationFrame(n).duration;
     }
 
-    public void insertAnimationFrame(int n, int imageId, int orientation,
-        int d)
-    {
-        this.animation.insertElementAt
-            (new AnimationFrame(imageId, orientation, d), n);
-    }
-
-    public void addAnimationFrame(int imageId, int orientation, int d)
-    {
-        this.animation.addElement(new AnimationFrame(imageId, orientation, d));
-    }
-
-    public void removeAnimationFrame(int n)
-    {
-        this.animation.remove(n);
-    }
-
-    public void setAnimationFrame(int n, int imageId, int orientation, int d)
-    {
-        this.animation.set(n, (new AnimationFrame(imageId, orientation, d)));
-    }
-
-    public void setAppearance(int imageId, int orientation)
-    {
-        this.animation.removeAllElements();
-        this.animation.addElement(new AnimationFrame(imageId, orientation, 1));
-    }
-
     public Image getAnimationFrameImage(int n)
     {
         AnimationFrame frame = this.getAnimationFrame(n);
@@ -330,8 +302,42 @@ public class Tile
             frame.orientation);
     }
 
+    public void insertAnimationFrame(int n, int imageId, int orientation,
+        int d)
+    {
+        this.scaledImage = null;
+        this.animation.insertElementAt
+            (new AnimationFrame(imageId, orientation, d), n);
+    }
+
+    public void addAnimationFrame(int imageId, int orientation, int d)
+    {
+        this.scaledImage = null;
+        this.animation.addElement(new AnimationFrame(imageId, orientation, d));
+    }
+
+    public void removeAnimationFrame(int n)
+    {
+        this.scaledImage = null;
+        this.animation.remove(n);
+    }
+
+    public void setAnimationFrame(int n, int imageId, int orientation, int d)
+    {
+        this.scaledImage = null;
+        this.animation.set(n, (new AnimationFrame(imageId, orientation, d)));
+    }
+
+    public void setAppearance(int imageId, int orientation)
+    {
+        this.scaledImage = null;
+        this.animation.removeAllElements();
+        this.animation.addElement(new AnimationFrame(imageId, orientation, 1));
+    }
+
     public void swapAnimationFrames(int n0, int n1)
     {
+        this.scaledImage = null;
       Object tmp = this.animation.elementAt(n0);
       this.animation.set(n0, this.animation.elementAt(n1));
       this.animation.set(n1, tmp);
