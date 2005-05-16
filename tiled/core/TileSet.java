@@ -77,8 +77,10 @@ public class TileSet
      * @param tileWidth   the tile width
      * @param tileHeight  the tile height
      * @param spacing     the amount of spacing between the tiles
+     * @param createTiles
+     * @throws Exception
      * @see TileSet#importTileBitmap(BufferedImage,int,int,int,boolean)
-     * @exception
+     * 
      */
     public void importTileBitmap(String imgFilename, int tileWidth,
             int tileHeight, int spacing, boolean createTiles) throws Exception
@@ -108,7 +110,7 @@ public class TileSet
      * @param spacing     the amount of spacing between the tiles
      * @param createTiles set to <code>true</code> to have the function create
      *                    Tiles
-     * @exception
+     * @throws Exception
      */
     public void importTileBitmap(BufferedImage tilebmp, int tileWidth,
             int tileHeight, int spacing, boolean createTiles) throws Exception{
@@ -117,6 +119,9 @@ public class TileSet
             throw new Exception("Failed to load " + tilebmpFile);
         }
 
+        GraphicsConfiguration config = 
+            GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
+        
         int iw = tilebmp.getWidth();
         int ih = tilebmp.getHeight();
 
@@ -127,7 +132,10 @@ public class TileSet
                             tileWidth, tileHeight,
                             BufferedImage.TYPE_INT_ARGB);
                     Graphics2D tg = tile.createGraphics();
-
+                    //FIXME: although faster, the following doesn't seem to handle alpha on some platforms...
+                    //Image tile = config.createCompatibleImage(tileWidth, tileHeight);
+                    //Graphics tg = tile.getGraphics();
+                    
                     tg.drawImage(tilebmp, 0, 0,
                             tileWidth, tileHeight,
                             x, y, x + tileWidth, y + tileHeight,
@@ -157,6 +165,8 @@ public class TileSet
      * Sets the standard height of the tiles in this tileset. This is used to
      * calculate the drawing position of tiles with a height above the standard
      * height.
+     * 
+     * @param s Standard height for tiles
      */
     public void setStandardHeight(int s) {
         standardHeight = s;
@@ -233,12 +243,13 @@ public class TileSet
     }
 
     /**
-     * Adds the tile to the setting the id of the tile only if the current
+     * Adds the tile to the set, setting the id of the tile only if the current
      * value of id is -1.
      *
      * @param t the tile to add
+     * @return int The <b>local</b> id of the tile
      */
-    public void addTile(Tile t) {
+    public int addTile(Tile t) {
         if (t.getId() < 0) {
             t.setId(tiles.size());
         }
@@ -254,6 +265,8 @@ public class TileSet
         if (standardWidth < t.getWidth()) {
             standardWidth = t.getWidth();
         }
+
+	return t.getId();
     }
 
     /**
@@ -629,9 +642,8 @@ public class TileSet
         if ((t = Integer.parseInt((String)queryImageId(image))) >= 0) {
             return t;
         } else {
-            // New images should use the first unused image id.  This is
-            // not necessarily equal to images.size.
-            for (t = 0; images.get(Integer.toString(t)) != null; ++t) {}
+            //image ids should be unique.
+            t = images.size();
             addImage(image, Integer.toString(t));
             return t;
         }

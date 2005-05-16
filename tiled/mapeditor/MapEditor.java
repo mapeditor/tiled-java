@@ -34,6 +34,7 @@ import tiled.mapeditor.selection.SelectionLayer;
 import tiled.mapeditor.util.*;
 import tiled.mapeditor.widget.*;
 import tiled.mapeditor.undo.*;
+import tiled.util.TileMergeHelper;
 import tiled.util.TiledConfiguration;
 import tiled.util.Util;
 import tiled.io.MapHelper;
@@ -822,11 +823,25 @@ public class MapEditor implements ActionListener,
                 }
             }
         } else if (command.equals("Merge All")) {
-            while (currentMap.getTotalLayers() > 1) {
-                try {
-                    currentMap.mergeLayerDown(
-                            currentMap.getTotalLayers() - 1);
-                } catch (Exception ex) {}
+            
+            if( JOptionPane.showConfirmDialog(appFrame,
+                    "Do you wish to merge tile images, and create a new tile set?",
+                    "Merge Tiles?", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION ) {
+                TileMergeHelper tmh = new TileMergeHelper(currentMap);
+                int len = currentMap.getTotalLayers();
+                //TODO: Add a dialog option: "Yes, visible only"
+                TileLayer newLayer = tmh.merge(0, len, true);
+                currentMap.removeAllLayers();
+                currentMap.addLayer(newLayer);
+                currentMap.addTileset(tmh.getSet());
+            } else {
+            
+	            while (currentMap.getTotalLayers() > 1) {
+	                try {
+	                    currentMap.mergeLayerDown(
+	                            currentMap.getTotalLayers() - 1);
+	                } catch (Exception ex) {}
+	            }
             }
             setCurrentLayer(0);
         }

@@ -98,13 +98,13 @@ State:      To be written.
 Suggestor:  Rainer Deyke <root@rainerdeyke.com>
 Date:       24/09/04
 Summary:    The ability to flip and rotate individual and blocks of tiles.
-State:      Selections maybe, not the tile images for now.
+State:      Implemented
 
 - 18 --------------------------------------------------------------------------
 Suggestor:  Rainer Deyke <root@rainerdeyke.com>
 Date:       24/09/04
 Summary:    A random brush that randomly picks one of several tiles to draw.
-State:      To be implemented.
+State:      Implemented
 
 - 19 --------------------------------------------------------------------------
 Suggestor:  Rainer Deyke <root@rainerdeyke.com>
@@ -112,14 +112,14 @@ Date:       24/09/04
 Summary:    A block tool that lets me draw blocks of tiles with a single mouse
             drag. I can fake this with select-and-pour, but a block tool would
             be much more convenient.
-State:      Can be implemented using a special brush.
+State:      Implemented
 
 - 20 --------------------------------------------------------------------------
 Suggestor:  Rainer Deyke <root@rainerdeyke.com>
 Date:       24/09/04
 Summary:    The ability to place objects, or failing that, the ability to
             attach properties to individual map cells.
-State:      Object support is planned for 0.5.0
+State:      Object support is planned for 0.6.0
 
 - 21 --------------------------------------------------------------------------
 Suggestor:  Rainer Deyke <root@rainerdeyke.com>

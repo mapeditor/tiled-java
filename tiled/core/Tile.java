@@ -16,7 +16,10 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.*;
 
-
+/**
+ * The core class for our tiles.
+ * 
+ */
 public class Tile
 {
     private Image internalImage, scaledImage;

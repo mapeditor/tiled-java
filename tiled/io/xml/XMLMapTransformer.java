@@ -286,7 +286,7 @@ public class XMLMapTransformer implements MapReader
             TileSet ext;
 
             try {
-                InputStream in = new URL(filename).openStream();
+                InputStream in = new URL(makeUrl(filename)).openStream();
                 ext = unmarshalTilesetFile(in, filename);
             } catch (FileNotFoundException fnf) {
                 warnings.push("ERROR: Could not find external tileset file " +
