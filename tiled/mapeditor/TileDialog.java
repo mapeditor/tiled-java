@@ -443,7 +443,6 @@ public class TileDialog extends JDialog
 
     private void updateAnimation()
     {
-        animationModel.setTile(currentTile);
         if (currentFrame >= 0) {
             this.tileAnimation.changeSelection(this.currentFrame, 0, false,
                 false);
