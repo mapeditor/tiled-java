@@ -126,13 +126,14 @@ public class TileDialog extends JDialog
         Icon imgDup = loadIcon("resources/gimp-duplicate-16.png");
         Icon imgUp = loadIcon("resources/gnome-up.png");
         Icon imgDown = loadIcon("resources/gnome-down.png");
+        Icon imgImage = loadIcon("resources/stock_animation.png");
 
         frameAddButton = createButton(imgAdd, "Add Frame");
         frameDelButton = createButton(imgDel, "Delete Frame");
         frameCloneButton = createButton(imgDup, "Duplicate Frame");
         frameUpButton = createButton(imgUp, "Move Frame Up");
         frameDownButton = createButton(imgDown, "Move Frame Down");
-        frameChangeImageButton = createButton(imgAdd, "Change Image");
+        frameChangeImageButton = createButton(imgImage, "Change Image");
 
         JPanel animationButtons = new JPanel();
         animationButtons.setLayout(new GridBagLayout());
@@ -658,7 +659,24 @@ public class TileDialog extends JDialog
                 queryImages();
             }
         } else if (source == frameAddButton) {
-            // TODO
+            TileImageDialog d;
+            if (currentFrame >= 0) {
+                d = new TileImageDialog(this, tileset,
+                    currentTile.getAnimationFrameImageId(currentFrame),
+                    currentTile.getAnimationFrameOrientation(currentFrame));
+            } else {
+                d = new TileImageDialog(this, tileset);
+            }
+            d.setVisible(true);
+            if (d.getImageId() >= 0) {
+                if (currentFrame < 0) {
+                    currentFrame = currentTile.countAnimationFrames();
+                }
+                currentTile.insertAnimationFrame(currentFrame,
+                    d.getImageId(),
+                    d.getImageOrientation(), 1);
+                this.updateAnimation();
+            }
         } else if (source == frameDelButton) {
             this.currentTile.removeAnimationFrame(this.currentFrame);
             this.updateAnimation();
