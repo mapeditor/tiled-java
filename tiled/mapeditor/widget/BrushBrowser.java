@@ -39,28 +39,17 @@ public class BrushBrowser extends JPanel
     }
 
     private void init() {
-        int iters = 7;
-        int n = 0, n1 = 1;
+        int[] dimensions = { 1, 2, 4, 8, 12, 20 };
 
-        // Use Fibonacci to create a sampling of brushes...
-        for (int i = 0; i < iters; i++) {
-            int dim = n + n1;
-            int hold = n1;
-            n1 = dim;
-            n = hold;
+        for (int n = 1; n < dimensions.length; n++) {
             ShapeBrush b = new ShapeBrush();
-            b.makeCircleBrush(dim / 2);
+            b.makeCircleBrush(dimensions[n] / 2);
             brushes.add(b);
         }
 
-        n = 0; n1 = 1;
-        for(int i = 0; i < iters; i++) {
-            int dim = n + n1;
-            int hold = n1;
-            n1 = dim;
-            n = hold;
+        for (int n = 0; n < dimensions.length; n++) {
             ShapeBrush b = new ShapeBrush();
-            b.makeQuadBrush(new Rectangle(0, 0, dim, dim));
+            b.makeQuadBrush(new Rectangle(0, 0, dimensions[n], dimensions[n]));
             brushes.add(b);
         }
     }
@@ -82,7 +71,7 @@ public class BrushBrowser extends JPanel
 
         if (brushes.indexOf(selectedBrush) > 0) {
             int index = brushes.indexOf(selectedBrush);
-            int brushesInRow = getPreferredSize().width / maxWidth;
+            int brushesInRow = getWidth() / maxWidth;
             int bx = index % brushesInRow;
             int by = index / brushesInRow;
             g.drawRect(bx * maxWidth, by * maxWidth, maxWidth, maxWidth);
@@ -120,7 +109,7 @@ public class BrushBrowser extends JPanel
     }
 
     public void findSelected(int x, int y) {
-        int perLine = this.getPreferredSize().width / maxWidth;
+        int perLine = getWidth() / maxWidth;
         int selectedIndex = (y / maxWidth) * perLine + x / maxWidth;
 
         try {

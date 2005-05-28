@@ -12,13 +12,8 @@
 
 package tiled.mapeditor;
 
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.*;
+import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -42,8 +37,9 @@ import tiled.mapeditor.widget.VerticalStaticJPanel;
 import tiled.util.TiledConfiguration;
 
 
-public class BrushDialog extends JFrame implements ActionListener,
-       ChangeListener, MouseListener, PropertyChangeListener, ListSelectionListener
+public class BrushDialog extends JDialog implements ActionListener,
+       ItemListener, ChangeListener, MouseListener, PropertyChangeListener,
+       ListSelectionListener
 {
     private JFrame parent;
     private AbstractBrush myBrush;
@@ -60,7 +56,7 @@ public class BrushDialog extends JFrame implements ActionListener,
     public BrushDialog(MapEditor editor, JFrame parent,
             AbstractBrush currentBrush)
     {
-        super("Brush Options");
+        super(parent, "Brush Options", false);
         this.parent = parent;
         myBrush = currentBrush;
         this.editor = editor;
@@ -71,74 +67,82 @@ public class BrushDialog extends JFrame implements ActionListener,
     }
 
     private JPanel createShapePanel() {
-        JPanel shapePanel = new JPanel();
-        JPanel opts = new JPanel();
-        JLabel size = new JLabel("Brush size: ");
-
-        brushSize = new IntegerSpinner(1, 1);
-        if (myBrush != null)
-            brushSize.setValue(myBrush.getBounds().width);
-        brushSize.addChangeListener(this);
-        brushSize.setToolTipText("Sets the size of the brush in tiles");
+        // Brush presets
         brushes = new BrushBrowser();
         brushes.addMouseListener(this);
         JScrollPane brushScrollPane = new JScrollPane(brushes);
-        brushScrollPane.setPreferredSize(new Dimension(150, 150));
+        brushScrollPane.setPreferredSize(new Dimension(100, 100));
         brushes.addPropertyChangeListener(this);
-
         brushes.setSelectedBrush(myBrush);
-        shapePanel.add(brushScrollPane);
 
-        opts.setLayout(new GridBagLayout());
-        GridBagConstraints c = new GridBagConstraints();
-        c.fill = GridBagConstraints.BOTH;
-        c.weightx = 1; c.weighty = 1;
-        opts.add(size, c);
-        c.gridx=1;
-        opts.add(brushSize,c);
+        JPanel presets = new JPanel();
+        presets.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createTitledBorder("Presets"),
+                    BorderFactory.createEmptyBorder(0, 5, 5, 5)));
+        presets.setLayout(new GridLayout(1, 1));
+        presets.add(brushScrollPane);
 
-        shapePanel.add(opts);
+        // Brush size
+        brushSize = new IntegerSpinner(1, 1);
+        if (myBrush != null) {
+            brushSize.setValue(myBrush.getBounds().width);
+        }
+        brushSize.addChangeListener(this);
+        brushSize.setToolTipText("Sets the size of the brush in tiles");
 
-        return shapePanel;
-    }
-
-    private JPanel createOptionsPanel() {
-        JPanel optionsPanel = new VerticalStaticJPanel();
-        cbRandomBrush = new JCheckBox("Random");
-        cbRandomBrush.setToolTipText(
-                "Make brush paint randomly within the shape area");
-        cbRandomBrush.addChangeListener(this);
-        cbRandomBrush.addActionListener(this);
-        sRandomAmount = new JSlider();
-        sRandomAmount.setToolTipText(
-                "The amount of area to fill with randomness");
-        sRandomAmount.addChangeListener(this);
-        JLabel affected = new JLabel("Affected layers");
+        // Number of affected layers
         affectLayers = new IntegerSpinner(myBrush.getAffectedLayers(),1);
         affectLayers.addChangeListener(this);
 
-        optionsPanel.setLayout(new GridBagLayout());
-        GridBagConstraints c = new GridBagConstraints();
-        c.anchor = GridBagConstraints.NORTH;
-        c.fill = GridBagConstraints.NONE;
-        c.weightx = 1; c.weighty = 1;
-        optionsPanel.add(affected,c);
-        //c.fill = GridBagConstraints.HORIZONTAL;
-        c.gridx = 1;
-        optionsPanel.add(affectLayers,c);
-        c.gridx = 0; c.gridy = 1;
-        optionsPanel.add(cbRandomBrush,c);
-        c.gridx = 1;
-        optionsPanel.add(sRandomAmount,c);
+        // Randomize tile placement
+        cbRandomBrush = new JCheckBox("Random");
+        cbRandomBrush.setToolTipText(
+                "Make brush paint randomly within the shape area");
+        cbRandomBrush.addItemListener(this);
+        sRandomAmount = new JSlider();
+        sRandomAmount.setPreferredSize(new Dimension(
+                    50, sRandomAmount.getPreferredSize().height));
+        sRandomAmount.setToolTipText(
+                "The amount of area to fill with randomness");
+        sRandomAmount.addChangeListener(this);
 
-        return optionsPanel;
+        // Brush options section
+        JPanel opts = new VerticalStaticJPanel();
+        opts.setLayout(new GridBagLayout());
+        opts.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createTitledBorder("Options"),
+                    BorderFactory.createEmptyBorder(0, 5, 5, 5)));
+        GridBagConstraints c = new GridBagConstraints();
+        c.fill = GridBagConstraints.NONE;
+        c.anchor = GridBagConstraints.NORTHWEST;
+        c.weightx = 0;
+        c.insets = new Insets(0, 0, 5, 0);
+        opts.add(new JLabel("Brush size: "), c);
+        c.gridy = 1;
+        opts.add(new JLabel("Affected layers: "), c);
+        c.gridy = 2;
+        opts.add(cbRandomBrush, c);
+        c.gridy = 0; c.gridx = 1; c.weightx = 0.3;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        opts.add(brushSize, c);
+        c.gridy = 1;
+        opts.add(affectLayers, c);
+        c.gridy = 2;
+        opts.add(sRandomAmount, c);
+
+        JPanel shapePanel = new JPanel();
+        shapePanel.setLayout(new BoxLayout(shapePanel, BoxLayout.Y_AXIS));
+        shapePanel.add(presets);
+        shapePanel.add(opts);
+
+        return shapePanel;
     }
 
     private JPanel createCustomPanel() {
         JPanel customPanel = new JPanel();
         
         mmv = new MiniMapViewer();
-        if(myBrush instanceof CustomBrush) {
+        if (myBrush instanceof CustomBrush) {
             //mmv.setView(((CustomBrush)myBrush));
         }
         
@@ -174,10 +178,7 @@ public class BrushDialog extends JFrame implements ActionListener,
     }
 
     private void init() {
-        JTabbedPane tabs = new JTabbedPane(JTabbedPane.TOP);
-        tabs.add("Shape", createShapePanel());
-        tabs.add("Options", createOptionsPanel());
-        tabs.add("Custom", createCustomPanel());
+        createCustomPanel();
 
         bOk = new JButton("OK");
         bApply = new JButton("Apply");
@@ -200,7 +201,7 @@ public class BrushDialog extends JFrame implements ActionListener,
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        mainPanel.add(tabs);
+        mainPanel.add(createShapePanel());
         mainPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         mainPanel.add(buttons);
 
@@ -217,42 +218,41 @@ public class BrushDialog extends JFrame implements ActionListener,
 
     private void createFromOptions() {
         Tile t = null;
-        if (myBrush instanceof ShapeBrush)
-            t = ((ShapeBrush)myBrush).getTile();
 
-        if (cbRandomBrush.isSelected()) {
-            ShapeBrush sel = (ShapeBrush)brushes.getSelectedBrush();
-            sel.setSize(((Integer)brushSize.getValue()).intValue());
-            myBrush = new RandomBrush(sel);
-            ((RandomBrush)myBrush).setRatio(sRandomAmount.getValue() / (double)sRandomAmount.getMaximum());
-            ((ShapeBrush)myBrush).setTile(t);
-        } else {
-            ShapeBrush sel = (ShapeBrush)brushes.getSelectedBrush();
-            sel.setSize(((Integer)brushSize.getValue()).intValue());
-            myBrush = new ShapeBrush(sel);
-            ((ShapeBrush)myBrush).setTile(t);
+        if (myBrush instanceof ShapeBrush) {
+            t = ((ShapeBrush)myBrush).getTile();
         }
 
-        myBrush.setAffectedLayers(((Integer)affectLayers.getValue()).intValue());
+        ShapeBrush sel = (ShapeBrush)brushes.getSelectedBrush();
+        sel.setSize(((Integer)brushSize.getValue()).intValue());
+
+        if (cbRandomBrush.isSelected()) {
+            RandomBrush randomBrush = new RandomBrush(sel);
+            myBrush = new RandomBrush(sel);
+            randomBrush.setRatio(
+                    sRandomAmount.getValue() / (double)sRandomAmount.getMaximum());
+        } else {
+            myBrush = new ShapeBrush(sel);
+        }
+
+        ((ShapeBrush)myBrush).setTile(t);
+        myBrush.setAffectedLayers(
+                ((Integer)affectLayers.getValue()).intValue());
 
         update();
     }
 
     private void update() {
-        sRandomAmount.setEnabled(false);
-        if (myBrush instanceof CustomBrush) {  //CUSTOM BRUSH
+        if (myBrush instanceof CustomBrush) {  // Custom brush
             affectLayers.setEnabled(false);
             cbRandomBrush.setEnabled(false);
-            sRandomAmount.setEnabled(false);
-        } else if (myBrush instanceof RandomBrush) {  //RANDOM BRUSH
+        } else if (myBrush instanceof RandomBrush) {  // Random brush
             cbRandomBrush.setSelected(true);
-            sRandomAmount.setValue((int)(((RandomBrush)myBrush).getRatio()*100));
+            sRandomAmount.setValue(
+                    (int)(((RandomBrush)myBrush).getRatio()*100));
         }
 
-        //SPECIAL SETTINGS FOR NON-CUSTOM BRUSHES
-        if (!(myBrush instanceof CustomBrush)) {
-            sRandomAmount.setEnabled(cbRandomBrush.isSelected());
-        }
+        sRandomAmount.setEnabled(cbRandomBrush.isSelected());
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -271,10 +271,7 @@ public class BrushDialog extends JFrame implements ActionListener,
         else if (source == bCancel) {
             dispose();
         }
-        else if (source == cbRandomBrush) {
-            sRandomAmount.setEnabled(cbRandomBrush.isSelected());
-        }
-        else if(e.getActionCommand().equals("Load...")) {
+        else if (e.getActionCommand().equals("Load...")) {
             try {
                 openMap();
                 //mmv.setView(((CustomBrush)myBrush));
@@ -289,6 +286,16 @@ public class BrushDialog extends JFrame implements ActionListener,
     }
 
     public void stateChanged(ChangeEvent e) {
+        bApply.setEnabled(true);
+    }
+
+    public void itemStateChanged(ItemEvent event) {
+        Object source = event.getItemSelectable();
+
+        if (source == cbRandomBrush) {
+            sRandomAmount.setEnabled(cbRandomBrush.isSelected());
+        }
+
         bApply.setEnabled(true);
     }
 
