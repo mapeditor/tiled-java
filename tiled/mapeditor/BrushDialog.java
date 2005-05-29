@@ -38,10 +38,9 @@ import tiled.util.TiledConfiguration;
 
 
 public class BrushDialog extends JDialog implements ActionListener,
-       ItemListener, ChangeListener, MouseListener, PropertyChangeListener,
+       ItemListener, ChangeListener, PropertyChangeListener,
        ListSelectionListener
 {
-    private JFrame parent;
     private AbstractBrush myBrush;
     private MapEditor editor;
 
@@ -57,19 +56,19 @@ public class BrushDialog extends JDialog implements ActionListener,
             AbstractBrush currentBrush)
     {
         super(parent, "Brush Options", false);
-        this.parent = parent;
         myBrush = currentBrush;
         this.editor = editor;
 
         init();
         update();
         pack();
+
+        setLocationRelativeTo(parent);
     }
 
     private JPanel createShapePanel() {
         // Brush presets
         brushes = new BrushBrowser();
-        brushes.addMouseListener(this);
         JScrollPane brushScrollPane = new JScrollPane(brushes);
         brushScrollPane.setPreferredSize(new Dimension(100, 100));
         brushes.addPropertyChangeListener(this);
@@ -91,7 +90,7 @@ public class BrushDialog extends JDialog implements ActionListener,
         brushSize.setToolTipText("Sets the size of the brush in tiles");
 
         // Number of affected layers
-        affectLayers = new IntegerSpinner(myBrush.getAffectedLayers(),1);
+        affectLayers = new IntegerSpinner(myBrush.getAffectedLayers(), 1);
         affectLayers.addChangeListener(this);
 
         // Randomize tile placement
@@ -209,13 +208,6 @@ public class BrushDialog extends JDialog implements ActionListener,
         getRootPane().setDefaultButton(bOk);
     }
 
-    public void setVisible(boolean visible) {
-        if (visible) {
-            setLocationRelativeTo(parent);
-        }
-        super.setVisible(visible);
-    }
-
     private void createFromOptions() {
         Tile t = null;
 
@@ -228,9 +220,10 @@ public class BrushDialog extends JDialog implements ActionListener,
 
         if (cbRandomBrush.isSelected()) {
             RandomBrush randomBrush = new RandomBrush(sel);
-            myBrush = new RandomBrush(sel);
             randomBrush.setRatio(
-                    sRandomAmount.getValue() / (double)sRandomAmount.getMaximum());
+                    sRandomAmount.getValue() /
+                    (double)sRandomAmount.getMaximum());
+            myBrush = randomBrush;
         } else {
             myBrush = new ShapeBrush(sel);
         }
@@ -249,7 +242,7 @@ public class BrushDialog extends JDialog implements ActionListener,
         } else if (myBrush instanceof RandomBrush) {  // Random brush
             cbRandomBrush.setSelected(true);
             sRandomAmount.setValue(
-                    (int)(((RandomBrush)myBrush).getRatio()*100));
+                    (int)(((RandomBrush)myBrush).getRatio() * 100));
         }
 
         sRandomAmount.setEnabled(cbRandomBrush.isSelected());
@@ -299,36 +292,19 @@ public class BrushDialog extends JDialog implements ActionListener,
         bApply.setEnabled(true);
     }
 
-    public void mouseClicked(MouseEvent e) {
-        brushes.findSelected(e.getX(), e.getY());
-        Brush b = brushes.getSelectedBrush();
-        if (b != null)
-            brushSize.setValue(b.getBounds().width);
-    }
-
-    public void mousePressed(MouseEvent e) {
-        brushes.findSelected(e.getX(), e.getY());
-        Brush b = brushes.getSelectedBrush();
-        if (b != null)
-            brushSize.setValue(b.getBounds().width);
-    }
-
-    public void mouseReleased(MouseEvent e) {
-    }
-
-    public void mouseEntered(MouseEvent e) {
-    }
-
-    public void mouseExited(MouseEvent e) {
-    }
-
     public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equals("selectedbrush")) {
+            Brush b = brushes.getSelectedBrush();
+            if (b != null) {
+                brushSize.setValue(b.getBounds().width);
+            }
+        }
+
         bApply.setEnabled(true);
     }
 
     public void valueChanged(ListSelectionEvent e) {
         // TODO Auto-generated method stub
-        
     }
     
     private void openMap() throws Exception {
@@ -343,7 +319,8 @@ public class BrushDialog extends JDialog implements ActionListener,
         JFileChooser ch = new JFileChooser(startLocation);
 
         try {
-            MapReader readers[] = (MapReader[]) PluginClassLoader.getInstance().getReaders();
+            MapReader readers[] =
+                (MapReader[])PluginClassLoader.getInstance().getReaders();
             for(int i = 0; i < readers.length; i++) {
                 ch.addChoosableFileFilter(new TiledFileFilter(
                             readers[i].getFilter(), readers[i].getName()));
@@ -361,7 +338,8 @@ public class BrushDialog extends JDialog implements ActionListener,
         
         int ret = ch.showOpenDialog(this);
         if (ret == JFileChooser.APPROVE_OPTION) {
-            myBrush = new CustomBrush(MapHelper.loadMap(ch.getSelectedFile().getAbsolutePath()));
+            myBrush = new CustomBrush(
+                    MapHelper.loadMap(ch.getSelectedFile().getAbsolutePath()));
         }
     }
 }

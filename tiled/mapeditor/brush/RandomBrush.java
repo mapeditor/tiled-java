@@ -42,7 +42,7 @@ public class RandomBrush extends ShapeBrush
         }
     }
 
-    public void setRatio(double r){
+    public void setRatio(double r) {
         ratio = r;
     }
 

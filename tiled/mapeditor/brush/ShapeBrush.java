@@ -57,7 +57,7 @@ public class ShapeBrush extends AbstractBrush
      */
     public void makeQuadBrush(Rectangle r) {
         shape = new Area(new Rectangle2D.Double(r.x, r.y, r.width, r.height));
-        this.resize(r.width,r.height,0,0);
+        this.resize(r.width, r.height, 0, 0);
     }
 
     public void makePolygonBrush(Polygon p) {
@@ -66,11 +66,11 @@ public class ShapeBrush extends AbstractBrush
     
     public void setSize(int s) {
         if (shape.isRectangular()) {
-            makeQuadBrush(new Rectangle(0,0,s,s));
+            makeQuadBrush(new Rectangle(0, 0, s, s));
         } else if (!shape.isPolygonal()) {
             makeCircleBrush(s/2);
-        }else{
-            //TODO: scale the polygon brush
+        } else {
+            // TODO: scale the polygon brush
         }
     }
     

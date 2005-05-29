@@ -13,16 +13,20 @@
 package tiled.mapeditor.widget;
 
 import java.awt.*;
+import java.awt.event.MouseEvent;
 import java.util.Iterator;
 import java.util.LinkedList;
 
 import javax.swing.JPanel;
+import javax.swing.event.MouseInputListener;
 
 import tiled.mapeditor.brush.Brush;
 import tiled.mapeditor.brush.ShapeBrush;
 
-
-public class BrushBrowser extends JPanel
+/**
+ * A panel that allows selecting a brush from a set of presets.
+ */
+public class BrushBrowser extends JPanel implements MouseInputListener
 {
     private int maxWidth = 25;
     private Brush selectedBrush;
@@ -31,14 +35,22 @@ public class BrushBrowser extends JPanel
     public BrushBrowser() {
         super();
         brushes = new LinkedList();
-        init();
+        initPresets();
+        addMouseListener(this);
+        addMouseMotionListener(this);
     }
 
     public Dimension getPreferredSize() {
-        return new Dimension(maxWidth * 5, 150);
+        int perLine = getWidth() / maxWidth;
+        if (perLine > 0) {
+            int lines = (brushes.size() + (perLine - 1)) / perLine;
+            return new Dimension(maxWidth, maxWidth * lines);
+        } else {
+            return new Dimension(maxWidth, 150);
+        }
     }
 
-    private void init() {
+    private void initPresets() {
         int[] dimensions = { 1, 2, 4, 8, 12, 20 };
 
         for (int n = 1; n < dimensions.length; n++) {
@@ -54,14 +66,8 @@ public class BrushBrowser extends JPanel
         }
     }
 
-    public void setSpacing(int w) {
-        maxWidth = w;
-    }
-
     public void paint(Graphics g) {
         Rectangle clipRect = g.getClipBounds();
-        int x = 0, y = 0;
-
         g.setColor(Color.white);
         g.fillRect(clipRect.x, clipRect.y, clipRect.width, clipRect.height);
 
@@ -69,24 +75,22 @@ public class BrushBrowser extends JPanel
                                          RenderingHints.VALUE_ANTIALIAS_ON);
         g.setColor(Color.black);
 
-        if (brushes.indexOf(selectedBrush) > 0) {
-            int index = brushes.indexOf(selectedBrush);
-            int brushesInRow = getWidth() / maxWidth;
-            int bx = index % brushesInRow;
-            int by = index / brushesInRow;
-            g.drawRect(bx * maxWidth, by * maxWidth, maxWidth, maxWidth);
-        }
-
-        // DRAW THE STANDARD SIZES
+        // Draw the brushes
         Iterator itr = brushes.iterator();
+        int x = 0, y = 0;
         while (itr.hasNext()) {
-            Brush b = (Brush) itr.next();
+            Brush b = (Brush)itr.next();
             Rectangle bb = b.getBounds();
             b.paint(g,
                     x + ((maxWidth / 2) - bb.width / 2),
                     y + ((maxWidth / 2) - bb.width / 2));
+
+            if (b == selectedBrush) {
+                g.drawRect(x, y, maxWidth, maxWidth);
+            }
+
             x += maxWidth;
-            if (x + maxWidth > clipRect.width) {
+            if (x + maxWidth > getWidth()) {
                 x = 0;
                 y += maxWidth;
             }
@@ -108,14 +112,37 @@ public class BrushBrowser extends JPanel
         return selectedBrush;
     }
 
-    public void findSelected(int x, int y) {
+    public void mouseClicked(MouseEvent e) {
         int perLine = getWidth() / maxWidth;
-        int selectedIndex = (y / maxWidth) * perLine + x / maxWidth;
+        int x = e.getX() / maxWidth;
+        int y = e.getY() / maxWidth;
+        int selectedIndex =
+            y * perLine + ((x > (perLine - 1)) ? (perLine - 1) : x);
 
-        try {
+        if (selectedIndex >= 0 && selectedIndex < brushes.size()) {
+            Brush previousBrush = selectedBrush;
             selectedBrush = (Brush)brushes.get(selectedIndex);
-            this.firePropertyChange("selectedbrush", null, null);
+            firePropertyChange("selectedbrush", previousBrush, selectedBrush);
             repaint();
-        } catch (IndexOutOfBoundsException e) {}
+        }
+    }
+
+    public void mousePressed(MouseEvent e) {
+    }
+
+    public void mouseReleased(MouseEvent e) {
+    }
+
+    public void mouseEntered(MouseEvent e) {
+    }
+
+    public void mouseExited(MouseEvent e) {
+    }
+
+    public void mouseDragged(MouseEvent e) {
+        mouseClicked(e);
+    }
+
+    public void mouseMoved(MouseEvent e) {
     }
 }

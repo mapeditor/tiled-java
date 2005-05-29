@@ -8,16 +8,19 @@
 * Added the ability to merge tile images when layers are merged
 * Added selection addition and substraction via Shift and Ctrl respectively
 + Added ability to select multiple layers from layer table
-* Improved the drawing speed thanks to some thorough testing and suggestions (Jerome Blouin)
+* Improved the drawing speed thanks to some thorough testing and suggestions
+  (Jerome Blouin)
 * Improved transformation so that it respects selections
 * Fixed the "Save As Image" feature to use current zoom level
 * Fixed drawing on invisible layers
 * Fixed selection rectangle to include one more tile
 * Fixed loading of plugins that only do export and no import
 * Fixed removing tilesets in the Tileset Manager
-+ Fixed image loading to ensure hardware acceleration is used in Java 1.4 and above (Jerome Blouin)
++ Fixed image loading to ensure hardware acceleration is used in Java 1.4 and
+  above (Jerome Blouin)
 * Fixed a NullPointerException when loading TSX files as imported tilesets
-* Fixed an "Unsupported protocol" error when loading TMX files which referenced an external tileset
+* Fixed an "Unsupported protocol" error when loading TMX files which referenced
+  an external tileset
 
 0.5.0 - December 14th, 2004
 
