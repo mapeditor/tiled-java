@@ -18,7 +18,7 @@ import java.awt.geom.Area;
 
 /**
  * A TileLayer is a specialized MapLayer, used for tracking two dimensional
- * tile data. 
+ * tile data.
  */
 public class TileLayer extends MapLayer
 {
@@ -33,7 +33,7 @@ public class TileLayer extends MapLayer
 
     /**
      * Construct a TileLayer from the given width and height
-     * 
+     *
      * @param w width in tiles
      * @param h height in tiles
      */
@@ -42,8 +42,9 @@ public class TileLayer extends MapLayer
     }
 
     /**
-     * 
-     * @param r
+     * Create a tile layer using the given bounds.
+     *
+     * @param r the bounds of the tile layer.
      */
     public TileLayer(Rectangle r) {
         super(r);
@@ -51,7 +52,7 @@ public class TileLayer extends MapLayer
 
     /**
      * Copy constructor. Copies all data from given TileLayer
-     * 
+     *
      * @param ml
      */
     public TileLayer(TileLayer ml) {
@@ -83,7 +84,7 @@ public class TileLayer extends MapLayer
 
     /**
      * Rotates the layer by the given Euler angle.
-     * 
+     *
      * @param angle The Euler angle (0-360) to rotate the layer array data by.
      * @see MapLayer#rotate(int)
      */
@@ -157,7 +158,7 @@ public class TileLayer extends MapLayer
     }
 
     /**
-     * Checks to see if the given Tile is used anywhere in the layer
+     * Checks to see if the given Tile is used anywhere in the layer.
      *
      * @param t a Tile object to check for
      * @return <code>true</code> if the Tile is used at least once,
@@ -233,7 +234,7 @@ public class TileLayer extends MapLayer
      * @param tile the Tile to be removed
      * @throws Exception
      */
-    public void removeTile(Tile tile) throws Exception{
+    public void removeTile(Tile tile) throws Exception {
         if (getLocked()) {
             throw new Exception(
                     "Attempted to remove tile when this layer is locked.");
@@ -242,7 +243,7 @@ public class TileLayer extends MapLayer
         for (int y = 0; y < bounds.height; y++) {
             for (int x = 0; x < bounds.width; x++) {
                 if (map[y][x] == tile) {
-                    map[y][x] = myMap.getNullTile();
+                    setTileAt(x + bounds.x, y + bounds.y, myMap.getNullTile());
                 }
             }
         }
@@ -258,8 +259,9 @@ public class TileLayer extends MapLayer
      */
     public void setTileAt(int tx, int ty, Tile ti) {
         try {
-            if (canEdit())
+            if (canEdit()) {
                 map[ty - bounds.y][tx - bounds.x] = ti;
+            }
         } catch (ArrayIndexOutOfBoundsException e) {
             // Silently ignore out of bounds exception
         }
@@ -267,7 +269,7 @@ public class TileLayer extends MapLayer
 
     /**
      * Returns the tile at the specified position.
-     * 
+     *
      * @param tx Tile-space x coordinate
      * @param ty Tile-space y coordinate
      * @return tile at position (tx, ty) or <code>null</code> when (tx, ty) is
@@ -286,13 +288,14 @@ public class TileLayer extends MapLayer
      * the given tile.
      *
      * @param t the {@link tiled.core.Tile} to look for
-     * @return A java.awt.Point instance of the first instance of t, or <code>null</code> if it is not found
+     * @return A java.awt.Point instance of the first instance of t, or
+     *         <code>null</code> if it is not found
      */
     public Point locationOf(Tile t) {
         for (int y = bounds.y; y < bounds.height + bounds.y; y++) {
             for (int x = bounds.x; x < bounds.width + bounds.x; x++) {
                 if (getTileAt(x, y) == t) {
-                    return new Point(x,y);
+                    return new Point(x, y);
                 }
             }
         }

@@ -22,7 +22,8 @@ import tiled.core.*;
 public class TilesetTableModel extends AbstractTableModel
 {
     private Map map;
-    private String[] columnNames = { "Tileset name", "Usage count" };
+    //private String[] columnNames = { "Tileset name", "Usage count" };
+    private String[] columnNames = { "Tileset name" };
 
     public TilesetTableModel(Map map) {
         this.map = map;
@@ -100,6 +101,7 @@ public class TilesetTableModel extends AbstractTableModel
                 }
             }
         }
+
         return used;
     }
 }

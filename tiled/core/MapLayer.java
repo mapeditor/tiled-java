@@ -67,7 +67,7 @@ public abstract class MapLayer implements Cloneable
     public MapLayer(MapLayer ml) {
         this(ml.getBounds());
         name = ml.getName();
-        
+
         // TODO: Copy properties
     }
 
@@ -247,7 +247,7 @@ public abstract class MapLayer implements Cloneable
     public abstract void maskedCopyFrom(MapLayer other, Area mask);
 
     public abstract MapLayer createDiff(MapLayer ml);
-    
+
     /**
      * Unlike mergeOnto, copyTo includes the null tile when merging
      *
@@ -258,7 +258,7 @@ public abstract class MapLayer implements Cloneable
     public abstract void copyTo(MapLayer other);
 
     public abstract boolean isUsed(Tile t);
-    
+
     /**
      * Creates a copy of this layer.
      *
@@ -312,7 +312,7 @@ public abstract class MapLayer implements Cloneable
     public Properties getProperties() {
         return properties;
     }
-    
+
     public boolean canEdit() {
         return !getLocked() && isVisible();
     }

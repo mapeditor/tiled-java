@@ -75,7 +75,7 @@ public class TilesetManager extends JDialog implements ActionListener,
         GridBagConstraints c = new GridBagConstraints();
         c.fill = GridBagConstraints.BOTH;
         c.gridy = 0;
-        c.gridwidth = 6;
+        c.gridwidth = 7;
         c.gridheight = 1;
         c.weightx = 1;
         c.weighty = 1;

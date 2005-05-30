@@ -18,7 +18,6 @@ import java.util.*;
 
 /**
  * The core class for our tiles.
- * 
  */
 public class Tile
 {
@@ -26,7 +25,8 @@ public class Tile
     private int id = -1;
     private int stdHeight;
     private int groundHeight;          // Height above/below ground
-    private int tileImageId = -1, tileOrientation;
+    private int tileImageId = -1;
+    private int tileOrientation;
     private double myZoom = 1.0;
     private Properties properties;
     private TileSet tileset;
@@ -120,7 +120,7 @@ public class Tile
     /**
      * Returns the {@link tiled.core.TileSet} that this tile is
      * part of.
-     * 
+     *
      * @return TileSet
      */
     public TileSet getTileSet() {
@@ -132,35 +132,35 @@ public class Tile
      * specified zoom level. It will attempt to use a cached copy, 
      * but will rescale if the requested zoom does not equal the 
      * current cache zoom.
-     * 
+     *
      * @param g Graphics instance to draw to
      * @param x x-coord to draw tile at
      * @param y y-coord to draw tile at
      * @param zoom Zoom level to draw the tile
      */
     public void drawRaw(Graphics g, int x, int y, double zoom) {
-            if (scaledImage == null || zoom != myZoom) {
-                scaledImage = getScaledImage(zoom);
-                myZoom = zoom;
-                if (scaledImage != null) {
-                    MediaTracker mediaTracker = new MediaTracker(new Canvas());
-                    mediaTracker.addImage(scaledImage, 0);
-                    try {
-                        mediaTracker.waitForID(0);
-                    }
-                    catch (InterruptedException ie) {
-                        System.err.println(ie);
-                        return;
-                    }
-                    mediaTracker.removeImage(scaledImage);
-                    g.drawImage(scaledImage, x, y, null);
-                } else {
-                    // TODO: Allow drawing IDs when no image data exists as a
-                    // config option
+        if (scaledImage == null || zoom != myZoom) {
+            scaledImage = getScaledImage(zoom);
+            myZoom = zoom;
+            if (scaledImage != null) {
+                MediaTracker mediaTracker = new MediaTracker(new Canvas());
+                mediaTracker.addImage(scaledImage, 0);
+                try {
+                    mediaTracker.waitForID(0);
                 }
-            } else {
+                catch (InterruptedException ie) {
+                    System.err.println(ie);
+                    return;
+                }
+                mediaTracker.removeImage(scaledImage);
                 g.drawImage(scaledImage, x, y, null);
+            } else {
+                // TODO: Allow drawing IDs when no image data exists as a
+                // config option
             }
+        } else {
+            g.drawImage(scaledImage, x, y, null);
+        }
     }
 
     public void draw(Graphics g, int x, int y, double zoom) {
@@ -210,7 +210,7 @@ public class Tile
 
     /**
      * Returns the tile image for this Tile.
-     * 
+     *
      * @return Image
      */
     public Image getImage() {

@@ -5,7 +5,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
@@ -26,16 +26,15 @@ public class MultilayerPlane
     protected int widthInTiles = 0, heightInTiles = 0;
 
     /**
-     * Default constructor
-     *
+     * Default constructor.
      */
     public MultilayerPlane() {
         layers = new Vector();
     }
 
     /**
-     * Construct a MultilayerPlane to the specified dimensions
-     * 
+     * Construct a MultilayerPlane to the specified dimensions.
+     *
      * @param width
      * @param height
      */
@@ -47,6 +46,7 @@ public class MultilayerPlane
 
     /**
      * Returns the total number of layers.
+     *
      * @return the size of the layer vector
      */
     public int getTotalLayers() {
@@ -57,7 +57,7 @@ public class MultilayerPlane
     /**
      * Returns a <code>Rectangle</code> representing the maximum bounds in
      * tiles.
-     * 
+     *
      * @return a Rectangle
      */
     public Rectangle getBounds() {
@@ -66,7 +66,7 @@ public class MultilayerPlane
 
     /**
      * Adds a layer to the map.
-     * 
+     *
      * @param l The {@link MapLayer} to add
      * @return the layer passed to the function
      */
@@ -77,7 +77,7 @@ public class MultilayerPlane
 
     /**
      * Adds the MapLayer <code>l</code> after the MapLayer <code>after</code>.
-     * 
+     *
      * @param l the layer to add
      * @param after specifies the layer to add <code>l</code> after 
      */
@@ -87,38 +87,36 @@ public class MultilayerPlane
 
     /**
      * Add a layer at the specified index, which should be a valid.
-     * 
-     * @param index
-     * @param layer
+     *
+     * @param index the position at which to add the layer
+     * @param layer the layer to add
      */
     public void addLayer(int index, MapLayer layer) {
         layers.add(index, layer);
     }
 
     /**
-     * Adds all the layers in a given java.util.Collection
-     * 
-     * @param c A collection of layers to add
+     * Adds all the layers in a given java.util.Collection.
+     *
+     * @param c a collection of layers to add
      */
     public void addAllLayers(Collection c) {
         layers.addAll(c);
     }
 
     /**
-     * Removes the layer at the specified index. Layers above this layer
-     * will move down to fill the gap.
+     * Removes the layer at the specified index. Layers above this layer will
+     * move down to fill the gap.
      *
-     * @param index the index of the layer to be removed.
-     * @return MapLayer The layer that was removed from the list
+     * @param index the index of the layer to be removed
+     * @return the layer that was removed from the list
      */
     public MapLayer removeLayer(int index) {
-        MapLayer layer = (MapLayer)layers.remove(index);
-        return layer;
+        return (MapLayer)layers.remove(index);
     }
 
     /**
-     * Clears the layer vector, thereby removing all layers from 
-     * the plane.
+     * Removes all layers from the plane.
      */
     public void removeAllLayers() {
         layers.removeAllElements();
@@ -126,25 +124,25 @@ public class MultilayerPlane
 
     /**
      * Returns the layer vector.
-     * 
-     * @return Vector The layer vector
+     *
+     * @return Vector the layer vector
      */
     public Vector getLayerVector() {
         return layers;
     }
 
     /**
-     * Sets the layer vector to the given java.util.Vector
-     * 
-     * @param layers
+     * Sets the layer vector to the given java.util.Vector.
+     *
+     * @param layers the new set of layers
      */
     public void setLayerVector(Vector layers) {
         this.layers = layers;
     }
 
     /**
-     * Moves the layer at <code>index</code> up one in the vector
-     * 
+     * Moves the layer at <code>index</code> up one in the vector.
+     *
      * @param index the index of the layer to swap up
      * @throws Exception
      */
@@ -160,8 +158,8 @@ public class MultilayerPlane
     }
 
     /**
-     * Moves the layer at <code>index</code> down one in the vector
-     * 
+     * Moves the layer at <code>index</code> down one in the vector.
+     *
      * @param index the index of the layer to swap down
      * @throws Exception
      */
@@ -177,7 +175,7 @@ public class MultilayerPlane
 
     /**
      * Merges the layer at <code>index</code> with the layer below it
-     * 
+     *
      * @see tiled.core.MapLayer#mergeOnto
      * @param index the index of the layer to merge down
      * @throws Exception
@@ -192,8 +190,8 @@ public class MultilayerPlane
     }
 
     /**
-     * Returns the layer at the specified vector index
-     * 
+     * Returns the layer at the specified vector index.
+     *
      * @param i the index of the layer to return
      * @return the layer at the specified index, or null if the index is out of
      *         bounds
@@ -207,8 +205,8 @@ public class MultilayerPlane
     }
 
     /**
-     * Gets a listIterator of all layers
-     * 
+     * Gets a listIterator of all layers.
+     *
      * @return a listIterator
      */
     public ListIterator getLayers() {

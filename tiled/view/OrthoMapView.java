@@ -116,7 +116,7 @@ public class OrthoMapView extends MapView
             }
         }
     }
-    
+
     protected void paintGrid(Graphics2D g2d, double zoom) {
         // Determine tile size
         Dimension tsize = getTileSize(zoom);

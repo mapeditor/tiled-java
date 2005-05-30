@@ -72,7 +72,7 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
         cbCompressLayerData.setActionCommand("tmx.save.layerCompression");
         //cbEmbedImages.setActionCommand("tmx.save.embedImages");
         cbReportIOWarnings.setActionCommand("tiled.report.io");
-        
+
         rbEmbedInTiles.setActionCommand("tmx.save.embedImages");
         rbEmbedInTiles.setEnabled(false);
         rbEmbedInSet.setActionCommand("tmx.save.tileSetImages");

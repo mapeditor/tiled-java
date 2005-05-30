@@ -218,7 +218,7 @@ public class Map extends MultilayerPlane implements Cloneable
 
     /**
      * Calls super method, and additionally fires a MapChangedEvent.
-     * 
+     *
      * @see MultilayerPlane#removeLayer(int)
      */
     public MapLayer removeLayer(int index) {

@@ -863,9 +863,7 @@ public class MapEditor implements ActionListener,
         } else if (mouseButton == MouseEvent.BUTTON3) {
             if (layer instanceof TileLayer) {
                 Tile newTile = ((TileLayer)layer).getTileAt(tile.x, tile.y);
-                if (newTile != currentMap.getNullTile()) {
-                    setCurrentTile(newTile);
-                }
+                setCurrentTile(newTile);
             } else if (layer instanceof ObjectGroup) {
                 // TODO: Add support for ObjectGroups here
             }
@@ -873,7 +871,7 @@ public class MapEditor implements ActionListener,
             switch (currentPointerState) {
                 case PS_PAINT:
                     paintEdit.setPresentationName("Paint");
-                    if(layer instanceof TileLayer) {
+                    if (layer instanceof TileLayer) {
                         Rectangle affectedRegion = currentBrush.commitPaint(
                                 currentMap, tile.x, tile.y, currentLayer);
                         mapView.repaintRegion(affectedRegion);
@@ -887,7 +885,7 @@ public class MapEditor implements ActionListener,
                     }
                     mapView.repaintRegion(new Rectangle(tile.x, tile.y, 1, 1));
                     break;
-                case PS_POUR:  //POUR only works on TileLayers
+                case PS_POUR:  // POUR only works on TileLayers
                     paintEdit = null;
                     if (layer instanceof TileLayer) {
                         Tile oldTile = ((TileLayer)layer).getTileAt(tile.x, tile.y);
@@ -899,9 +897,7 @@ public class MapEditor implements ActionListener,
                     if (layer instanceof TileLayer) {
                         Tile newTile = ((TileLayer)layer).getTileAt(
                                 tile.x, tile.y);
-                        if (newTile != currentMap.getNullTile()) {
-                            setCurrentTile(newTile);
-                        }
+                        setCurrentTile(newTile);
                     } else if (layer instanceof ObjectGroup) {
                         // TODO: Add support for ObjectGroups here
                     }
@@ -1371,7 +1367,8 @@ public class MapEditor implements ActionListener,
             MapLayer currentLayer = getCurrentLayer();
             MapLayer layer = currentLayer;
             MapLayerEdit transEdit;
-            transEdit = new MapLayerEdit(currentLayer, createLayerCopy(currentLayer));
+            transEdit = new MapLayerEdit(
+                    currentLayer, createLayerCopy(currentLayer));
 
             if (marqueeSelection != null) {
                 if (currentLayer instanceof TileLayer) {
@@ -1381,32 +1378,20 @@ public class MapEditor implements ActionListener,
                     layer = new ObjectGroup(
                             marqueeSelection.getSelectedAreaBounds());
                 }
-				layer.setMap(currentMap);
+                layer.setMap(currentMap);
                 layer.maskedCopyFrom(
                         currentLayer,
                         marqueeSelection.getSelectedArea());
             }
 
             switch (transform) {
-                /*case MapLayer.ROTATE_90:
-                    transEdit.setPresentationName("Rotate");
-                    layer.rotate(MapLayer.ROTATE_90);
-                    break;
+                case MapLayer.ROTATE_90:
                 case MapLayer.ROTATE_180:
-                    transEdit.setPresentationName("Rotate");
-                    layer.rotate(MapLayer.ROTATE_180);
-                    break;
                 case MapLayer.ROTATE_270:
                     transEdit.setPresentationName("Rotate");
-                    layer.rotate(MapLayer.ROTATE_270);
-                    break;*/
-            	case MapLayer.ROTATE_90:
-            	case MapLayer.ROTATE_180:
-            	case MapLayer.ROTATE_270:
-            	    transEdit.setPresentationName("Rotate");
-            		layer.rotate(transform);
-            		//if(marqueeSelection != null) marqueeSelection.rotate(transform);
-            		break;
+                    layer.rotate(transform);
+                    //if(marqueeSelection != null) marqueeSelection.rotate(transform);
+                    break;
                 case MapLayer.MIRROR_VERTICAL:
                     transEdit.setPresentationName("Vertical Flip");
                     layer.mirror(MapLayer.MIRROR_VERTICAL);
@@ -1690,7 +1675,7 @@ public class MapEditor implements ActionListener,
     public void setBrush(AbstractBrush b) {
         currentBrush = b;
     }
-    
+
     private void updateTitle() {
         String title = "Tiled";
 
@@ -1835,7 +1820,7 @@ public class MapEditor implements ActionListener,
     /**
      * Attempts to draw the entire map to an image file
      * of the format of the extension. (filename.ext)
-     * 
+     *
      * @param filename Image filename to save map render to.
      */
     public void saveMapImage(String filename) {
@@ -2161,6 +2146,11 @@ public class MapEditor implements ActionListener,
      * @param args the first argument may be a map file
      */
     public static void main(String[] args) {
+        //try {
+        //    UIManager.setLookAndFeel(
+        //            UIManager.getSystemLookAndFeelClassName());
+        //} catch (Exception e) {}
+
         MapEditor editor = new MapEditor();
 
         if (args.length > 0) {

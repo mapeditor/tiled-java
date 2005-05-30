@@ -150,7 +150,7 @@ public abstract class MapView extends JPanel implements Scrollable
     /**
      * Creates a MapView instance that will render the map in the right
      * orientation.
-     * 
+     *
      * @param p the Map to create a view for
      * @return a suitable instance of a MapView for the given Map
      * @see Map#getOrientation()
@@ -218,7 +218,7 @@ public abstract class MapView extends JPanel implements Scrollable
                     } else {
                         g2d.setComposite(AlphaComposite.SrcOver);
                     }
-                    
+
                     if (layer instanceof TileLayer) {
                         paintLayer(g2d, (TileLayer)layer, currentZoom);
                     } else if (layer instanceof ObjectGroup) {
