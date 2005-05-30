@@ -21,7 +21,6 @@
 * Fixed a NullPointerException when loading TSX files as imported tilesets
 * Fixed an "Unsupported protocol" error when loading TMX files which referenced
   an external tileset
-* Added support for animated tiles
 
 0.5.0 - December 14th, 2004
 

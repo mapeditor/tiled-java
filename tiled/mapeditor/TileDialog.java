@@ -37,22 +37,16 @@ public class TileDialog extends JDialog
     private Tile currentTile;
     private TileSet tileset;
     private JList tileList, imageList;
-    private JTable tileProperties, tileAnimation;
-    private AnimationTableModel animationModel;
+    private JTable tileProperties;
     private JComboBox tLinkList;
-    private JButton bOk, bNew, bDelete, bDuplicate;
+    private JButton bOk, bNew, bDelete, bChangeI, bDuplicate;
     private JButton bAddImage, bDeleteImage, bDeleteAllUnusedImages;
-    private AbstractButton frameAddButton, frameCloneButton, frameDelButton;
-    private AbstractButton frameUpButton, frameDownButton;
-    private AbstractButton frameChangeImageButton;
-
     private String location;
     private JTextField tilesetNameEntry;
     private JCheckBox externalBitmapCheck;
     //private JCheckBox sharedImagesCheck;
     private JTabbedPane tabs;
     private int currentImageIndex = -1;
-    private int currentFrame = -1;
 
     public TileDialog(Dialog parent, TileSet s) {
         super(parent, "Edit Tileset '" + s.getName() + "'", true);
@@ -64,38 +58,16 @@ public class TileDialog extends JDialog
         setLocationRelativeTo(getOwner());
     }
 
-    // The following function was taken verbatim from MapEditor.java.  Beware
-    // the unnecessary code duplication.
-    private ImageIcon loadIcon(String fname) {
-        try {
-            return new ImageIcon
-              (ImageIO.read(MapEditor.class.getResourceAsStream(fname)));
-        } catch (java.io.IOException e) {
-            System.out.println("Failed to load icon: " + fname);
-            return null;
-        }
-    }
-
-    private AbstractButton createButton(Icon icon, String command) {
-        AbstractButton button;
-        button = new JButton("", icon);
-        button.setMargin(new Insets(0, 0, 0, 0));
-        button.setActionCommand(command);
-        button.addActionListener(this);
-        button.setToolTipText(command);
-        return button;
-    }
-
     private JPanel createTilePanel() {
         // Create the buttons
 
         bDelete = new JButton("Delete Tile");
-        // bChangeI = new JButton("Change Image");
+        bChangeI = new JButton("Change Image");
         bDuplicate = new JButton("Duplicate Tile");
         bNew = new JButton("Add Tile");
 
         bDelete.addActionListener(this);
-        // bChangeI.addActionListener(this);
+        bChangeI.addActionListener(this);
         bDuplicate.addActionListener(this);
         bNew.addActionListener(this);
 
@@ -110,50 +82,6 @@ public class TileDialog extends JDialog
         JScrollPane propScrollPane = new JScrollPane(tileProperties);
         propScrollPane.setPreferredSize(new Dimension(150, 150));
 
-        // Tile animation table
-
-        animationModel = new AnimationTableModel();
-        tileAnimation = new JTable(animationModel);
-        tileAnimation.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        tileAnimation.getSelectionModel().addListSelectionListener(this);
-        JScrollPane animScrollPane = new JScrollPane(tileAnimation);
-        animScrollPane.setPreferredSize(new Dimension(64, 150));
-
-        // Tile animation buttons
-
-        Icon imgAdd = loadIcon("resources/gnome-new.png");
-        Icon imgDel = loadIcon("resources/gnome-delete.png");
-        Icon imgDup = loadIcon("resources/gimp-duplicate-16.png");
-        Icon imgUp = loadIcon("resources/gnome-up.png");
-        Icon imgDown = loadIcon("resources/gnome-down.png");
-        Icon imgImage = loadIcon("resources/stock_animation.png");
-
-        frameAddButton = createButton(imgAdd, "Add Frame");
-        frameDelButton = createButton(imgDel, "Delete Frame");
-        frameCloneButton = createButton(imgDup, "Duplicate Frame");
-        frameUpButton = createButton(imgUp, "Move Frame Up");
-        frameDownButton = createButton(imgDown, "Move Frame Down");
-        frameChangeImageButton = createButton(imgImage, "Change Image");
-
-        JPanel animationButtons = new JPanel();
-        animationButtons.setLayout(new GridBagLayout());
-        GridBagConstraints c = new GridBagConstraints();
-        c.fill = GridBagConstraints.BOTH;
-        c.weightx = 1;
-        animationButtons.add(frameAddButton, c);
-        animationButtons.add(frameUpButton, c);
-        animationButtons.add(frameDownButton, c);
-        animationButtons.add(frameCloneButton, c);
-        animationButtons.add(frameChangeImageButton, c);
-        animationButtons.add(frameDelButton, c);
-        animationButtons.setMaximumSize(new Dimension(Integer.MAX_VALUE,
-                    animationButtons.getPreferredSize().height));
-
-        JPanel animationPanel = new JPanel();
-        animationPanel.setLayout
-            (new BoxLayout(animationPanel, BoxLayout.Y_AXIS));
-        animationPanel.add(animScrollPane);
-        animationPanel.add(animationButtons);
 
         // Tile list
 
@@ -164,17 +92,12 @@ public class TileDialog extends JDialog
 
         // The split pane
 
-        JSplitPane subSplitPane = new JSplitPane(
-                JSplitPane.HORIZONTAL_SPLIT, true);
-        subSplitPane.setLeftComponent(propScrollPane);
-        subSplitPane.setRightComponent(animationPanel);
-
         JSplitPane splitPane = new JSplitPane(
                 JSplitPane.HORIZONTAL_SPLIT, true);
         splitPane.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         splitPane.setResizeWeight(0.25);
         splitPane.setLeftComponent(sp);
-        splitPane.setRightComponent(subSplitPane);
+        splitPane.setRightComponent(propScrollPane);
 
 
         // The buttons
@@ -185,8 +108,8 @@ public class TileDialog extends JDialog
         buttons.add(bNew);
         buttons.add(Box.createRigidArea(new Dimension(5, 0)));
         buttons.add(bDelete);
-        // buttons.add(Box.createRigidArea(new Dimension(5, 0)));
-        // buttons.add(bChangeI);
+        buttons.add(Box.createRigidArea(new Dimension(5, 0)));
+        buttons.add(bChangeI);
         buttons.add(Box.createRigidArea(new Dimension(5, 0)));
         buttons.add(bDuplicate);
         buttons.add(Box.createRigidArea(new Dimension(5, 0)));
@@ -198,6 +121,7 @@ public class TileDialog extends JDialog
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new GridBagLayout());
         mainPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        GridBagConstraints c = new GridBagConstraints();
         c.fill = GridBagConstraints.BOTH;
         c.weightx = 1; c.weighty = 1;
         mainPanel.add(splitPane, c);
@@ -295,17 +219,22 @@ public class TileDialog extends JDialog
     }
 
     private void changeImage() {
-        if (currentTile == null || currentFrame < 0) {
+        if (currentTile == null) {
             return;
         }
-        TileImageDialog d = new TileImageDialog(this, tileset,
-            currentTile.getImageId(), currentTile.getImageOrientation());
-        d.setVisible(true);
-        if (d.getImageId() >= 0) {
-            currentTile.setAnimationFrame(currentFrame,
-                d.getImageId(),
-                d.getImageOrientation(),
-                currentTile.getAnimationFrameDuration(currentFrame));
+        if (tileset.usesSharedImages()) {
+            TileImageDialog d = new TileImageDialog(this, tileset,
+                currentTile.getImageId(), currentTile.getImageOrientation());
+            d.setVisible(true);
+            if (d.getImageId() >= 0) {
+                currentTile.setImage(d.getImageId());
+                currentTile.setImageOrientation(d.getImageOrientation());
+            }
+        } else {
+            Image img = loadImage();
+            if (img != null) {
+                currentTile.setImage(img);
+            }
         }
     }
 
@@ -341,8 +270,8 @@ public class TileDialog extends JDialog
             d.setVisible(true);
             if (d.getImageId() >= 0) {
                 currentTile = new Tile(tileset);
-                currentTile.setAppearance(d.getImageId(),
-                    d.getImageOrientation());
+                currentTile.setImage(d.getImageId());
+                currentTile.setImageOrientation(d.getImageOrientation());
                 tileset.addNewTile(currentTile);
                 queryTiles();
             }
@@ -368,8 +297,7 @@ public class TileDialog extends JDialog
             }
 
             Tile newTile = new Tile(tileset);
-            int image_id = tileset.addImage(image);
-            newTile.setAppearance(image_id, 0);
+            newTile.setImage(image);
             tileset.addNewTile(newTile);
         }
 
@@ -393,8 +321,6 @@ public class TileDialog extends JDialog
             tilesetNameEntry.setText(tileset.getName());
             //sharedImagesCheck.setSelected(tileset.usesSharedImages());
             externalBitmapCheck.setSelected(tileset.getTilebmpFile() != null);
-
-            tileAnimation.setRowHeight(tileset.getStandardHeight());
         }
 
         queryTiles();
@@ -442,31 +368,24 @@ public class TileDialog extends JDialog
         }
     }
 
-    private void updateAnimation()
-    {
-        if (currentFrame >= 0) {
-            this.tileAnimation.changeSelection(this.currentFrame, 0, false,
-                false);
-        }
-        currentFrame = tileAnimation.getSelectedRow();
-        updateEnabledState();
-    }
-
     private void setCurrentTile(Tile tile) {
+        // Update the old current tile's properties
+        // (happens automatically as properties are changed in place now)
+        /*
+        if (currentTile != null) {
+            PropertiesTableModel model =
+                (PropertiesTableModel)tileProperties.getModel();
+            currentTile.setProperties(model.getProperties());
+        }
+        */
+
         currentTile = tile;
-        animationModel.setTile(currentTile);
-        currentFrame = tileAnimation.getSelectedRow();
         updateTileInfo();
         updateEnabledState();
     }
 
     private void setImageIndex(int i) {
         currentImageIndex = i;
-        updateEnabledState();
-    }
-
-    private void setCurrentFrame(int n) {
-        currentFrame = n;
         updateEnabledState();
     }
 
@@ -480,8 +399,8 @@ public class TileDialog extends JDialog
 
         bNew.setEnabled(atLeastOneSharedImage || !tilebmp);
         bDelete.setEnabled((sharedImages || !tilebmp) && tileSelected);
-        // bChangeI.setEnabled((atLeastOneSharedImage || !tilebmp)
-        //     && tileSelected);
+        bChangeI.setEnabled((atLeastOneSharedImage || !tilebmp)
+            && tileSelected);
         bDuplicate.setEnabled((sharedImages || !tilebmp) && tileSelected);
         tileProperties.setEnabled((sharedImages || !tilebmp) && tileSelected);
         externalBitmapCheck.setEnabled(tilebmp); // Can't turn this off yet
@@ -496,27 +415,13 @@ public class TileDialog extends JDialog
 
             while (tileIterator.hasNext()) {
                 Tile tile = (Tile)tileIterator.next();
-                for (int i = 0; i < tile.countAnimationFrames(); ++i) {
-                    if (tile.getAnimationFrameImageId(i)
-                            == currentImageIndex) {
-                        image_used = true;
-                    }
+                if (tile.getImageId() == currentImageIndex) {
+                    image_used = true;
                 }
             }
             bDeleteImage.setEnabled(!tilebmp && currentImageIndex >= 0
                 && !image_used);
         }
-
-        // Update animation buttons
-        frameAddButton.setEnabled(currentTile != null);
-        frameChangeImageButton.setEnabled(currentTile != null
-            && currentFrame >= 0 && atLeastOneSharedImage);
-        frameCloneButton.setEnabled(currentTile != null && currentFrame >= 0);
-        frameDelButton.setEnabled(currentTile != null && currentFrame >= 0
-            && currentTile.countAnimationFrames() > 1);
-        frameUpButton.setEnabled(currentTile != null && currentFrame > 0);
-        frameDownButton.setEnabled(currentTile != null && currentFrame >= 0
-            && currentFrame < currentTile.countAnimationFrames() - 1);
     }
 
     /**
@@ -558,8 +463,8 @@ public class TileDialog extends JDialog
                 }
                 queryTiles();
             }
-//        } else if (source == bChangeI) {
-//            changeImage();
+        } else if (source == bChangeI) {
+            changeImage();
         } else if (source == bNew) {
             newTile();
         } else if (source == bDuplicate) {
@@ -644,10 +549,8 @@ public class TileDialog extends JDialog
 
                     while (tileIterator.hasNext()) {
                         Tile tile = (Tile)tileIterator.next();
-                        for (int i = 0; i < tile.countAnimationFrames(); ++i) {
-                            if (tile.getAnimationFrameImageId(i) == id) {
-                                image_used = true;
-                            }
+                        if (tile.getImageId() == id) {
+                            image_used = true;
                         }
                     }
 
@@ -658,48 +561,6 @@ public class TileDialog extends JDialog
 
                 queryImages();
             }
-        } else if (source == frameAddButton) {
-            TileImageDialog d;
-            if (currentFrame >= 0) {
-                d = new TileImageDialog(this, tileset,
-                    currentTile.getAnimationFrameImageId(currentFrame),
-                    currentTile.getAnimationFrameOrientation(currentFrame));
-            } else {
-                d = new TileImageDialog(this, tileset);
-            }
-            d.setVisible(true);
-            if (d.getImageId() >= 0) {
-                if (currentFrame < 0) {
-                    currentFrame = currentTile.countAnimationFrames();
-                }
-                currentTile.insertAnimationFrame(currentFrame,
-                    d.getImageId(),
-                    d.getImageOrientation(), 1);
-                this.updateAnimation();
-            }
-        } else if (source == frameDelButton) {
-            this.currentTile.removeAnimationFrame(this.currentFrame);
-            this.updateAnimation();
-        } else if (source == frameCloneButton) {
-            this.currentTile.insertAnimationFrame(this.currentFrame,
-                this.currentTile.getAnimationFrameImageId(this.currentFrame),
-                this.currentTile.getAnimationFrameOrientation
-                    (this.currentFrame),
-                this.currentTile.getAnimationFrameDuration(this.currentFrame));
-            ++this.currentFrame;
-            this.updateAnimation();
-        } else if (source == frameUpButton) {
-            this.currentTile.swapAnimationFrames(this.currentFrame,
-                this.currentFrame - 1);
-            --this.currentFrame;
-            this.updateAnimation();
-        } else if (source == frameDownButton) {
-            this.currentTile.swapAnimationFrames(this.currentFrame,
-                this.currentFrame + 1);
-            ++this.currentFrame;
-            this.updateAnimation();
-        } else if (source == frameChangeImageButton) {
-            changeImage();
         }
 
         repaint();
@@ -710,9 +571,6 @@ public class TileDialog extends JDialog
             setCurrentTile((Tile)tileList.getSelectedValue());
         } else if (e.getSource() == imageList) {
             setImageIndex(imageList.getSelectedIndex());
-        } else if (e.getSource() == tileAnimation.getSelectionModel()) {
-            setCurrentFrame(tileAnimation.getSelectedRow());
         }
     }
-
 }

@@ -75,8 +75,7 @@ public class TileMergeHelper {
 	            GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
 		Image tileImg = config.createCompatibleImage(c.getWidth(), c.getHeight());	
 		c.render(tileImg.getGraphics());
-                int image_id = myTs.addImage(tileImg);
-		tile.setAppearance(image_id, 0);
+		tile.setImage(tileImg);
 	
 		myTs.addTile(tile);
 	
