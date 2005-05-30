@@ -749,12 +749,22 @@ public class TileSet
      *         one tile, <code>false</code> otherwise.
      */
     public boolean isOneForOne() {
+        Iterator itr = iterator();
+
+        while (itr.hasNext()) {
+            Tile t = (Tile)itr.next();
+            if (t.countAnimationFrames() != 1 || t.getImageId() != t.getId()
+                    || t.getImageOrientation() != 0) {
+                return false;
+            }
+        }
+
         Enumeration keys = images.keys();
 
         while (keys.hasMoreElements()) {
             int key = Integer.parseInt((String)keys.nextElement());
             int relations = 0;
-            Iterator itr = iterator();
+            itr = iterator();
 
             while (itr.hasNext()) {
                 Tile t = (Tile)itr.next();
