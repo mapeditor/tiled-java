@@ -27,6 +27,7 @@ import java.net.URL;
 import java.util.Properties;
 import java.util.zip.GZIPInputStream;
 
+import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
 import javax.xml.parsers.*;
 
@@ -344,24 +345,28 @@ public class XMLMapTransformer implements MapReader
                             Color color = new Color(
                                     Integer.parseInt(transStr, 16));
                             Toolkit tk = Toolkit.getDefaultToolkit();
-                            Image orig = ImageIO.read(new File(sourcePath));
-                            Image trans = tk.createImage(
-                                    new FilteredImageSource(orig.getSource(),
-                                        new TransparentImageFilter(
-                                            color.getRGB())));
-                            BufferedImage img = new BufferedImage(
-                                    trans.getWidth(null),
-                                    trans.getHeight(null),
-                                    BufferedImage.TYPE_INT_ARGB);
-
-                            img.getGraphics().drawImage(trans, 0, 0, null);
-
-                            set.importTileBitmap(img,
-                                    tileWidth, tileHeight, tileSpacing,
-                                    !hasTileElements);
-
-                            set.setTransparentColor(color);
-                            set.setTilesetImageFilename(sourcePath);
+                            try {
+	                            Image orig = ImageIO.read(new File(sourcePath));
+	                            Image trans = tk.createImage(
+	                                    new FilteredImageSource(orig.getSource(),
+	                                        new TransparentImageFilter(
+	                                            color.getRGB())));
+	                            BufferedImage img = new BufferedImage(
+	                                    trans.getWidth(null),
+	                                    trans.getHeight(null),
+	                                    BufferedImage.TYPE_INT_ARGB);
+	
+	                            img.getGraphics().drawImage(trans, 0, 0, null);
+	
+	                            set.importTileBitmap(img,
+	                                    tileWidth, tileHeight, tileSpacing,
+	                                    !hasTileElements);
+	
+	                            set.setTransparentColor(color);
+	                            set.setTilesetImageFilename(sourcePath);
+                            } catch(IIOException iioe) {
+                            	warnings.push("ERROR: "+iioe.getMessage()+" ("+sourcePath+")");
+                            }
                         } else {
                             set.importTileBitmap(sourcePath, tileWidth,
                                     tileHeight, tileSpacing, !hasTileElements);
