@@ -24,7 +24,7 @@ import tiled.mapeditor.util.*;
  * This class also handles notifing listeners if there is a change to any layer
  * or object contained by the map.
  */
-public class Map extends MultilayerPlane implements Cloneable
+public class Map extends MultilayerPlane
 {
     /** orthogonal */
     public static final int MDO_ORTHO   = 1;

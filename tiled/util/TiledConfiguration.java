@@ -83,7 +83,7 @@ public final class TiledConfiguration
 
     /**
      * Returns wether the option is available in the config file.
-     * 
+     *
      * @param name the name of the option to check for
      * @return <code>true</code> if the option has a non-<code>null</code>
      *         value, <code>false</code> otherwise
@@ -94,11 +94,11 @@ public final class TiledConfiguration
 
     /**
      * Returns the value of the given option.
-     * 
+     *
      * @param option
      * @return String The value of the specified option as a String
      */
-    public String getValue(String option) {    	
+    public String getValue(String option) {
          return (String)settings.get(option);
     }
 
@@ -212,10 +212,9 @@ public final class TiledConfiguration
 
         bw.close();
     }
-    
+
     /**
-     * Sets the default values for pertinent properties
-     * 
+     * Sets the default values for pertinent properties.
      */
     public void populateDefaults() {
         addConfigPair("tmx.save.embedImages", "1");

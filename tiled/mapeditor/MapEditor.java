@@ -1097,7 +1097,6 @@ public class MapEditor implements ActionListener,
 
     private void handleEvent(ActionEvent event) {
         String command = event.getActionCommand();
-        Object src = event.getSource();
 
         if (command.equals("Open...")) {
             if (checkSave()) {
@@ -1168,7 +1167,6 @@ public class MapEditor implements ActionListener,
                     }
                 }
             }
-
         } else if (command.equals("Tileset Manager")) {
             if (currentMap != null) {
                 TilesetManager manager = new TilesetManager(appFrame, currentMap);

@@ -5,7 +5,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
@@ -29,20 +29,19 @@ import tiled.util.TiledConfiguration;
  * A handler for saving and loading maps.
  */
 public class MapHelper {
-    
     private static PluginClassLoader pluginLoader;
-    
+
     /**
      * Called to tell the MapHelper which
      * {@link tiled.mapeditor.plugin.PluginClassLoader} to use when finding a
      * suitable plugin for a filename.
-     * 
+     *
      * @param p the PluginClassLoader instance to use
      */
     public static void init(PluginClassLoader p) {
         pluginLoader = p;
     }
-    
+
     /**
      * Saves the current map. Use the extension (.xxx) of the filename to
      * determine the plugin to use when writing the file. Throws an exception
@@ -210,7 +209,7 @@ public class MapHelper {
 
     /**
      * Reports messages from the plugin to the user in a dialog.
-     * 
+     *
      * @param s A Stack which was used by the plugin to record any messages it
      *          had for the user
      */
@@ -222,12 +221,11 @@ public class MapHelper {
         if (config.keyHasValue("tiled.report.io", 1)) {
             if (s.size() > 0) {
                 Iterator itr = s.iterator();
-                String warnings = "";
+                StringBuffer warnings = new StringBuffer();
                 while (itr.hasNext()) {
-                    String warn = (String) itr.next();
-                    warnings = warnings + warn + "\n";
+                    warnings.append((String)itr.next() + "\n");
                 }
-                JOptionPane.showMessageDialog(null,  warnings,
+                JOptionPane.showMessageDialog(null, warnings.toString(),
                         "Loading Messages",
                         JOptionPane.INFORMATION_MESSAGE);
             }

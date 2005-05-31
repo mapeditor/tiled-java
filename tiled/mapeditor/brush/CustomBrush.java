@@ -29,22 +29,22 @@ public class CustomBrush extends AbstractBrush
         this();
         this.addAllLayers(m.getLayerVector());
     }
-    
+
     public void setAffectedLayers(int num) {
     }
-    
+
     public int getAffectedLayers() {
         return getTotalLayers();
     }
-    
+
     public Rectangle getBounds() {
         return getBounds();
     }
-    
+
     /**
      * The custom brush will merge its internal layers onto the layers of the 
      * specified MultilayerPlane.
-     * 
+     *
      * @see TileLayer#mergeOnto(MapLayer)
      * @see Brush#commitPaint(MultilayerPlane, int, int, int)
      * @param mp         The MultilayerPlane to be affected
@@ -59,17 +59,17 @@ public class CustomBrush extends AbstractBrush
         Rectangle bounds = this.getBounds();
         int centerx = (int)(x - (bounds.width / 2));
         int centery = (int)(y - (bounds.height / 2));
-        
+
         ListIterator itr = getLayers();
         while (itr.hasNext()) {
-            TileLayer tl = (TileLayer)itr.next();            
+            TileLayer tl = (TileLayer)itr.next();
             TileLayer tm = (TileLayer)mp.getLayer(initLayer++);
             if (tm != null && tm.isVisible()) {
                 tl.setOffset(centerx, centery);
                 tl.mergeOnto(tm);
             }
         }
-        
+
         return new Rectangle(centerx, centery, bounds.width, bounds.height);
     }
 

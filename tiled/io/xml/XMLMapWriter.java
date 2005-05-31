@@ -276,17 +276,16 @@ public class XMLMapWriter implements MapWriter
             e.printStackTrace();
         }
     }
-    
+
     private void writeObjectGroup(ObjectGroup o, XMLWriter w)
         throws IOException
     {
         Iterator itr = o.getObjects();
-        Rectangle r = o.getBounds();
         while (itr.hasNext()) {
             writeObject((MapObject)itr.next(), o, w);
         }
-    }    
-    
+    }
+
     /**
      * Writes this layer to an XMLWriter. This should be done <b>after</b> the
      * first global ids for the tilesets are determined, in order for the right
@@ -546,16 +545,17 @@ public class XMLMapWriter implements MapWriter
         }
 
         // Append .. for each remaining parent in fromParents
-        String relPath = "";
+        StringBuffer relPathBuf = new StringBuffer();
         for (int i = shared; i < fromParents.size() - 1; i++) {
-            relPath += ".." + File.separator;
+            relPathBuf.append(".." + File.separator);
         }
 
         // Add the remaining part in toParents
         for (int i = shared; i < toParents.size() - 1; i++) {
-            relPath += toParents.get(i) + File.separator;
+            relPathBuf.append(toParents.get(i) + File.separator);
         }
-        relPath += new File(to).getName();
+        relPathBuf.append(new File(to).getName());
+        String relPath = relPathBuf.toString();
 
         // Turn around the slashes when path is relative
         try {

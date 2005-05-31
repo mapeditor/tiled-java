@@ -34,19 +34,19 @@ import tiled.util.Util;
  * A 'tile' is represented internally as three distinct pieces of data. The
  * first and most important is a tiled.core.Tile object, and these are held in
  * a java.util.Vector.</p>
- * 
+ *
  * <p>Tile objects contain an id that can be used to look up the second piece
  * of data, the tile image hash. The tile image hash is a unique CRC32
  * checksum. A checksum is generated for each image that is added to the set.
  * A java.util.Hashtable keeps the key-value pair of id and checksum. A second
  * java.util.Hashtable (the imageCache) maintains a key-value pair with the
  * checksum as key and the actual java.awt.Image as value.</p>
- * 
+ *
  * <p>When a new image is added, a checksum is created and checked against the
  * checksums in the cache. If the checksum does not already exist, the image
  * is given an id, and is added to the cache. In this way, tile images are
  * never duplicated, and multiple tiles may reference the image by id.</p>
- * 
+ *
  * <p>The TileSet also handles 'cutting' tile images from a tileset image, and
  * can optionally create Tile objects that reference the images.</p>
  */
@@ -80,7 +80,6 @@ public class TileSet
      * @param createTiles
      * @throws Exception
      * @see TileSet#importTileBitmap(BufferedImage,int,int,int,boolean)
-     * 
      */
     public void importTileBitmap(String imgFilename, int tileWidth,
             int tileHeight, int spacing, boolean createTiles) throws Exception
@@ -119,27 +118,18 @@ public class TileSet
             throw new Exception("Failed to load " + tilebmpFile);
         }
 
-        GraphicsConfiguration config = 
+        GraphicsConfiguration config =
             GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
-        
+
         int iw = tilebmp.getWidth();
         int ih = tilebmp.getHeight();
 
         if (iw > 0 && ih > 0) {
             for (int y = 0; y <= ih - tileHeight; y += tileHeight + spacing) {
                 for (int x = 0; x <= iw - tileWidth; x += tileWidth + spacing) {
-                    BufferedImage tile = new BufferedImage(
-                            tileWidth, tileHeight,
-                            BufferedImage.TYPE_INT_ARGB);
-                    Graphics2D tg = tile.createGraphics();
-                    //FIXME: although faster, the following doesn't seem to handle alpha on some platforms...
-                    //Image tile = config.createCompatibleImage(tileWidth, tileHeight);
-                    //Graphics tg = tile.getGraphics();
-                    
-                    tg.drawImage(tilebmp, 0, 0,
-                            tileWidth, tileHeight,
-                            x, y, x + tileWidth, y + tileHeight,
-                            null);
+                    BufferedImage tile = tilebmp.getSubimage(
+                            x, y, tileWidth, tileHeight);
+
                     int newId = addImage(tile);
                     if (createTiles) {
                         Tile newTile = new Tile();
@@ -154,7 +144,7 @@ public class TileSet
     /**
      * Sets the standard width of the tiles in this tileset. Tiles in this
      * tileset are not recommended to have any other width.
-     * 
+     *
      * @param width the width in pixels to use as the standard tile width
      */
     public void setStandardWidth(int width) {
@@ -165,8 +155,8 @@ public class TileSet
      * Sets the standard height of the tiles in this tileset. This is used to
      * calculate the drawing position of tiles with a height above the standard
      * height.
-     * 
-     * @param s Standard height for tiles
+     *
+     * @param s standard height for tiles
      */
     public void setStandardHeight(int s) {
         standardHeight = s;
@@ -195,7 +185,7 @@ public class TileSet
 
     /**
      * Sets the base directory for the tileset
-     * 
+     *
      * @param base a String containing the native format directory
      */
     public void setBaseDir(String base) {
@@ -266,7 +256,7 @@ public class TileSet
             standardWidth = t.getWidth();
         }
 
-	return t.getId();
+        return t.getId();
     }
 
     /**
@@ -468,7 +458,7 @@ public class TileSet
 
     /**
      * Provides a CRC32 checksum of the given image.
-     * 
+     *
      * @param i a preloaded Image object
      * @return a String containing the checksum value
      */
@@ -501,21 +491,20 @@ public class TileSet
 
     /**
      * Returns the number of images in the set.
-     * 
+     *
      * @return the number of images in the set
      */
     public int getTotalImages() {
         return images.size();
     }
-    
+
     /**
-     * 
      * @return an Enumeration of the image ids
      */
     public Enumeration getImageIds() {
         return images.keys();
     }
-    
+
     /**
      * This function uses the CRC32 checksums to find the cached version of the
      * image supplied.
@@ -540,7 +529,6 @@ public class TileSet
     }
 
     /**
-     * 
      * @param key a key identifying the image to get
      * @return the imagine identified by the key, or <code>null</code> when
      *         there is no such image
@@ -575,7 +563,7 @@ public class TileSet
     /**
      * Returns the dimensions of an image as specified by the id
      * <code>key</code>.
-     * 
+     *
      * @param key
      * @return dimensions of image with referenced by given key
      */
@@ -608,7 +596,7 @@ public class TileSet
 
     /**
      * Find the id fo the given image in the image cache.
-     * 
+     *
      * @param image the java.awt.Image to find the id for.
      * @return an java.lang.Object that represents the id of the image
      */
@@ -633,7 +621,7 @@ public class TileSet
      * Adds the specified image to the image cache. If the image already exists
      * in the cache, returns the id of the existing image. If it does not exist,
      * this function adds the image and returns the new id.
-     * 
+     *
      * @param image the java.awt.Image to add to the image cache
      * @return the id as an <code>int</code> of the image in the cache
      */
@@ -663,7 +651,7 @@ public class TileSet
     }
 
     public void removeImage(Object id) {
-    	//System.out.println(name+".removeImage(Object): " + id);
+        //System.out.println(name+".removeImage(Object): " + id);
         // This operation is siginificantly slower now that 'images' stores
         // images directly instead of storing hashes.  Fortunately this
         // operation is also extremely rare.
@@ -679,25 +667,7 @@ public class TileSet
         }
     }
 
-    /*
-     * The following function is broken now that the 'images' hashtable refers
-     * directly to images.  It is also completely unused, so there is no point
-     * in fixing it.
-     *
-    private boolean isUsed(String hash) {
-        Iterator itr = iterator();
-        while (itr.hasNext()) {
-            Tile t = (Tile)itr.next();
-            if (hash.equals(images.get("" + t.getImageId()))) {
-                return true;
-            }
-        }
-        return false;
-    }
-    */
-
-    public static Image generateImageWithOrientation(Image src,
-            int orientation) {
+    public static Image generateImageWithOrientation(Image src, int orientation) {
         if (orientation == 0) {
             return src;
         } else {
@@ -741,10 +711,10 @@ public class TileSet
         // TODO: Currently only uses shared sets...
         return true;
     }
-    
+
     /**
      * Checks whether each image has a one to one relationship with the tiles.
-     * 
+     *
      * @return <code>true</code> if each image is associated with one and only
      *         one tile, <code>false</code> otherwise.
      */
@@ -778,5 +748,4 @@ public class TileSet
       imageCache.put(s, img);
       return img;
     }
-
 }

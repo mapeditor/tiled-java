@@ -95,12 +95,6 @@ public class HexMapView extends MapView
         int toffset = (((modeFlags & PF_GRIDMODE) != 0) ? 1 : 0);
 
         Rectangle clipRect = g2d.getClipBounds();
-        Polygon gridPoly;
-        Point topLeft = screenToTileCoords(
-                (int)clipRect.getMinX(), (int)clipRect.getMinY());
-        Point bottomRight = screenToTileCoords(
-                (int)(clipRect.getMaxX() - clipRect.getMinX()),
-                (int)(clipRect.getMaxY() - clipRect.getMinY()));
         int startX = (int)clipRect.x / tsize.width;
         int startY = (int)clipRect.y / tsize.height - 1;
         int endX = (int)(((clipRect.x + clipRect.width) / tsize.width) * 1.5) + 2;
@@ -108,7 +102,7 @@ public class HexMapView extends MapView
 
         int gy = (int)(startY * tsize.height + toffset);
         for (int y = startY; y < endY; y++) {
-            gridPoly = createGridPolygon(0, y, 1);
+            Polygon gridPoly = createGridPolygon(0, y, 1);
             gridPoly.translate(0, -(int)(tsize.getHeight() / 2));
             int gx = (int)(startX * tsize.width + toffset);
             for (int x = startX; x < endX; x++) {
@@ -139,7 +133,7 @@ public class HexMapView extends MapView
 
     protected void paintLayer(Graphics2D g2d, ObjectGroup og, double zoom) {
     }
-    
+
     /**
      * Returns the distance between the centres of two horizontally adjacent
      * Hexes.

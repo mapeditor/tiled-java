@@ -1,14 +1,14 @@
 package tiled.util;
 
-/** 
+/**
    A C-program for MT19937, with initialization improved 2002/1/26.
    Coded by Takuji Nishimura and Makoto Matsumoto.
 
-   Before using, initialize the state by using init_genrand(seed)  
+   Before using, initialize the state by using init_genrand(seed)
    or init_by_array(init_key, key_length).
 
    Copyright (C) 1997 - 2002, Makoto Matsumoto and Takuji Nishimura,
-   All rights reserved.                          
+   All rights reserved.
 
    Redistribution and use in source and binary forms, with or without
    modification, are permitted provided that the following conditions
@@ -41,36 +41,36 @@ package tiled.util;
    Any feedback is very welcome.<br>
    http://www.math.keio.ac.jp/matumoto/emt.html<br>
    email: matumoto@math.keio.ac.jp<br>
-   
+
    @author Makoto Matsumoto (matumoto@math.keio.ac.jp)
    @author Takuji Nishimura
 */
 public class MersenneTwister {
-    public static int N = 624;
-    public static int M = 397;
-    public static int MATRIX_A = 0x9908b0df;   /* constant vector a */
-    public static int UPPER_MASK = 0x80000000; /* most significant w-r bits */
-    public static int LOWER_MASK = 0x7fffffff; /* least significant r bits */
-    
+    public static final int N = 624;
+    public static final int M = 397;
+    public static final int MATRIX_A = 0x9908b0df;   /* constant vector a */
+    public static final int UPPER_MASK = 0x80000000; /* most significant w-r bits */
+    public static final int LOWER_MASK = 0x7fffffff; /* least significant r bits */
+
     private long mt[];
     private int mti=N+1; /* mti==N+1 means mt[N] is not initialized */
-    
+
     public MersenneTwister() {
         mt = new long[N];
     }
-    
+
     public MersenneTwister(long s) {
         this();
         initGenRand(s);
     }
-    
+
     /* initializes mt[N] with a seed */
     public void initGenRand(long s)
     {
         mt[0]= s & 0xffffffff;
         for (mti=1; mti<N; mti++) {
-            mt[mti] = 
-    	    (1812433253 * (mt[mti-1] ^ (mt[mti-1] >> 30)) + mti); 
+            mt[mti] =
+                (1812433253 * (mt[mti-1] ^ (mt[mti-1] >> 30)) + mti);
             /* See Knuth TAOCP Vol2. 3rd Ed. P.106 for multiplier. */
             /* In the previous versions, MSBs of the seed affect   */
             /* only MSBs of the array mt[].                        */
@@ -79,7 +79,7 @@ public class MersenneTwister {
             /* for >32 bit machines */
         }
     }
-    
+
     /* initialize by an array with array-length */
     /* init_key is the array for initializing keys */
     /* key_length is its length */
@@ -108,7 +108,7 @@ public class MersenneTwister {
 
         mt[0] = 0x80000000; /* MSB is 1; assuring non-zero initial array */ 
     }
-    
+
     /* generates a random number on [0,0xffffffff]-interval */
     public long genrand()
     {
@@ -135,7 +135,7 @@ public class MersenneTwister {
 
             mti = 0;
         }
-      
+
         y = (int) mt[mti++];
 
         /* Tempering */
