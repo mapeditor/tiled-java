@@ -118,16 +118,28 @@ public class TileSet
             throw new Exception("Failed to load " + tilebmpFile);
         }
 
-        GraphicsConfiguration config =
-            GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
-
         int iw = tilebmp.getWidth();
         int ih = tilebmp.getHeight();
+        
+        BufferedImage tilesetImage = new BufferedImage(
+        		iw, ih,
+                BufferedImage.TYPE_INT_ARGB);
+        Graphics2D tg = tilesetImage.createGraphics();
+        //FIXME: although faster, the following doesn't seem to handle alpha on some platforms...
+        //GraphicsConfiguration config =
+        //    GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
+        //Image tilesetImage = config.createCompatibleImage(tileWidth, tileHeight);
+        //Graphics tg = tilesetImage.getGraphics();
+
+        tg.drawImage(tilebmp, 0, 0,
+                iw, ih,
+                0, 0, iw, ih,
+                null);
 
         if (iw > 0 && ih > 0) {
             for (int y = 0; y <= ih - tileHeight; y += tileHeight + spacing) {
                 for (int x = 0; x <= iw - tileWidth; x += tileWidth + spacing) {
-                    BufferedImage tile = tilebmp.getSubimage(
+                    BufferedImage tile = tilesetImage.getSubimage(
                             x, y, tileWidth, tileHeight);
 
                     int newId = addImage(tile);
