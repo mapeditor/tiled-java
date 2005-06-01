@@ -12,10 +12,8 @@
 
 package tiled.io.xml;
 
-import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Image;
-import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.awt.image.FilteredImageSource;

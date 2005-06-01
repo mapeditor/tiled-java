@@ -471,8 +471,16 @@ public class TileSet
             ImageInputStream is;
 
             try {
-                ByteArrayInputStream bais = new ByteArrayInputStream(
+            	int psize = pg.getColorModel().getPixelSize();
+            	ByteArrayInputStream bais = null;
+            	
+            	// handle different pixel sizes
+            	if(psize >= 15 ) {
+            		bais = new ByteArrayInputStream(
                         Util.convertIntegersToBytes((int[])pg.getPixels()));
+            	} else {
+            		bais = new ByteArrayInputStream((byte[])pg.getPixels());
+            	}
                 byte[] bytes = new byte[1024];
                 int len = 0;
 
