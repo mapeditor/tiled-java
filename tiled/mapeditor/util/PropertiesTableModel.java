@@ -12,7 +12,6 @@
 
 package tiled.mapeditor.util;
 
-import java.util.Enumeration;
 import java.util.Properties;
 
 import javax.swing.table.AbstractTableModel;

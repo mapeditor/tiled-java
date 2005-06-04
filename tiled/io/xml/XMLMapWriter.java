@@ -37,7 +37,10 @@ public class XMLMapWriter implements MapWriter
      * @param filename the filename of the map file
      */
     public void writeMap(Map map, String filename) throws Exception {
-        FileOutputStream os = new FileOutputStream(filename);
+        OutputStream os = new FileOutputStream(filename);
+        if(filename.endsWith(".tmx.gz")) {
+        	os = new GZIPOutputStream(os);
+        }
         Writer writer = new OutputStreamWriter(os);
         XMLWriter xmlWriter = new XMLWriter(writer);
 
@@ -46,6 +49,9 @@ public class XMLMapWriter implements MapWriter
         xmlWriter.endDocument();
 
         writer.flush();
+        if(filename.endsWith(".tmx.gz")) {
+        	((GZIPOutputStream)os).finish();
+        }
     }
 
     /**
@@ -54,7 +60,7 @@ public class XMLMapWriter implements MapWriter
      * @param filename the filename of the tileset file
      */
     public void writeTileset(TileSet set, String filename) throws Exception {
-        FileOutputStream os = new FileOutputStream(filename);
+        OutputStream os = new FileOutputStream(filename);
         Writer writer = new OutputStreamWriter(os);
         XMLWriter xmlWriter = new XMLWriter(writer);
 
@@ -576,7 +582,7 @@ public class XMLMapWriter implements MapWriter
      * @see tiled.io.MapReader#getFilter()
      */
     public String getFilter() throws Exception {
-        return "*.tmx,*.tsx";
+        return "*.tmx,*.tsx,*.tmx.gz";
     }
 
     public String getPluginPackage() {
@@ -587,19 +593,19 @@ public class XMLMapWriter implements MapWriter
         return
             "The core Tiled TMX format writer\n" +
             "\n" +
-            "Tiled Map Editor, (c) 2004\n" +
+            "Tiled Map Editor, (c) 2005\n" +
             "Adam Turk\n" +
             "Bjorn Lindeijer";
     }
 
     public String getName() {
-        return "Default Tiled XML map writer";
+        return "Default Tiled XML (TMX) map writer";
     }
 
     public boolean accept(File pathname) {
         try {
             String path = pathname.getCanonicalPath();
-            if (path.endsWith(".tmx") || path.endsWith(".tsx")) {
+            if (path.endsWith(".tmx") || path.endsWith(".tsx") || path.endsWith(".tmx.gz")) {
                 return true;
             }
         } catch (IOException e) {}

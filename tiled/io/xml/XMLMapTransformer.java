@@ -734,13 +734,13 @@ public class XMLMapTransformer implements MapReader
     public String getDescription() {
         return "This is the core Tiled TMX format reader\n" +
             "\n" +
-            "Tiled Map Editor, (c) 2004\n" +
+            "Tiled Map Editor, (c) 2005\n" +
             "Adam Turk\n" +
             "Bjorn Lindeijer";
     }
 
     public String getName() {
-        return "Default Tiled XML map reader";
+        return "Default Tiled XML (TMX) map reader";
     }
 
     public boolean accept(File pathname) {

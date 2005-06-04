@@ -32,6 +32,7 @@ public class TiledFileFilter extends FileFilter
         desc = new String("Tiled files");
         exts = new LinkedList();
         exts.add(new String("tmx"));
+        exts.add(new String("tmx.gz"));
         exts.add(new String("tsx"));
     }
 
@@ -41,6 +42,7 @@ public class TiledFileFilter extends FileFilter
         if ((filter & FILTER_TMX) != 0) {
             desc = new String("Tiled Maps files ");
             exts.add(new String("tmx"));
+            exts.add(new String("tmx.gz"));
         }
         if ((filter & FILTER_TSX) != 0) {
             desc = desc + "Tiled Tileset files";

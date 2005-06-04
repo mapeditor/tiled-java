@@ -57,7 +57,7 @@ public class MapHelper {
         throws Exception
     {
         MapWriter mw = null;
-        if (filename.endsWith("tmx")) {
+        if (filename.endsWith("tmx") || filename.endsWith("tmx.gz")) {
             // Override, so people can't overtake our format
             mw = new XMLMapWriter();
         } else {
