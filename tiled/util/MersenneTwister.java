@@ -1,5 +1,7 @@
 package tiled.util;
 
+import java.util.Random;
+
 /**
    A C-program for MT19937, with initialization improved 2002/1/26.
    Coded by Takuji Nishimura and Makoto Matsumoto.
@@ -45,7 +47,7 @@ package tiled.util;
    @author Makoto Matsumoto (matumoto@math.keio.ac.jp)
    @author Takuji Nishimura
 */
-public class MersenneTwister {
+public class MersenneTwister extends Random {
     public static final int N = 624;
     public static final int M = 397;
     public static final int MATRIX_A = 0x9908b0df;   /* constant vector a */
@@ -146,4 +148,8 @@ public class MersenneTwister {
 
         return y;
     }
+    
+ 	synchronized protected int next(int bits) {
+		return (int)genrand();
+	}
 }
