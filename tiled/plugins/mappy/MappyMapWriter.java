@@ -105,13 +105,16 @@ public class MappyMapWriter implements MapWriter
         Chunk c = new Chunk("MPHD");
         OutputStream out = c.getOutputStream();
         String ver = m.getProperties().getProperty("version");
-        if (ver == null) {
+        if (ver == null || ver.length() < 3) {
             ver = "0.3";                            // default the value
         }
         TileSet set = (TileSet) m.getTilesets().get(0);
 
-        out.write(Integer.parseInt(ver.substring(0,ver.indexOf('.')-1)));
-        out.write(Integer.parseInt(ver.substring(ver.indexOf('.')+1)));
+        //FIXME
+        //out.write(Integer.parseInt(ver.substring(0,ver.indexOf('.')-1)));
+        //out.write(Integer.parseInt(ver.substring(ver.indexOf('.')+1)));
+        out.write(0);
+        out.write(3);
         out.write(1); out.write(0);                 // LSB, reserved
         Util.writeShort(m.getWidth(), out);  Util.writeShort(m.getHeight(), out);
         out.write(0); out.write(0); out.write(0); out.write(0);     // reserved

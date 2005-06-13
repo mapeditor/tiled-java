@@ -1,13 +1,18 @@
-0.5.1 - TBD
+0.5.2 - TBD
+
++ Added the Shifted view, which emulates several tiling configurations
++ Added "stamp" tool
++ Added ability to select multiple layers from layer table
++ Added the ability to merge tile images when layers are merged
++ Fixed memory problems when loading several maps with many tilesets
+  in a row
+
+0.5.1 - June 13th, 2005
 
 * Added a checkerboard background to tileset palette
-+ Added the Shifted view, which emulates several tiling configurations
-+ Added "stamp" brushes
 * Added support for layer locking (not editable when locked)
 * Added support for tmx.gz map files
-* Added the ability to merge tile images when layers are merged
 * Added selection addition and substraction via Shift and Ctrl respectively
-+ Added ability to select multiple layers from layer table
 * Improved the drawing speed thanks to some thorough testing and suggestions
   (Jerome Blouin)
 * Improved transformation so that it respects selections
@@ -16,11 +21,12 @@
 * Fixed selection rectangle to include one more tile
 * Fixed loading of plugins that only do export and no import
 * Fixed removing tilesets in the Tileset Manager
-+ Fixed image loading to ensure hardware acceleration is used in Java 1.4 and
+* Fixed image loading to ensure hardware acceleration is used in Java 1.4 and
   above (Jerome Blouin)
 * Fixed a NullPointerException when loading TSX files as imported tilesets
 * Fixed an "Unsupported protocol" error when loading TMX files which referenced
-  an external tileset
+  an external tileset under certain conditions
+* Fixed a ClassCastException when loading GIFs as tilesets
 
 0.5.0 - December 14th, 2004
 
