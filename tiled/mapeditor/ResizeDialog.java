@@ -76,7 +76,7 @@ public class ResizeDialog extends JDialog implements ActionListener,
         c.gridx = 2; c.gridy = 0; c.gridheight = 2; c.weightx = 1;
         offsetPanel.add(new JPanel(), c);
         c.gridx = 0; c.gridy = 2; c.gridwidth = 3; c.gridheight = 1;
-        offsetPanel.add(orient, c);
+        //offsetPanel.add(orient, c);
 
         // New size panel
         JPanel newSizePanel = new VerticalStaticJPanel(new GridBagLayout());

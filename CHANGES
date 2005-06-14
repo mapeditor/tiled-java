@@ -1,4 +1,4 @@
-0.5.2 - TBD
+0.5.2 - TBD (+ means planned change)
 
 + Added the Shifted view, which emulates several tiling configurations
 + Added "stamp" tool
@@ -7,7 +7,7 @@
 + Fixed memory problems when loading several maps with many tilesets
   in a row
 
-0.5.1 - June 13th, 2005
+0.5.1 - June 15th, 2005
 
 * Added a checkerboard background to tileset palette
 * Added support for layer locking (not editable when locked)
