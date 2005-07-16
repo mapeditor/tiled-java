@@ -1616,7 +1616,7 @@ public class MapEditor implements ActionListener,
 
     private void pour(TileLayer layer, int x, int y,
             Tile newTile, Tile oldTile) {
-        if (newTile == oldTile) return;
+        if (newTile == oldTile || layer.getLocked()) return;
 
         Rectangle area = null;
         TileLayer before = new TileLayer(layer);
@@ -1633,7 +1633,7 @@ public class MapEditor implements ActionListener,
 
                 // If the tile it meets the requirements, set it and push its
                 // neighbouring tiles on the stack.
-                if (currentMap.inBounds(p.x, p.y) &&
+                if (layer.contains(p.x, p.y) &&
                         layer.getTileAt(p.x, p.y) == oldTile)
                 {
                     layer.setTileAt(p.x, p.y, newTile);

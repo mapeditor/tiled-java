@@ -31,7 +31,7 @@ public class AboutDialog extends JFrame
 
         this.parent = parent;
         ImageIcon icon;
-        
+
         try {
             icon = new ImageIcon(ImageIO.read(
                         getClass().getResourceAsStream("resources/logo.png")));
