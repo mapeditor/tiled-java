@@ -21,18 +21,35 @@ import java.util.*;
  */
 public class Tile
 {
+    // One warning about animation frames: when copying a tile, a shallow
+    // copy of the original tile's animation is made.  This means that the
+    // animation frame objects between the two tiles are shared.  One should
+    // therefore never modify an animation frame object in-place, but create
+    // a new animation frame object instead.
+    private static class AnimationFrame {
+        public int imageId, orientation; // Used to look up actual image.
+        public int duration; // In milliseconds.
+
+        public AnimationFrame(int img, int o, int d)
+        {
+            this.imageId = img;
+            this.orientation = o;
+            this.duration = d;
+        }
+    };
+
     private Image internalImage, scaledImage;
     private int id = -1;
     private int stdHeight;
     private int groundHeight;          // Height above/below ground
-    private int tileImageId = -1;
-    private int tileOrientation;
     private double myZoom = 1.0;
     private Properties properties;
     private TileSet tileset;
+    private Vector animation;
 
     public Tile() {
         properties = new Properties();
+        this.animation = new Vector();
     }
 
     public Tile(TileSet set) {
@@ -42,12 +59,9 @@ public class Tile
 
     public Tile(Tile t) {
         properties = (Properties)t.properties.clone();
-        tileImageId = t.tileImageId;
+        this.animation = (Vector)t.animation.clone();
+
         tileset = t.tileset;
-        if (tileset != null) {
-            scaledImage = getImage().getScaledInstance(
-                    -1, -1, Image.SCALE_DEFAULT);
-        }
         groundHeight = getHeight();
     }
 
@@ -67,6 +81,7 @@ public class Tile
      *
      * @param i the new image of the tile
      */
+    /*
     public void setImage(Image i) {
         if (tileset != null) {
             tileset.overlayImage("" + tileImageId, i);
@@ -75,14 +90,10 @@ public class Tile
         }
         groundHeight = getHeight();
     }
+    */
 
     public void setImage(int id) {
-        tileImageId = id;
-        groundHeight = getHeight();
-    }
-
-    public void setImageOrientation(int orientation) {
-        this.tileOrientation = orientation;
+        this.setAppearance(id, 0);
     }
 
     public void setStandardHeight(int i) {
@@ -91,10 +102,12 @@ public class Tile
 
     public void setTileSet(TileSet set) {
         tileset = set;
+        /*
         if (internalImage != null) {
             tileImageId = set.addImage(internalImage);
             internalImage = null;
         }
+        */
         groundHeight = getHeight();
     }
 
@@ -180,9 +193,14 @@ public class Tile
 
     public int getWidth() {
         if (tileset != null) {
-            Dimension d
-              = tileset.getImageDimensions("" + tileImageId, tileOrientation);
-            return d.width;
+            int width = 0;
+            for (int i = 0; i < this.animation.size(); ++i) {
+                AnimationFrame frame = this.getAnimationFrame(i);
+                Dimension d = tileset.getImageDimensions("" + frame.imageId,
+                    frame.orientation);
+                if (d.width > width) width = d.width;
+            }
+            return width;
         } else if (internalImage != null){
             return internalImage.getWidth(null);
         }
@@ -191,9 +209,14 @@ public class Tile
 
     public int getHeight() {
         if (tileset != null) {
-            Dimension d
-              = tileset.getImageDimensions("" + tileImageId, tileOrientation);
-            return d.height;
+            int height = 0;
+            for (int i = 0; i < this.animation.size(); ++i) {
+                AnimationFrame frame = this.getAnimationFrame(i);
+                Dimension d = tileset.getImageDimensions("" + frame.imageId,
+                    frame.orientation);
+                if (d.height > height) height = d.height;
+            }
+            return height;
         } else if (internalImage != null) {
             return internalImage.getHeight(null);
         }
@@ -201,11 +224,11 @@ public class Tile
     }
 
     public int getImageId() {
-        return tileImageId;
+        return getAnimationFrameImageId(0);
     }
 
     public int getImageOrientation() {
-        return tileOrientation;
+        return getAnimationFrameOrientation(0);
     }
 
     /**
@@ -214,9 +237,8 @@ public class Tile
      * @return Image
      */
     public Image getImage() {
-        if (tileset != null) {
-            return tileset.getImageByIdAndOrientation(
-                Integer.toString(tileImageId), tileOrientation);
+        if (tileset != null && this.animation.size() > 0) {
+            return getAnimationFrameImage(0);
         } else {
             return internalImage;
         }
@@ -241,8 +263,86 @@ public class Tile
 
     public String toString() {
         String out = "";
-        out += "Tile: " + id + " Image: " + tileImageId + " (" + getWidth() +
+        out += "Tile: " + id + " (" + getWidth() +
             "x" + getHeight() + ")";
         return out;
     }
+
+
+    // The following functions are all concerned with manipulating animation
+    // data.
+
+    private AnimationFrame getAnimationFrame(int n)
+    {
+        return (AnimationFrame)(this.animation.elementAt(n));
+    }
+
+    public int countAnimationFrames()
+    {
+        return this.animation.size();
+    }
+
+    public int getAnimationFrameImageId(int n)
+    {
+        return this.getAnimationFrame(n).imageId;
+    }
+
+    public int getAnimationFrameOrientation(int n)
+    {
+        return this.getAnimationFrame(n).orientation;
+    }
+
+    public int getAnimationFrameDuration(int n)
+    {
+        return this.getAnimationFrame(n).duration;
+    }
+
+    public Image getAnimationFrameImage(int n)
+    {
+        AnimationFrame frame = this.getAnimationFrame(n);
+        return this.tileset.getImageByIdAndOrientation("" + frame.imageId,
+            frame.orientation);
+    }
+
+    public void insertAnimationFrame(int n, int imageId, int orientation,
+        int d)
+    {
+        this.scaledImage = null;
+        this.animation.insertElementAt
+            (new AnimationFrame(imageId, orientation, d), n);
+    }
+
+    public void addAnimationFrame(int imageId, int orientation, int d)
+    {
+        this.scaledImage = null;
+        this.animation.addElement(new AnimationFrame(imageId, orientation, d));
+    }
+
+    public void removeAnimationFrame(int n)
+    {
+        this.scaledImage = null;
+        this.animation.remove(n);
+    }
+
+    public void setAnimationFrame(int n, int imageId, int orientation, int d)
+    {
+        this.scaledImage = null;
+        this.animation.set(n, (new AnimationFrame(imageId, orientation, d)));
+    }
+
+    public void setAppearance(int imageId, int orientation)
+    {
+        this.scaledImage = null;
+        this.animation.removeAllElements();
+        this.animation.addElement(new AnimationFrame(imageId, orientation, 1));
+    }
+
+    public void swapAnimationFrames(int n0, int n1)
+    {
+        this.scaledImage = null;
+      Object tmp = this.animation.elementAt(n0);
+      this.animation.set(n0, this.animation.elementAt(n1));
+      this.animation.set(n1, tmp);
+    }
+
 }

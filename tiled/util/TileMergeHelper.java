@@ -54,28 +54,29 @@ public class TileMergeHelper {
         Iterator itr = cells.iterator();
         Tile tile;
 
-        while (itr.hasNext()) {
-            Cell check = (Cell)itr.next();
-            if (check.equals(c)) {
-                return check.getTile();
-            }
-        }
-
-        cells.add(c);
-
-        tile = new Tile();
-        c.setTile(tile);
-
-        //GENERATE MERGED TILE IMAGE
-        GraphicsConfiguration config =
-            GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
-        Image tileImg = config.createCompatibleImage(c.getWidth(), c.getHeight());
-        c.render(tileImg.getGraphics());
-        tile.setImage(tileImg);
-
-        myTs.addTile(tile);
-
-        return tile;
+		while(itr.hasNext()) {
+			Cell check = (Cell)itr.next();
+			if(check.equals(c)) {
+			    return check.getTile(); 
+			}
+		}
+	
+		cells.add(c);
+	
+		tile = new Tile();
+		c.setTile(tile);
+	
+		//GENERATE MERGED TILE IMAGE
+		GraphicsConfiguration config =
+	            GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
+		Image tileImg = config.createCompatibleImage(c.getWidth(), c.getHeight());	
+		c.render(tileImg.getGraphics());
+                int image_id = myTs.addImage(tileImg);
+		tile.setAppearance(image_id, 0);
+	
+		myTs.addTile(tile);
+	
+		return tile;
     }
 
     private static class Cell {

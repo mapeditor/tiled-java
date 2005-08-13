@@ -7,6 +7,7 @@
 + Fixed memory problems when loading several maps with many tilesets
   in a row
 * Fixed two cases of a hanging when using the fill tool
+* Added support for animated tiles
 
 0.5.1 - June 15th, 2005
 
