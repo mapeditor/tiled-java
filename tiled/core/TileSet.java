@@ -28,6 +28,7 @@ import javax.imageio.stream.ImageInputStream;
 import tiled.util.Util;
 import tiled.util.NumberedSet;
 
+import tiled.core.ImageGroup;
 
 /**
  * <p>TileSet handles operations on tiles as a set, or group. It has several
@@ -543,14 +544,9 @@ public class TileSet
     }
 
     public Image getImageByIdAndOrientation(Object key, int orientation) {
-        Image[] imgs = (Image[])images.get(key);
-        if (imgs == null) return null;
-        if (imgs[orientation] == null) {
-            imgs[orientation]
-                = internImage(generateImageWithOrientation(imgs[0],
-                      orientation));
-        }
-        return imgs[orientation];
+        ImageGroup img = (ImageGroup)images.get(key);
+        if (img == null) return null;
+        return img.getImage(orientation);
     }
 
     /*
@@ -560,9 +556,7 @@ public class TileSet
      * I don't have the patience to fix it right now. - Rainer Deyke
      */
     public void overlayImage(Object key, Image i) {
-        Image[] imgs = new Image[8];
-        imgs[0] = internImage(i);
-        images.put(key, imgs);
+        images.put(key, new ImageGroup(internImage(i)));
     }
 
     /**
@@ -612,8 +606,8 @@ public class TileSet
             Iterator itr = images.keySet().iterator();
             while (itr.hasNext()) {
                 Object key = itr.next();
-                Image[] imgs = (Image[])images.get(key);
-                if (imgs[0] == image) {
+                ImageGroup img = (ImageGroup)images.get(key);
+                if (img.getImage(0) == image) {
                     //System.out.println("Success: " + key);
                     return key;
                 }
@@ -648,9 +642,7 @@ public class TileSet
         } else {
             //System.out.print(name+".addImage(Image, Object): " + key + " ");
             //System.out.println("Checksum: " + cs);
-            Image[] imgs = new Image[8];
-            imgs[0] = internImage(image);
-            images.put(key, imgs);
+            images.put(key, new ImageGroup(internImage(image)));
             return Integer.parseInt((String)key);
         }
     }
@@ -660,55 +652,15 @@ public class TileSet
         // This operation is siginificantly slower now that 'images' stores
         // images directly instead of storing hashes.  Fortunately this
         // operation is also extremely rare.
-        Image[] img = (Image[])images.get(id);
+        ImageGroup img = (ImageGroup)images.get(id);
         images.remove(id);
         for (Enumeration e = imageCache.keys(); e.hasMoreElements();) {
           Object key = e.nextElement();
-          for (int i = 0; i < img.length; ++i) {
-            if (imageCache.get(key) == img[i]) {
+          for (int i = 0; i < 8; ++i) {
+            if (imageCache.get(key) == img.getImage(i)) {
               imageCache.remove(key);
             }
           }
-        }
-    }
-
-    public static Image generateImageWithOrientation(Image src, int orientation) {
-        if (orientation == 0) {
-            return src;
-        } else {
-            int w = src.getWidth(null), h = src.getHeight(null);
-            int[] old_pixels = new int[w * h];
-            PixelGrabber p = new PixelGrabber(src, 0, 0, w, h,
-                    old_pixels, 0, w);
-            try {
-                p.grabPixels();
-            } catch (InterruptedException e) {
-            }
-            int[] new_pixels = new int[w * h];
-            int dest_w = ((orientation & 4) != 0) ? h : w;
-            int dest_h = ((orientation & 4) != 0) ? w : h;
-            for (int dest_y = 0; dest_y < dest_h; ++dest_y) {
-                for (int dest_x = 0; dest_x < dest_w; ++dest_x) {
-                    int src_x = dest_x, src_y = dest_y;
-                    if ((orientation & 4) != 0) {
-                        src_y = dest_w - dest_x - 1;
-                        src_x = dest_y;
-                    }
-                    if ((orientation & 1) != 0) {
-                        src_x = w - src_x - 1;
-                    }
-                    if ((orientation & 2) != 0) {
-                        src_y = h - src_y - 1;
-                    }
-                    new_pixels[dest_x + dest_y * dest_w]
-                        = old_pixels[src_x + src_y * w];
-                }
-            }
-            old_pixels = null;
-            BufferedImage new_img = new BufferedImage(dest_w, dest_h,
-                    BufferedImage.TYPE_INT_ARGB);
-            new_img.setRGB(0, 0, dest_w, dest_h, new_pixels, 0, dest_w);
-            return new_img;
         }
     }
 
