@@ -1,5 +1,5 @@
 /*
- *  Tiled Map Editor, (c) 2004
+ *  Tiled Map Editor, (c) 2004, 2005
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -8,9 +8,10 @@
  *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
+ *  Rainer Deyke <rainerd@eldwood.com>
  */
 
-package tiled.core;
+package tiled.util;
 
 import java.lang.IllegalStateException;
 import java.lang.UnsupportedOperationException;
@@ -19,29 +20,25 @@ import java.util.Vector;
 import java.util.NoSuchElementException;
 
 
-public class TileIterator implements Iterator
+public class NumberedSetIterator implements Iterator
 {
-    private Vector tiles;
-    private int pos;
+    private NumberedSet set;
+    private int id;
 
-    public TileIterator(Vector tiles) {
-        this.tiles = tiles;
-        pos = 0;
+    public NumberedSetIterator(NumberedSet set) {
+        this.set = set;
+        this.id = 0;
     }
 
     public boolean hasNext() {
-        while (pos < tiles.size()) {
-            if (tiles.get(pos) != null) return true;
-            pos++;
-        }
-        return false;
+        return this.set.getMaxId() > this.id;
     }
 
     public Object next() throws NoSuchElementException {
-        while (pos < tiles.size()) {
-            Tile t = (Tile)tiles.get(pos);
-            pos++;
-            if (t != null) return t;
+        while (this.id < this.set.getMaxId()) {
+            ++this.id;
+            Object o = this.set.get(id);
+            if (o != null) return o;
         }
         throw new NoSuchElementException();
     }

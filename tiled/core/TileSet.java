@@ -26,6 +26,7 @@ import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageInputStream;
 
 import tiled.util.Util;
+import tiled.util.NumberedSet;
 
 
 /**
@@ -53,8 +54,8 @@ import tiled.util.Util;
 public class TileSet
 {
     private String base;
-    private Vector tiles;
-    private Hashtable images, orientedImages, imageCache;
+    private NumberedSet tiles;
+    private Hashtable images, imageCache;
     private int firstGid;
     private int standardHeight;
     private int standardWidth;
@@ -65,7 +66,7 @@ public class TileSet
     private Color transparentColor;
 
     public TileSet() {
-        tiles = new Vector();
+        tiles = new NumberedSet();
         images = new Hashtable();
         imageCache = new Hashtable();
     }
@@ -175,9 +176,7 @@ public class TileSet
         Iterator itr = tiles.iterator();
         while (itr.hasNext()) {
             Tile t = (Tile)itr.next();
-            if (t != null) {
-                t.setStandardHeight(standardHeight);
-            }
+            t.setStandardHeight(standardHeight);
         }
     }
 
@@ -253,11 +252,7 @@ public class TileSet
      */
     public int addTile(Tile t) {
         if (t.getId() < 0) {
-            t.setId(tiles.size());
-        }
-
-        if (t.getId() >= tiles.size()) {
-            tiles.setSize(t.getId() + 1);
+            t.setId(tiles.getFirstFreeId());
         }
 
         tiles.set(t.getId(), t);
@@ -301,13 +296,7 @@ public class TileSet
      * @return the amount of tiles in this tileset
      */
     public int size() {
-        int total = 0;
-        for (int i = 0; i < tiles.size(); i++) {
-            if (tiles.get(i) != null) {
-                total++;
-            }
-        }
-        return total;
+        return tiles.size();
     }
 
     /**
@@ -316,7 +305,7 @@ public class TileSet
      * @return the maximum tile id, or -1 when there are no tiles
      */
     public int getMaxTileId() {
-        return tiles.size() - 1;
+        return tiles.getMaxId();
     }
 
     /**
@@ -325,7 +314,7 @@ public class TileSet
      * @return an iterator over the tiles in this tileset.
      */
     public Iterator iterator() {
-        return new TileIterator(tiles);
+        return tiles.iterator();
     }
 
     /**
@@ -375,11 +364,7 @@ public class TileSet
      *         tile exists with that id
      */
     public Tile getTile(int i) {
-        try {
-            return (Tile)tiles.get(i);
-        } catch (ArrayIndexOutOfBoundsException e) {
-            return null;
-        }
+        return (Tile)tiles.get(i);
     }
 
     /**
