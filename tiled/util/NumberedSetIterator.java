@@ -31,13 +31,13 @@ public class NumberedSetIterator implements Iterator
     }
 
     public boolean hasNext() {
-        return this.set.getMaxId() > this.id;
+        return this.id <= this.set.getMaxId();
     }
 
     public Object next() throws NoSuchElementException {
-        while (this.id < this.set.getMaxId()) {
-            ++this.id;
+        while (this.id <= this.set.getMaxId()) {
             Object o = this.set.get(id);
+            ++this.id;
             if (o != null) return o;
         }
         throw new NoSuchElementException();
