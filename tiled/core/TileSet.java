@@ -507,7 +507,7 @@ public class TileSet
      */
     public Enumeration getImageIds() {
         Vector v = new Vector();
-        for (int id = 0; id < images.getMaxId(); ++id) {
+        for (int id = 0; id <= images.getMaxId(); ++id) {
             if (images.containsId(id)) v.add(Integer.toString(id));
         }
         return v.elements();
@@ -601,7 +601,7 @@ public class TileSet
      * @return the id as an <code>int</code> of the image in the cache
      */
     public int addImage(Image image) {
-        return images.findOrAdd(image);
+        return images.findOrAdd(new ImageGroup(image));
     }
 
     public int addImage(Image image, Object key) {
