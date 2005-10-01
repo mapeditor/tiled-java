@@ -37,11 +37,13 @@ public class TileDialog extends JDialog
     private Tile currentTile;
     private TileSet tileset;
     private JList tileList, imageList;
+    private Vector imageIds;
     private JTable tileProperties, tileAnimation;
     private AnimationTableModel animationModel;
     private JComboBox tLinkList;
     private JButton bOk, bNew, bDelete, bDuplicate;
-    private JButton bAddImage, bDeleteImage, bDeleteAllUnusedImages;
+    private JButton bAddImage, bReplaceImage, bDeleteImage,
+            bDeleteAllUnusedImages;
     private AbstractButton frameAddButton, frameCloneButton, frameDelButton;
     private AbstractButton frameUpButton, frameDownButton;
     private AbstractButton frameChangeImageButton;
@@ -244,6 +246,8 @@ public class TileDialog extends JDialog
         // Buttons
         bAddImage = new JButton("Add Image");
         bAddImage.addActionListener(this);
+        bReplaceImage = new JButton("Replace Image");
+        bReplaceImage.addActionListener(this);
         bDeleteImage = new JButton("Delete Image");
         bDeleteImage.addActionListener(this);
         bDeleteAllUnusedImages = new JButton("Delete Unused Images");
@@ -252,6 +256,8 @@ public class TileDialog extends JDialog
         buttons.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
         buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
         buttons.add(bAddImage);
+        buttons.add(Box.createRigidArea(new Dimension(5, 0)));
+        buttons.add(bReplaceImage);
         buttons.add(Box.createRigidArea(new Dimension(5, 0)));
         buttons.add(bDeleteImage);
         buttons.add(Box.createRigidArea(new Dimension(5, 0)));
@@ -426,13 +432,15 @@ public class TileDialog extends JDialog
 
     public void queryImages() {
         Vector listData = new Vector();
+        imageIds = new Vector();
         int curSlot = 0;
 
         Enumeration ids = tileset.getImageIds();
         while(ids.hasMoreElements()) {
-        	Image img = tileset.getImageById(ids.nextElement());
-        	if(img != null)
-        		listData.add(img);
+            Object key = ids.nextElement();
+            Image img = tileset.getImageById(key);
+            listData.add(img);
+            imageIds.add(key);
         }
 
         imageList.setListData(listData);
@@ -490,6 +498,7 @@ public class TileDialog extends JDialog
         tabs.setEnabledAt(2, sharedImages);
         if (sharedImages) {
             bAddImage.setEnabled(!tilebmp);
+            bReplaceImage.setEnabled(!tilebmp && currentImageIndex >= 0);
             bDeleteAllUnusedImages.setEnabled(!tilebmp);
             boolean image_used = false;
             Iterator tileIterator = tileset.iterator();
@@ -585,9 +594,8 @@ public class TileDialog extends JDialog
                     externalBitmapCheck.setSelected(true);
                 }
             }
-        }
         /*
-        else if (source == sharedImagesCheck) {
+        } else if (source == sharedImagesCheck) {
             if (sharedImagesCheck.isSelected()) {
                 tileset.enableSharedImages();
                 updateEnabledState();
@@ -611,10 +619,16 @@ public class TileDialog extends JDialog
             }
         }
         */
-        else if (source == bAddImage) {
+        } else if (source == bAddImage) {
             Image img = loadImage();
             if (img != null) {
                 tileset.addImage(img);
+            }
+            queryImages();
+        } else if (source == bReplaceImage) {
+            Image img = loadImage();
+            if (img != null) {
+                tileset.addImage(img, imageIds.get(currentImageIndex));
             }
             queryImages();
         } else if (source == bDeleteImage) {
@@ -624,8 +638,7 @@ public class TileDialog extends JDialog
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE);
             if (answer == JOptionPane.YES_OPTION) {
-            	Image img = (Image)imageList.getSelectedValue();
-                tileset.removeImage(Integer.toString(tileset.getIdByImage(img)));
+                tileset.removeImage(imageIds.get(currentImageIndex));
                 queryImages();
             }
         } else if (source == bDeleteAllUnusedImages) {
@@ -636,10 +649,10 @@ public class TileDialog extends JDialog
                 JOptionPane.QUESTION_MESSAGE);
             if (answer == JOptionPane.YES_OPTION) {
            
-            	Enumeration ids = tileset.getImageIds();
+                Enumeration ids = tileset.getImageIds();
                 while(ids.hasMoreElements()) {
-                	int id = Integer.parseInt((String)ids.nextElement());
-                	boolean image_used = false;
+                    int id = Integer.parseInt((String)ids.nextElement());
+                    boolean image_used = false;
                     Iterator tileIterator = tileset.iterator();
 
                     while (tileIterator.hasNext()) {
