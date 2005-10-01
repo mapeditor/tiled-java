@@ -69,6 +69,14 @@ public class NumberedSet
   }
 
   /**
+   * Removes the element associated with the given id from the NumberedSet.
+   */
+  public void remove(int id)
+  {
+    this.set(id, null);
+  }
+
+  /**
    * Returns the first free id in the NumberedSet.
    */
   public int getFirstFreeId()

@@ -55,8 +55,7 @@ import tiled.core.ImageGroup;
 public class TileSet
 {
     private String base;
-    private NumberedSet tiles;
-    private Hashtable images, imageCache;
+    private NumberedSet tiles, images;
     private int firstGid;
     private int standardHeight;
     private int standardWidth;
@@ -68,8 +67,7 @@ public class TileSet
 
     public TileSet() {
         tiles = new NumberedSet();
-        images = new Hashtable();
-        imageCache = new Hashtable();
+        images = new NumberedSet();
     }
 
     /**
@@ -508,7 +506,11 @@ public class TileSet
      * @return an Enumeration of the image ids
      */
     public Enumeration getImageIds() {
-        return images.keys();
+        Vector v = new Vector();
+        for (int id = 0; id < images.getMaxId(); ++id) {
+            if (images.containsId(id)) v.add(Integer.toString(id));
+        }
+        return v.elements();
     }
 
     /**
@@ -520,18 +522,7 @@ public class TileSet
      *         the set
      */
     public int getIdByImage(Image i) {
-        Iterator itr = imageCache.keySet().iterator();
-        int searchId = -1;
-        if (i != null) {
-            while (itr.hasNext()) {
-                Image img = (Image)imageCache.get(itr.next());
-                searchId++;
-                if (img.equals(i)) {
-                    break;
-                }
-            }
-        }
-        return searchId;
+        return images.find(new ImageGroup(i));
     }
 
     /**
@@ -544,19 +535,15 @@ public class TileSet
     }
 
     public Image getImageByIdAndOrientation(Object key, int orientation) {
-        ImageGroup img = (ImageGroup)images.get(key);
+        int img_id = Integer.parseInt((String)key);
+        ImageGroup img = (ImageGroup)images.get(img_id);
         if (img == null) return null;
         return img.getImage(orientation);
     }
 
-    /*
-     * The following function is almost certainly incorrect, and at the very
-     * least contains a potential memory leak (because the old image is never
-     * removed from 'imageCache').  It was that way when I found it, and
-     * I don't have the patience to fix it right now. - Rainer Deyke
-     */
     public void overlayImage(Object key, Image i) {
-        images.put(key, new ImageGroup(internImage(i)));
+        int img_id = Integer.parseInt((String)key);
+        images.set(img_id, new ImageGroup(i));
     }
 
     /**
@@ -584,8 +571,9 @@ public class TileSet
      *         otherwise
      */
     public Image queryImage(Image image) {
-        String hash = checksumImage(image);
-        return (Image)imageCache.get(hash);
+        int id = images.find(new ImageGroup(image));
+        ImageGroup img = (ImageGroup)images.get(id);
+        return img.getImage(0);
     }
 
     /*
@@ -594,26 +582,14 @@ public class TileSet
      */
 
     /**
-     * Find the id fo the given image in the image cache.
+     * Find the id of the given image in the image cache.
      *
      * @param image the java.awt.Image to find the id for.
      * @return an java.lang.Object that represents the id of the image
      */
     public Object queryImageId(Image image) {
-        String hash = checksumImage(image);
-        image = (Image)imageCache.get(hash);
-        if (image != null) {
-            Iterator itr = images.keySet().iterator();
-            while (itr.hasNext()) {
-                Object key = itr.next();
-                ImageGroup img = (ImageGroup)images.get(key);
-                if (img.getImage(0) == image) {
-                    //System.out.println("Success: " + key);
-                    return key;
-                }
-            }
-        }
-        return Integer.toString(-1);
+        ImageGroup img = new ImageGroup(image);
+        return Integer.toString(images.find(img));
     }
 
     /**
@@ -625,43 +601,22 @@ public class TileSet
      * @return the id as an <code>int</code> of the image in the cache
      */
     public int addImage(Image image) {
-        int t;
-        if ((t = Integer.parseInt((String)queryImageId(image))) >= 0) {
-            return t;
-        } else {
-            //image ids should be unique.
-            t = images.size();
-            addImage(image, Integer.toString(t));
-            return t;
-        }
+        return images.findOrAdd(image);
     }
 
     public int addImage(Image image, Object key) {
         if (key == null) {
             return addImage(image);
         } else {
-            //System.out.print(name+".addImage(Image, Object): " + key + " ");
-            //System.out.println("Checksum: " + cs);
-            images.put(key, new ImageGroup(internImage(image)));
-            return Integer.parseInt((String)key);
+            int id = Integer.parseInt((String)key);
+            images.set(id, new ImageGroup(image));
+            return id;
         }
     }
 
-    public void removeImage(Object id) {
-        //System.out.println(name+".removeImage(Object): " + id);
-        // This operation is siginificantly slower now that 'images' stores
-        // images directly instead of storing hashes.  Fortunately this
-        // operation is also extremely rare.
-        ImageGroup img = (ImageGroup)images.get(id);
+    public void removeImage(Object key) {
+        int id = Integer.parseInt((String)key);
         images.remove(id);
-        for (Enumeration e = imageCache.keys(); e.hasMoreElements();) {
-          Object key = e.nextElement();
-          for (int i = 0; i < 8; ++i) {
-            if (imageCache.get(key) == img.getImage(i)) {
-              imageCache.remove(key);
-            }
-          }
-        }
     }
 
     public boolean usesSharedImages() {
@@ -686,16 +641,14 @@ public class TileSet
             }
         }
 
-        Enumeration keys = images.keys();
 
-        while (keys.hasMoreElements()) {
-            int key = Integer.parseInt((String)keys.nextElement());
+        for (int id = 0; id <= images.getMaxId(); ++id) {
             int relations = 0;
             itr = iterator();
 
             while (itr.hasNext()) {
                 Tile t = (Tile)itr.next();
-                if (t.getImageId() == key) {
+                if (t.getImageId() == id) {
                     relations++;
                 }
             }
@@ -707,12 +660,4 @@ public class TileSet
         return true;
     }
 
-    private Image internImage(Image img)
-    {
-      String s = checksumImage(img);
-      Image img2 = (Image)imageCache.get(s);
-      if (img2 != null) return img2;
-      imageCache.put(s, img);
-      return img;
-    }
 }
