@@ -188,7 +188,7 @@ public class XMLMapTransformer implements MapReader
             if (Util.checkRoot(source)) {
                 source = makeUrl(source);
             } else {
-                source = baseDir + source;
+                source = makeUrl(baseDir + source);
             }
             img = ImageIO.read(new URL(source));
         } else {
@@ -234,34 +234,36 @@ public class XMLMapTransformer implements MapReader
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         try {
             DocumentBuilder builder = factory.newDocumentBuilder();
+            //builder.setErrorHandler(new XMLErrorHandler());
             tsDoc = builder.parse(in, ".");
-        } catch (FileNotFoundException fnf) {
-            // TODO: Have a popup and ask the user to browse to the file...
-            warnings.push("ERROR: Could not find external tileset file " +
-                    filename);
+        
+
+	        String xmlPathSave = xmlPath;
+	        if (filename.indexOf(File.separatorChar) >= 0) {
+	            xmlPath = filename.substring(0,
+	                    filename.lastIndexOf(File.separatorChar) + 1);
+	        }
+	
+	        NodeList tsNodeList = tsDoc.getElementsByTagName("tileset");
+	
+	        for (int itr = 0; (tsNode = tsNodeList.item(itr)) != null; itr++) {
+	            set = unmarshalTileset(tsNode);
+	            if (set.getSource() != null) {
+	                warnings.push(
+	                        "WARN: Recursive external Tilesets are not supported.");
+	            }
+	            set.setSource(filename);
+	            // NOTE: This is a deliberate break. multiple tilesets per TSX are
+	            // not supported yet (maybe never)...
+	            break;
+	        }
+
+	        xmlPath = xmlPathSave;
+        } catch (SAXException e) {
+        	warnings.push("ERROR: Failed while loading "+filename+": "+e.getMessage());
+        	//e.printStackTrace();
         }
-
-        String xmlPathSave = xmlPath;
-        if (filename.indexOf(File.separatorChar) >= 0) {
-            xmlPath = filename.substring(0,
-                    filename.lastIndexOf(File.separatorChar) + 1);
-        }
-
-        NodeList tsNodeList = tsDoc.getElementsByTagName("tileset");
-
-        for (int itr = 0; (tsNode = tsNodeList.item(itr)) != null; itr++) {
-            set = unmarshalTileset(tsNode);
-            if (set.getSource() != null) {
-                warnings.push(
-                        "WARN: Recursive external Tilesets are not supported.");
-            }
-            set.setSource(filename);
-            // NOTE: This is a deliberate break. multiple tilesets per TSX are
-            // not supported yet (maybe never)...
-            break;
-        }
-
-        xmlPath = xmlPathSave;
+        
         return set;
     }
 
@@ -282,17 +284,26 @@ public class XMLMapTransformer implements MapReader
             //    filename = makeUrl(source);
             //}
             
-            TileSet ext;
+            TileSet ext = null;
 
             try {
+            	//just a little check for tricky people...
+            	if(!source.substring(source.lastIndexOf('.')+1).toLowerCase().equals("tsx")) {
+            		warnings.push("WARN: tileset files should end in .tsx! ("+source+")");
+            	}
+            	
                 InputStream in = new URL(makeUrl(filename)).openStream();
                 ext = unmarshalTilesetFile(in, filename);
             } catch (FileNotFoundException fnf) {
                 warnings.push("ERROR: Could not find external tileset file " +
                         filename);
-                ext = new TileSet();
             }
 
+            if(ext == null) {
+            	warnings.push("ERROR: tileset "+source+" was not loaded correctly!");
+            	ext = new TileSet();
+            }
+            
             ext.setFirstGid(firstGid);
             return ext;
         }
@@ -570,7 +581,6 @@ public class XMLMapTransformer implements MapReader
 
     private void buildMap(Document doc) throws Exception {
         Node item, mapNode;
-        Tile tile;
 
         mapNode = doc.getDocumentElement();
 

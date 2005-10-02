@@ -94,12 +94,6 @@ Date:       09/09/04
 Summary:    Additional documentation on the map format.
 State:      To be written.
 
-- 17 --------------------------------------------------------------------------
-Suggestor:  Rainer Deyke <root@rainerdeyke.com>
-Date:       24/09/04
-Summary:    The ability to flip and rotate individual and blocks of tiles.
-State:      Implemented
-
 - 18 --------------------------------------------------------------------------
 Suggestor:  Rainer Deyke <root@rainerdeyke.com>
 Date:       24/09/04
@@ -133,29 +127,22 @@ Date:       24/09/04
 Summary:    "Deep" brushes that affect more than one layer.
 State:      Implemented.
 
-- 23 --------------------------------------------------------------------------
-Suggestor:  Rainer Deyke <root@rainerdeyke.com>
-Date:       24/09/04
-Summary:    The ability to set properties for individual layers.
-State:      Implemented.
-
 - 24 --------------------------------------------------------------------------
 Suggestor:  Radomir Dopieralski <sheep@atos.wmid.amu.edu.pl>
-Date:	    29/10/04
+Date:       29/10/04
 Summary:    Tileset should allow a base directory attribute for relative image
             paths.
 State:      Implemented.
 
 - 25 --------------------------------------------------------------------------
 Suggestor:  Radomir Dopieralski <sheep@atos.wmid.amu.edu.pl>
-Date:	    29/10/04
+Date:       29/10/04
 Summary:    Tilesets should allow a designated default tile image.
 State:      Interesting.
 
 - 26 --------------------------------------------------------------------------
-Suggestor:  Marc <public@adaran.net>
-Date:	    13/11/04
-Summary:    Should be able to save the map as an image, for printing or use
-            elsewhere.
-State:      Implemented.
+Suggestor:  danter
+Date:       14/08/05
+Summary:    Have an option to toggle tile ids shown in tile palette window.
+State:      To be implemented.
 

@@ -19,6 +19,7 @@ import javax.swing.Scrollable;
 import javax.swing.JPanel;
 
 import tiled.core.*;
+import tiled.mapeditor.brush.Brush;
 import tiled.mapeditor.selection.SelectionLayer;
 import tiled.util.TiledConfiguration;
 
@@ -37,6 +38,7 @@ public abstract class MapView extends JPanel implements Scrollable
     public static int ZOOM_NORMALSIZE = 5;
 
     protected Map myMap;
+    protected Brush currentBrush;
     protected int modeFlags = 0;
     protected double zoom = 1.0;
     protected int zoomLevel = 5;
@@ -70,6 +72,15 @@ public abstract class MapView extends JPanel implements Scrollable
 
     public boolean getMode(int modeModifier) {
         return (modeFlags & modeModifier) != 0;
+    }
+
+
+    /**
+     * Sets a new brush. The brush can draw a preview of the change while
+     * editing.
+     */
+    public void setBrush(Brush brush) {
+        currentBrush = brush;
     }
 
 
@@ -192,7 +203,6 @@ public abstract class MapView extends JPanel implements Scrollable
         TiledConfiguration conf = TiledConfiguration.getInstance();
 
         double currentZoom = zoom;
-        Iterator li = myMap.getLayers();
         MapLayer layer;
         Rectangle clip = g2d.getClipBounds();
 
@@ -208,28 +218,10 @@ public abstract class MapView extends JPanel implements Scrollable
 
         g2d.fillRect(clip.x, clip.y, clip.width, clip.height);
 
-        while (li.hasNext()) {
-            if ((layer = (MapLayer)li.next()) != null) {
-                float opacity = layer.getOpacity();
-                if (layer.isVisible() && opacity > 0.0f) {
-                    if (opacity < 1.0f) {
-                        g2d.setComposite(AlphaComposite.getInstance(
-                                    AlphaComposite.SRC_ATOP, opacity));
-                    } else {
-                        g2d.setComposite(AlphaComposite.SrcOver);
-                    }
-
-                    if (layer instanceof TileLayer) {
-                        paintLayer(g2d, (TileLayer)layer, currentZoom);
-                    } else if (layer instanceof ObjectGroup) {
-                        paintLayer(g2d, (ObjectGroup)layer, currentZoom);
-                    }
-                }
-            }
-        }
+        paintSubMap(myMap, g2d, 1.0f);
 
         if (!getMode(PF_NOSPECIAL)) {
-            li = myMap.getLayersSpecial();
+            Iterator li = myMap.getLayersSpecial();
 
             while (li.hasNext()) {
                 layer = (MapLayer) li.next();
@@ -242,6 +234,11 @@ public abstract class MapView extends JPanel implements Scrollable
                     }
                     paintLayer(g2d, (TileLayer)layer, currentZoom);
                 }
+            }
+
+            //Paint Brush
+            if (currentBrush != null) {
+                currentBrush.drawPreview(g2d, this);
             }
         }
 
@@ -282,6 +279,32 @@ public abstract class MapView extends JPanel implements Scrollable
         }
     }
 
+    public void paintSubMap(MultilayerPlane m, Graphics2D g2d, float mapOpacity) {
+    	Iterator li = m.getLayers();
+    	MapLayer layer;
+    	double currentZoom = zoom;
+    	
+    	while (li.hasNext()) {
+            if ((layer = (MapLayer)li.next()) != null) {
+                float opacity = layer.getOpacity() * mapOpacity;
+                if (layer.isVisible() && opacity > 0.0f) {
+                    if (opacity < 1.0f) {
+                        g2d.setComposite(AlphaComposite.getInstance(
+                                    AlphaComposite.SRC_ATOP, opacity));
+                    } else {
+                        g2d.setComposite(AlphaComposite.SrcOver);
+                    }
+
+                    if (layer instanceof TileLayer) {
+                        paintLayer(g2d, (TileLayer)layer, currentZoom);
+                    } else if (layer instanceof ObjectGroup) {
+                        paintLayer(g2d, (ObjectGroup)layer, currentZoom);
+                    }
+                }
+            }
+        }
+    }
+    
     /**
      * Draws a TileLayer. Implemented in a subclass.
      *
@@ -299,7 +322,7 @@ public abstract class MapView extends JPanel implements Scrollable
      */
     protected abstract void paintLayer(Graphics2D g2d, ObjectGroup og,
             double zoom);
-    
+
     protected void paintEdge(Graphics2D g2d, MapLayer layer, int x, int y) {
         /*
         Polygon grid = createGridPolygon(x, y, 0);
@@ -365,7 +388,7 @@ public abstract class MapView extends JPanel implements Scrollable
      */
     public void repaintRegion(Rectangle region) {
         repaint();
-    }    
+    }
 
     /**
      * Draws the map grid.

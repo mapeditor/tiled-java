@@ -12,12 +12,13 @@
 
 package tiled.mapeditor.brush;
 
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.util.ListIterator;
 
 import tiled.core.MultilayerPlane;
 import tiled.core.TileLayer;
+import tiled.view.MapView;
 
 public class CustomBrush extends AbstractBrush
 {
@@ -27,7 +28,8 @@ public class CustomBrush extends AbstractBrush
 
     public CustomBrush(MultilayerPlane m) {
         this();
-        this.addAllLayers(m.getLayerVector());
+        addAllLayers(m.getLayerVector());
+        fitBoundsToLayers();
     }
 
     public void setAffectedLayers(int num) {
@@ -37,33 +39,45 @@ public class CustomBrush extends AbstractBrush
         return getTotalLayers();
     }
 
-    public Rectangle getBounds() {
-        return getBounds();
+    /**
+     * Determines whether this brush is equal to another brush.
+     */
+    public boolean equals(Brush b) {
+        if (b instanceof CustomBrush) {
+        	if(b == this) return true;
+        	else {
+        		//TODO: THIS
+        	}
+        }
+        return false;
     }
+
+	public void startPaint(MultilayerPlane mp, int x, int y, int button, int layer) {
+		super.startPaint(mp, x, y, button, layer);
+		
+	}
 
     /**
      * The custom brush will merge its internal layers onto the layers of the 
      * specified MultilayerPlane.
      *
-     * @see TileLayer#mergeOnto(MapLayer)
-     * @see Brush#commitPaint(MultilayerPlane, int, int, int)
-     * @param mp         The MultilayerPlane to be affected
-     * @param x          The x-coordinate where the user initiated the paint
-     * @param y          The y-coordinate where the user initiated the paint
-     * @param initLayer  The first layer to paint to.
-     * @return The rectangular region affected by the painting  
+     * @see tiled.core.TileLayer#mergeOnto(MapLayer)
+     * @see tiled.mapeditor.brush.Brush#doPaint(int, int)
+     * @throws Exception
      */
-    public Rectangle commitPaint(MultilayerPlane mp, int x, int y,
-            int initLayer)
+    public Rectangle doPaint(int x, int y) throws Exception
     {
-        Rectangle bounds = this.getBounds();
+    	int layer = initLayer;
+        Rectangle bounds = getBounds();
         int centerx = (int)(x - (bounds.width / 2));
         int centery = (int)(y - (bounds.height / 2));
 
+        super.doPaint(x, y);
+        
         ListIterator itr = getLayers();
         while (itr.hasNext()) {
             TileLayer tl = (TileLayer)itr.next();
-            TileLayer tm = (TileLayer)mp.getLayer(initLayer++);
+            TileLayer tm = (TileLayer)affectedMp.getLayer(layer++);
             if (tm != null && tm.isVisible()) {
                 tl.setOffset(centerx, centery);
                 tl.mergeOnto(tm);
@@ -72,18 +86,8 @@ public class CustomBrush extends AbstractBrush
 
         return new Rectangle(centerx, centery, bounds.width, bounds.height);
     }
-
-    /* (non-Javadoc)
-     * @see tiled.mapeditor.brush.Brush#paint(java.awt.Graphics, int, int)
-     */
-    public void paint(Graphics g, int x, int y) {
-        // TODO Auto-generated method stub
-    }
-
-    public boolean equals(Brush b) {
-        if (b instanceof CustomBrush) {
-            //TODO: THIS
-        }
-        return false;
-    }
+	
+	public void drawPreview(Graphics2D g2d, MapView mv) {
+		mv.paintSubMap(this, g2d, 0.5f);
+	}
 }

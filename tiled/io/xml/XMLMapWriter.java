@@ -236,6 +236,8 @@ public class XMLMapWriter implements MapWriter
                 } else if (conf.keyHasValue("tmx.save.embedImages", "0")) {
                     String imgSource = conf.getValue(
                             "tmx.save.tileImagePrefix") + "set.png";
+                    
+                    w.startElement("image");
                     w.writeAttribute("source", imgSource);
                     
                     String tilesetFilename = (wp.substring(0,
@@ -245,6 +247,8 @@ public class XMLMapWriter implements MapWriter
                                 tilesetFilename));
                     //byte[] data = ImageHelper.imageToPNG(setImage);
                     //fw.write(data, 0, data.length);
+                    w.endElement();
+                    
                     fw.close();
                 }
                 

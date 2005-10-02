@@ -179,7 +179,7 @@ public class Map extends MultilayerPlane
         // Sanity check
         if (tilesets.indexOf(s) == -1)
             return;
-        
+
         // Go through the map and remove any instances of the tiles in the set
         Iterator tileIterator = s.iterator();
         while (tileIterator.hasNext()) {
@@ -386,10 +386,11 @@ public class Map extends MultilayerPlane
     /**
      * Returns wether the given tile coordinates fall within the map
      * boundaries.
-     * 
+     *
      * @param x The tile-space x-coordinate
      * @param y The tile-space y-coordinate
-     * @return boolean <code>true</code> if the point lies within the bounds of the extents of the Map.
+     * @return <code>true</code> if the point is within the map boundaries,
+     *         <code>false</code> otherwise
      */
     public boolean contains(int x, int y) {
         return x >= 0 && y >= 0 && x < widthInTiles && y < heightInTiles;
@@ -436,7 +437,7 @@ public class Map extends MultilayerPlane
 
     /**
      * Returns the amount of objects on the map.
-     * 
+     *
      * @return The total objects in the map
      */
     public int getTotalObjects() {
@@ -468,15 +469,5 @@ public class Map extends MultilayerPlane
     }
 
     /**
-     * Determines wether the point (x,y) falls within the map boundaries.
-     * 
-     * @param x
-     * @param y
-     * @return <code>true</code> if the point is within the map boundaries, <code>false</code> otherwise
      */
-    public boolean inBounds(int x, int y) {
-        return (x >= 0 && y >= 0 &&
-                x < this.widthInTiles && y < this.heightInTiles);
-    }
-
 }

@@ -66,8 +66,8 @@ public class MapEditor implements ActionListener,
     private Cursor curEyed    = null;
     private Cursor curMarquee = null;
 
-    /** current release version */
-    public static final String version = "0.5.1";
+    /** Current release version */
+    public static final String version = "0.5.2";
 
     private Map currentMap;
     private MapView mapView;
@@ -128,6 +128,10 @@ public class MapEditor implements ActionListener,
     AboutDialog aboutDialog;
     MapLayerEdit paintEdit;
 
+    /** Available brushes */
+    Vector brushes = new Vector();
+    Brush eraserBrush;
+
     // Actions
     Action zoomInAction, zoomOutAction, zoomNormalAction;
     Action undoAction, redoAction;
@@ -139,6 +143,10 @@ public class MapEditor implements ActionListener,
     public MapEditor() {
         // Get instance of configuration
         configuration = TiledConfiguration.getInstance();
+
+        /*eraserBrush = new Eraser();
+        brushes.add(eraserBrush());
+        setBrush(eraserBrush);*/
 
         /*
         try {
@@ -161,7 +169,7 @@ public class MapEditor implements ActionListener,
         undoSupport.addUndoableEditListener(new UndoAdapter());
 
         cursorHighlight = new SelectionLayer(1, 1);
-        cursorHighlight.select(0,0);
+        cursorHighlight.select(0, 0);
         cursorHighlight.setVisible(configuration.keyHasValue(
                     "tiled.cursorhighlight", 1));
 
@@ -488,14 +496,14 @@ public class MapEditor implements ActionListener,
         mapEventAdapter.addListener(objectMoveButton);
 
         JToolBar toolBar = new JToolBar(JToolBar.VERTICAL);
-        toolBar.setFloatable(false);
+        toolBar.setFloatable(true);
         toolBar.add(moveButton);
         toolBar.add(paintButton);
         toolBar.add(eraseButton);
         toolBar.add(pourButton);
         toolBar.add(eyedButton);
         toolBar.add(marqueeButton);
-        toolBar.add(Box.createRigidArea(new Dimension(0, 5)));
+        toolBar.add(Box.createRigidArea(new Dimension(5, 5)));
         //TODO: put this back when working...
         //toolBar.add(objectMoveButton);
         //toolBar.add(Box.createRigidArea(new Dimension(0, 5)));
@@ -509,7 +517,7 @@ public class MapEditor implements ActionListener,
         tilePaletteButton.addActionListener(this);
 
         toolPanel = new JPanel(new BorderLayout());
-        toolPanel.add(toolBar, BorderLayout.WEST);
+        toolPanel.add(toolBar, BorderLayout.NORTH);
         toolPanel.add(tilePaletteButton, BorderLayout.SOUTH);
     }
 
@@ -528,7 +536,8 @@ public class MapEditor implements ActionListener,
         Icon imgDown = loadIcon("resources/gnome-down.png");
 
         //navigation and tool options
-        //TODO: the minimap is prohibitively slow, need to speed this up before it can be used
+        // TODO: the minimap is prohibitively slow, need to speed this up
+        // before it can be used
         miniMap = new MiniMapViewer();
         //miniMap.setMainPanel(mapScrollPane);
         JScrollPane miniMapSp = new JScrollPane();
@@ -580,11 +589,13 @@ public class MapEditor implements ActionListener,
                     layerButtons.getPreferredSize().height));
 
         // Edit history
-        /*JScrollPane editSp = new JScrollPane();
+        /*
+        JScrollPane editSp = new JScrollPane();
         editHistoryList = new JList();
         editSp.setHorizontalScrollBarPolicy(
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        editSp.getViewport().setView(editHistoryList);*/
+        editSp.getViewport().setView(editHistoryList);
+        */
 
         JPanel layerPanel = new JPanel();
         layerPanel.setLayout(new GridBagLayout());
@@ -600,8 +611,10 @@ public class MapEditor implements ActionListener,
         layerPanel.add(new JScrollPane(layerTable), c);
         c.weighty = 0; c.insets = new Insets(0, 0, 0, 0); c.gridy += 1;
         layerPanel.add(layerButtons, c);
-        /*c.weighty = 0.25; c.insets = new Insets(3, 0, 0, 0); c.gridy += 1;
-        layerPanel.add(editSp, c);*/
+        /*
+        c.weighty = 0.25; c.insets = new Insets(3, 0, 0, 0); c.gridy += 1;
+        layerPanel.add(editSp, c);
+        */
 
         // Create paint panel
         tilePalettePanel = new TilePalettePanel();
@@ -835,13 +848,12 @@ public class MapEditor implements ActionListener,
                 currentMap.addLayer(newLayer);
                 currentMap.addTileset(tmh.getSet());
             } else {*/
-            
-	            while (currentMap.getTotalLayers() > 1) {
-	                try {
-	                    currentMap.mergeLayerDown(
-	                            currentMap.getTotalLayers() - 1);
-	                } catch (Exception ex) {}
-	            }
+                while (currentMap.getTotalLayers() > 1) {
+                    try {
+                        currentMap.mergeLayerDown(
+                                currentMap.getTotalLayers() - 1);
+                    } catch (Exception ex) {}
+                }
             //}
             setCurrentLayer(0);
         }
@@ -872,9 +884,11 @@ public class MapEditor implements ActionListener,
                 case PS_PAINT:
                     paintEdit.setPresentationName("Paint");
                     if (layer instanceof TileLayer) {
-                        Rectangle affectedRegion = currentBrush.commitPaint(
-                                currentMap, tile.x, tile.y, currentLayer);
-                        mapView.repaintRegion(affectedRegion);
+                        try {
+							mapView.repaintRegion(currentBrush.doPaint(tile.x, tile.y));
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
                     }
                     break;
                 case PS_ERASE:
@@ -919,19 +933,17 @@ public class MapEditor implements ActionListener,
                         int minx = Math.min(limp.x, tile.x);
                         int miny = Math.min(limp.y, tile.y);
 
-                        if(event.isShiftDown()) {
-                            marqueeSelection.add(new Area(new Rectangle(minx, miny,
-                                    (Math.max(limp.x, tile.x) - minx)+1,
-                                    (Math.max(limp.y, tile.y) - miny)+1)));
-                        } else if(event.isControlDown()) {
-                            marqueeSelection.subtract(new Area(new Rectangle(minx, miny,
-                                    (Math.max(limp.x, tile.x) - minx)+1,
-                                    (Math.max(limp.y, tile.y) - miny)+1)));
-                        } else {
-                            marqueeSelection.selectRegion(new Rectangle(minx, miny,
-                                    (Math.max(limp.x, tile.x) - minx)+1,
-                                    (Math.max(limp.y, tile.y) - miny)+1));
+                        Rectangle selRect = new Rectangle(
+                                minx, miny,
+                                (Math.max(limp.x, tile.x) - minx)+1,
+                                (Math.max(limp.y, tile.y) - miny)+1);
 
+                        if (event.isShiftDown()) {
+                            marqueeSelection.add(new Area(selRect));
+                        } else if (event.isControlDown()) {
+                            marqueeSelection.subtract(new Area(selRect));
+                        } else {
+                            marqueeSelection.selectRegion(selRect);
                         }
                         if (oldArea != null) {
                             oldArea.add(
@@ -955,6 +967,7 @@ public class MapEditor implements ActionListener,
     }
 
     public void mousePressed(MouseEvent e) {
+    	Point tile = mapView.screenToTileCoords(e.getX(), e.getY());
         mouseButton = e.getButton();
         bMouseIsDown = true;
         mousePressLocation = mapView.screenToTileCoords(e.getX(), e.getY());
@@ -963,6 +976,7 @@ public class MapEditor implements ActionListener,
         if (mouseButton == MouseEvent.BUTTON1) {
             switch (currentPointerState) {
                 case PS_PAINT:
+                	currentBrush.startPaint(currentMap, tile.x, tile.y, mouseButton, currentLayer);
                 case PS_ERASE:
                 case PS_POUR:
                     MapLayer layer = getCurrentLayer();
@@ -1005,6 +1019,8 @@ public class MapEditor implements ActionListener,
             if (layer != null && moveDist.x != 0 || moveDist.x != 0) {
                 undoSupport.postEdit(new MoveLayerEdit(layer, moveDist));
             }
+        } else if (currentPointerState == PS_PAINT) {
+        	currentBrush.endPaint();
         }
 
         if (paintEdit != null) {
@@ -1037,9 +1053,39 @@ public class MapEditor implements ActionListener,
     }
 
     public void mouseDragged(MouseEvent e) {
-        doMouse(e);
         mousePressLocation = mapView.screenToTileCoords(e.getX(), e.getY());
         Point tile = mapView.screenToTileCoords(e.getX(), e.getY());
+
+        if (mouseButton == MouseEvent.BUTTON3 &&
+                getCurrentLayer() instanceof TileLayer &&
+                currentPointerState == PS_PAINT)
+        {
+            Point limp = mouseInitialPressLocation;
+            int minx = Math.min(limp.x, tile.x);
+            int miny = Math.min(limp.y, tile.y);
+            Rectangle oldArea = null;
+
+            if (currentBrush instanceof CustomBrush) {
+                oldArea = ((CustomBrush)currentBrush).getBounds();
+            }
+
+            Rectangle bounds = new Rectangle(
+                    minx, miny,
+                    (Math.max(limp.x, tile.x) - minx)+1,
+                    (Math.max(limp.y, tile.y) - miny)+1);
+
+            // Right mouse button dragged: create and set custom brush
+            MultilayerPlane mlp =
+                new MultilayerPlane(bounds.width, bounds.height);
+            TileLayer brushLayer = new TileLayer(bounds);
+            brushLayer.copyFrom(getCurrentLayer());
+            mlp.addLayer(brushLayer);
+            setBrush(new CustomBrush(mlp));
+        }
+        else {
+            doMouse(e);
+        }
+
         if (currentMap.inBounds(tile.x, tile.y)) {
             tileCoordsLabel.setText("" + tile.x + ", " + tile.y);
         } else {
@@ -1120,8 +1166,8 @@ public class MapEditor implements ActionListener,
                 e.printStackTrace();
             }
         } else if (command.equals("Brush...")) {
-                BrushDialog bd = new BrushDialog(this, appFrame, currentBrush);
-                bd.setVisible(true);
+            BrushDialog bd = new BrushDialog(this, appFrame, currentBrush);
+            bd.setVisible(true);
         } else if (command.equals("Add Layer") ||
                 command.equals("Duplicate Layer") ||
                 command.equals("Delete Layer") ||
@@ -1512,7 +1558,7 @@ public class MapEditor implements ActionListener,
         public ZoomNormalAction() {
             super("Zoom Normalsize");
             putValue(ACCELERATOR_KEY,
-                    KeyStroke.getKeyStroke("control 1"));
+                    KeyStroke.getKeyStroke("control 0"));
             putValue(SHORT_DESCRIPTION, "Zoom 100%");
         }
         public void actionPerformed(ActionEvent evt) {

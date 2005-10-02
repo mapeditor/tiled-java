@@ -81,9 +81,9 @@ public class BrushBrowser extends JPanel implements MouseInputListener
         while (itr.hasNext()) {
             Brush b = (Brush)itr.next();
             Rectangle bb = b.getBounds();
-            b.paint(g,
-                    x + ((maxWidth / 2) - bb.width / 2),
-                    y + ((maxWidth / 2) - bb.width / 2));
+            b.drawPreview((Graphics2D)g, null);
+            //        x + ((maxWidth / 2) - bb.width / 2),
+            //        y + ((maxWidth / 2) - bb.width / 2));
 
             if (b == selectedBrush) {
                 g.drawRect(x, y, maxWidth, maxWidth);

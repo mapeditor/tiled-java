@@ -132,7 +132,8 @@ public class ImageColorDialog
 
 	private void grabColor(int x, int y) {
 		int w = image.getWidth(null);
-		if(pixels != null) {
+		int h = image.getHeight(null);
+		if(pixels != null && (x < w && y < h)) {
 			int r = (pixels[y * w + x] >> 16) & 0xff;
 			int g = (pixels[y * w + x] >>  8) & 0xff;
 			int b = (pixels[y * w + x]      ) & 0xff;

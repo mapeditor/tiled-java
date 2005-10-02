@@ -16,12 +16,15 @@ import java.awt.*;
 import java.awt.geom.*;
 
 import tiled.core.*;
+import tiled.view.MapView;
 
 
 public class ShapeBrush extends AbstractBrush
 {
     protected Area shape;
     protected Tile paintTile;
+    protected int initLayer=0;
+    
     
     public ShapeBrush() {
         super();
@@ -31,7 +34,7 @@ public class ShapeBrush extends AbstractBrush
         super();
         this.shape = shape;
     }
-    
+
     public ShapeBrush(AbstractBrush sb) {
         super(sb);
         if (sb instanceof ShapeBrush) {
@@ -39,10 +42,10 @@ public class ShapeBrush extends AbstractBrush
             paintTile = ((ShapeBrush)sb).paintTile;
         }
     }
-    
+
     /**
      * Makes this brush a circular brush.
-     * 
+     *
      * @param rad the radius of the circular region
      */
     public void makeCircleBrush(double rad) {
@@ -61,9 +64,8 @@ public class ShapeBrush extends AbstractBrush
     }
 
     public void makePolygonBrush(Polygon p) {
-        
     }
-    
+
     public void setSize(int s) {
         if (shape.isRectangular()) {
             makeQuadBrush(new Rectangle(0, 0, s, s));
@@ -73,26 +75,65 @@ public class ShapeBrush extends AbstractBrush
             // TODO: scale the polygon brush
         }
     }
+
+    public void setTile(Tile t) {
+        paintTile = t;
+    }
+
+    public Tile getTile() {
+        return paintTile;
+    }
+
+    public Rectangle getBounds() {
+        return shape.getBounds();
+    }
+
+    public boolean isRectangular() {
+        return shape.isRectangular();
+    }
     
-    /**
+    public void drawPreview(Graphics2D g2d, MapView mv) {
+        
+        if (shape.isRectangular()) {
+            Rectangle bounds = shape.getBounds();
+            g2d.fillRect(sx, sy, bounds.width, bounds.height);
+        } else if (!shape.isPolygonal()) {
+            Rectangle bounds = shape.getBounds();
+            g2d.fillOval(sx, sy, bounds.width, bounds.height);
+        }
+        
+    }
+
+    public boolean equals(Brush b) {
+        if (b instanceof ShapeBrush) {
+            return ((ShapeBrush)b).shape.equals(shape);
+        }
+        return false;
+    }
+
+	public void startPaint(MultilayerPlane mp, int x, int y, int button, int layer) {
+		super.startPaint(mp, x, y, button, layer);
+	}
+
+	/**
      * Paints the entire area of the brush with the set tile. This brush can
      * affect several layers. 
+	 * @throws Exception 
      * 
-     * @see Brush#commitPaint(MultilayerPlane, int, int, int)
-     * @return a Rectangle of the bounds of the area that was modified
-     * @param mp The multilayer plane that will be modified
-     * @param x  The x-coordinate where the click occurred.
-     * @param y  The y-coordinate where the click occurred.
+     * @see tiled.mapeditor.brush.Brush#doPaint(int, int)
      */
-    public Rectangle commitPaint(MultilayerPlane mp, int x, int y, int initLayer) {
+    public Rectangle doPaint(int x, int y) throws Exception
+    {
         Rectangle bounds = shape.getBounds();
         int centerx = (int)(x - (bounds.width / 2));
         int centery = (int)(y - (bounds.height / 2));
 
-        // TODO: This loop does not take all edges into account
+        super.doPaint(x, y);
+        
+        // FIXME: This loop does not take all edges into account
 
         for(int l = 0; l < numLayers; l++) {
-            TileLayer tl = (TileLayer)mp.getLayer(initLayer - l);
+            TileLayer tl = (TileLayer)affectedMp.getLayer(initLayer - l);
             if (tl != null) {
                 for (int i = 0; i <= bounds.height + 1; i++) {
                     for (int j = 0; j <= bounds.width + 1; j++) {
@@ -103,41 +144,8 @@ public class ShapeBrush extends AbstractBrush
                 }
             }
         }
-        
+
         // Return affected area
         return new Rectangle(centerx, centery, bounds.width, bounds.height);
-    }
-
-    public void setTile(Tile t) {
-        paintTile = t;
-    }
-
-    public Tile getTile() {
-        return paintTile;
-    }
-    
-    public Rectangle getBounds() {
-        return shape.getBounds();
-    }
-
-    public boolean isRectangular() {
-        return shape.isRectangular();
-    }
-    
-    public void paint(Graphics g, int x, int y) {
-        if (shape.isRectangular()) {
-            Rectangle bounds = shape.getBounds();
-            g.fillRect(x, y, bounds.width, bounds.height);
-        } else if (!shape.isPolygonal()) {
-            Rectangle bounds = shape.getBounds();
-            g.fillOval(x, y, bounds.width, bounds.height);
-        }
-    }
-
-    public boolean equals(Brush b) {
-        if (b instanceof ShapeBrush) {
-            return ((ShapeBrush)b).shape.equals(shape);
-        }
-        return false;
     }
 }

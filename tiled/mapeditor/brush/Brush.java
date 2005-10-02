@@ -12,47 +12,78 @@
 
 package tiled.mapeditor.brush;
 
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
 import tiled.core.MultilayerPlane;
+import tiled.view.MapView;
 
 
-public abstract class Brush extends MultilayerPlane
+public interface Brush
 {
-    public Brush() {
-        super();
-    }
+    /**
+     * Returns the number of layers affected by this brush.
+     */
+    public int getAffectedLayers();
 
     /**
-     * This will set the number of layers to affect, the default is 1 - the
-     * layer specified in commitPaint.
-     * 
-     * @see Brush#commitPaint(MultilayerPlane, int, int, int)
-     * @param num   the number of layers to affect.
+     * Returns the bounds of this brush. This is used for determining the area
+     * to redraw when the brush moves.
      */
-    public abstract void setAffectedLayers(int num);
-    
-    public abstract int getAffectedLayers();
-    
-    public abstract Rectangle getBounds();
+    public Rectangle getBounds();
+
+    /**
+     * Called before painting operation starts. This is when the mouse is
+     * initially pressed.
+     *
+     * @param mp      the MultilayerPlane to be affected.
+     * @param x       the tile x-coordinate where the user initiated the paint.
+     * @param y       the tile y-coordinate where the user initiated the paint.
+     * @param button  the mouse button that was used.
+     * @param layer   the selected layer.
+     *
+     * @see MultilayerPlane
+     */
+    public void startPaint(
+            MultilayerPlane mp, int x, int y, int button, int layer);
+
+    /**
+     * This is the main processing method for a brush. This method should only
+     * be called between calls to startPaint and endPaint.
+     *
+     * @param x       the tile x-coordinate of the mouse.
+     * @param y       the tile y-coordinate of the mouse.
+     *
+     * @return the rectangular region affected by the painting, used to
+     *         determine which area to redraw.
+     */
+    public Rectangle doPaint(int x, int y) throws Exception;
+
+    /**
+     * Called when painting operation finishes. This is when the mouse is
+     * released.
+     */
+    public void endPaint();
+
+    /**
+     * Draws a preview of the editing operation when applicable. This version 
+     * will draw the preview at the specified location.
+     *
+     * @param g2d The graphics context to draw to.
+     * @param x The x-coord to draw the preview at
+     * @param y The y-coord to draw the preview at
+     */
+    public void drawPreview(Graphics2D g2d, int x, int y, MapView mv);
     
     /**
-     * This is the main processing method for a Brush object. Painting starts
-     * on initLayer, and if the brush has more than one layer, then the brush  
-     * will paint deeper into the layer stack.
-     * 
-     * @see MultilayerPlane
-     * @param mp         The MultilayerPlane to be affected
-     * @param x          The x-coordinate where the user initiated the paint
-     * @param y          The y-coordinate where the user initiated the paint
-     * @param initLayer  The first layer to paint to.
-     * @return The rectangular region affected by the painting  
+     * Draws a preview of the editing operation when applicable.
+     *
+     * @param g2d The graphics context to draw to.
      */
-    public abstract Rectangle commitPaint(MultilayerPlane mp, int x, int y,
-            int initLayer);
-    
-    public abstract void paint(Graphics g, int x, int y);
-    
-    public abstract boolean equals(Brush b);
+    public void drawPreview(Graphics2D g2d, MapView mv);
+
+    /**
+     * Returns wether this brush equals another brush.
+     */
+    public boolean equals(Brush brush);
 }

@@ -1,13 +1,16 @@
 0.5.2 - TBD (+ means planned change)
 
++ Added more useful visual feedback for some brushes
 + Added the Shifted view, which emulates several tiling configurations
 + Added "stamp" tool
+* For pencil, right-click, drag now creates a stamp for easy copying
 + Added ability to select multiple layers from layer table
 + Added the ability to merge tile images when layers are merged
-+ Fixed memory problems when loading several maps with many tilesets
-  in a row
-* Fixed two cases of a hanging when using the fill tool
 * Added support for animated tiles
++ Added support for localization/internationalization
++ Fixed memory problems when loading several maps with many tilesets in a row
+* Fixed a bug when exporting a tileset with an external image
+* Fixed two cases of hanging when using the fill tool
 
 0.5.1 - June 15th, 2005
 
