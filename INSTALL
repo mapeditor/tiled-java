@@ -2,6 +2,11 @@
  BUILDING TILED
 ----------------
 
+NOTE: If you have downloaded the binary archive (bin), then you can skip this
+as you will already have the tiled.jar file. Continue to "running Tiled" below.
+
+Take the following steps to build Tiled from source:
+
 - Install j2sdk       (http://java.sun.com/)
 - Install apache-ant  (http://ant.apache.org/)
 - Run ant in the directory where you placed Tiled
@@ -10,7 +15,14 @@
  RUNNING TILED
 ---------------
 
-- From the directory where you placed Tiled:
+- Install JRE 5.0     (http://java.sun.com/)
+
+- From the command line, you can run the following from the directory where you
+  placed Tiled:
 
   java -jar dist/tiled.jar
 
+- You can also use the Java webstart link on the website, see "Start Now!"
+
+- Windows users that have JRE 5.0 installed should be able to double click the
+  tiled.jar file to run it.

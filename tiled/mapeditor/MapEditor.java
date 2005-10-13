@@ -66,8 +66,8 @@ public class MapEditor implements ActionListener,
     private Cursor curEyed    = null;
     private Cursor curMarquee = null;
 
-    /** current release version */
-    public static final String version = "0.5.1";
+    /** Current release version */
+    public static final String version = "0.5.2";
 
     private Map currentMap;
     private MapView mapView;
@@ -161,7 +161,7 @@ public class MapEditor implements ActionListener,
         undoSupport.addUndoableEditListener(new UndoAdapter());
 
         cursorHighlight = new SelectionLayer(1, 1);
-        cursorHighlight.select(0,0);
+        cursorHighlight.select(0, 0);
         cursorHighlight.setVisible(configuration.keyHasValue(
                     "tiled.cursorhighlight", 1));
 
@@ -495,7 +495,7 @@ public class MapEditor implements ActionListener,
         toolBar.add(pourButton);
         toolBar.add(eyedButton);
         toolBar.add(marqueeButton);
-        toolBar.add(Box.createRigidArea(new Dimension(0, 5)));
+        toolBar.add(Box.createRigidArea(new Dimension(5, 5)));
         //TODO: put this back when working...
         //toolBar.add(objectMoveButton);
         //toolBar.add(Box.createRigidArea(new Dimension(0, 5)));
@@ -528,7 +528,8 @@ public class MapEditor implements ActionListener,
         Icon imgDown = loadIcon("resources/gnome-down.png");
 
         //navigation and tool options
-        //TODO: the minimap is prohibitively slow, need to speed this up before it can be used
+        // TODO: the minimap is prohibitively slow, need to speed this up
+        // before it can be used
         miniMap = new MiniMapViewer();
         //miniMap.setMainPanel(mapScrollPane);
         JScrollPane miniMapSp = new JScrollPane();
@@ -580,11 +581,13 @@ public class MapEditor implements ActionListener,
                     layerButtons.getPreferredSize().height));
 
         // Edit history
-        /*JScrollPane editSp = new JScrollPane();
+        /*
+        JScrollPane editSp = new JScrollPane();
         editHistoryList = new JList();
         editSp.setHorizontalScrollBarPolicy(
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        editSp.getViewport().setView(editHistoryList);*/
+        editSp.getViewport().setView(editHistoryList);
+        */
 
         JPanel layerPanel = new JPanel();
         layerPanel.setLayout(new GridBagLayout());
@@ -600,8 +603,10 @@ public class MapEditor implements ActionListener,
         layerPanel.add(new JScrollPane(layerTable), c);
         c.weighty = 0; c.insets = new Insets(0, 0, 0, 0); c.gridy += 1;
         layerPanel.add(layerButtons, c);
-        /*c.weighty = 0.25; c.insets = new Insets(3, 0, 0, 0); c.gridy += 1;
-        layerPanel.add(editSp, c);*/
+        /*
+        c.weighty = 0.25; c.insets = new Insets(3, 0, 0, 0); c.gridy += 1;
+        layerPanel.add(editSp, c);
+        */
 
         // Create paint panel
         tilePalettePanel = new TilePalettePanel();
@@ -835,13 +840,12 @@ public class MapEditor implements ActionListener,
                 currentMap.addLayer(newLayer);
                 currentMap.addTileset(tmh.getSet());
             } else {*/
-            
-	            while (currentMap.getTotalLayers() > 1) {
-	                try {
-	                    currentMap.mergeLayerDown(
-	                            currentMap.getTotalLayers() - 1);
-	                } catch (Exception ex) {}
-	            }
+                while (currentMap.getTotalLayers() > 1) {
+                    try {
+                        currentMap.mergeLayerDown(
+                                currentMap.getTotalLayers() - 1);
+                    } catch (Exception ex) {}
+                }
             //}
             setCurrentLayer(0);
         }
@@ -919,19 +923,17 @@ public class MapEditor implements ActionListener,
                         int minx = Math.min(limp.x, tile.x);
                         int miny = Math.min(limp.y, tile.y);
 
-                        if(event.isShiftDown()) {
-                            marqueeSelection.add(new Area(new Rectangle(minx, miny,
-                                    (Math.max(limp.x, tile.x) - minx)+1,
-                                    (Math.max(limp.y, tile.y) - miny)+1)));
-                        } else if(event.isControlDown()) {
-                            marqueeSelection.subtract(new Area(new Rectangle(minx, miny,
-                                    (Math.max(limp.x, tile.x) - minx)+1,
-                                    (Math.max(limp.y, tile.y) - miny)+1)));
-                        } else {
-                            marqueeSelection.selectRegion(new Rectangle(minx, miny,
-                                    (Math.max(limp.x, tile.x) - minx)+1,
-                                    (Math.max(limp.y, tile.y) - miny)+1));
+                        Rectangle selRect = new Rectangle(
+                                minx, miny,
+                                (Math.max(limp.x, tile.x) - minx)+1,
+                                (Math.max(limp.y, tile.y) - miny)+1);
 
+                        if (event.isShiftDown()) {
+                            marqueeSelection.add(new Area(selRect));
+                        } else if (event.isControlDown()) {
+                            marqueeSelection.subtract(new Area(selRect));
+                        } else {
+                            marqueeSelection.selectRegion(selRect);
                         }
                         if (oldArea != null) {
                             oldArea.add(
@@ -1120,8 +1122,8 @@ public class MapEditor implements ActionListener,
                 e.printStackTrace();
             }
         } else if (command.equals("Brush...")) {
-                BrushDialog bd = new BrushDialog(this, appFrame, currentBrush);
-                bd.setVisible(true);
+            BrushDialog bd = new BrushDialog(this, appFrame, currentBrush);
+            bd.setVisible(true);
         } else if (command.equals("Add Layer") ||
                 command.equals("Duplicate Layer") ||
                 command.equals("Delete Layer") ||
@@ -1512,7 +1514,7 @@ public class MapEditor implements ActionListener,
         public ZoomNormalAction() {
             super("Zoom Normalsize");
             putValue(ACCELERATOR_KEY,
-                    KeyStroke.getKeyStroke("control 1"));
+                    KeyStroke.getKeyStroke("control 0"));
             putValue(SHORT_DESCRIPTION, "Zoom 100%");
         }
         public void actionPerformed(ActionEvent evt) {

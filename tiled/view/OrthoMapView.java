@@ -105,8 +105,8 @@ public class OrthoMapView extends MapView
 
         while (itr.hasNext()) {
             MapObject mo = (MapObject) itr.next();
-            double ox = mo.getX()*zoom;
-            double oy = mo.getY()*zoom;
+            double ox = mo.getX() * zoom;
+            double oy = mo.getY() * zoom;
 
             g.setColor(Color.black);
             g.fillOval((int)ox, (int)oy, (int)(10 * zoom), (int)(10 * zoom));

@@ -188,7 +188,7 @@ public class XMLMapTransformer implements MapReader
             if (Util.checkRoot(source)) {
                 source = makeUrl(source);
             } else {
-                source = baseDir + source;
+                source = makeUrl(baseDir + source);
             }
             img = ImageIO.read(new URL(source));
         } else {
@@ -282,17 +282,26 @@ public class XMLMapTransformer implements MapReader
             //    filename = makeUrl(source);
             //}
             
-            TileSet ext;
+            TileSet ext = null;
 
             try {
+            	//just a little check for tricky people...
+            	if(!source.substring(source.lastIndexOf('.')+1).toLowerCase().equals("tsx")) {
+            		warnings.push("WARN: tileset files should end in .tsx! ("+source+")");
+            	}
+            	
                 InputStream in = new URL(makeUrl(filename)).openStream();
                 ext = unmarshalTilesetFile(in, filename);
             } catch (FileNotFoundException fnf) {
                 warnings.push("ERROR: Could not find external tileset file " +
                         filename);
-                ext = new TileSet();
             }
 
+            if(ext == null) {
+            	warnings.push("ERROR: tileset "+source+" was not loaded correctly!");
+            	ext = new TileSet();
+            }
+            
             ext.setFirstGid(firstGid);
             return ext;
         }
@@ -567,7 +576,6 @@ public class XMLMapTransformer implements MapReader
 
     private void buildMap(Document doc) throws Exception {
         Node item, mapNode;
-        Tile tile;
 
         mapNode = doc.getDocumentElement();
 

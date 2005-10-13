@@ -102,12 +102,12 @@ public class IsoMapView extends MapView
             drawLoc.x -= columns * tileSize.width;
             drawLoc.y += tileStepY;
         }
-    }	
+    }
 
     protected void paintLayer(Graphics2D g2d, ObjectGroup og, double zoom) {
         // TODO: Implement objectgroup painting for IsoMapView
     }
-    
+
     protected void paintGrid(Graphics2D g2d, double zoom) {
         Dimension tileSize = getTileSize(zoom);
         Rectangle clipRect = g2d.getClipBounds();

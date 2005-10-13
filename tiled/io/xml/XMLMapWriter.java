@@ -38,9 +38,11 @@ public class XMLMapWriter implements MapWriter
      */
     public void writeMap(Map map, String filename) throws Exception {
         OutputStream os = new FileOutputStream(filename);
-        if(filename.endsWith(".tmx.gz")) {
-        	os = new GZIPOutputStream(os);
+
+        if (filename.endsWith(".tmx.gz")) {
+            os = new GZIPOutputStream(os);
         }
+
         Writer writer = new OutputStreamWriter(os);
         XMLWriter xmlWriter = new XMLWriter(writer);
 
@@ -49,8 +51,9 @@ public class XMLMapWriter implements MapWriter
         xmlWriter.endDocument();
 
         writer.flush();
-        if(filename.endsWith(".tmx.gz")) {
-        	((GZIPOutputStream)os).finish();
+
+        if (filename.endsWith(".tmx.gz")) {
+            ((GZIPOutputStream)os).finish();
         }
     }
 
@@ -160,7 +163,7 @@ public class XMLMapWriter implements MapWriter
             String source = set.getSource();
 
             if (source == null) {
-                this.writeTileset(set, w, wp);
+                writeTileset(set, w, wp);
             } else {
                 w.startElement("tileset");
                 try {
@@ -236,6 +239,8 @@ public class XMLMapWriter implements MapWriter
                 } else if (conf.keyHasValue("tmx.save.embedImages", "0")) {
                     String imgSource = conf.getValue(
                             "tmx.save.tileImagePrefix") + "set.png";
+                    
+                    w.startElement("image");
                     w.writeAttribute("source", imgSource);
                     
                     String tilesetFilename = (wp.substring(0,
@@ -245,6 +250,8 @@ public class XMLMapWriter implements MapWriter
                                 tilesetFilename));
                     //byte[] data = ImageHelper.imageToPNG(setImage);
                     //fw.write(data, 0, data.length);
+                    w.endElement();
+                    
                     fw.close();
                 }
                 

@@ -299,7 +299,7 @@ public abstract class MapView extends JPanel implements Scrollable
      */
     protected abstract void paintLayer(Graphics2D g2d, ObjectGroup og,
             double zoom);
-    
+
     protected void paintEdge(Graphics2D g2d, MapLayer layer, int x, int y) {
         /*
         Polygon grid = createGridPolygon(x, y, 0);
@@ -365,7 +365,7 @@ public abstract class MapView extends JPanel implements Scrollable
      */
     public void repaintRegion(Rectangle region) {
         repaint();
-    }    
+    }
 
     /**
      * Draws the map grid.

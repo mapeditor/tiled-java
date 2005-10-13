@@ -237,6 +237,7 @@ public class BrushDialog extends JDialog implements ActionListener,
 
     private void update() {
         if (myBrush instanceof CustomBrush) {  // Custom brush
+            brushSize.setEnabled(false);
             affectLayers.setEnabled(false);
             cbRandomBrush.setEnabled(false);
         } else if (myBrush instanceof RandomBrush) {  // Random brush

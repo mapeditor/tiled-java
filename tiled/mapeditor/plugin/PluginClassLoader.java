@@ -90,8 +90,6 @@ public final class PluginClassLoader extends URLClassLoader
             if (aPath.endsWith(".jar")) {
                 total++;
             }
-        readers = new Vector();
-        writers = new Vector();
         }
 
         // Start the progress monitor
@@ -141,7 +139,7 @@ public final class PluginClassLoader extends URLClassLoader
                         if (reader != null) {
                             readerClass = loadFromJar(
                                     jf, reader, readerClassName);
-                        }
+                        }else System.err.println("Manifest entry "+readerClassName+" does not match any class in the jar.");
                     }
                     if (writerClassName != null) {
                         JarEntry writer = jf.getJarEntry(
@@ -150,7 +148,7 @@ public final class PluginClassLoader extends URLClassLoader
                         if (writer != null) {
                             writerClass = loadFromJar(
                                     jf, writer, writerClassName);
-                        }
+                        } else System.err.println("Manifest entry "+writerClassName+" does not match any class in the jar.");
                     }
 
                     boolean bPlugin = false;

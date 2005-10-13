@@ -60,8 +60,6 @@ public class PropertiesTableModel extends AbstractTableModel
     }
 
     public void setValueAt(Object value, int row, int col) {
-        // TODO: When the name is set to an empty string, consider removing the
-        // property (and ignore when it happens on the last row).
         if (row >= 0) {
             if (row >= properties.size() && col == 0) {
                 if (((String)value).length() > 0) {

@@ -92,7 +92,7 @@ public class TilePalettePanel extends JPanel implements Scrollable,
         Rectangle clip = g.getClipBounds();
 
         paintBackground(g);
-        
+
         if (tilesets.size() <= 0) {
             return;
         }
@@ -102,7 +102,8 @@ public class TilePalettePanel extends JPanel implements Scrollable,
         // draw the gaps and leave out tiles at the end.
         for (int i = 0; i < tilesets.size(); i++) {
             TileSet tileset = (TileSet)tilesets.get(i);
-            if (tileset != null) {					
+
+            if (tileset != null) {
                 // Draw the tiles
                 int twidth = tileset.getStandardWidth() + 1;
                 int maxHeight = tileset.getTileHeightMax() + 1;
