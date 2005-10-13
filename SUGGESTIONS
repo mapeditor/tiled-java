@@ -146,3 +146,12 @@ Date:       14/08/05
 Summary:    Have an option to toggle tile ids shown in tile palette window.
 State:      To be implemented.
 
+- 27 --------------------------------------------------------------------------
+Suggestor:  danter
+Date:       24/09/05
+Summary:    Location-based properties.
+State:      Needs to be discussed.
+Problems:   Do we store these properties on the map level, the layer level or
+            on their own "property"-layers? Things to consider are ease of use
+            and flexibility. Also, is this functionality provided by objects?
+
