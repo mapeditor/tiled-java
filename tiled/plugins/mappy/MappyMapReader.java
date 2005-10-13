@@ -173,8 +173,6 @@ public class MappyMapReader implements MapReader
         in.skip(4); // reserved
         twidth = Util.readShort(in);
         theight = Util.readShort(in);
-        set.setStandardWidth(twidth);
-        set.setStandardHeight(theight);
         ret.setTileWidth(twidth);
         ret.setTileHeight(theight);
         set.setName("Static tiles");

@@ -67,7 +67,7 @@ public class MapEditor implements ActionListener,
     private Cursor curMarquee = null;
 
     /** Current release version */
-    public static final String version = "0.5.2";
+    public static final String version = "0.5.2 (bjorn)";
 
     private Map currentMap;
     private MapView mapView;

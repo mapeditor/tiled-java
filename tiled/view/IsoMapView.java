@@ -61,6 +61,7 @@ public class IsoMapView extends MapView
         rowItr.x--;
         Point drawLoc = tileToScreenCoords(rowItr.x, rowItr.y);
         drawLoc.x -= tileSize.width / 2;
+        drawLoc.y += tileSize.height;
 
         // Determine area to draw from clipping rectangle
         int columns = clipRect.width / tileSize.width + 3;
@@ -77,7 +78,7 @@ public class IsoMapView extends MapView
                 if (tile != null) {
                     if (layer instanceof SelectionLayer) {
                         Polygon gridPoly = createGridPolygon(
-                                drawLoc.x, drawLoc.y, 0);
+                                drawLoc.x, drawLoc.y - tileSize.height, 0);
                         g2d.fillPolygon(gridPoly);
                         //paintEdge(g2d, layer, drawLoc.x, drawLoc.y);
                     } else {

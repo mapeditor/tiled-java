@@ -237,4 +237,8 @@ public class MultilayerPlane
         widthInTiles = width;
         heightInTiles = height;
     }
+
+    public boolean inBounds(int x, int y) {
+        return (x >= 0 && x <= widthInTiles) && (y >= 0 && y <= heightInTiles);
+    }
 }

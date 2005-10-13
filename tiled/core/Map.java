@@ -160,18 +160,16 @@ public class Map extends MultilayerPlane
             }
         }
 
-        s.setStandardHeight(tileHeight);
-        s.setStandardWidth(tileWidth);
         tilesets.add(s);
         s.setMap(this);
         fireMapChanged();
     }
 
     /**
-     * Removes a {@link TileSet} from the map, and removes any tiles
-     * in the set from the map layers. A {@link MapChangedEvent} is 
-     * fired when all processing is complete. 
-     * 
+     * Removes a {@link TileSet} from the map, and removes any tiles in the set
+     * from the map layers. A {@link MapChangedEvent} is fired when all
+     * processing is complete.
+     *
      * @param s TileSet to remove
      * @throws Exception
      */
@@ -179,7 +177,7 @@ public class Map extends MultilayerPlane
         // Sanity check
         if (tilesets.indexOf(s) == -1)
             return;
-        
+
         // Go through the map and remove any instances of the tiles in the set
         Iterator tileIterator = s.iterator();
         while (tileIterator.hasNext()) {
@@ -386,10 +384,11 @@ public class Map extends MultilayerPlane
     /**
      * Returns wether the given tile coordinates fall within the map
      * boundaries.
-     * 
+     *
      * @param x The tile-space x-coordinate
      * @param y The tile-space y-coordinate
-     * @return boolean <code>true</code> if the point lies within the bounds of the extents of the Map.
+     * @return <code>true</code> if the point is within the map boundaries,
+     *         <code>false</code> otherwise
      */
     public boolean contains(int x, int y) {
         return x >= 0 && y >= 0 && x < widthInTiles && y < heightInTiles;
@@ -398,7 +397,7 @@ public class Map extends MultilayerPlane
     /**
      * Returns the maximum tile height. This is the height of the highest tile
      * in all tilesets or the tile height used by this map if it's smaller.
-     * 
+     *
      * @return int The maximum tile height
      */
     public int getTileHeightMax() {
@@ -406,7 +405,7 @@ public class Map extends MultilayerPlane
         Iterator itr = tilesets.iterator();
 
         while (itr.hasNext()) {
-            int height = ((TileSet)itr.next()).getTileHeightMax();
+            int height = ((TileSet)itr.next()).getTileHeight();
             if (height > maxHeight) {
                 maxHeight = height;
             }
@@ -417,7 +416,7 @@ public class Map extends MultilayerPlane
 
     /**
      * Returns the sum of the size of each tile set.
-     * 
+     *
      * @return
      */
     /*
@@ -436,7 +435,7 @@ public class Map extends MultilayerPlane
 
     /**
      * Returns the amount of objects on the map.
-     * 
+     *
      * @return The total objects in the map
      */
     public int getTotalObjects() {

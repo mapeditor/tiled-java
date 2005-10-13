@@ -81,7 +81,7 @@ public class OrthoMapView extends MapView
         // (endY +2 for high tiles, could be done more properly)
 
         // Draw this map layer
-        for (int y = startY, gy = startY * tsize.height + toffset;
+        for (int y = startY, gy = (startY + 1) * tsize.height + toffset;
                 y < endY; y++, gy += tsize.height) {
             for (int x = startX, gx = startX * tsize.width + toffset;
                     x < endX; x++, gx += tsize.width) {
@@ -89,7 +89,8 @@ public class OrthoMapView extends MapView
 
                 if (tile != null && tile != myMap.getNullTile()) {
                     if (layer instanceof SelectionLayer) {
-                        Polygon gridPoly = createGridPolygon(gx, gy, 0);
+                        Polygon gridPoly = createGridPolygon(
+                                gx, gy - tsize.height, 0);
                         g2d.fillPolygon(gridPoly);
                         //paintEdge(g, layer, gx, gy);
                     } else {

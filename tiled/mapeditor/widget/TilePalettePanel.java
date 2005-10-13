@@ -73,13 +73,13 @@ public class TilePalettePanel extends JPanel implements Scrollable,
         repaint();
     }
 
-    public Tile getTileAtPoint(int x, int y) {    	
+    public Tile getTileAtPoint(int x, int y) {
         Tile ret = null;
         TileSet tileset = (TileSet)tilesets.get(0);
-        int twidth = tileset.getStandardWidth() + 1;
-        int maxHeight = tileset.getTileHeightMax() + 1;
+        int twidth = tileset.getTileWidth() + 1;
+        int theight = tileset.getTileHeight() + 1;
         int tx = x / twidth;
-        int ty = y / maxHeight; 
+        int ty = y / theight;
         int tilesPerRow = (getWidth() - 1) / twidth;
         int tileId = ty * tilesPerRow + tx;
         ret = tileset.getTile(tileId);
@@ -105,26 +105,24 @@ public class TilePalettePanel extends JPanel implements Scrollable,
 
             if (tileset != null) {
                 // Draw the tiles
-                int twidth = tileset.getStandardWidth() + 1;
-                int maxHeight = tileset.getTileHeightMax() + 1;
+                int twidth = tileset.getTileWidth() + 1;
+                int theight = tileset.getTileHeight() + 1;
                 int tilesPerRow = Math.max(1, (getWidth() - 1) / twidth);
 
-                int startY = clip.y / maxHeight;
-                int endY = ((clip.y + clip.height) / maxHeight) + 1;
+                int startY = clip.y / theight;
+                int endY = ((clip.y + clip.height) / theight) + 1;
                 int tileAt = tilesPerRow * startY;
 
-                for (int y = startY, gy = startY * maxHeight; y < endY; y++) {
+                for (int y = startY, gy = startY * theight; y < endY; y++) {
                     for (int x = 0, gx = 1; x < tilesPerRow; x++) {
                         Tile tile = tileset.getTile(tileAt);
                         if (tile != null) {
-                            tile.drawRaw(g,
-                                    gx,
-                                    gy + (maxHeight - tile.getHeight()), 1.0);
+                            tile.drawRaw(g, gx, gy + theight, 1.0);
                         }
                         gx += twidth;
                         tileAt++;
                     }
-                    gy += maxHeight;
+                    gy += theight;
                 }
             }
         }
@@ -163,8 +161,8 @@ public class TilePalettePanel extends JPanel implements Scrollable,
         }
         else {
             TileSet tileset = (TileSet)tilesets.get(0);
-            int twidth = tileset.getStandardWidth() + 1;
-            int theight = tileset.getTileHeightMax() + 1;
+            int twidth = tileset.getTileWidth() + 1;
+            int theight = tileset.getTileHeight() + 1;
             int tileCount = tileset.size();
             int tilesPerRow = Math.max(1, (getWidth() - 1) / twidth);
             int rows = (tileCount / tilesPerRow +
@@ -182,7 +180,7 @@ public class TilePalettePanel extends JPanel implements Scrollable,
             int twidth = 35 + 1;
             TileSet tileset = (TileSet)tilesets.get(0);
             if (tileset != null) {
-                twidth = tileset.getStandardWidth() + 1;
+                twidth = tileset.getTileWidth() + 1;
             }
 
             return new Dimension(TILES_PER_ROW * twidth + 1, 200);
@@ -195,7 +193,7 @@ public class TilePalettePanel extends JPanel implements Scrollable,
             int orientation, int direction) {
         TileSet tileset = (TileSet)tilesets.get(0);
         if (tileset != null) {
-            return tileset.getStandardWidth();
+            return tileset.getTileWidth();
         } else {
             return 0;
         }
@@ -205,7 +203,7 @@ public class TilePalettePanel extends JPanel implements Scrollable,
             int orientation, int direction) {
         TileSet tileset = (TileSet)tilesets.get(0);
         if (tileset != null) {
-            return tileset.getStandardWidth();
+            return tileset.getTileWidth();
         } else {
             return 0;
         }

@@ -331,13 +331,13 @@ public class TileLayer extends MapLayer
      * @param other the insignificant layer to merge with
      */
     public void mergeOnto(MapLayer other) {
-        if(!other.canEdit())
+        if (!other.canEdit())
             return;
 
         for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
             for (int x = bounds.x; x < bounds.x + bounds.width; x++) {
                 Tile tile = getTileAt(x, y);
-                if (tile != myMap.getNullTile()) {
+                if (myMap == null || tile != myMap.getNullTile()) {
                     ((TileLayer)other).setTileAt(x, y, tile);
                 }
             }
