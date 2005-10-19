@@ -160,18 +160,16 @@ public class Map extends MultilayerPlane
             }
         }
 
-        s.setStandardHeight(tileHeight);
-        s.setStandardWidth(tileWidth);
         tilesets.add(s);
         s.setMap(this);
         fireMapChanged();
     }
 
     /**
-     * Removes a {@link TileSet} from the map, and removes any tiles
-     * in the set from the map layers. A {@link MapChangedEvent} is 
-     * fired when all processing is complete. 
-     * 
+     * Removes a {@link TileSet} from the map, and removes any tiles in the set
+     * from the map layers. A {@link MapChangedEvent} is fired when all
+     * processing is complete.
+     *
      * @param s TileSet to remove
      * @throws Exception
      */
@@ -399,7 +397,7 @@ public class Map extends MultilayerPlane
     /**
      * Returns the maximum tile height. This is the height of the highest tile
      * in all tilesets or the tile height used by this map if it's smaller.
-     * 
+     *
      * @return int The maximum tile height
      */
     public int getTileHeightMax() {
@@ -407,7 +405,7 @@ public class Map extends MultilayerPlane
         Iterator itr = tilesets.iterator();
 
         while (itr.hasNext()) {
-            int height = ((TileSet)itr.next()).getTileHeightMax();
+            int height = ((TileSet)itr.next()).getTileHeight();
             if (height > maxHeight) {
                 maxHeight = height;
             }
@@ -418,7 +416,7 @@ public class Map extends MultilayerPlane
 
     /**
      * Returns the sum of the size of each tile set.
-     * 
+     *
      * @return
      */
     /*

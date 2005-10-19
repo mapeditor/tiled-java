@@ -40,8 +40,8 @@ public class Tile
 
     private Image internalImage, scaledImage;
     private int id = -1;
-    private int stdHeight;
-    private int groundHeight;          // Height above/below ground
+    private int groundHeight = 0;          // Height above/below ground
+    private int tileOrientation;
     private double myZoom = 1.0;
     private Properties properties;
     private TileSet tileset;
@@ -62,7 +62,6 @@ public class Tile
         this.animation = (Vector)t.animation.clone();
 
         tileset = t.tileset;
-        groundHeight = getHeight();
     }
 
     /**
@@ -88,7 +87,6 @@ public class Tile
         } else {
             internalImage = i;
         }
-        groundHeight = getHeight();
     }
     */
 
@@ -108,7 +106,6 @@ public class Tile
             internalImage = null;
         }
         */
-        groundHeight = getHeight();
     }
 
     public void setProperties(Properties p) {
@@ -166,29 +163,21 @@ public class Tile
                     return;
                 }
                 mediaTracker.removeImage(scaledImage);
-                g.drawImage(scaledImage, x, y, null);
+                g.drawImage(
+                        scaledImage, x, y - scaledImage.getHeight(null), null);
             } else {
                 // TODO: Allow drawing IDs when no image data exists as a
                 // config option
             }
         } else {
-            g.drawImage(scaledImage, x, y, null);
+            g.drawImage(scaledImage, x, y - scaledImage.getHeight(null), null);
         }
     }
 
     public void draw(Graphics g, int x, int y, double zoom) {
-        // Make sure tiles longer than the standard height are drawn with
-        // bottom aligned with other tiles.
-        int h = (int)(getHeight() * zoom);
-        int gnd_h = (int)(groundHeight * zoom);
-        int std_h = (int)(stdHeight * zoom);
-
-        if (h > std_h && std_h != 0) {
-            y -= h - std_h;
-        }
-
         // Invoke raw draw function
-        drawRaw(g, x, y + (h - gnd_h), zoom);
+        int gnd_h = (int)(groundHeight * zoom);
+        drawRaw(g, x, y - gnd_h, zoom);
     }
 
     public int getWidth() {

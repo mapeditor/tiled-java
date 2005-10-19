@@ -198,8 +198,8 @@ public class XMLMapWriter implements MapWriter
             w.writeAttribute("firstgid", "" + set.getFirstGid());
 
             if (tilebmpFile != null) {
-                w.writeAttribute("tilewidth", "" + set.getStandardWidth());
-                w.writeAttribute("tileheight", "" + set.getStandardHeight());
+                w.writeAttribute("tilewidth", "" + set.getTileWidth());
+                w.writeAttribute("tileheight", "" + set.getTileHeight());
                 //w.writeAttribute("spacing", "0");
             }
 

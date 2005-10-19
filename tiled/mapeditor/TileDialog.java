@@ -400,7 +400,7 @@ public class TileDialog extends JDialog
             //sharedImagesCheck.setSelected(tileset.usesSharedImages());
             externalBitmapCheck.setSelected(tileset.getTilebmpFile() != null);
 
-            tileAnimation.setRowHeight(tileset.getStandardHeight());
+            tileAnimation.setRowHeight(tileset.getTileHeight());
         }
 
         queryTiles();

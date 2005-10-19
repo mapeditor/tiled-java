@@ -57,8 +57,8 @@ public class TileSet
     private String base;
     private NumberedSet tiles, images;
     private int firstGid;
-    private int standardHeight;
-    private int standardWidth;
+    private int tileHeight;
+    private int tileWidth;
     private Image setImage;
     private String externalSource, tilebmpFile;
     private String name;
@@ -92,8 +92,6 @@ public class TileSet
             tilebmpFile = imgFilename;
         }
 
-        System.out.println("Importing " + imgFilename + "...");
-
         importTileBitmap(ImageIO.read(imgFile.toURL()), tileWidth,
                 tileHeight, spacing, createTiles);
     }
@@ -112,17 +110,17 @@ public class TileSet
      * @throws Exception
      */
     public void importTileBitmap(BufferedImage tilebmp, int tileWidth,
-            int tileHeight, int spacing, boolean createTiles) throws Exception{
-
+            int tileHeight, int spacing, boolean createTiles) throws Exception
+    {
         if (tilebmp == null) {
             throw new Exception("Failed to load " + tilebmpFile);
         }
 
         int iw = tilebmp.getWidth();
         int ih = tilebmp.getHeight();
-        
+
         BufferedImage tilesetImage = new BufferedImage(
-        		iw, ih,
+                iw, ih,
                 BufferedImage.TYPE_INT_ARGB);
         Graphics2D tg = tilesetImage.createGraphics();
         //FIXME: although faster, the following doesn't seem to handle alpha on some platforms...
@@ -150,32 +148,6 @@ public class TileSet
                     }
                 }
             }
-        }
-    }
-
-    /**
-     * Sets the standard width of the tiles in this tileset. Tiles in this
-     * tileset are not recommended to have any other width.
-     *
-     * @param width the width in pixels to use as the standard tile width
-     */
-    public void setStandardWidth(int width) {
-        standardWidth = width;
-    }
-
-    /**
-     * Sets the standard height of the tiles in this tileset. This is used to
-     * calculate the drawing position of tiles with a height above the standard
-     * height.
-     *
-     * @param s standard height for tiles
-     */
-    public void setStandardHeight(int s) {
-        standardHeight = s;
-        Iterator itr = tiles.iterator();
-        while (itr.hasNext()) {
-            Tile t = (Tile)itr.next();
-            t.setStandardHeight(standardHeight);
         }
     }
 
@@ -257,9 +229,13 @@ public class TileSet
         tiles.set(t.getId(), t);
         //System.out.println("adding tile " +t.getId());
         t.setTileSet(this);
-        t.setStandardHeight(standardHeight);
-        if (standardWidth < t.getWidth()) {
-            standardWidth = t.getWidth();
+
+        if (tileHeight < t.getHeight()) {
+            tileHeight = t.getHeight();
+        }
+
+        if (tileWidth < t.getWidth()) {
+            tileWidth = t.getWidth();
         }
 
         return t.getId();
@@ -317,42 +293,24 @@ public class TileSet
     }
 
     /**
-     * Returns the standard width of tiles in this tileset. All tiles in a
-     * tileset should be the same width.
-     * 
-     * @return the standard width as previously set with a call to
-     *         TileSet#setStandardWidth
+     * Returns the width of tiles in this tileset. All tiles in a tileset
+     * should be the same width, and the same as the tile width of the map the
+     * tileset is used with.
      */
-    public int getStandardWidth() {
-        return standardWidth;
+    public int getTileWidth() {
+        return tileWidth;
     }
 
     /**
-     * Returns the standard height of tiles in this tileset. Not all tiles in
-     * a tileset are required to have the same height.
+     * Returns the tile height of tiles in this tileset. Not all tiles in a
+     * tileset are required to have the same height, but the height should be
+     * at least the tile height of the map the tileset is used with.
      *
-     * @return the standard height as previously set with a call to
-     *         TileSet#setStandardHeight
+     * If there are tiles with varying heights in this tileset, the returned
+     * height will be the maximum.
      */
-    public int getStandardHeight() {
-        return standardHeight;
-    }
-
-    /**
-     * Iterates through the set an retrieves the largest height value.
-     *
-     * @return the maximum hieght of any tile
-     */
-    public int getTileHeightMax() {
-        int maxHeight = 0;
-        Iterator itr = iterator();
-        while (itr.hasNext()) {
-            Tile t = (Tile)itr.next();
-            if (t.getHeight() > maxHeight) {
-                maxHeight = t.getHeight();
-            }
-        }
-        return maxHeight;
+    public int getTileHeight() {
+        return tileHeight;
     }
 
     /**
@@ -467,16 +425,16 @@ public class TileSet
             ImageInputStream is;
 
             try {
-            	int psize = pg.getColorModel().getPixelSize();
-            	ByteArrayInputStream bais = null;
-            	
-            	// handle different pixel sizes
-            	if(psize >= 15 ) {
-            		bais = new ByteArrayInputStream(
-                        Util.convertIntegersToBytes((int[])pg.getPixels()));
-            	} else {
-            		bais = new ByteArrayInputStream((byte[])pg.getPixels());
-            	}
+                int psize = pg.getColorModel().getPixelSize();
+                ByteArrayInputStream bais = null;
+
+                // Handle different pixel sizes
+                if (psize >= 15 ) {
+                    bais = new ByteArrayInputStream(
+                            Util.convertIntegersToBytes((int[])pg.getPixels()));
+                } else {
+                    bais = new ByteArrayInputStream((byte[])pg.getPixels());
+                }
                 byte[] bytes = new byte[1024];
                 int len = 0;
 
@@ -516,7 +474,7 @@ public class TileSet
     /**
      * This function uses the CRC32 checksums to find the cached version of the
      * image supplied.
-     * 
+     *
      * @param i an Image object
      * @return returns the id of the given image, or -1 if the image is not in
      *         the set

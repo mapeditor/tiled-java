@@ -74,7 +74,6 @@ public final class PluginClassLoader extends URLClassLoader
                     "tiled.plugins.dir");
         }
 
-        //System.out.println("Loading from: "+baseURL);
         File dir = new File(baseURL);
         if (!dir.exists() || !dir.canRead()) {
             //FIXME: removed for webstart
