@@ -159,13 +159,13 @@ public class Tile
                 }
                 mediaTracker.removeImage(scaledImage);
                 g.drawImage(
-                        scaledImage, x, y - scaledImage.getHeight(null), null);
+                        scaledImage, x, y, null);
             } else {
                 // TODO: Allow drawing IDs when no image data exists as a
                 // config option
             }
         } else {
-            g.drawImage(scaledImage, x, y - scaledImage.getHeight(null), null);
+            g.drawImage(scaledImage, x, y, null);
         }
     }
 

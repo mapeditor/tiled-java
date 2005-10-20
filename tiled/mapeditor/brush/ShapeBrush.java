@@ -23,7 +23,6 @@ public class ShapeBrush extends AbstractBrush
 {
     protected Area shape;
     protected Tile paintTile;
-    protected int initLayer=0;
     
     
     public ShapeBrush() {
@@ -133,7 +132,7 @@ public class ShapeBrush extends AbstractBrush
         // FIXME: This loop does not take all edges into account
 
         for(int l = 0; l < numLayers; l++) {
-            TileLayer tl = (TileLayer)affectedMp.getLayer(initLayer - l);
+            TileLayer tl = (TileLayer)affectedMp.getLayer(initLayer + l);
             if (tl != null) {
                 for (int i = 0; i <= bounds.height + 1; i++) {
                     for (int j = 0; j <= bounds.width + 1; j++) {

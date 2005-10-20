@@ -129,7 +129,7 @@ public class TilePalettePanel extends JPanel implements Scrollable,
                         }
                         gx += twidth;
                     }
-                    gy += theight;
+                    gy += maxHeight;
                 }
             }
         }
