@@ -7,155 +7,158 @@
  *  (at your option) any later version.
  *
  *  Rainer Deyke <rainerd@eldwood.com>
+ *  Adam Turk <aturk@biggeruniverse.com>
+ *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
 
 package tiled.util;
 
-import java.util.Vector;
-import tiled.util.NumberedSetIterator;
+import java.util.*;
 
 /**
  * A NumberedSet is a generic container of Objects where each element is
  * identified by an integer id.  Unlike with a Vector, the mapping between
  * id and element remains unaffected when elements are deleted.  This means
- * that the set of ids for a NumberedSet may not be contiguous.
+ * that the set of ids for a NumberedSet may not be contiguous. (A sparse
+ * array)
  */
-public class NumberedSet
-{
-  private Vector data;
+public class NumberedSet {
+	
+	private Hashtable data;
 
-  /**
-   * Constructs a new empty NumberedSet.
-   */
-  public NumberedSet()
-  {
-    data = new Vector();
-  }
+	/**
+	 * Constructs a new empty NumberedSet.
+	 */
+	public NumberedSet() {
+		data = new Hashtable();
+	}
 
-  /**
-   * Returns the element for a specific element, or null if the id does not
-   * identify any element in this NumberedSet.
-   */
-  public Object get(int id)
-  {
-    try {
-      return this.data.get(id);
-    } catch (IndexOutOfBoundsException e) {
-      return null;
-    }
-  }
+	/**
+	 * Returns the element for a specific element, or null if the id does not
+	 * identify any element in this NumberedSet.
+	 * 
+	 * @param id
+	 */
+	public Object get(int id) {
+		return data.get(""+id);
+	}
 
-  /**
-   * Returns true if the NumberedSet contains an element for the specified id.
-   */
-  public boolean containsId(int id)
-  {
-    return this.get(id) != null;
-  }
+	/**
+	 * This get() is mainly used by NumberedSetIterator
+	 * 
+	 * @param key
+	 * @return
+	 */
+	public Object get(Object key) {
+		return data.get(key);
+	}
+	
+	/**
+	 * Returns true if the NumberedSet contains an element for the specified id.
+	 * 
+	 * @param id
+	 */
+	public boolean containsId(int id) {
+		return get(id) != null;
+	}
 
-  /**
-   * Sets the element for the specified id, replacing any previous element that
-   * was associated with that id.  id should be a relatively small positive
-   * integer.
-   */
-  public void set(int id, Object o)
-  {
-    if (id < 0) throw new IllegalArgumentException();
-    if (id >= this.data.size()) this.data.setSize(id + 1);
-    this.data.set(id, o);
-    while (this.data.get(this.data.size() - 1) == null) {
-      this.data.setSize(this.data.size() - 1);
-    }
-  }
+	/**
+	 * Sets the element for the specified id, replacing any previous element that
+	 * was associated with that id.  id should be a relatively small positive
+	 * integer.
+	 * 
+	 * @param id
+	 * @param o
+	 */
+	public void put(int id, Object o) {
+		if (id < 0) throw new IllegalArgumentException();
+		data.put(""+id, o);
+	}
 
-  /**
-   * Removes the element associated with the given id from the NumberedSet.
-   */
-  public void remove(int id)
-  {
-    this.set(id, null);
-  }
+	/**
+	 * Removes the element associated with the given id from the NumberedSet.
+	 */
+	public void remove(int id) {
+		data.remove(""+id);
+	}
 
-  /**
-   * Returns the first free id in the NumberedSet.
-   */
-  public int getFirstFreeId()
-  {
-    int id = 0;
-    while (this.containsId(id)) ++id;
-    return id;
-  }
+	/**
+	 * Returns the last id in the NumberedSet that is associated with an element,
+	 * or -1 if the NumberedSet is empty.
+	 */
+	public int getMaxId() {
+		int id = -1;
+		Iterator itr = data.keySet().iterator();
+		while(itr.hasNext()) {
+			int i = Integer.parseInt((String)itr.next());
+			if(i>id) id = i;
+		}
+		
+		return id+1;
+	}
+	
+	/**
+	 * Returns an iterator to iterate over the elements of the NumberedSet.
+	 * 
+	 * @return
+	 */
+	public NumberedSetIterator iterator() {
+		return new NumberedSetIterator(this);
+	}
 
-  /**
-   * Returns the last id in the NumberedSet that is associated with an element,
-   * or -1 if the NumberedSet is empty.
-   */
-  public int getMaxId()
-  {
-    return this.data.size() - 1;
-  }
+	/**
+	 * Adds a new element to the NumberedSet and returns its id.
+	 */
+	public int add(Object o) {
+	  int id = getMaxId();
+	  put(id, o);
+	  return id;
+	}
 
-  /**
-   * Returns an iterator to iterate over the elements of the NumberedSet.
-   */
-  public NumberedSetIterator iterator()
-  {
-    return new NumberedSetIterator(this);
-  }
+	/**
+	 * Returns the id of the first element of the NumberedSet that is euqal to
+	 * the given object, or -1 otherwise.
+	 * 
+	 * @param o
+	 */
+	public int indexOf(Object o) {
+		if(contains(o)) {
+			Iterator itr = data.keySet().iterator();
+			while(itr.hasNext()) {
+				String key = (String)itr.next();
+				if(o.equals(data.get(key))) {
+					return Integer.parseInt(key);
+				}
+			}
+		}
+		return -1;
+	}
 
-  /**
-   * Adds a new element to the NumberedSet and returns its id.
-   */
-  public int add(Object o)
-  {
-    int id = this.getFirstFreeId();
-    this.set(id, o);
-    return id;
-  }
+	/**
+	 * Returns true if at least one element of the NumberedSet is equal to the
+	 * given object.
+	 */
+	public boolean contains(Object o) {
+		return data.containsValue(o);
+	}
 
-  /**
-   * Returns the id of the first element of the NumberedSet that is euqal to
-   * the given object, or -1 otherwise.
-   */
-  public int find(Object o)
-  {
-    return this.data.indexOf(o);
-  }
+	/**
+	 * If this NumberedSet already contains an element equal to the given object,
+	 * return its id.  Otherwise insert the given object into the NumberedSet
+	 * and return its id.
+	 */
+	public int findOrAdd(Object o) {
+		int id = indexOf(o);
+		if (id != -1) return id;
+		return add(o);
+	}
 
-  /**
-   * Returns true if at least one element of the NumberedSet is equal to the
-   * given object.
-   */
-  public boolean contains(Object o)
-  {
-    return this.find(o) != -1;
-  }
-
-  /**
-   * If this NumberedSet already contains an element equal to the given object,
-   * return its id.  Otherwise insert the given object into the NumberedSet
-   * and return its id.
-   */
-  public int findOrAdd(Object o)
-  {
-    int id = this.find(o);
-    if (id != -1) return id;
-    return this.add(o);
-  }
-
-  /**
-   * Returns the number of actual elements in the NumberedSet.  This operation
-   * is unfortunately somewhat slow because it requires iterating over the
-   * underlying Vector.
-   */
-  public int size()
-  {
-    int total = 0;
-    for (int id = 0; id < this.data.size(); ++id) {
-      if (this.data.get(id) != null) ++total;
-    }
-    return total;
-  }
-
+	/**
+	 * Returns the number of actual elements in the NumberedSet.  This operation
+	 * is unfortunately somewhat slow because it requires iterating over the
+	 * underlying Vector.
+	 */
+  	public int size() {
+  		return data.size();
+  	}
 }
-

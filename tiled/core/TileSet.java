@@ -23,8 +23,9 @@ import java.util.zip.CRC32;
 import java.util.zip.Checksum;
 
 import javax.imageio.ImageIO;
-import javax.imageio.stream.ImageInputStream;
 
+import tiled.mapeditor.util.cutter.BasicTileCutter;
+import tiled.mapeditor.util.cutter.TileCutter;
 import tiled.util.Util;
 import tiled.util.NumberedSet;
 
@@ -49,15 +50,13 @@ import tiled.core.ImageGroup;
  * is given an id, and is added to the cache. In this way, tile images are
  * never duplicated, and multiple tiles may reference the image by id.</p>
  *
- * <p>The TileSet also handles 'cutting' tile images from a tileset image, and
- * can optionally create Tile objects that reference the images.</p>
  */
 public class TileSet
 {
     private String base;
     private NumberedSet tiles, images;
     private int firstGid;
-    private int tileHeight;
+    private int tileHeight, maxTileHeight=0;
     private int tileWidth;
     private Image setImage;
     private String externalSource, tilebmpFile;
@@ -71,18 +70,11 @@ public class TileSet
     }
 
     /**
-     * Creates a tileset from a tile bitmap file. This is a tile-cutter.
+     * Creates a tileset from a tile bitmap file.
      *
-     * @param imgFilename the filename of the image to be used
-     * @param tileWidth   the tile width
-     * @param tileHeight  the tile height
-     * @param spacing     the amount of spacing between the tiles
-     * @param createTiles
-     * @throws Exception
-     * @see TileSet#importTileBitmap(BufferedImage,int,int,int,boolean)
+     * @see TileSet#importTileBitmap(BufferedImage,TileCutter,int,int,int,boolean)
      */
-    public void importTileBitmap(String imgFilename, int tileWidth,
-            int tileHeight, int spacing, boolean createTiles) throws Exception
+    public void importTileBitmap(String imgFilename, TileCutter cutter, boolean createTiles) throws Exception
     {
         File imgFile = null;
         try {
@@ -92,8 +84,9 @@ public class TileSet
             tilebmpFile = imgFilename;
         }
 
-        importTileBitmap(ImageIO.read(imgFile.toURL()), tileWidth,
-                tileHeight, spacing, createTiles);
+        System.out.println("Importing " + imgFilename + "...");
+        
+        importTileBitmap(ImageIO.read(imgFile.toURL()), cutter, createTiles);
     }
 
     /**
@@ -102,6 +95,7 @@ public class TileSet
      * tiled.core.Tile objects that reference the images as it is cutting them.
      *
      * @param tilebmp     the image to be used
+     * @param cutter
      * @param tileWidth   the tile width
      * @param tileHeight  the tile height
      * @param spacing     the amount of spacing between the tiles
@@ -109,35 +103,43 @@ public class TileSet
      *                    Tiles
      * @throws Exception
      */
-    public void importTileBitmap(BufferedImage tilebmp, int tileWidth,
-            int tileHeight, int spacing, boolean createTiles) throws Exception
-    {
+    public void importTileBitmap(BufferedImage tilebmp, TileCutter cutter, boolean createTiles) throws Exception{
+
         if (tilebmp == null) {
             throw new Exception("Failed to load " + tilebmpFile);
         }
 
-        int iw = tilebmp.getWidth();
-        int ih = tilebmp.getHeight();
+        if(cutter == null) {
+        	throw new Exception("No cutter!");
+        }
+        
+        BufferedImage tile;
+        
+        cutter.setImage(tilebmp);
+        
+        try {
+	        while((tile = (BufferedImage) cutter.getNextTile()) != null) {
+	        	int newId = addImage(tile);
+	        	if (createTiles) {
+                    Tile newTile = new Tile();
+                    newTile.setImage(newId);
+                    addNewTile(newTile);
+                }
+	        }
+        } catch(Exception e) {
+        	e.printStackTrace();
+        }
 
-        BufferedImage tilesetImage = new BufferedImage(
-                iw, ih,
-                BufferedImage.TYPE_INT_ARGB);
-        Graphics2D tg = tilesetImage.createGraphics();
         //FIXME: although faster, the following doesn't seem to handle alpha on some platforms...
         //GraphicsConfiguration config =
         //    GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
         //Image tilesetImage = config.createCompatibleImage(tileWidth, tileHeight);
         //Graphics tg = tilesetImage.getGraphics();
 
-        tg.drawImage(tilebmp, 0, 0,
-                iw, ih,
-                0, 0, iw, ih,
-                null);
-
-        if (iw > 0 && ih > 0) {
+        /*if (iw > 0 && ih > 0) {
             for (int y = 0; y <= ih - tileHeight; y += tileHeight + spacing) {
                 for (int x = 0; x <= iw - tileWidth; x += tileWidth + spacing) {
-                    BufferedImage tile = tilesetImage.getSubimage(
+                    BufferedImage tile = ((BufferedImage)setImage).getSubimage(
                             x, y, tileWidth, tileHeight);
 
                     int newId = addImage(tile);
@@ -148,7 +150,7 @@ public class TileSet
                     }
                 }
             }
-        }
+        }*/
     }
 
     public void setTilesetImage(Image i) {
@@ -223,20 +225,24 @@ public class TileSet
      */
     public int addTile(Tile t) {
         if (t.getId() < 0) {
-            t.setId(tiles.getFirstFreeId());
+            t.setId(tiles.getMaxId());
         }
-
-        tiles.set(t.getId(), t);
-        //System.out.println("adding tile " +t.getId());
-        t.setTileSet(this);
-
+        
         if (tileHeight < t.getHeight()) {
             tileHeight = t.getHeight();
+        } 
+        
+        if (maxTileHeight < tileHeight) {
+        	maxTileHeight = tileHeight;
         }
 
         if (tileWidth < t.getWidth()) {
             tileWidth = t.getWidth();
         }
+        
+        tiles.put(t.getId(), t);
+        //System.out.println("adding tile " +t.getId());
+        t.setTileSet(this);
 
         return t.getId();
     }
@@ -262,7 +268,7 @@ public class TileSet
      * @param i the index to remove
      */
     public void removeTile(int i) {
-        tiles.set(i, null);
+        tiles.remove(i);
     }
 
     /**
@@ -313,6 +319,10 @@ public class TileSet
         return tileHeight;
     }
 
+    public int getMaxTileHeight() {
+    	return maxTileHeight;
+    }
+    
     /**
      * Gets the tile with <b>local</b> id <code>i</code>.
      *
@@ -422,7 +432,7 @@ public class TileSet
 
         try {
             pg.grabPixels();
-            ImageInputStream is;
+            //ImageInputStream is;
 
             try {
                 int psize = pg.getColorModel().getPixelSize();
@@ -480,7 +490,7 @@ public class TileSet
      *         the set
      */
     public int getIdByImage(Image i) {
-        return images.find(new ImageGroup(i));
+        return images.indexOf(new ImageGroup(i));
     }
 
     /**
@@ -501,7 +511,7 @@ public class TileSet
 
     public void overlayImage(Object key, Image i) {
         int img_id = Integer.parseInt((String)key);
-        images.set(img_id, new ImageGroup(i));
+        images.put(img_id, new ImageGroup(i));
     }
 
     /**
@@ -529,7 +539,7 @@ public class TileSet
      *         otherwise
      */
     public Image queryImage(Image image) {
-        int id = images.find(new ImageGroup(image));
+        int id = images.indexOf(new ImageGroup(image));
         ImageGroup img = (ImageGroup)images.get(id);
         return img.getImage(0);
     }
@@ -547,7 +557,7 @@ public class TileSet
      */
     public Object queryImageId(Image image) {
         ImageGroup img = new ImageGroup(image);
-        return Integer.toString(images.find(img));
+        return Integer.toString(images.indexOf(img));
     }
 
     /**
@@ -567,7 +577,7 @@ public class TileSet
             return addImage(image);
         } else {
             int id = Integer.parseInt((String)key);
-            images.set(id, new ImageGroup(image));
+            images.put(id, new ImageGroup(image));
             return id;
         }
     }
@@ -591,13 +601,14 @@ public class TileSet
     public boolean isOneForOne() {
         Iterator itr = iterator();
 
-        while (itr.hasNext()) {
+        //[ATURK] I don't that this check makes complete sense...
+        /*while (itr.hasNext()) {
             Tile t = (Tile)itr.next();
             if (t.countAnimationFrames() != 1 || t.getImageId() != t.getId()
                     || t.getImageOrientation() != 0) {
                 return false;
             }
-        }
+        }*/
 
 
         for (int id = 0; id <= images.getMaxId(); ++id) {

@@ -12,7 +12,9 @@
 
 package tiled.io;
 
+import java.awt.Canvas;
 import java.awt.Image;
+import java.awt.MediaTracker;
 import java.awt.Toolkit;
 import java.awt.image.*;
 import java.io.*;
@@ -57,7 +59,18 @@ public class ImageHelper
      * @see java.awt.Toolkit.createImage(byte[] imagedata)
      */
     static public Image bytesToImage(byte[] imageData) {
-        return Toolkit.getDefaultToolkit().createImage(imageData);
+    	Image img = Toolkit.getDefaultToolkit().createImage(imageData);
+    	
+    	MediaTracker mediaTracker = new MediaTracker(new Canvas());
+        mediaTracker.addImage(img, 0);
+        try {
+            mediaTracker.waitForID(0);
+        }
+        catch (InterruptedException ie) {
+        }
+        mediaTracker.removeImage(img);
+        
+        return img;
     }
     
     /**

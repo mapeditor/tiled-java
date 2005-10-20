@@ -408,8 +408,9 @@ public class XMLMapWriter implements MapWriter
             e.printStackTrace();
         }
     }
-
+    
     private void writeTile(Tile tile, XMLWriter w) throws IOException {
+    	
         try {
             w.startElement("tile");
 
@@ -447,28 +448,21 @@ public class XMLMapWriter implements MapWriter
                     w.endElement();
                     w.endElement();
                 } else if(conf.keyHasValue("tmx.save.tileSetImages", "1")) {
-                    for (int i = 0; i < tile.countAnimationFrames(); ++i) {
-                        w.startElement("image");
-                        w.writeAttribute("id",
-                            "" + tile.getAnimationFrameImageId(i));
-                        int orientation = tile.getAnimationFrameOrientation(i);
-                        int rotation = 0;
-                        boolean flipped =
-                            (orientation & 1) == ((orientation & 2) >> 1);
-                        if ((orientation & 4) == 4) {
-                            rotation = ((orientation & 1) == 1) ? 270 : 90;
-                        } else {
-                            rotation = ((orientation & 2) == 2) ? 180 : 0;
-                        }
-                        if (rotation != 0) w.writeAttribute("rotation",
-                                "" + rotation);
-                        if (flipped) w.writeAttribute("flipped", "true");
-                        int duration = tile.getAnimationFrameDuration(i);
-                        if (duration != 1) {
-                          w.writeAttribute("duration", "" + duration);
-                        }
-                        w.endElement();
+                    w.startElement("image");
+                    w.writeAttribute("id", "" + tile.getImageId());
+                    int orientation = tile.getImageOrientation();
+                    int rotation = 0;
+                    boolean flipped =
+                        (orientation & 1) == ((orientation & 2) >> 1);
+                    if ((orientation & 4) == 4) {
+                        rotation = ((orientation & 1) == 1) ? 270 : 90;
+                    } else {
+                        rotation = ((orientation & 2) == 2) ? 180 : 0;
                     }
+                    if (rotation != 0) w.writeAttribute("rotation",
+                            "" + rotation);
+                    if (flipped) w.writeAttribute("flipped", "true");
+                    w.endElement();
                 } else {
                     String prefix = conf.getValue("tmx.save.tileImagePrefix");
                     String filename = conf.getValue("tmx.save.maplocation") +
@@ -483,13 +477,38 @@ public class XMLMapWriter implements MapWriter
                     w.endElement();
                 }
             }
-
+            
+            if(tile instanceof AnimatedTile) {
+            	writeAnimation(((AnimatedTile)tile).getSprite(), w);
+            }
+            
             w.endElement();
         } catch (XMLWriterException e) {
             e.printStackTrace();
         }
     }
 
+    private void writeAnimation(Sprite s, XMLWriter w) throws IOException {
+    	try {
+	    	w.startElement("animation");
+	    	for(int k = 0; k < s.getTotalKeys(); k++) {
+	    		Sprite.KeyFrame key = s.getKey(k);
+	    		w.startElement("keyframe");
+	    		w.writeAttribute("name", key.getName());
+	    		for(int it = 0; it < key.getTotalFrames(); it++) {
+	    			Tile stile = key.getFrame(it);
+	    			w.startElement("tile");
+	                w.writeAttribute("gid", ""+stile.getGid());
+	                w.endElement();
+	    		}
+	    		w.endElement();
+	    	}
+	    	w.endElement();
+    	} catch (XMLWriterException e) {
+            e.printStackTrace();
+        }
+    }
+    
     private void writeObject(MapObject m, ObjectGroup o, XMLWriter w)
         throws IOException
     {

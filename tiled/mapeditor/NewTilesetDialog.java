@@ -25,6 +25,9 @@ import javax.swing.event.*;
 
 import tiled.core.*;
 import tiled.mapeditor.util.TransparentImageFilter;
+import tiled.mapeditor.util.cutter.BasicTileCutter;
+import tiled.mapeditor.util.cutter.BorderTileCutter;
+import tiled.mapeditor.util.cutter.TileCutter;
 import tiled.mapeditor.widget.*;
 
 
@@ -41,11 +44,12 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
     private JTextField tilesetName;
     private JTextField tilebmpFile;
     private JLabel nameLabel, tileWidthLabel, tileHeightLabel, spacingLabel;
-    private JLabel tilebmpFileLabel;
+    private JLabel tilebmpFileLabel, cutterLabel;
     private JCheckBox tilebmpCheck, tileAutoCheck, transCheck;
-    private JRadioButton importRadio;
-    private JRadioButton referenceRadio;
-    private JButton okButton, cancelButton, browseButton;
+    private JComboBox cutterBox;
+    //private JRadioButton importRadio;
+    //private JRadioButton referenceRadio;
+    private JButton okButton, cancelButton, browseButton, propsButton;
     private ColorButton colorButton;
     private String path;
 
@@ -66,6 +70,7 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
         tileHeightLabel = new JLabel("Tile height: ");
         spacingLabel = new JLabel("Tile spacing: ");
         tilebmpFileLabel = new JLabel("Tile image: ");
+        cutterLabel = new JLabel("Tile Cutter: ");
 
         tilesetName = new JTextField("Untitled");
         tileWidth = new JTextField("" + map.getTileWidth(), 3);
@@ -79,6 +84,11 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
         tileWidth.setEnabled(false);
         tileHeight.setEnabled(false);
 
+        cutterBox = new JComboBox(new String[] {"Basic", "Border"});
+        cutterBox.setEditable(false);
+        cutterBox.setEnabled(false);
+        cutterLabel.setEnabled(false);
+        
         tilebmpCheck = new JCheckBox("Reference tileset image", false);
         tilebmpCheck.addChangeListener(this);
 
@@ -92,10 +102,12 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
         okButton = new JButton("OK");
         cancelButton = new JButton("Cancel");
         browseButton = new JButton("Browse...");
+        propsButton = new JButton("Set Default Properties...");
         colorButton = new ColorButton(new Color(255, 0, 255));
         okButton.addActionListener(this);
         cancelButton.addActionListener(this);
         browseButton.addActionListener(this);
+        propsButton.addActionListener(this);
         colorButton.addActionListener(this);
 
         // Combine browse button and tile bitmap path text field
@@ -140,15 +152,19 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
         tilebmpPanel.add(tilebmpFileLabel, c);
         c.gridy = 3;
         tilebmpPanel.add(spacingLabel, c);
+        c.gridy = 4;
+        tilebmpPanel.add(cutterLabel,c );
         c.gridx = 1; c.gridy = 2; c.weightx = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
         tilebmpPanel.add(tilebmpPathPanel, c);
         c.gridy = 3;
         tilebmpPanel.add(tileSpacing, c);
-        c.gridx = 0; c.gridy = 4; c.gridwidth = 2;
+        c.gridy = 4;
+        tilebmpPanel.add(cutterBox,c);
+        c.gridx = 0; c.gridy = 5; c.gridwidth = 2;
         tilebmpPanel.add(tileColorPanel, c);
         c.gridx = 1; c.gridwidth = 1;
-
+        
         // OK and Cancel buttons
 
         JPanel buttons = new VerticalStaticJPanel();
@@ -179,7 +195,9 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
         miscPropPanel.add(tileWidth, c);
         c.gridy = 2;
         miscPropPanel.add(tileHeight, c);
-
+        c.gridy = 3;
+        miscPropPanel.add(propsButton, c);
+        
         // Main panel
 
         JPanel mainPanel = new JPanel();
@@ -202,6 +220,16 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
         return newTileset;
     }
 
+    public TileCutter getCutter(int w, int h, int s) {
+    	if(((String)cutterBox.getSelectedItem()).equalsIgnoreCase("basic")) {
+    		return new BasicTileCutter(w, h, s, 0);
+    	} else if(((String)cutterBox.getSelectedItem()).equalsIgnoreCase("border")) {
+    		return new BorderTileCutter();
+    	}
+    	
+    	return null;
+    }
+    
     public void actionPerformed(ActionEvent event) {
         Object source = event.getSource();
 
@@ -214,9 +242,10 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
                 int spacing = tileSpacing.intValue();
                 try {
                     if (!transCheck.isSelected()) {
-                        newTileset.importTileBitmap(file,
-                                map.getTileWidth(), map.getTileHeight(),
-                                spacing,
+                    	newTileset.importTileBitmap(file,
+                                getCutter(map.getTileWidth(),
+                                map.getTileHeight(),
+                                spacing),
                                 tileAutoCheck.isSelected());
                     } else {
                         try {
@@ -234,9 +263,9 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
                             img.getGraphics().drawImage(trans, 0, 0, null);
 
                             newTileset.importTileBitmap(img,
-                                    map.getTileWidth(),
+                                    getCutter(map.getTileWidth(),
                                     map.getTileHeight(),
-                                    spacing,
+                                    spacing),
                                     tileAutoCheck.isSelected());
 
                             newTileset.setTransparentColor(
@@ -278,6 +307,8 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
                         "Error while choosing color",
                         JOptionPane.ERROR_MESSAGE);
             }
+        } else if (source == propsButton) {
+        	
         } else {
             dispose();
         }
@@ -304,5 +335,7 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
         tileAutoCheck.setEnabled(value);
         transCheck.setEnabled(value);
         colorButton.setEnabled(value && transCheck.isSelected());
+        cutterBox.setEnabled(value && tileAutoCheck.isSelected());
+        cutterLabel.setEnabled(value && tileAutoCheck.isSelected());
     }
 }

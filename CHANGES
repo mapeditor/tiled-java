@@ -1,3 +1,9 @@
+0.6.0 - TBD (+ means planned change)
+
++ Added support for localization/internationalization
++ Added a navigation minimap
++ Fixed memory problems when loading several maps with many tilesets in a row
+
 0.5.2 - TBD (+ means planned change)
 
 + Added more useful visual feedback for some brushes
@@ -7,10 +13,15 @@
 + Added ability to select multiple layers from layer table
 + Added the ability to merge tile images when layers are merged
 * Added support for animated tiles
-+ Added support for localization/internationalization
-+ Fixed memory problems when loading several maps with many tilesets in a row
+* Added more error-checking to XMLMapTransformer, the default map reader
++ Added "global properties" for tilesets (properties set for all tiles)
+* Added support for "tile cutters"
++ Added preview of new tileset when creating a tileset
 * Fixed a bug when exporting a tileset with an external image
 * Fixed two cases of hanging when using the fill tool
++ Fixed tile palette bug of displaying multiple tilesets over eachother
+* Fixed tile palette bug of not accounting for gaps in tile ids (old bug)
+* Fixed bug of adding a new tile even if cancelling out of new tile dialog
 
 0.5.1 - June 15th, 2005
 

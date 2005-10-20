@@ -30,7 +30,8 @@ public class TilePalettePanel extends JPanel implements Scrollable,
     private static final int TILES_PER_ROW = 4;
     private Vector tilesets;
     private EventListenerList tileSelectionListeners;
-
+    private Rectangle currentClip;
+    
     public TilePalettePanel() {
         tileSelectionListeners = new EventListenerList();
         addMouseListener(this);
@@ -75,6 +76,9 @@ public class TilePalettePanel extends JPanel implements Scrollable,
 
     public Tile getTileAtPoint(int x, int y) {
         Tile ret = null;
+        
+        // TODO: This code only works if one and only one tileset is selected
+        // from the list.
         TileSet tileset = (TileSet)tilesets.get(0);
         int twidth = tileset.getTileWidth() + 1;
         int theight = tileset.getTileHeight() + 1;
@@ -82,14 +86,15 @@ public class TilePalettePanel extends JPanel implements Scrollable,
         int ty = y / theight;
         int tilesPerRow = (getWidth() - 1) / twidth;
         int tileId = ty * tilesPerRow + tx;
-        ret = tileset.getTile(tileId);
-        // TODO: This code only works if one and only one tileset is selected
-        // from the list.
+        
+        //now that we're in the right "spot", find the next valid tile
+        while((ret = tileset.getTile(tileId++)) == null) if(tileId > tileset.getMaxTileId()) break;
+        
         return ret;
     }
 
     public void paint(Graphics g) {
-        Rectangle clip = g.getClipBounds();
+    	currentClip = g.getClipBounds();
 
         paintBackground(g);
 
@@ -97,30 +102,32 @@ public class TilePalettePanel extends JPanel implements Scrollable,
             return;
         }
 
-        // TODO: In its current form this code doesn't take into account gaps
-        // in the tileset (tile ids without associated tiles), causing it to
-        // draw the gaps and leave out tiles at the end.
         for (int i = 0; i < tilesets.size(); i++) {
             TileSet tileset = (TileSet)tilesets.get(i);
 
             if (tileset != null) {
                 // Draw the tiles
+            	int maxHeight = tileset.getMaxTileHeight();
                 int twidth = tileset.getTileWidth() + 1;
                 int theight = tileset.getTileHeight() + 1;
                 int tilesPerRow = Math.max(1, (getWidth() - 1) / twidth);
 
-                int startY = clip.y / theight;
-                int endY = ((clip.y + clip.height) / theight) + 1;
+                int startY = currentClip.y / maxHeight;
+                int endY = ((currentClip.y + currentClip.height) / maxHeight) + 1;
+                //int startY = currentClip.y / theight;
+                //int endY = ((currentClip.y + currentClip.height) / theight) + 1;
                 int tileAt = tilesPerRow * startY;
 
-                for (int y = startY, gy = startY * theight; y < endY; y++) {
+                for (int y = startY, gy = startY * maxHeight; y < endY && tileAt < tileset.getMaxTileId(); y++) {
                     for (int x = 0, gx = 1; x < tilesPerRow; x++) {
-                        Tile tile = tileset.getTile(tileAt);
+                        Tile tile = null;
+                        while((tile = tileset.getTile(tileAt++)) == null) 
+                        	if(tileAt > tileset.getMaxTileId() || tileAt-1 == 0) break;
+                        
                         if (tile != null) {
                             tile.drawRaw(g, gx, gy + theight, 1.0);
                         }
                         gx += twidth;
-                        tileAt++;
                     }
                     gy += theight;
                 }

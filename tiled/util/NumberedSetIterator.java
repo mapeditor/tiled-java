@@ -16,10 +16,14 @@ package tiled.util;
 import java.lang.IllegalStateException;
 import java.lang.UnsupportedOperationException;
 import java.util.Iterator;
-import java.util.Vector;
 import java.util.NoSuchElementException;
 
-
+/**
+ * This special iterator assures that access to the
+ * NumberedSet data is correctly ordered, and that 
+ * empty sections of the sparce array are skipped
+ * automatically.
+ */
 public class NumberedSetIterator implements Iterator
 {
     private NumberedSet set;
@@ -31,13 +35,12 @@ public class NumberedSetIterator implements Iterator
     }
 
     public boolean hasNext() {
-        return this.id <= this.set.getMaxId();
+        return this.id < this.set.getMaxId();
     }
 
     public Object next() throws NoSuchElementException {
-        while (this.id <= this.set.getMaxId()) {
-            Object o = this.set.get(id);
-            ++this.id;
+        while (this.id < this.set.getMaxId()) {
+            Object o = set.get(id++);
             if (o != null) return o;
         }
         throw new NoSuchElementException();

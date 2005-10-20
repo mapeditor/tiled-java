@@ -72,7 +72,7 @@ public class TileMergeHelper {
         Image tileImg = config.createCompatibleImage(c.getWidth(), c.getHeight());
         c.render(tileImg.getGraphics());
         int image_id = myTs.addImage(tileImg);
-        tile.setAppearance(image_id, 0);
+        //tile.setAppearance(image_id, 0);
 
         myTs.addTile(tile);
 

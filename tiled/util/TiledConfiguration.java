@@ -232,5 +232,17 @@ public final class TiledConfiguration
         addConfigPair("tiled.grid.antialias", "1");
         addConfigPair("tiled.grid.opacity", "255");
         addConfigPair("tiled.plugins.dir", "plugins");
+        
+        //animation prefs
+        
+        addConfigPair("tiled.animation.safe", "0");
+        addConfigPair("tiled.animation.animate", "0");
+        
+        // defaults for new map dialog...
+        
+        addConfigPair("tiled.newmapdialog.mapwidth", "64");
+        addConfigPair("tiled.newmapdialog.mapheight", "64");
+        addConfigPair("tiled.newmapdialog.tilewidth", "35");
+        addConfigPair("tiled.newmapdialog.tileheight", "35");
     }
 }

@@ -279,7 +279,7 @@ public class MappyMapReader implements MapReader
             Tile t = new Tile();
             int image_id
               = set.addImage(Util.readRawImage(in, twidth, theight));
-            t.setAppearance(image_id, 0);
+            //t.setAppearance(image_id, 0);
             set.addTile(t);
         }
     }

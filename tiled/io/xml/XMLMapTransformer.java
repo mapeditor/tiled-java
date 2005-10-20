@@ -36,6 +36,7 @@ import tiled.core.*;
 import tiled.io.ImageHelper;
 import tiled.io.MapReader;
 import tiled.mapeditor.util.TransparentImageFilter;
+import tiled.mapeditor.util.cutter.BasicTileCutter;
 import tiled.util.*;
 
 
@@ -367,8 +368,8 @@ public class XMLMapTransformer implements MapReader
 	
 	                            img.getGraphics().drawImage(trans, 0, 0, null);
 	
-	                            set.importTileBitmap(img,
-	                                    tileWidth, tileHeight, tileSpacing,
+	                            set.importTileBitmap(img, new BasicTileCutter( 
+	                                    tileWidth, tileHeight, tileSpacing, 0),
 	                                    !hasTileElements);
 	
 	                            set.setTransparentColor(color);
@@ -377,8 +378,8 @@ public class XMLMapTransformer implements MapReader
                             	warnings.push("ERROR: "+iioe.getMessage()+" ("+sourcePath+")");
                             }
                         } else {
-                            set.importTileBitmap(sourcePath, tileWidth,
-                                    tileHeight, tileSpacing, !hasTileElements);
+                            set.importTileBitmap(sourcePath, new BasicTileCutter( 
+                                    tileWidth, tileHeight, tileSpacing, 0), !hasTileElements);
                         }
 
                     } else {
@@ -417,18 +418,30 @@ public class XMLMapTransformer implements MapReader
         throws Exception
     {
         Tile tile = null;
-
+        NodeList children = t.getChildNodes();
+        boolean isAnimated = false;
+        
+        for (int i = 0; i < children.getLength(); i++) {
+        	Node child = children.item(i);
+        	if (child.getNodeName().equalsIgnoreCase("animation")) {
+        		isAnimated = true;
+        		break;
+        	}
+        }
+        
         try {
-            tile = (Tile)unmarshalClass(Tile.class, t);
+        	if(isAnimated) {
+        		tile = (Tile)unmarshalClass(AnimatedTile.class, t);
+        	} else {
+        		tile = (Tile)unmarshalClass(Tile.class, t);
+        	}
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         tile.setTileSet(set);
-
         Properties tileProps = tile.getProperties();
-        NodeList children = t.getChildNodes();
-
+        
         for (int i = 0; i < children.getLength(); i++) {
             Node child = children.item(i);
             if (child.getNodeName().equalsIgnoreCase("image")) {
@@ -436,6 +449,7 @@ public class XMLMapTransformer implements MapReader
                 if (id < 0) {
                     id = set.addImage(unmarshalImage(child, baseDir));
                 }
+                tile.setImage(id);
                 int rotation = getAttribute(child, "rotation", 0);
                 String flipped_s = getAttributeValue(child, "flipped");
                 boolean flipped = (flipped_s != null
@@ -450,14 +464,15 @@ public class XMLMapTransformer implements MapReader
                 } else {
                     orientation = (flipped ? 1 : 0);
                 }
-                int duration = getAttribute(child, "duration", 1);
-                tile.addAnimationFrame(id, orientation, duration);
+                tile.setImageOrientation(orientation);
             } else if (child.getNodeName().equalsIgnoreCase("property")) {
                 tileProps.setProperty(getAttributeValue(child, "name"),
                         getAttributeValue(child, "value"));
+            } else if (child.getNodeName().equalsIgnoreCase("animation")) {
+            	//TODO: fill this in once XMLMapWriter is complete
             }
         }
-
+        
         return tile;
     }
 
