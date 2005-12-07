@@ -7,6 +7,7 @@
 + Fixed memory problems when loading several maps with many tilesets in a row
 * Fixed a bug when exporting a tileset with an external image
 * Fixed two cases of hanging when using the fill tool
+* Fixed loading of layer visibility attribute
 
 0.5.1 - June 15th, 2005
 

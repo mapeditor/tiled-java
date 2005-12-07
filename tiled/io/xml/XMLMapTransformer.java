@@ -488,11 +488,13 @@ public class XMLMapTransformer implements MapReader
 
         int offsetX = getAttribute(t, "x", 0);
         int offsetY = getAttribute(t, "y", 0);
+        int visible = getAttribute(t, "visible", 1);
         String opacity = getAttributeValue(t, "opacity");
 
         ml.setOffset(offsetX, offsetY);
         ml.setName(getAttributeValue(t, "name"));
-
+        ml.setVisible(visible == 1);
+        
         if (opacity != null) {
             ml.setOpacity(Float.parseFloat(opacity));
         }
