@@ -25,6 +25,7 @@ import javax.swing.event.ListSelectionListener;
 import tiled.core.*;
 import tiled.io.MapHelper;
 import tiled.io.MapWriter;
+import tiled.mapeditor.dialog.TileDialog;
 import tiled.mapeditor.util.*;
 import tiled.mapeditor.plugin.PluginClassLoader;
 

@@ -10,7 +10,7 @@
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
 
-package tiled.mapeditor;
+package tiled.mapeditor.dialog;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -22,6 +22,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import tiled.core.Map;
+import tiled.mapeditor.MapEditor;
 import tiled.mapeditor.widget.*;
 
 public class ResizeDialog extends JDialog implements ActionListener,

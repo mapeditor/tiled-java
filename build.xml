@@ -47,7 +47,7 @@
   <target name="compile" depends="init" description="Compile the source">
     <javac srcdir="${src}" destdir="${build}"/>
     <copy todir="${build}/tiled/mapeditor/resources">
-      <fileset dir="./tiled/mapeditor/resources">
+      <fileset dir="./src/tiled/mapeditor/resources">
         <include name="*.png" />
         <include name="map.dtd" />
       </fileset>
@@ -121,6 +121,6 @@
   </target>
 
   <target name="plugins" description="Plugins for various map formats">
-	<ant dir="${plugins}" target="dist"/>
+    <ant dir="${plugins}" target="dist"/>
   </target>
 </project>

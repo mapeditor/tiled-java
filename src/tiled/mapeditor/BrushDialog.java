@@ -51,7 +51,7 @@ public class BrushDialog extends JDialog implements ActionListener,
     private BrushBrowser brushes;
     private MiniMapViewer mmv;
     private JTable layerTable;
-    
+
     public BrushDialog(MapEditor editor, JFrame parent,
             AbstractBrush currentBrush)
     {
@@ -139,12 +139,12 @@ public class BrushDialog extends JDialog implements ActionListener,
 
     private JPanel createCustomPanel() {
         JPanel customPanel = new JPanel();
-        
+
         mmv = new MiniMapViewer();
         if (myBrush instanceof CustomBrush) {
             //mmv.setView(((CustomBrush)myBrush));
         }
-        
+
         JScrollPane miniSp = new JScrollPane();
         miniSp.getViewport().setView(mmv);
         miniSp.setPreferredSize(new Dimension(100,100));
@@ -158,7 +158,7 @@ public class BrushDialog extends JDialog implements ActionListener,
         layerTable.getColumnModel().getColumn(0).setPreferredWidth(32);
         layerTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         layerTable.getSelectionModel().addListSelectionListener(this);
-        
+
         customPanel.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
         c.anchor = GridBagConstraints.NORTH;
@@ -172,7 +172,7 @@ public class BrushDialog extends JDialog implements ActionListener,
         customPanel.add(bLoad, c);
         c.gridx=0; c.gridy=2;
         customPanel.add(layerTable, c);
-        
+
         return customPanel;
     }
 
@@ -191,7 +191,7 @@ public class BrushDialog extends JDialog implements ActionListener,
         JPanel buttons = new VerticalStaticJPanel();
         buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
         buttons.add(Box.createGlue());
-        buttons.add(bOk);        
+        buttons.add(bOk);
         buttons.add(Box.createRigidArea(new Dimension(5, 0)));
         buttons.add(bApply);
         buttons.add(Box.createRigidArea(new Dimension(5, 0)));
@@ -307,11 +307,11 @@ public class BrushDialog extends JDialog implements ActionListener,
     public void valueChanged(ListSelectionEvent e) {
         // TODO Auto-generated method stub
     }
-    
+
     private void openMap() throws Exception {
         String startLocation = "";
         TiledConfiguration configuration = TiledConfiguration.getInstance();
-        
+
         // Start at the location of the most recently loaded map file
         if (configuration.hasOption("tiled.recent.1")) {
             startLocation = configuration.getValue("tiled.recent.1");
@@ -336,7 +336,7 @@ public class BrushDialog extends JDialog implements ActionListener,
 
         ch.addChoosableFileFilter(
                 new TiledFileFilter(TiledFileFilter.FILTER_TMX));
-        
+
         int ret = ch.showOpenDialog(this);
         if (ret == JFileChooser.APPROVE_OPTION) {
             myBrush = new CustomBrush(

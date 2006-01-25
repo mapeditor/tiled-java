@@ -11,7 +11,7 @@
  *  Rainer Deyke <rainerd@eldwood.com>
  */
 
-package tiled.mapeditor;
+package tiled.mapeditor.dialog;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -542,7 +542,7 @@ public class TileDialog extends JDialog
             if (answer == JOptionPane.YES_OPTION) {
            
             	Enumeration ids = tileset.getImageIds();
-                while(ids.hasMoreElements()) {
+                while (ids.hasMoreElements()) {
                 	int id = Integer.parseInt((String)ids.nextElement());
                 	boolean image_used = false;
                     Iterator tileIterator = tileset.iterator();
