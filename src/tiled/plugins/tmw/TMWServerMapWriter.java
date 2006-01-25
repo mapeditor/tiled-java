@@ -13,12 +13,9 @@
 package tiled.plugins.tmw;
 
 import java.io.*;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Stack;
 
 import tiled.io.MapWriter;
-import tiled.plugins.mappy.MappyMapReader.BlkStr;
 import tiled.core.*;
 
 /**
