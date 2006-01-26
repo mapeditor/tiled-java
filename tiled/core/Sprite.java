@@ -133,16 +133,17 @@ public class Sprite {
     }
     
     public Sprite(Image image, int fpl, int border,int totalFrames) {
-        
-    	//TODO: break up the image into tiles
+        Tile [] frames = null;
         this.fpl=fpl;
         borderWidth=border;
 
+        //TODO: break up the image into tiles
+        
         //given this information, extrapolate the rest...
         
         frameSize.width=image.getWidth(null)/(fpl+borderWidth*fpl);
         frameSize.height=(int) (image.getHeight(null)/(Math.ceil(totalFrames/fpl)+Math.ceil(totalFrames/fpl)*borderWidth));
-		keys = new Vector();
+        createKey("", frames, KeyFrame.KEY_LOOP);
     }
 
     public void setFrames(Tile [] frames) {
@@ -352,6 +353,9 @@ public class Sprite {
     	return new Rectangle(x, y, frameSize.width, frameSize.height);
     }
 
+    /**
+     * @see Object#toString()
+     */
     public String toString() {
         String s = null;
         s = "Frame: ("+frameSize.width+"x"+frameSize.height+")\nBorder: "+borderWidth+"\nFPL: "+fpl+"\nTotal Frames: "+getTotalFrames()+"\nTotal keys: "+totalKeys;

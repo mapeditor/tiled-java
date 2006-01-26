@@ -56,7 +56,7 @@ public class ImageHelper
      * 
      * @param imageData The byte array of the data to convert.
      * @return Image The image instance created from the byte array
-     * @see java.awt.Toolkit.createImage(byte[] imagedata)
+     * @see java.awt.Toolkit#createImage(byte[] imagedata)
      */
     static public Image bytesToImage(byte[] imageData) {
     	Image img = Toolkit.getDefaultToolkit().createImage(imageData);

@@ -18,7 +18,11 @@ import java.io.OutputStream;
 import tiled.core.Map;
 import tiled.core.TileSet;
 
-
+/**
+ * Used by Tiled to denote a plugin for writing maps. The map file
+ * can have any format, as long as the MapWriter implementor accepts
+ * instances of tiled.core.Map and tiled.core.TileSet.
+ */
 public interface MapWriter  extends PluggableMapIO, FileFilter
 {
     /**
@@ -49,5 +53,12 @@ public interface MapWriter  extends PluggableMapIO, FileFilter
      */
     public void writeMap(Map map, OutputStream out) throws Exception;
     
+    /**
+     * Overload this to write a tileset to an open stream.
+     * 
+     * @param set
+     * @param out
+     * @throws Exception
+     */
     public void writeTileset(TileSet set, OutputStream out) throws Exception;
 }

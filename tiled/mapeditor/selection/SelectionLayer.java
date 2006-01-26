@@ -55,7 +55,7 @@ public class SelectionLayer extends TileLayer
     /**
      * Returns the selected area.
      * 
-     * @return
+     * @return Area
      */
     public Area getSelectedArea() {
         return selection;
@@ -93,19 +93,34 @@ public class SelectionLayer extends TileLayer
         selection.subtract(area);
     }
 
+    /**
+     * Sets the selected area to the given Rectangle
+     * 
+     * @param region
+     */
     public void selectRegion(Rectangle region) {
         clearRegion(selection);
         selection = new Area(region);
         fillRegion(selection, selTile);
     }
 
+    /**
+     * Selects only the given tile location (adds it to the selection
+     * if one exists)
+     * 
+     * @param tx
+     * @param ty
+     */
     public void select(int tx, int ty) {
         setTileAt(tx, ty, selTile);
+        
+        Area a = new Area(new Rectangle2D.Double(tx, ty, 1, 1));
+        
         if (selection == null) {
-            selection = new Area(new Rectangle2D.Double(tx, ty, 1, 1));
+            selection = a;
         } else {
             if (!selection.contains(tx, ty)) {
-                selection.add(new Area(new Rectangle2D.Double(tx, ty, 1, 1)));
+                selection.add(a);
             }
         }
     }
