@@ -24,7 +24,6 @@ import java.util.zip.Checksum;
 
 import javax.imageio.ImageIO;
 
-import tiled.mapeditor.util.cutter.BasicTileCutter;
 import tiled.mapeditor.util.cutter.TileCutter;
 import tiled.util.Util;
 import tiled.util.NumberedSet;
@@ -56,14 +55,16 @@ public class TileSet
     private String base;
     private NumberedSet tiles, images;
     private int firstGid;
-    private int tileHeight, maxTileHeight=0;
+    private int tileHeight;
     private int tileWidth;
-    private Image setImage;
     private String externalSource, tilebmpFile;
     private String name;
     private Map map;
     private Color transparentColor;
 
+    /**
+     * Default constructor
+     */
     public TileSet() {
         tiles = new NumberedSet();
         images = new NumberedSet();
@@ -71,8 +72,12 @@ public class TileSet
 
     /**
      * Creates a tileset from a tile bitmap file.
-     *
-     * @see TileSet#importTileBitmap(BufferedImage,TileCutter,int,int,int,boolean)
+     * 
+     * @param imgFilename
+     * @param cutter
+     * @param createTiles
+     * @throws Exception
+     * @see TileSet#importTileBitmap(BufferedImage, TileCutter, boolean)
      */
     public void importTileBitmap(String imgFilename, TileCutter cutter, boolean createTiles) throws Exception
     {
@@ -96,9 +101,6 @@ public class TileSet
      *
      * @param tilebmp     the image to be used
      * @param cutter
-     * @param tileWidth   the tile width
-     * @param tileHeight  the tile height
-     * @param spacing     the amount of spacing between the tiles
      * @param createTiles set to <code>true</code> to have the function create
      *                    Tiles
      * @throws Exception
@@ -112,6 +114,9 @@ public class TileSet
         if(cutter == null) {
         	throw new Exception("No cutter!");
         }
+        
+        tileHeight = cutter.getDimensions().height;
+        tileWidth = cutter.getDimensions().width;
         
         BufferedImage tile;
         
@@ -153,8 +158,12 @@ public class TileSet
         }*/
     }
 
+    /**
+     * @deprecated
+     * @param i
+     */
     public void setTilesetImage(Image i) {
-        setImage = i;
+        //setImage = i;
     }
 
     /**
@@ -179,6 +188,8 @@ public class TileSet
     /**
      * Sets the filename of the tileset image. Doesn't change the tileset in
      * any other way.
+     * 
+     * @param name
      */
     public void setTilesetImageFilename(String name) {
         tilebmpFile = name;
@@ -204,6 +215,9 @@ public class TileSet
 
     /**
      * Sets the map this tileset is part of.
+     * 
+     * @param map
+     * @deprecated
      */
     public void setMap(Map map) {
         this.map = map;
@@ -211,6 +225,8 @@ public class TileSet
 
     /**
      * Sets the transparent color in the tileset image.
+     * 
+     * @param color
      */
     public void setTransparentColor(Color color) {
         transparentColor = color;
@@ -230,10 +246,6 @@ public class TileSet
         
         if (tileHeight < t.getHeight()) {
             tileHeight = t.getHeight();
-        } 
-        
-        if (maxTileHeight < tileHeight) {
-        	maxTileHeight = tileHeight;
         }
 
         if (tileWidth < t.getWidth()) {
@@ -302,6 +314,8 @@ public class TileSet
      * Returns the width of tiles in this tileset. All tiles in a tileset
      * should be the same width, and the same as the tile width of the map the
      * tileset is used with.
+     * 
+     * @return int - The maximum tile width
      */
     public int getTileWidth() {
         return tileWidth;
@@ -314,13 +328,19 @@ public class TileSet
      *
      * If there are tiles with varying heights in this tileset, the returned
      * height will be the maximum.
+     * 
+     * @return int - The max height of the tiles in the set
      */
     public int getTileHeight() {
         return tileHeight;
     }
 
+    /**
+     * @deprecated
+     * @return int
+     */
     public int getMaxTileHeight() {
-    	return maxTileHeight;
+    	return getTileHeight();
     }
     
     /**
@@ -397,6 +417,8 @@ public class TileSet
 
     /**
      * Returns the map this tileset is part of.
+     * @deprecated
+     * @return int
      */
     public Map getMap() {
         return map;
@@ -405,6 +427,8 @@ public class TileSet
     /**
      * Returns the transparent color of the tileset image, or <code>null</code>
      * if none is set.
+     * 
+     * @return Color - The transparent color of the set
      */
     public Color getTransparentColor() {
         return transparentColor;
@@ -495,13 +519,22 @@ public class TileSet
 
     /**
      * @param key a key identifying the image to get
-     * @return the imagine identified by the key, or <code>null</code> when
+     * @return the image identified by the key, or <code>null</code> when
      *         there is no such image
+     * @see TileSet#getImageByIdAndOrientation(Object, int)
      */
     public Image getImageById(Object key) {
         return getImageByIdAndOrientation(key, 0);
     }
 
+    /**
+     * Returns the image referred to by the given key, and automatically
+     * sets it to the given orientation.
+     * 
+     * @param key
+     * @param orientation
+     * @return Image
+     */
     public Image getImageByIdAndOrientation(Object key, int orientation) {
         int img_id = Integer.parseInt((String)key);
         ImageGroup img = (ImageGroup)images.get(img_id);
@@ -509,6 +542,12 @@ public class TileSet
         return img.getImage(orientation);
     }
 
+    /**
+     * Overlays the image in the set referred to by the given key.
+     * 
+     * @param key
+     * @param i
+     */
     public void overlayImage(Object key, Image i) {
         int img_id = Integer.parseInt((String)key);
         images.put(img_id, new ImageGroup(i));
@@ -519,6 +558,7 @@ public class TileSet
      * <code>key</code>.
      *
      * @param key
+     * @param orientation
      * @return dimensions of image with referenced by given key
      */
     public Dimension getImageDimensions(Object key, int orientation) {
@@ -601,7 +641,7 @@ public class TileSet
     public boolean isOneForOne() {
         Iterator itr = iterator();
 
-        //[ATURK] I don't that this check makes complete sense...
+        //[ATURK] I don't think that this check makes complete sense...
         /*while (itr.hasNext()) {
             Tile t = (Tile)itr.next();
             if (t.countAnimationFrames() != 1 || t.getImageId() != t.getId()

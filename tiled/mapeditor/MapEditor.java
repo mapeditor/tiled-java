@@ -522,7 +522,6 @@ public class MapEditor implements ActionListener,
     }
 
     private void createData() {
-        JButton b;
         JToolBar tabsPanel = new JToolBar();
         JTabbedPane paintPanel = new JTabbedPane();
 
@@ -836,8 +835,7 @@ public class MapEditor implements ActionListener,
                 }
             }
         } else if (command.equals("Merge All")) {
-            //TODO: put this back in for 0.5.2
-            /*if( JOptionPane.showConfirmDialog(appFrame,
+            if( JOptionPane.showConfirmDialog(appFrame,
                     "Do you wish to merge tile images, and create a new tile set?",
                     "Merge Tiles?", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION ) {
                 TileMergeHelper tmh = new TileMergeHelper(currentMap);
@@ -847,14 +845,14 @@ public class MapEditor implements ActionListener,
                 currentMap.removeAllLayers();
                 currentMap.addLayer(newLayer);
                 currentMap.addTileset(tmh.getSet());
-            } else {*/
+            } else {
                 while (currentMap.getTotalLayers() > 1) {
                     try {
                         currentMap.mergeLayerDown(
                                 currentMap.getTotalLayers() - 1);
                     } catch (Exception ex) {}
                 }
-            //}
+            }
             setCurrentLayer(0);
         }
 
@@ -1836,6 +1834,13 @@ public class MapEditor implements ActionListener,
             }
         }
 
+        // Make sure that the file has an extension. If not, append .tmx
+        // NOTE: we can't know anything more than the filename has at least
+        //		 one '.' in it...
+        if(filename.lastIndexOf('.') == -1) {
+        	filename = filename.concat(".tmx");
+        }
+        
         try {
             // Check if file exists
             File exist = new File(filename);

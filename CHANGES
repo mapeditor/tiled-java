@@ -2,6 +2,8 @@
 
 + Added support for localization/internationalization
 + Added a navigation minimap
++ Added full support for animated tiles
++ Rewrote main mapeditor code
 + Fixed memory problems when loading several maps with many tilesets in a row
 
 0.5.2 - TBD (+ means planned change)
@@ -12,7 +14,7 @@
 * For pencil, right-click, drag now creates a stamp for easy copying
 + Added ability to select multiple layers from layer table
 + Added the ability to merge tile images when layers are merged
-* Added support for animated tiles
+* Added core support for animated tiles
 * Added more error-checking to XMLMapTransformer, the default map reader
 + Added "global properties" for tilesets (properties set for all tiles)
 * Added support for "tile cutters"
@@ -22,6 +24,7 @@
 + Fixed tile palette bug of displaying multiple tilesets over eachother
 * Fixed tile palette bug of not accounting for gaps in tile ids (old bug)
 * Fixed bug of adding a new tile even if cancelling out of new tile dialog
+* Fixed NPE when saving a map with no extension - default to .tmx
 
 0.5.1 - June 15th, 2005
 

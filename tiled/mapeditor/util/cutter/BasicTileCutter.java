@@ -1,5 +1,6 @@
 package tiled.mapeditor.util.cutter;
 
+import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -55,4 +56,7 @@ public class BasicTileCutter implements TileCutter {
 		return null;
 	}
 
+	public Dimension getDimensions() {
+		return new Dimension(tileWidth, tileHeight);
+	}
 }
