@@ -61,7 +61,7 @@ public class CustomBrush extends AbstractBrush
      * The custom brush will merge its internal layers onto the layers of the 
      * specified MultilayerPlane.
      *
-     * @see tiled.core.TileLayer#mergeOnto(MapLayer)
+     * @see tiled.core.TileLayer#mergeOnto(tiled.core.MapLayer)
      * @see tiled.mapeditor.brush.Brush#doPaint(int, int)
      * @throws Exception
      */

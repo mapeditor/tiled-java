@@ -10,7 +10,7 @@
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
 
-package tiled.mapeditor;
+package tiled.mapeditor.dialogs;
 
 import java.io.IOException;
 import javax.imageio.ImageIO;
@@ -34,7 +34,7 @@ public class AboutDialog extends JFrame
 
         try {
             icon = new ImageIcon(ImageIO.read(
-                        getClass().getResourceAsStream("resources/logo.png")));
+                        getClass().getResourceAsStream("../resources/logo.png")));
 
             JPanel content = new JPanel();
             JLabel label = new JLabel(icon);

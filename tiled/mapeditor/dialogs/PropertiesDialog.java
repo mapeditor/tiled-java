@@ -10,7 +10,7 @@
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
 
-package tiled.mapeditor;
+package tiled.mapeditor.dialogs;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -22,6 +22,7 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import tiled.mapeditor.MapEditor;
 import tiled.mapeditor.util.*;
 import tiled.mapeditor.widget.*;
 

@@ -10,7 +10,7 @@
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
 
-package tiled.mapeditor;
+package tiled.mapeditor.dialogs;
 
 import java.awt.Dialog;
 import java.awt.event.*;

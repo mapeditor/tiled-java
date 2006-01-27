@@ -29,6 +29,17 @@ import javax.swing.undo.UndoableEditSupport;
 import tiled.core.*;
 import tiled.view.*;
 import tiled.mapeditor.brush.*;
+import tiled.mapeditor.dialogs.AboutDialog;
+import tiled.mapeditor.dialogs.BrushDialog;
+import tiled.mapeditor.dialogs.ConfigurationDialog;
+import tiled.mapeditor.dialogs.NewMapDialog;
+import tiled.mapeditor.dialogs.NewTilesetDialog;
+import tiled.mapeditor.dialogs.PluginDialog;
+import tiled.mapeditor.dialogs.PropertiesDialog;
+import tiled.mapeditor.dialogs.ResizeDialog;
+import tiled.mapeditor.dialogs.SearchDialog;
+import tiled.mapeditor.dialogs.TilePaletteDialog;
+import tiled.mapeditor.dialogs.TilesetManager;
 import tiled.mapeditor.plugin.PluginClassLoader;
 import tiled.mapeditor.selection.SelectionLayer;
 import tiled.mapeditor.util.*;
@@ -67,7 +78,7 @@ public class MapEditor implements ActionListener,
     private Cursor curMarquee = null;
 
     /** Current release version */
-    public static final String version = "0.5.2";
+    public static final String version = "0.6.0";
 
     private Map currentMap;
     private MapView mapView;
