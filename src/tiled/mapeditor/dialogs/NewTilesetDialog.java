@@ -25,16 +25,20 @@ import javax.swing.event.*;
 
 import tiled.core.*;
 import tiled.mapeditor.util.TransparentImageFilter;
-import tiled.mapeditor.widget.*;
+import tiled.mapeditor.widget.IntegerSpinner;
+import tiled.mapeditor.widget.ColorButton;
+import tiled.mapeditor.widget.VerticalStaticJPanel;
 
 
 /**
  * A dialog for creating a new tileset.
+ *
+ * @version $Id$
  */
 public class NewTilesetDialog extends JDialog implements ActionListener,
        ChangeListener
 {
-    private Map map;
+    private final Map map;
     private TileSet newTileset;
     private JTextField tileWidth, tileHeight;
     private IntegerSpinner tileSpacing;
@@ -83,7 +87,7 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
         tilebmpCheck.addChangeListener(this);
 
         tileAutoCheck = new JCheckBox("Automatically create tiles from images",
-                true);
+                                      true);
         tileAutoCheck.setEnabled(false);
 
         transCheck = new JCheckBox("Use transparent color");
@@ -215,17 +219,17 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
                 try {
                     if (!transCheck.isSelected()) {
                         newTileset.importTileBitmap(file,
-                                map.getTileWidth(), map.getTileHeight(),
-                                spacing,
-                                tileAutoCheck.isSelected());
+                                                    map.getTileWidth(), map.getTileHeight(),
+                                                    spacing,
+                                                    tileAutoCheck.isSelected());
                     } else {
                         try {
                             Toolkit tk = Toolkit.getDefaultToolkit();
                             Image orig = ImageIO.read(new File(file));
                             Image trans = tk.createImage(
                                     new FilteredImageSource(orig.getSource(),
-                                        new TransparentImageFilter(
-                                            colorButton.getColor().getRGB())));
+                                                            new TransparentImageFilter(
+                                                                colorButton.getColor().getRGB())));
                             BufferedImage img = new BufferedImage(
                                     trans.getWidth(null),
                                     trans.getHeight(null),
@@ -234,10 +238,10 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
                             img.getGraphics().drawImage(trans, 0, 0, null);
 
                             newTileset.importTileBitmap(img,
-                                    map.getTileWidth(),
-                                    map.getTileHeight(),
-                                    spacing,
-                                    tileAutoCheck.isSelected());
+                                                        map.getTileWidth(),
+                                                        map.getTileHeight(),
+                                                        spacing,
+                                                        tileAutoCheck.isSelected());
 
                             newTileset.setTransparentColor(
                                     colorButton.getColor());
@@ -248,8 +252,8 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
                     }
                 } catch (Exception e) {
                     JOptionPane.showMessageDialog(this,
-                        e.getMessage(), "Error while importing tileset",
-                        JOptionPane.ERROR_MESSAGE);
+                                                  e.getMessage(), "Error while importing tileset",
+                                                  JOptionPane.ERROR_MESSAGE);
                     newTileset = null;
                 }
             }
@@ -274,9 +278,9 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
                 }
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(getOwner(),
-                        "Error while loading image: " + e.getMessage(),
-                        "Error while choosing color",
-                        JOptionPane.ERROR_MESSAGE);
+                                              "Error while loading image: " + e.getMessage(),
+                                              "Error while choosing color",
+                                              JOptionPane.ERROR_MESSAGE);
             }
         } else {
             dispose();

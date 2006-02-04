@@ -12,17 +12,25 @@
 
 package tiled.mapeditor.brush;
 
-import java.awt.*;
-import java.awt.geom.*;
+import java.awt.geom.Area;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.Polygon;
+import java.awt.Rectangle;
+import java.awt.Graphics;
 
-import tiled.core.*;
+import tiled.core.Tile;
+import tiled.core.TileLayer;
+import tiled.core.MultilayerPlane;
 
-
+/**
+ * @version $Id$
+ */
 public class ShapeBrush extends AbstractBrush
 {
     protected Area shape;
     protected Tile paintTile;
-    
+
     public ShapeBrush() {
         super();
     }
@@ -31,7 +39,7 @@ public class ShapeBrush extends AbstractBrush
         super();
         this.shape = shape;
     }
-    
+
     public ShapeBrush(AbstractBrush sb) {
         super(sb);
         if (sb instanceof ShapeBrush) {
@@ -39,7 +47,7 @@ public class ShapeBrush extends AbstractBrush
             paintTile = ((ShapeBrush)sb).paintTile;
         }
     }
-    
+
     /**
      * Makes this brush a circular brush.
      * 
@@ -61,9 +69,9 @@ public class ShapeBrush extends AbstractBrush
     }
 
     public void makePolygonBrush(Polygon p) {
-        
+
     }
-    
+
     public void setSize(int s) {
         if (shape.isRectangular()) {
             makeQuadBrush(new Rectangle(0, 0, s, s));
@@ -73,12 +81,12 @@ public class ShapeBrush extends AbstractBrush
             // TODO: scale the polygon brush
         }
     }
-    
+
     /**
      * Paints the entire area of the brush with the set tile. This brush can
      * affect several layers. 
      * 
-     * @see Brush#commitPaint(MultilayerPlane, int, int, int)
+     * @see Brush#commitPaint(tiled.core.MultilayerPlane, int, int, int)
      * @return a Rectangle of the bounds of the area that was modified
      * @param mp The multilayer plane that will be modified
      * @param x  The x-coordinate where the click occurred.
@@ -86,8 +94,8 @@ public class ShapeBrush extends AbstractBrush
      */
     public Rectangle commitPaint(MultilayerPlane mp, int x, int y, int initLayer) {
         Rectangle bounds = shape.getBounds();
-        int centerx = (int)(x - (bounds.width / 2));
-        int centery = (int)(y - (bounds.height / 2));
+        int centerx = x - (bounds.width / 2);
+        int centery = y - (bounds.height / 2);
 
         // TODO: This loop does not take all edges into account
 
@@ -103,7 +111,7 @@ public class ShapeBrush extends AbstractBrush
                 }
             }
         }
-        
+
         // Return affected area
         return new Rectangle(centerx, centery, bounds.width, bounds.height);
     }
@@ -115,7 +123,7 @@ public class ShapeBrush extends AbstractBrush
     public Tile getTile() {
         return paintTile;
     }
-    
+
     public Rectangle getBounds() {
         return shape.getBounds();
     }
@@ -123,7 +131,7 @@ public class ShapeBrush extends AbstractBrush
     public boolean isRectangular() {
         return shape.isRectangular();
     }
-    
+
     public void paint(Graphics g, int x, int y) {
         if (shape.isRectangular()) {
             Rectangle bounds = shape.getBounds();

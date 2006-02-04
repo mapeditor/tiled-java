@@ -232,5 +232,20 @@ public final class TiledConfiguration
         addConfigPair("tiled.grid.antialias", "1");
         addConfigPair("tiled.grid.opacity", "255");
         addConfigPair("tiled.plugins.dir", "plugins");
+
+        // defaults for new map dialog...
+        addConfigPair("tiled.newmapdialog.mapwidth", "64");
+        addConfigPair("tiled.newmapdialog.mapheight", "64");
+        addConfigPair("tiled.newmapdialog.tilewidth", "35");
+        addConfigPair("tiled.newmapdialog.tileheight", "35");
+    }
+
+    /**
+     * Writes current the configuration to <code>tiled.conf</code>. Silently ignores any exception.
+     */
+    public void flush () {
+        try { write("tiled.conf"); }
+        catch (IOException ex) {}
+        catch (Exception ex) {}
     }
 }

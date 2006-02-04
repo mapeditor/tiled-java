@@ -38,7 +38,9 @@ import tiled.io.MapReader;
 import tiled.mapeditor.util.TransparentImageFilter;
 import tiled.util.*;
 
-
+/**
+ * @version $Id$
+ */
 public class XMLMapTransformer implements MapReader
 {
     private Map map = null;
@@ -50,7 +52,7 @@ public class XMLMapTransformer implements MapReader
     }
 
     private String makeUrl(String filename) throws MalformedURLException {
-        String url = "";
+        final String url;
         if (filename.indexOf("://") > 0 || filename.startsWith("file:")) {
             url = filename;
         } else {
@@ -87,7 +89,7 @@ public class XMLMapTransformer implements MapReader
             } else if (parameterTypes[i].getName().endsWith("String")) {
                 conformingArguments[i] = args[i];
             } else if (parameterTypes[i].getName().equalsIgnoreCase("boolean")) {
-                conformingArguments[i] = new Boolean(args[i]);
+                conformingArguments[i] = Boolean.valueOf(args[i]);
             } else {
                 warnings.push("INFO: Unsupported argument type " +
                         parameterTypes[i].getName() +
@@ -229,39 +231,40 @@ public class XMLMapTransformer implements MapReader
     {
         TileSet set = null;
         Node tsNode;
-        Document tsDoc = null;
+        final Document tsDoc;
 
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         try {
             DocumentBuilder builder = factory.newDocumentBuilder();
             tsDoc = builder.parse(in, ".");
+
+            String xmlPathSave = xmlPath;
+            if (filename.indexOf(File.separatorChar) >= 0) {
+                xmlPath = filename.substring(0,
+                        filename.lastIndexOf(File.separatorChar) + 1);
+            }
+
+            NodeList tsNodeList = tsDoc.getElementsByTagName("tileset");
+
+            for (int itr = 0; (tsNode = tsNodeList.item(itr)) != null; itr++) {
+                set = unmarshalTileset(tsNode);
+                if (set.getSource() != null) {
+                    warnings.push(
+                            "WARN: Recursive external Tilesets are not supported.");
+                }
+                set.setSource(filename);
+                // NOTE: This is a deliberate break. multiple tilesets per TSX are
+                // not supported yet (maybe never)...
+                break;
+            }
+
+            xmlPath = xmlPathSave;
         } catch (FileNotFoundException fnf) {
             // TODO: Have a popup and ask the user to browse to the file...
             warnings.push("ERROR: Could not find external tileset file " +
                     filename);
         }
-
-        String xmlPathSave = xmlPath;
-        if (filename.indexOf(File.separatorChar) >= 0) {
-            xmlPath = filename.substring(0,
-                    filename.lastIndexOf(File.separatorChar) + 1);
-        }
-
-        NodeList tsNodeList = tsDoc.getElementsByTagName("tileset");
-
-        for (int itr = 0; (tsNode = tsNodeList.item(itr)) != null; itr++) {
-            set = unmarshalTileset(tsNode);
-            if (set.getSource() != null) {
-                warnings.push(
-                        "WARN: Recursive external Tilesets are not supported.");
-            }
-            set.setSource(filename);
-            // NOTE: This is a deliberate break. multiple tilesets per TSX are
-            // not supported yet (maybe never)...
-            break;
-        }
-
-        xmlPath = xmlPathSave;
+        
         return set;
     }
 

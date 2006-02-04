@@ -48,10 +48,12 @@ import tiled.mapeditor.selection.SelectionLayer;
  * height of a hex (i.e. from the bottom edge to the top edge).
  * This is equal to the distance between two adjacent hexes (in the same
  * column)
+ *
+ * @version $Id$
  */
 public class HexMapView extends MapView
 {
-    private static double HEX_SLOPE = Math.tan(Math.toRadians(60));
+    private static final double HEX_SLOPE = Math.tan(Math.toRadians(60));
 
     public HexMapView(Map m) {
         super(m);
@@ -84,7 +86,7 @@ public class HexMapView extends MapView
         int wbhc = (int)getWidthBetweenHexCentres();
 
         return new Dimension(
-                (int)(myMap.getWidth() * wbhc + border + wbhc),
+                myMap.getWidth() * wbhc + border + wbhc,
                 myMap.getHeight() * tsize.height + border +
                 tsize.height / 2);
     }
@@ -95,16 +97,16 @@ public class HexMapView extends MapView
         int toffset = (((modeFlags & PF_GRIDMODE) != 0) ? 1 : 0);
 
         Rectangle clipRect = g2d.getClipBounds();
-        int startX = (int)clipRect.x / tsize.width;
-        int startY = (int)clipRect.y / tsize.height - 1;
+        int startX = clipRect.x / tsize.width;
+        int startY = clipRect.y / tsize.height - 1;
         int endX = (int)(((clipRect.x + clipRect.width) / tsize.width) * 1.5) + 2;
-        int endY = (int)((clipRect.y + clipRect.height) / tsize.height) * 3 + 2;
+        int endY = ((clipRect.y + clipRect.height) / tsize.height) * 3 + 2;
 
-        int gy = (int)(startY * tsize.height + toffset);
+        int gy = startY * tsize.height + toffset;
         for (int y = startY; y < endY; y++) {
             Polygon gridPoly = createGridPolygon(0, y, 1);
             gridPoly.translate(0, -(int)(tsize.getHeight() / 2));
-            int gx = (int)(startX * tsize.width + toffset);
+            int gx = startX * tsize.width + toffset;
             for (int x = startX; x < endX; x++) {
                 Tile t = layer.getTileAt(x, y);
 
@@ -195,7 +197,6 @@ public class HexMapView extends MapView
 
         int adjustyhexes = 10;
 
-
         // Note: We adjust my & mx so they are always positive.
         // The algorithm returns incorrect values for negative my
         // The value adjustyhexes is arbitrary.
@@ -234,9 +235,7 @@ public class HexMapView extends MapView
         ty -= adjustyhexes;
         tx -= adjustyhexes;
 
-        Point result = new Point(tx, ty);
-
-        return result;
+        return new Point(tx, ty);
     }
 
     /**

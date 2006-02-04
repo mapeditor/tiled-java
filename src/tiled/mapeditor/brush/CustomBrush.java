@@ -19,6 +19,9 @@ import java.util.ListIterator;
 import tiled.core.MultilayerPlane;
 import tiled.core.TileLayer;
 
+/**
+ * @version $Id$
+ */
 public class CustomBrush extends AbstractBrush
 {
     public CustomBrush() {
@@ -37,15 +40,11 @@ public class CustomBrush extends AbstractBrush
         return getTotalLayers();
     }
 
-    public Rectangle getBounds() {
-        return getBounds();
-    }
-
     /**
      * The custom brush will merge its internal layers onto the layers of the 
      * specified MultilayerPlane.
      *
-     * @see TileLayer#mergeOnto(MapLayer)
+     * @see TileLayer#mergeOnto(tiled.core.MapLayer)
      * @see Brush#commitPaint(MultilayerPlane, int, int, int)
      * @param mp         The MultilayerPlane to be affected
      * @param x          The x-coordinate where the user initiated the paint
@@ -57,8 +56,8 @@ public class CustomBrush extends AbstractBrush
             int initLayer)
     {
         Rectangle bounds = this.getBounds();
-        int centerx = (int)(x - (bounds.width / 2));
-        int centery = (int)(y - (bounds.height / 2));
+        int centerx = x - (bounds.width / 2);
+        int centery = y - (bounds.height / 2);
 
         ListIterator itr = getLayers();
         while (itr.hasNext()) {

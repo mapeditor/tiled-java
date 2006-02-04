@@ -26,6 +26,8 @@ import tiled.util.TiledConfiguration;
 /**
  * The base class for map views. This is meant to be extended for different
  * tile map orientations, such as orthagonal and isometric.
+ *
+ * @version $Id$
  */
 public abstract class MapView extends JPanel implements Scrollable
 {
@@ -183,7 +185,7 @@ public abstract class MapView extends JPanel implements Scrollable
      * layers.
      *
      * @param g the Graphics2D object to paint to
-     * @see JComponent#paintComponent(java.awt.Graphics)
+     * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
      * @see MapLayer
      * @see SelectionLayer
      */
@@ -285,8 +287,8 @@ public abstract class MapView extends JPanel implements Scrollable
     /**
      * Draws a TileLayer. Implemented in a subclass.
      *
-     * @param tl    the TileLayer to be drawn
-     * @param zoom  the zoom level to draw the layer on
+     * @param tileLayer the TileLayer to be drawn
+     * @param zoom      the zoom level to draw the layer on
      */
     protected abstract void paintLayer(Graphics2D g2d, TileLayer tileLayer,
             double zoom);
@@ -396,8 +398,8 @@ public abstract class MapView extends JPanel implements Scrollable
 
 class SmoothZoomer extends Thread
 {
-    private MapView mapView;
-    private double zoomFrom, zoomTo;
+    private final MapView mapView;
+    private final double zoomFrom, zoomTo;
     private boolean keepZooming;
 
     public SmoothZoomer(MapView view, double from, double to) {

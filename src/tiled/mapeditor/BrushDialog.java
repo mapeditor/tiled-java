@@ -42,7 +42,7 @@ public class BrushDialog extends JDialog implements ActionListener,
        ListSelectionListener
 {
     private AbstractBrush myBrush;
-    private MapEditor editor;
+    private final MapEditor editor;
 
     private JCheckBox cbRandomBrush;
     private IntegerSpinner affectLayers, brushSize;

@@ -28,7 +28,9 @@ import tiled.io.*;
 import tiled.mapeditor.selection.SelectionLayer;
 import tiled.util.*;
 
-
+/**
+ * @version $Id$
+ */
 public class XMLMapWriter implements MapWriter
 {
     /**
@@ -52,7 +54,7 @@ public class XMLMapWriter implements MapWriter
 
         writer.flush();
 
-        if (filename.endsWith(".tmx.gz")) {
+        if (os instanceof GZIPOutputStream) {
             ((GZIPOutputStream)os).finish();
         }
     }
@@ -453,7 +455,7 @@ public class XMLMapWriter implements MapWriter
                     w.startElement("image");
                     w.writeAttribute("id", "" + tile.getImageId());
                     int orientation = tile.getImageOrientation();
-                    int rotation = 0;
+                    int rotation;
                     boolean flipped =
                         (orientation & 1) == ((orientation & 2) >> 1);
                     if ((orientation & 4) == 4) {

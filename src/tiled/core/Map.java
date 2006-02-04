@@ -23,18 +23,20 @@ import tiled.mapeditor.util.*;
  * The Map class is the focal point of the <code>tiled.core</code> package.
  * This class also handles notifing listeners if there is a change to any layer
  * or object contained by the map.
+ *
+ * @version $Id$
  */
 public class Map extends MultilayerPlane
 {
-    /** orthogonal */
+    /** Orthogonal. */
     public static final int MDO_ORTHO   = 1;
-    /** isometric */
+    /** Isometric. */
     public static final int MDO_ISO     = 2;
-    /** oblique */
+    /** Oblique. */
     public static final int MDO_OBLIQUE = 3;
-    /** hexagonal */
+    /** Hexagonal. */
     public static final int MDO_HEX     = 4;
-    /** shifted (used for iso and hex) */
+    /** Shifted (used for iso and hex). */
     public static final int MDO_SHIFTED = 5;
 
     private Vector specialLayers;

@@ -20,7 +20,8 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
 
 import tiled.util.TiledConfiguration;
-import tiled.mapeditor.widget.*;
+import tiled.mapeditor.widget.IntegerSpinner;
+import tiled.mapeditor.widget.VerticalStaticJPanel;
 
 
 public class ConfigurationDialog extends JDialog implements ActionListener,
@@ -34,7 +35,7 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
     private JRadioButton rbEmbedInTiles, rbEmbedInSet;
     private JCheckBox cbGridAA;
     private JColorChooser gridColor;
-    private TiledConfiguration configuration;
+    private final TiledConfiguration configuration;
 
     public ConfigurationDialog(JFrame parent) {
         super(parent, "Preferences", true);
@@ -120,7 +121,7 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
         c.gridy = 1;
         c.gridx = 0;
         generalOps.add(cbReportIOWarnings, c);
-        
+
         /* TILESET OPTIONS */
         tilesetOps = new VerticalStaticJPanel();
         tilesetOps.setLayout(new GridBagLayout());
@@ -135,7 +136,7 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
         tilesetOps.add(rbEmbedInTiles, c);
         c.gridy = 2; c.insets = new Insets(0, 10, 0, 0);
         tilesetOps.add(rbEmbedInSet, c);
-        
+
         /* GRID OPTIONS */
         gridOps = new VerticalStaticJPanel();
         gridOps.setLayout(new GridBagLayout());
@@ -156,7 +157,7 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
         JPanel buttons = new VerticalStaticJPanel();
         buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
         buttons.add(Box.createGlue());
-        buttons.add(bOk);        
+        buttons.add(bOk);
         buttons.add(Box.createRigidArea(new Dimension(5, 0)));
         buttons.add(bApply);
         buttons.add(Box.createRigidArea(new Dimension(5, 0)));
@@ -168,7 +169,7 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
         saving.setLayout(new BoxLayout(saving, BoxLayout.Y_AXIS));
         saving.add(layerOps);
         saving.add(tilesetOps);
-        
+
         JPanel general = new JPanel();
         general.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
         general.setLayout(new BoxLayout(general, BoxLayout.Y_AXIS));

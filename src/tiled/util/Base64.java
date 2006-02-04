@@ -76,7 +76,7 @@ static public char[] encode(byte[] data)
         val >>= 6;
         out[index+1] = alphabet[val & 0x3F];
         val >>= 6;
-        out[index+0] = alphabet[val & 0x3F];
+        out[index] = alphabet[val & 0x3F];
     }
     return out;
 }
@@ -228,7 +228,7 @@ private static byte[] readBytes(File file)
     {
         InputStream fis = new FileInputStream(file);
         InputStream is = new BufferedInputStream(fis);
-        int count = 0;
+        int count;
         byte[] buf = new byte[16384];
         while ((count=is.read(buf)) != -1) {
             if (count > 0) baos.write(buf, 0, count);
@@ -247,7 +247,7 @@ private static char[] readChars(File file)
     {
         Reader fr = new FileReader(file);
         Reader in = new BufferedReader(fr);
-        int count = 0;
+        int count;
         char[] buf = new char[16384];
         while ((count=in.read(buf)) != -1) {
             if (count > 0) caw.write(buf, 0, count);

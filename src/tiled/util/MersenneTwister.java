@@ -69,7 +69,7 @@ public class MersenneTwister extends Random {
     /* initializes mt[N] with a seed */
     public void initGenRand(long s)
     {
-        mt[0]= s & 0xffffffff;
+        mt[0]= s;
         for (mti=1; mti<N; mti++) {
             mt[mti] =
                 (1812433253 * (mt[mti-1] ^ (mt[mti-1] >> 30)) + mti);

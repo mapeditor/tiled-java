@@ -33,8 +33,7 @@ import tiled.mapeditor.plugin.PluginClassLoader;
 public class TilesetManager extends JDialog implements ActionListener,
        ListSelectionListener
 {
-    private Map map;
-    private Vector tileSets;
+    private final Map map;
 
     private JButton saveAsButton, saveButton, embedButton;
     private JButton removeButton, editButton, closeButton;

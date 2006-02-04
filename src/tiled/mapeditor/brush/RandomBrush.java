@@ -19,9 +19,12 @@ import tiled.core.MultilayerPlane;
 import tiled.core.TileLayer;
 import tiled.util.MersenneTwister;
 
+/**
+ * @version $Id$
+ */
 public class RandomBrush extends ShapeBrush
 {
-    private MersenneTwister mt;
+    private final MersenneTwister mt;
     private double ratio = 0.5;
 
     public RandomBrush() {
@@ -66,8 +69,8 @@ public class RandomBrush extends ShapeBrush
             int initLayer)
     {
         Rectangle bounds = shape.getBounds();
-        int centerx = (int)(x - (bounds.width / 2));
-        int centery = (int)(y - (bounds.height / 2));
+        int centerx = x - (bounds.width / 2);
+        int centery = y - (bounds.height / 2);
 
         for (int i = 0; i < numLayers; i++) {
             TileLayer tl = (TileLayer)mp.getLayer(initLayer - i);

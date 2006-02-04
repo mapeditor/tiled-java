@@ -17,8 +17,9 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import tiled.core.*;
-import tiled.mapeditor.widget.*;
-
+import tiled.util.TiledConfiguration;
+import tiled.mapeditor.widget.IntegerSpinner;
+import tiled.mapeditor.widget.VerticalStaticJPanel;
 
 public class NewMapDialog extends JDialog implements ActionListener
 {
@@ -36,13 +37,20 @@ public class NewMapDialog extends JDialog implements ActionListener
     }
 
     private void init() {
+        // Load dialog defaults
+
+        TiledConfiguration conf = TiledConfiguration.getInstance();
+        int defaultMapWidth = conf.getIntValue("tiled.newmapdialog.mapwidth", 64);
+        int defaultMapHeight = conf.getIntValue("tiled.newmapdialog.mapheight", 64);
+        int defaultTileWidth = conf.getIntValue("tiled.newmapdialog.tilewidth", 35);
+        int defaultTileHeight = conf.getIntValue("tiled.newmapdialog.tileheight", 35);
+
         // Create the primitives
 
-        mapWidth = new IntegerSpinner(64, 1);
-        mapHeight = new IntegerSpinner(64, 1);
-        tileWidth = new IntegerSpinner(35, 1);
-        tileHeight = new IntegerSpinner(35, 1);
-
+        mapWidth = new IntegerSpinner(defaultMapWidth, 1);
+        mapHeight = new IntegerSpinner(defaultMapHeight, 1);
+        tileWidth = new IntegerSpinner(defaultTileWidth, 1);
+        tileHeight = new IntegerSpinner(defaultTileHeight, 1);
 
         // Map size fields
 
@@ -169,9 +177,16 @@ public class NewMapDialog extends JDialog implements ActionListener
             newMap.setTileHeight(theight);
             newMap.setOrientation(orientation);
 
-            dispose();
-        } else {
-            dispose();
+            // Save dialog options
+
+            TiledConfiguration conf = TiledConfiguration.getInstance();
+            conf.addConfigPair("tiled.newmapdialog.mapwidth", Integer.toString(mapWidth.intValue()));
+            conf.addConfigPair("tiled.newmapdialog.mapheight", Integer.toString(mapHeight.intValue()));
+            conf.addConfigPair("tiled.newmapdialog.tilewidth", Integer.toString(tileWidth.intValue()));
+            conf.addConfigPair("tiled.newmapdialog.tileheight", Integer.toString(tileHeight.intValue()));
+
+            conf.flush();
         }
+        dispose();
     }
 }
