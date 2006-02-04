@@ -29,13 +29,12 @@ import javax.swing.undo.UndoableEditSupport;
 import tiled.core.*;
 import tiled.view.*;
 import tiled.mapeditor.brush.*;
-import tiled.mapeditor.dialog.*;
+import tiled.mapeditor.dialogs.*;
 import tiled.mapeditor.plugin.PluginClassLoader;
 import tiled.mapeditor.selection.SelectionLayer;
 import tiled.mapeditor.util.*;
 import tiled.mapeditor.widget.*;
 import tiled.mapeditor.undo.*;
-import tiled.util.TileMergeHelper;
 import tiled.util.TiledConfiguration;
 import tiled.util.Util;
 import tiled.io.MapHelper;
@@ -45,6 +44,8 @@ import tiled.io.MapWriter;
 
 /**
  * The main class for the Tiled Map Editor.
+ *
+ * @version $Id$
  */
 public class MapEditor implements ActionListener,
     MouseListener, MouseMotionListener, MapChangeListener,
@@ -1137,7 +1138,7 @@ public class MapEditor implements ActionListener,
         } else if (command.equals("Import Tileset...")) {
             if (currentMap != null) {
                 JFileChooser ch = new JFileChooser(currentMap.getFilename());
-                MapReader readers[] = (MapReader[]) pluginLoader.getReaders();
+                MapReader readers[] = pluginLoader.getReaders();
                 for(int i = 0; i < readers.length; i++) {
                     try {
                         ch.addChoosableFileFilter(new TiledFileFilter(
@@ -1613,7 +1614,7 @@ public class MapEditor implements ActionListener,
             Tile newTile, Tile oldTile) {
         if (newTile == oldTile || layer.getLocked()) return;
 
-        Rectangle area = null;
+        Rectangle area;
         TileLayer before = new TileLayer(layer);
         TileLayer after;
 
@@ -1764,7 +1765,7 @@ public class MapEditor implements ActionListener,
                 ch = new JFileChooser(filename);
             }
 
-            MapWriter writers[] = (MapWriter[]) pluginLoader.getWriters();
+            MapWriter writers[] = pluginLoader.getWriters();
             for(int i = 0; i < writers.length; i++) {
                 try {
                     ch.addChoosableFileFilter(new TiledFileFilter(
@@ -1866,7 +1867,7 @@ public class MapEditor implements ActionListener,
         JFileChooser ch = new JFileChooser(startLocation);
 
         try {
-            MapReader readers[] = (MapReader[]) pluginLoader.getReaders();
+            MapReader readers[] = pluginLoader.getReaders();
             for(int i = 0; i < readers.length; i++) {
                 ch.addChoosableFileFilter(new TiledFileFilter(
                             readers[i].getFilter(), readers[i].getName()));

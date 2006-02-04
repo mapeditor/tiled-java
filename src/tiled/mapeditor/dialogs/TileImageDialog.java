@@ -11,7 +11,7 @@
  *  Rainer Deyke <rainerd@eldwood.com>
  */
 
-package tiled.mapeditor.dialog;
+package tiled.mapeditor.dialogs;
 
 import java.awt.*;
 import java.awt.event.*;
