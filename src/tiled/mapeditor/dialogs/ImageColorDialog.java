@@ -36,11 +36,11 @@ public class ImageColorDialog extends JDialog implements ActionListener,
     private JPanel colorPanel;
     private int pixels[];
 
-    public ImageColorDialog () {
+    public ImageColorDialog() {
         super();
     }
 
-    public ImageColorDialog (Image i) {
+    public ImageColorDialog(Image i) {
         this();
         image = i;
         PixelGrabber pg = new PixelGrabber(i, 0, 0, -1, -1, true);
@@ -60,7 +60,7 @@ public class ImageColorDialog extends JDialog implements ActionListener,
         setModal(true);
     }
 
-    private void init () {
+    private void init() {
         ImageViewPanel imagePanel = new ImageViewPanel(image);
         imagePanel.addMouseListener(this);
         imagePanel.addMouseMotionListener(this);
@@ -100,44 +100,44 @@ public class ImageColorDialog extends JDialog implements ActionListener,
         setContentPane(mainPanel);
     }
 
-    public Color showDialog () {
+    public Color showDialog() {
         setVisible(true);
         return color;
     }
 
-    public void actionPerformed (ActionEvent e) {
+    public void actionPerformed(ActionEvent e) {
         if (e.getSource() == bCancel) {
             color = null;
             dispose();
         }
     }
 
-    public void mouseClicked (MouseEvent e) {
+    public void mouseClicked(MouseEvent e) {
         grabColor(e.getX(), e.getY());
         dispose();
     }
 
-    public void mousePressed (MouseEvent e) {
+    public void mousePressed(MouseEvent e) {
     }
 
-    public void mouseReleased (MouseEvent e) {
+    public void mouseReleased(MouseEvent e) {
     }
 
-    public void mouseEntered (MouseEvent e) {
+    public void mouseEntered(MouseEvent e) {
     }
 
-    public void mouseExited (MouseEvent e) {
+    public void mouseExited(MouseEvent e) {
     }
 
-    public void mouseDragged (MouseEvent e) {
+    public void mouseDragged(MouseEvent e) {
         grabColor(e.getX(), e.getY());
     }
 
-    public void mouseMoved (MouseEvent e) {
+    public void mouseMoved(MouseEvent e) {
         grabColor(e.getX(), e.getY());
     }
 
-    private void grabColor (int x, int y) {
+    private void grabColor(int x, int y) {
         int w = image.getWidth(null);
         int h = image.getHeight(null);
         if (pixels != null && (x < w && y < h)) {
