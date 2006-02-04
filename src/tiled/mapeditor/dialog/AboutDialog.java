@@ -33,8 +33,8 @@ public class AboutDialog extends JFrame
         ImageIcon icon;
 
         try {
-            icon = new ImageIcon(ImageIO.read(
-                        getClass().getResourceAsStream("resources/logo.png")));
+            icon = new ImageIcon(ImageIO.read(MapEditor.class.
+                        getResourceAsStream("resources/logo.png")));
 
             JPanel content = new JPanel();
             JLabel label = new JLabel(icon);

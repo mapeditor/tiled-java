@@ -131,10 +131,8 @@ public class MapEditor implements ActionListener,
 
     // Actions
     Action zoomInAction, zoomOutAction, zoomNormalAction;
-    Action undoAction, redoAction;
     Action rot90Action, rot180Action, rot270Action;
     Action flipHorAction, flipVerAction;
-    Action copyAction, cutAction, pasteAction;
     Action selectAllAction, inverseAction, cancelSelectionAction;
 
     public MapEditor() {
@@ -177,16 +175,11 @@ public class MapEditor implements ActionListener,
         zoomInAction = new ZoomInAction();
         zoomOutAction = new ZoomOutAction();
         zoomNormalAction = new ZoomNormalAction();
-        undoAction = new UndoAction();
-        redoAction = new RedoAction();
         rot90Action = new LayerTransformAction(MapLayer.ROTATE_90);
         rot180Action = new LayerTransformAction(MapLayer.ROTATE_180);
         rot270Action = new LayerTransformAction(MapLayer.ROTATE_270);
         flipHorAction = new LayerTransformAction(MapLayer.MIRROR_HORIZONTAL);
         flipVerAction = new LayerTransformAction(MapLayer.MIRROR_VERTICAL);
-        copyAction = new CopyAction();
-        pasteAction = new PasteAction();
-        cutAction = new CutAction();
         selectAllAction = new SelectAllAction();
         cancelSelectionAction = new CancelSelectionAction();
         inverseAction = new InverseSelectionAction();
@@ -295,14 +288,14 @@ public class MapEditor implements ActionListener,
         fileMenu.add(createMenuItem("Exit", null, "Exit the map editor",
                     "control Q"));
 
-        undoMenuItem = new TMenuItem(undoAction);
-        redoMenuItem = new TMenuItem(redoAction);
+        undoMenuItem = new TMenuItem(new UndoAction());
+        redoMenuItem = new TMenuItem(new RedoAction());
         undoMenuItem.setEnabled(false);
         redoMenuItem.setEnabled(false);
 
-        copyMenuItem = new TMenuItem(copyAction);
-        cutMenuItem = new TMenuItem(cutAction);
-        pasteMenuItem = new TMenuItem(pasteAction);
+        copyMenuItem = new TMenuItem(new CopyAction());
+        cutMenuItem = new TMenuItem(new CutAction());
+        pasteMenuItem = new TMenuItem(new PasteAction());
         copyMenuItem.setEnabled(false);
         cutMenuItem.setEnabled(false);
         pasteMenuItem.setEnabled(false);
@@ -515,7 +508,6 @@ public class MapEditor implements ActionListener,
     }
 
     private void createData() {
-        JButton b;
         JToolBar tabsPanel = new JToolBar();
         JTabbedPane paintPanel = new JTabbedPane();
 
