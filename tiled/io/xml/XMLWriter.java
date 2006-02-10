@@ -21,15 +21,17 @@ import java.util.Stack;
 /**
  * A simple helper class to write an XML file, based on
  * http://www.xmlsoft.org/html/libxml-xmlwriter.html
+ *
+ * @version $Id$
  */
 public class XMLWriter
 {
     private boolean bIndent = true;
     private String indentString = " ";
     private String newLine = "\n";
-    private Writer w;
+    private final Writer w;
     
-    private Stack openElements;
+    private final Stack openElements;
     private boolean bStartTagOpen = false;
     private boolean bDocumentOpen = false;
 
@@ -77,7 +79,7 @@ public class XMLWriter
         bStartTagOpen = true;
     }
 
-    
+
     public void endDocument() throws IOException {
         // End all open elements.
         while (openElements.size() > 0) {

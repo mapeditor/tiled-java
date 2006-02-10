@@ -28,7 +28,9 @@ import tiled.io.*;
 import tiled.mapeditor.selection.SelectionLayer;
 import tiled.util.*;
 
-
+/**
+ * @version $Id$
+ */
 public class XMLMapWriter implements MapWriter
 {
     /**
@@ -52,7 +54,7 @@ public class XMLMapWriter implements MapWriter
 
         writer.flush();
 
-        if (filename.endsWith(".tmx.gz")) {
+        if (os instanceof GZIPOutputStream) {
             ((GZIPOutputStream)os).finish();
         }
     }
@@ -239,10 +241,10 @@ public class XMLMapWriter implements MapWriter
                 } else if (conf.keyHasValue("tmx.save.embedImages", "0")) {
                     String imgSource = conf.getValue(
                             "tmx.save.tileImagePrefix") + "set.png";
-                    
+
                     w.startElement("image");
                     w.writeAttribute("source", imgSource);
-                    
+
                     String tilesetFilename = (wp.substring(0,
                             wp.lastIndexOf(File.separatorChar) + 1)
                             + imgSource);
@@ -251,10 +253,10 @@ public class XMLMapWriter implements MapWriter
                     //byte[] data = ImageHelper.imageToPNG(setImage);
                     //fw.write(data, 0, data.length);
                     w.endElement();
-                    
+
                     fw.close();
                 }
-                
+
                 // Check to see if there is a need to write tile elements
                 Iterator tileIterator = set.iterator();
                 boolean needWrite = !set.isOneForOne();
@@ -451,7 +453,7 @@ public class XMLMapWriter implements MapWriter
                     w.startElement("image");
                     w.writeAttribute("id", "" + tile.getImageId());
                     int orientation = tile.getImageOrientation();
-                    int rotation = 0;
+                    int rotation;
                     boolean flipped =
                         (orientation & 1) == ((orientation & 2) >> 1);
                     if ((orientation & 4) == 4) {
@@ -477,11 +479,11 @@ public class XMLMapWriter implements MapWriter
                     w.endElement();
                 }
             }
-            
-            if(tile instanceof AnimatedTile) {
-            	writeAnimation(((AnimatedTile)tile).getSprite(), w);
+
+            if (tile instanceof AnimatedTile) {
+                writeAnimation(((AnimatedTile)tile).getSprite(), w);
             }
-            
+
             w.endElement();
         } catch (XMLWriterException e) {
             e.printStackTrace();

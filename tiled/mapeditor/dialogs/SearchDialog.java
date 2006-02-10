@@ -14,19 +14,21 @@ package tiled.mapeditor.dialogs;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.util.*;
+import java.util.Vector;
+import java.util.Iterator;
 import javax.swing.*;
 
 import tiled.mapeditor.selection.SelectionLayer;
 import tiled.mapeditor.util.MultisetListRenderer;
 import tiled.mapeditor.widget.*;
 import tiled.core.*;
-import tiled.core.Map;
 
-
+/**
+ * @version $Id$
+ */
 public class SearchDialog extends JDialog implements ActionListener
 {
-    private Map myMap;
+    private final Map myMap;
     private JComboBox searchCBox, replaceCBox;
     private JButton bFind, bFindAll;
     private JButton bReplace, bReplaceAll;
@@ -123,15 +125,14 @@ public class SearchDialog extends JDialog implements ActionListener
     }
 
     private void queryTiles(JComboBox b) {
-        Vector sets = myMap.getTilesets();
-        int curSlot = 0;
-        Iterator itr = sets.iterator();
+        final Vector sets = myMap.getTilesets();
+        final Iterator itr = sets.iterator();
 
         while (itr.hasNext()) {
             TileSet ts = (TileSet)itr.next();
             b.addItem(ts);
 
-            Iterator tileIterator = ts.iterator();
+            final Iterator tileIterator = ts.iterator();
             while (tileIterator.hasNext()) {
                 Tile tile = (Tile)tileIterator.next();
                 b.addItem(tile);
@@ -155,14 +156,14 @@ public class SearchDialog extends JDialog implements ActionListener
             }
 
             sl = new SelectionLayer(myMap.getWidth(), myMap.getHeight());
-            ListIterator itr = myMap.getLayers();
+            final Iterator itr = myMap.getLayers();
             while (itr.hasNext()) {
                 MapLayer layer = (MapLayer) itr.next();
                 if (layer instanceof TileLayer) {
                     Rectangle bounds = layer.getBounds();
                     for (int y = 0; y < bounds.height; y++) {
                         for (int x = 0; x < bounds.width; x++) {
-                            if (((TileLayer)layer).getTileAt(x,y) == (Tile) searchCBox.getSelectedItem()) {
+                            if (((TileLayer)layer).getTileAt(x,y) == searchCBox.getSelectedItem()) {
                                 sl.select(x,y);
                             }
                         }
@@ -183,11 +184,11 @@ public class SearchDialog extends JDialog implements ActionListener
 
                 // run through the layers, look for the first instance of the
                 // tile we need to replace
-                ListIterator itr = myMap.getLayers();
+                final Iterator itr = myMap.getLayers();
                 while (itr.hasNext()) {
                     MapLayer layer = (MapLayer) itr.next();
                     if (layer instanceof TileLayer) {
-                        if (((TileLayer)layer).getTileAt(currentMatch.x,currentMatch.y) == (Tile) searchCBox.getSelectedItem()) {
+                        if (((TileLayer)layer).getTileAt(currentMatch.x,currentMatch.y) == searchCBox.getSelectedItem()) {
                             ((TileLayer)layer).setTileAt(currentMatch.x,currentMatch.y, (Tile) replaceCBox.getSelectedItem());
                             break;
                         }
@@ -202,9 +203,8 @@ public class SearchDialog extends JDialog implements ActionListener
     }
 
     private void replaceAll(Tile f, Tile r) {
-        // TODO: Allow for "scopes" of one or more layers, rather than all
-        //  layers
-        ListIterator itr = myMap.getLayers();
+        // TODO: Allow for "scopes" of one or more layers, rather than all layers
+        final Iterator itr = myMap.getLayers();
         while (itr.hasNext()) {
             MapLayer layer = (MapLayer) itr.next();
             if (layer instanceof TileLayer) {
@@ -230,14 +230,14 @@ public class SearchDialog extends JDialog implements ActionListener
 
         for (int y = starty; y < myMap.getHeight() && !bFound; y++) {
             for (int x = startx; x < myMap.getWidth() && !bFound; x++) {
-                ListIterator itr = myMap.getLayers();
+                final Iterator itr = myMap.getLayers();
                 while (itr.hasNext()) {
                     MapLayer layer = (MapLayer) itr.next();
 
                     if (layer instanceof TileLayer) {
                         Rectangle bounds = layer.getBounds();
 
-                        if (((TileLayer)layer).getTileAt(x,y) == (Tile) searchCBox.getSelectedItem()) {
+                        if (((TileLayer)layer).getTileAt(x,y) == searchCBox.getSelectedItem()) {
                             if (currentMatch != null) {
                                 if (currentMatch.equals(new Point(x,y))) {
                                     continue;

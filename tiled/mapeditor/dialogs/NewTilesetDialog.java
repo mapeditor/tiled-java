@@ -28,11 +28,15 @@ import tiled.mapeditor.util.TransparentImageFilter;
 import tiled.mapeditor.util.cutter.BasicTileCutter;
 import tiled.mapeditor.util.cutter.BorderTileCutter;
 import tiled.mapeditor.util.cutter.TileCutter;
-import tiled.mapeditor.widget.*;
+import tiled.mapeditor.widget.IntegerSpinner;
+import tiled.mapeditor.widget.ColorButton;
+import tiled.mapeditor.widget.VerticalStaticJPanel;
 
 
 /**
  * A dialog for creating a new tileset.
+ *
+ * @version $Id$
  */
 public class NewTilesetDialog extends JDialog implements ActionListener,
        ChangeListener
@@ -93,7 +97,7 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
         tilebmpCheck.addChangeListener(this);
 
         tileAutoCheck = new JCheckBox("Automatically create tiles from images",
-                true);
+                                      true);
         tileAutoCheck.setEnabled(false);
 
         transCheck = new JCheckBox("Use transparent color");
@@ -277,8 +281,8 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
                     }
                 } catch (Exception e) {
                     JOptionPane.showMessageDialog(this,
-                        e.getMessage(), "Error while importing tileset",
-                        JOptionPane.ERROR_MESSAGE);
+                                                  e.getMessage(), "Error while importing tileset",
+                                                  JOptionPane.ERROR_MESSAGE);
                     newTileset = null;
                 }
             }
@@ -303,9 +307,9 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
                 }
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(getOwner(),
-                        "Error while loading image: " + e.getMessage(),
-                        "Error while choosing color",
-                        JOptionPane.ERROR_MESSAGE);
+                                              "Error while loading image: " + e.getMessage(),
+                                              "Error while choosing color",
+                                              JOptionPane.ERROR_MESSAGE);
             }
         } else if (source == propsButton) {
         	

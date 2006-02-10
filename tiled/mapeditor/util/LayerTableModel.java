@@ -73,9 +73,9 @@ public class LayerTableModel extends AbstractTableModel
         
         if (layer != null) {
             if (col == 0) {
-                return new Boolean(layer.getLocked() || !layer.isVisible());
+                return Boolean.valueOf(layer.getLocked() || !layer.isVisible());
             } else if (col == 1) {
-                return new Boolean(layer.isVisible());
+                return Boolean.valueOf(layer.isVisible());
             } else if (col == 2) {
                 return layer.getName();
             } else {

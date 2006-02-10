@@ -12,12 +12,22 @@
 
 package tiled.util;
 
-import java.awt.*;
-import java.util.*;
+import java.util.Vector;
+import java.util.Iterator;
+import java.awt.GraphicsEnvironment;
+import java.awt.GraphicsConfiguration;
+import java.awt.Image;
+import java.awt.Graphics;
 
-import tiled.core.*;
 import tiled.core.Map;
+import tiled.core.TileSet;
+import tiled.core.TileLayer;
+import tiled.core.Tile;
+import tiled.core.MapLayer;
 
+/**
+ * @version $Id$
+ */
 public class TileMergeHelper {
     private Map myMap;
     private TileSet myTs;
@@ -87,10 +97,10 @@ public class TileMergeHelper {
         public Cell(Map map, int posx, int posy, int start, int len, boolean all) {
             sandwich = new Vector();
             for (int i = 0; i < len; i++) {
-                MapLayer ml = (MapLayer)map.getLayer(start+i);
+                MapLayer ml = map.getLayer(start+i);
                 if (ml instanceof TileLayer) {
                     TileLayer l = (TileLayer)ml;
-                    if (l != null && (l.isVisible() || all)) {
+                    if (l.isVisible() || all) {
                         sandwich.add(l.getTileAt(posx, posy));
                     } else {
                         sandwich.add(null);

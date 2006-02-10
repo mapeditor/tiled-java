@@ -39,7 +39,9 @@ import tiled.mapeditor.util.TransparentImageFilter;
 import tiled.mapeditor.util.cutter.BasicTileCutter;
 import tiled.util.*;
 
-
+/**
+ * @version $Id$
+ */
 public class XMLMapTransformer implements MapReader
 {
     private Map map = null;
@@ -51,7 +53,7 @@ public class XMLMapTransformer implements MapReader
     }
 
     private String makeUrl(String filename) throws MalformedURLException {
-        String url = "";
+        final String url;
         if (filename.indexOf("://") > 0 || filename.startsWith("file:")) {
             url = filename;
         } else {
@@ -88,7 +90,7 @@ public class XMLMapTransformer implements MapReader
             } else if (parameterTypes[i].getName().endsWith("String")) {
                 conformingArguments[i] = args[i];
             } else if (parameterTypes[i].getName().equalsIgnoreCase("boolean")) {
-                conformingArguments[i] = new Boolean(args[i]);
+                conformingArguments[i] = Boolean.valueOf(args[i]);
             } else {
                 warnings.push("INFO: Unsupported argument type " +
                         parameterTypes[i].getName() +
@@ -184,7 +186,7 @@ public class XMLMapTransformer implements MapReader
         Image img = null;
 
         String source = getAttributeValue(t, "source");
-        
+
         if (source != null) {
             if (Util.checkRoot(source)) {
                 source = makeUrl(source);
@@ -221,7 +223,7 @@ public class XMLMapTransformer implements MapReader
             }
         }
         */
-        
+
         return img;
     }
 
@@ -237,34 +239,34 @@ public class XMLMapTransformer implements MapReader
             DocumentBuilder builder = factory.newDocumentBuilder();
             //builder.setErrorHandler(new XMLErrorHandler());
             tsDoc = builder.parse(in, ".");
-        
 
-	        String xmlPathSave = xmlPath;
-	        if (filename.indexOf(File.separatorChar) >= 0) {
-	            xmlPath = filename.substring(0,
-	                    filename.lastIndexOf(File.separatorChar) + 1);
-	        }
-	
-	        NodeList tsNodeList = tsDoc.getElementsByTagName("tileset");
-	
-	        for (int itr = 0; (tsNode = tsNodeList.item(itr)) != null; itr++) {
-	            set = unmarshalTileset(tsNode);
-	            if (set.getSource() != null) {
-	                warnings.push(
-	                        "WARN: Recursive external Tilesets are not supported.");
-	            }
-	            set.setSource(filename);
-	            // NOTE: This is a deliberate break. multiple tilesets per TSX are
-	            // not supported yet (maybe never)...
-	            break;
-	        }
 
-	        xmlPath = xmlPathSave;
+            String xmlPathSave = xmlPath;
+            if (filename.indexOf(File.separatorChar) >= 0) {
+                xmlPath = filename.substring(0,
+                        filename.lastIndexOf(File.separatorChar) + 1);
+            }
+
+            NodeList tsNodeList = tsDoc.getElementsByTagName("tileset");
+
+            for (int itr = 0; (tsNode = tsNodeList.item(itr)) != null; itr++) {
+                set = unmarshalTileset(tsNode);
+                if (set.getSource() != null) {
+                    warnings.push(
+                            "WARN: Recursive external Tilesets are not supported.");
+                }
+                set.setSource(filename);
+                // NOTE: This is a deliberate break. multiple tilesets per TSX are
+                // not supported yet (maybe never)...
+                break;
+            }
+
+            xmlPath = xmlPathSave;
         } catch (SAXException e) {
-        	warnings.push("ERROR: Failed while loading "+filename+": "+e.getMessage());
-        	//e.printStackTrace();
+            warnings.push("ERROR: Failed while loading "+filename+": "+e.getMessage());
+            //e.printStackTrace();
         }
-        
+
         return set;
     }
 
@@ -284,15 +286,15 @@ public class XMLMapTransformer implements MapReader
             //if (Util.checkRoot(source)) {
             //    filename = makeUrl(source);
             //}
-            
+
             TileSet ext = null;
 
             try {
-            	//just a little check for tricky people...
-            	if(!source.substring(source.lastIndexOf('.')+1).toLowerCase().equals("tsx")) {
-            		warnings.push("WARN: tileset files should end in .tsx! ("+source+")");
-            	}
-            	
+                //just a little check for tricky people...
+                if(!source.substring(source.lastIndexOf('.')+1).toLowerCase().equals("tsx")) {
+                    warnings.push("WARN: tileset files should end in .tsx! ("+source+")");
+                }
+
                 InputStream in = new URL(makeUrl(filename)).openStream();
                 ext = unmarshalTilesetFile(in, filename);
             } catch (FileNotFoundException fnf) {
@@ -300,11 +302,11 @@ public class XMLMapTransformer implements MapReader
                         filename);
             }
 
-            if(ext == null) {
-            	warnings.push("ERROR: tileset "+source+" was not loaded correctly!");
-            	ext = new TileSet();
+            if (ext == null) {
+                warnings.push("ERROR: tileset "+source+" was not loaded correctly!");
+                ext = new TileSet();
             }
-            
+
             ext.setFirstGid(firstGid);
             return ext;
         }
@@ -356,26 +358,26 @@ public class XMLMapTransformer implements MapReader
                                     Integer.parseInt(transStr, 16));
                             Toolkit tk = Toolkit.getDefaultToolkit();
                             try {
-	                            Image orig = ImageIO.read(new File(sourcePath));
-	                            Image trans = tk.createImage(
-	                                    new FilteredImageSource(orig.getSource(),
-	                                        new TransparentImageFilter(
-	                                            color.getRGB())));
-	                            BufferedImage img = new BufferedImage(
-	                                    trans.getWidth(null),
-	                                    trans.getHeight(null),
-	                                    BufferedImage.TYPE_INT_ARGB);
-	
-	                            img.getGraphics().drawImage(trans, 0, 0, null);
-	
-	                            set.importTileBitmap(img, new BasicTileCutter( 
-	                                    tileWidth, tileHeight, tileSpacing, 0),
-	                                    !hasTileElements);
-	
-	                            set.setTransparentColor(color);
-	                            set.setTilesetImageFilename(sourcePath);
+                                Image orig = ImageIO.read(new File(sourcePath));
+                                Image trans = tk.createImage(
+                                        new FilteredImageSource(orig.getSource(),
+                                            new TransparentImageFilter(
+                                                color.getRGB())));
+                                BufferedImage img = new BufferedImage(
+                                        trans.getWidth(null),
+                                        trans.getHeight(null),
+                                        BufferedImage.TYPE_INT_ARGB);
+
+                                img.getGraphics().drawImage(trans, 0, 0, null);
+
+                                set.importTileBitmap(img, new BasicTileCutter( 
+                                            tileWidth, tileHeight, tileSpacing, 0),
+                                        !hasTileElements);
+
+                                set.setTransparentColor(color);
+                                set.setTilesetImageFilename(sourcePath);
                             } catch(IIOException iioe) {
-                            	warnings.push("ERROR: "+iioe.getMessage()+" ("+sourcePath+")");
+                                warnings.push("ERROR: "+iioe.getMessage()+" ("+sourcePath+")");
                             }
                         } else {
                             set.importTileBitmap(sourcePath, new BasicTileCutter( 
@@ -420,28 +422,28 @@ public class XMLMapTransformer implements MapReader
         Tile tile = null;
         NodeList children = t.getChildNodes();
         boolean isAnimated = false;
-        
+
         for (int i = 0; i < children.getLength(); i++) {
-        	Node child = children.item(i);
-        	if (child.getNodeName().equalsIgnoreCase("animation")) {
-        		isAnimated = true;
-        		break;
-        	}
+            Node child = children.item(i);
+            if (child.getNodeName().equalsIgnoreCase("animation")) {
+                isAnimated = true;
+                break;
+            }
         }
-        
+
         try {
-        	if(isAnimated) {
-        		tile = (Tile)unmarshalClass(AnimatedTile.class, t);
-        	} else {
-        		tile = (Tile)unmarshalClass(Tile.class, t);
-        	}
+            if(isAnimated) {
+                tile = (Tile)unmarshalClass(AnimatedTile.class, t);
+            } else {
+                tile = (Tile)unmarshalClass(Tile.class, t);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         tile.setTileSet(set);
         Properties tileProps = tile.getProperties();
-        
+
         for (int i = 0; i < children.getLength(); i++) {
             Node child = children.item(i);
             if (child.getNodeName().equalsIgnoreCase("image")) {
@@ -469,10 +471,10 @@ public class XMLMapTransformer implements MapReader
                 tileProps.setProperty(getAttributeValue(child, "name"),
                         getAttributeValue(child, "value"));
             } else if (child.getNodeName().equalsIgnoreCase("animation")) {
-            	//TODO: fill this in once XMLMapWriter is complete
+                //TODO: fill this in once XMLMapWriter is complete
             }
         }
-        
+
         return tile;
     }
 
@@ -483,7 +485,7 @@ public class XMLMapTransformer implements MapReader
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
+
         //Read all objects from the group, "...and in the darkness bind them."
         NodeList children = t.getChildNodes();
 
@@ -493,7 +495,7 @@ public class XMLMapTransformer implements MapReader
                 og.bindObject(unmarshalObject(child));
             }
         }
-        
+
         return og;
     }
 
@@ -514,7 +516,7 @@ public class XMLMapTransformer implements MapReader
         ml.setOffset(offsetX, offsetY);
         ml.setName(getAttributeValue(t, "name"));
         ml.setVisible(visible == 1);
-        
+
         if (opacity != null) {
             ml.setOpacity(Float.parseFloat(opacity));
         }
@@ -701,7 +703,7 @@ public class XMLMapTransformer implements MapReader
     public Map readMap(String filename) throws Exception {
         xmlPath = filename.substring(0,
                 filename.lastIndexOf(File.separatorChar) + 1);
-        
+
         String xmlFile = makeUrl(filename);
         //xmlPath = makeUrl(xmlPath);
 
@@ -715,26 +717,26 @@ public class XMLMapTransformer implements MapReader
 
         Map unmarshalledMap = unmarshal(is);
         unmarshalledMap.setFilename(filename);
-        
+
         return unmarshalledMap;
     }
 
     public Map readMap(InputStream in) throws Exception {
         xmlPath = makeUrl(".");
-        
+
         Map unmarshalledMap = unmarshal(in);
-        
+
         //unmarshalledMap.setFilename(xmlFile)
         //
         return unmarshalledMap;
     }
-    
+
     public TileSet readTileset(String filename) throws Exception {
         String xmlFile = filename;
-        
+
         xmlPath = filename.substring(0,
                 filename.lastIndexOf(File.separatorChar) + 1);
-        
+
         xmlFile = makeUrl(xmlFile);
         xmlPath = makeUrl(xmlPath);
 
@@ -746,7 +748,7 @@ public class XMLMapTransformer implements MapReader
         // TODO: The MapReader interface should be changed...
         return unmarshalTilesetFile(in, ".");
     }
-    
+
     /**
      * @see tiled.io.MapReader#getFilter()
      */
@@ -757,7 +759,7 @@ public class XMLMapTransformer implements MapReader
     public String getPluginPackage() {
         return "Tiled internal TMX reader/writer";
     }
-    
+
     /**
      * @see tiled.io.PluggableMapIO#getDescription()
      */
@@ -783,7 +785,7 @@ public class XMLMapTransformer implements MapReader
         } catch (IOException e) {}
         return false;
     }
-    
+
     public void setErrorStack(Stack es) {
         warnings = es;
     }

@@ -15,16 +15,19 @@ package tiled.mapeditor.brush;
 import java.awt.*;
 import java.awt.geom.*;
 
-import tiled.core.*;
+import tiled.core.Tile;
+import tiled.core.TileLayer;
+import tiled.core.MultilayerPlane;
 import tiled.view.MapView;
 
-
+/**
+ * @version $Id$
+ */
 public class ShapeBrush extends AbstractBrush
 {
     protected Area shape;
     protected Tile paintTile;
-    
-    
+
     public ShapeBrush() {
         super();
     }
@@ -54,7 +57,7 @@ public class ShapeBrush extends AbstractBrush
 
     /**
      * Makes this brush a rectangular brush.
-     * 
+     *
      * @param r a Rectangle to use as the shape of the brush
      */
     public void makeQuadBrush(Rectangle r) {
@@ -90,9 +93,8 @@ public class ShapeBrush extends AbstractBrush
     public boolean isRectangular() {
         return shape.isRectangular();
     }
-    
+
     public void drawPreview(Graphics2D g2d, MapView mv) {
-        
         if (shape.isRectangular()) {
             Rectangle bounds = shape.getBounds();
             g2d.fillRect(sx, sy, bounds.width, bounds.height);
@@ -100,7 +102,6 @@ public class ShapeBrush extends AbstractBrush
             Rectangle bounds = shape.getBounds();
             g2d.fillOval(sx, sy, bounds.width, bounds.height);
         }
-        
     }
 
     public boolean equals(Brush b) {
@@ -110,25 +111,25 @@ public class ShapeBrush extends AbstractBrush
         return false;
     }
 
-	public void startPaint(MultilayerPlane mp, int x, int y, int button, int layer) {
-		super.startPaint(mp, x, y, button, layer);
-	}
+    public void startPaint(MultilayerPlane mp, int x, int y, int button, int layer) {
+        super.startPaint(mp, x, y, button, layer);
+    }
 
-	/**
+    /**
      * Paints the entire area of the brush with the set tile. This brush can
-     * affect several layers. 
-	 * @throws Exception 
-     * 
+     * affect several layers.
+     * @throws Exception
+     *
      * @see tiled.mapeditor.brush.Brush#doPaint(int, int)
      */
     public Rectangle doPaint(int x, int y) throws Exception
     {
         Rectangle bounds = shape.getBounds();
-        int centerx = (int)(x - (bounds.width / 2));
-        int centery = (int)(y - (bounds.height / 2));
+        int centerx = x - (bounds.width / 2);
+        int centery = y - (bounds.height / 2);
 
         super.doPaint(x, y);
-        
+
         // FIXME: This loop does not take all edges into account
 
         for(int l = 0; l < numLayers; l++) {

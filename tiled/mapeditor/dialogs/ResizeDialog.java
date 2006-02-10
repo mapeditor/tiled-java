@@ -25,10 +25,13 @@ import tiled.core.Map;
 import tiled.mapeditor.MapEditor;
 import tiled.mapeditor.widget.*;
 
+/**
+ * @version $Id$
+ */
 public class ResizeDialog extends JDialog implements ActionListener,
        PropertyChangeListener, ChangeListener
 {
-    private Map currentMap;
+    private final Map currentMap;
     private IntegerSpinner width, height, offsetX, offsetY;
     private JButton bOk, bCancel;
     private ResizePanel orient;

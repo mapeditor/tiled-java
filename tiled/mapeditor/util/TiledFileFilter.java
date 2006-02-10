@@ -29,24 +29,24 @@ public class TiledFileFilter extends FileFilter
     private LinkedList exts;
     
     public TiledFileFilter() {
-        desc = new String("Tiled files");
+        desc = "Tiled files";
         exts = new LinkedList();
-        exts.add(new String("tmx"));
-        exts.add(new String("tmx.gz"));
-        exts.add(new String("tsx"));
+        exts.add("tmx");
+        exts.add("tmx.gz");
+        exts.add("tsx");
     }
 
     public TiledFileFilter(int filter) {		
         exts = new LinkedList();
         desc = "";
         if ((filter & FILTER_TMX) != 0) {
-            desc = new String("Tiled Maps files ");
-            exts.add(new String("tmx"));
-            exts.add(new String("tmx.gz"));
+            desc = "Tiled Maps files ";
+            exts.add("tmx");
+            exts.add("tmx.gz");
         }
         if ((filter & FILTER_TSX) != 0) {
             desc = desc + "Tiled Tileset files";
-            exts.add(new String("tsx"));
+            exts.add("tsx");
         }
     }
 

@@ -20,6 +20,9 @@ import tiled.core.MultilayerPlane;
 import tiled.core.TileLayer;
 import tiled.view.MapView;
 
+/**
+ * @version $Id$
+ */
 public class CustomBrush extends AbstractBrush
 {
     public CustomBrush() {
@@ -44,18 +47,17 @@ public class CustomBrush extends AbstractBrush
      */
     public boolean equals(Brush b) {
         if (b instanceof CustomBrush) {
-        	if(b == this) return true;
-        	else {
-        		//TODO: THIS
-        	}
+            if(b == this) return true;
+            else {
+                //TODO: THIS
+            }
         }
         return false;
     }
 
-	public void startPaint(MultilayerPlane mp, int x, int y, int button, int layer) {
-		super.startPaint(mp, x, y, button, layer);
-		
-	}
+    public void startPaint(MultilayerPlane mp, int x, int y, int button, int layer) {
+        super.startPaint(mp, x, y, button, layer);
+    }
 
     /**
      * The custom brush will merge its internal layers onto the layers of the 
@@ -67,13 +69,13 @@ public class CustomBrush extends AbstractBrush
      */
     public Rectangle doPaint(int x, int y) throws Exception
     {
-    	int layer = initLayer;
+        int layer = initLayer;
         Rectangle bounds = getBounds();
-        int centerx = (int)(x - (bounds.width / 2));
-        int centery = (int)(y - (bounds.height / 2));
+        int centerx = x - (bounds.width / 2);
+        int centery = y - (bounds.height / 2);
 
         super.doPaint(x, y);
-        
+
         ListIterator itr = getLayers();
         while (itr.hasNext()) {
             TileLayer tl = (TileLayer)itr.next();
@@ -86,8 +88,8 @@ public class CustomBrush extends AbstractBrush
 
         return new Rectangle(centerx, centery, bounds.width, bounds.height);
     }
-	
-	public void drawPreview(Graphics2D g2d, MapView mv) {
-		mv.paintSubMap(this, g2d, 0.5f);
-	}
+
+    public void drawPreview(Graphics2D g2d, MapView mv) {
+        mv.paintSubMap(this, g2d, 0.5f);
+    }
 }

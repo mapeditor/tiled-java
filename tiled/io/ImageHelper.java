@@ -16,13 +16,17 @@ import java.awt.Canvas;
 import java.awt.Image;
 import java.awt.MediaTracker;
 import java.awt.Toolkit;
-import java.awt.image.*;
-import java.io.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.File;
 import javax.imageio.ImageIO;
 
 
 /**
  * This class provides functions to help out with saving/loading images.
+ *
+ * @version $Id$
  */
 public class ImageHelper
 {
@@ -53,15 +57,15 @@ public class ImageHelper
     /**
      * Converts a byte array into an image. The byte array must include the image
      * header, so that a decision about format can be made.
-     * 
+     *
      * @param imageData The byte array of the data to convert.
      * @return Image The image instance created from the byte array
      * @see java.awt.Toolkit#createImage(byte[] imagedata)
      */
     static public Image bytesToImage(byte[] imageData) {
-    	Image img = Toolkit.getDefaultToolkit().createImage(imageData);
-    	
-    	MediaTracker mediaTracker = new MediaTracker(new Canvas());
+        Image img = Toolkit.getDefaultToolkit().createImage(imageData);
+
+        MediaTracker mediaTracker = new MediaTracker(new Canvas());
         mediaTracker.addImage(img, 0);
         try {
             mediaTracker.waitForID(0);
@@ -69,20 +73,19 @@ public class ImageHelper
         catch (InterruptedException ie) {
         }
         mediaTracker.removeImage(img);
-        
+
         return img;
     }
-    
+
     /**
      * This function loads the image denoted by <code>file</code>. This supports
      * PNG, GIF, JPG, and BMP (in 1.5).
-     * 
+     *
      * @param file
      * @return the (partially) loaded image
      * @throws IOException
      */
     static public Image loadImageFile(File file) throws IOException {
-		BufferedImage buffer = ImageIO.read(file);
-		return buffer;
+        return ImageIO.read(file);
     }
 }

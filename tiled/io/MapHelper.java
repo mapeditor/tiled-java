@@ -56,7 +56,7 @@ public class MapHelper {
     public static void saveMap(Map currentMap, String filename)
         throws Exception
     {
-        MapWriter mw = null;
+        MapWriter mw;
         if (filename.endsWith("tmx") || filename.endsWith("tmx.gz")) {
             // Override, so people can't overtake our format
             mw = new XMLMapWriter();
@@ -88,7 +88,7 @@ public class MapHelper {
     public static void saveTileset(TileSet set, String filename)
         throws Exception
     {
-        MapWriter mw = null;
+        MapWriter mw;
         if (filename.endsWith(".tsx")) {
             // Override, so people can't overtake our format
             mw = new XMLMapWriter();
@@ -120,7 +120,7 @@ public class MapHelper {
     public static Map loadMap(String file) throws Exception {
         Map ret = null;
         try {
-            MapReader mr = null;
+            MapReader mr;
             if (file.endsWith(".tmx") || file.endsWith(".tmx.gz")) {
                 // Override, so people can't overtake our format
                 mr = new XMLMapTransformer();
@@ -170,7 +170,7 @@ public class MapHelper {
     public static TileSet loadTileset(String file) throws Exception {
         TileSet ret = null;
         try {
-            MapReader mr = null;
+            MapReader mr;
             if (file.endsWith(".tsx")) {
                 // Override, so people can't overtake our format
                 mr = new XMLMapTransformer();
@@ -223,7 +223,7 @@ public class MapHelper {
                 Iterator itr = s.iterator();
                 StringBuffer warnings = new StringBuffer();
                 while (itr.hasNext()) {
-                    warnings.append((String)itr.next() + "\n");
+                    warnings.append(itr.next()).append("\n");
                 }
                 JOptionPane.showMessageDialog(null, warnings.toString(),
                         "Loading Messages",

@@ -61,14 +61,14 @@ public class MapEditor implements ActionListener,
     ListSelectionListener, ChangeListener, ComponentListener
 {
     // Constants and the like
-    protected static final int PS_POINT   = 0;
-    protected static final int PS_PAINT   = 1;
-    protected static final int PS_ERASE   = 2;
-    protected static final int PS_POUR    = 3;
-    protected static final int PS_EYED    = 4;
-    protected static final int PS_MARQUEE = 5;
-    protected static final int PS_MOVE    = 6;
-    protected static final int PS_MOVEOBJ = 7;
+    private static final int PS_POINT   = 0;
+    private static final int PS_PAINT   = 1;
+    private static final int PS_ERASE   = 2;
+    private static final int PS_POUR    = 3;
+    private static final int PS_EYED    = 4;
+    private static final int PS_MARQUEE = 5;
+    private static final int PS_MOVE    = 6;
+    private static final int PS_MOVEOBJ = 7;
 
     private Cursor curDefault = null;
     private Cursor curPaint   = null;
@@ -82,11 +82,11 @@ public class MapEditor implements ActionListener,
 
     private Map currentMap;
     private MapView mapView;
-    private UndoStack undoStack;
-    private UndoableEditSupport undoSupport;
-    private MapEventAdapter mapEventAdapter;
-    private PluginClassLoader pluginLoader;
-    private TiledConfiguration configuration;
+    private final UndoStack undoStack;
+    private final UndoableEditSupport undoSupport;
+    private final MapEventAdapter mapEventAdapter;
+    private final PluginClassLoader pluginLoader;
+    private final TiledConfiguration configuration;
 
 
     int currentPointerState;
@@ -144,12 +144,12 @@ public class MapEditor implements ActionListener,
     Brush eraserBrush;
 
     // Actions
-    Action zoomInAction, zoomOutAction, zoomNormalAction;
-    Action undoAction, redoAction;
-    Action rot90Action, rot180Action, rot270Action;
-    Action flipHorAction, flipVerAction;
-    Action copyAction, cutAction, pasteAction;
-    Action selectAllAction, inverseAction, cancelSelectionAction;
+    final Action zoomInAction, zoomOutAction, zoomNormalAction;
+    final Action undoAction, redoAction;
+    final Action rot90Action, rot180Action, rot270Action;
+    final Action flipHorAction, flipVerAction;
+    final Action copyAction, cutAction, pasteAction;
+    final Action selectAllAction, inverseAction, cancelSelectionAction;
 
     public MapEditor() {
         // Get instance of configuration
@@ -243,6 +243,7 @@ public class MapEditor implements ActionListener,
         mapScrollPane = new JScrollPane(
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                 JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        mapScrollPane.setBorder(null);
 
         createToolbox();
         createData();
@@ -1377,7 +1378,7 @@ public class MapEditor implements ActionListener,
     }
 
     private class LayerTransformAction extends AbstractAction {
-        private int transform;
+        private final int transform;
         public LayerTransformAction(int transform) {
             this.transform = transform;
             switch (transform) {

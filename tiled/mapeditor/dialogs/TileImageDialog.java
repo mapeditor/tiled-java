@@ -28,7 +28,9 @@ import tiled.core.*;
 import tiled.mapeditor.util.*;
 import tiled.mapeditor.widget.*;
 
-
+/**
+ * @version $Id$
+ */
 public class TileImageDialog extends JDialog
     implements ActionListener, ListSelectionListener
 {
@@ -36,7 +38,7 @@ public class TileImageDialog extends JDialog
     private JButton bOk, bCancel;
     private JCheckBox horizFlipCheck, vertFlipCheck, rotateCheck;
     private int imageId, imageOrientation;
-    private TileSet tileset;
+    private final TileSet tileset;
     private JLabel imageLabel;
     private int[] imageIds;
 

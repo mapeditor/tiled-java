@@ -28,7 +28,7 @@ import tiled.mapeditor.widget.*;
 public class TilePaletteDialog extends JDialog implements ActionListener,
     TileSelectionListener, ListSelectionListener
 {
-    private MapEditor editor;
+    private final MapEditor editor;
     private Map currentMap;
     private TilePalettePanel pc;
     private JList sets;

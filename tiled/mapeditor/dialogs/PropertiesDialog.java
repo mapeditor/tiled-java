@@ -31,8 +31,8 @@ public class PropertiesDialog extends JDialog implements ActionListener,
 {
     private JTable tProperties;
     private JButton bOk, bCancel, bDel;
-    private Properties properties;
-    private PropertiesTableModel tableModel;
+    private final Properties properties;
+    private final PropertiesTableModel tableModel = new PropertiesTableModel();
 
     public PropertiesDialog(JFrame parent, Properties p) {
         super(parent, "Properties", true);
@@ -43,7 +43,6 @@ public class PropertiesDialog extends JDialog implements ActionListener,
     }
 
     private void init() {
-        tableModel = new PropertiesTableModel();
         tProperties = new JTable(tableModel);
         tProperties.getSelectionModel().addListSelectionListener(this);
         JScrollPane propScrollPane = new JScrollPane(tProperties);

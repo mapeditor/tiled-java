@@ -74,7 +74,7 @@ public interface Brush
      * @param y The y-coord to draw the preview at
      */
     public void drawPreview(Graphics2D g2d, int x, int y, MapView mv);
-    
+
     /**
      * Draws a preview of the editing operation when applicable.
      *

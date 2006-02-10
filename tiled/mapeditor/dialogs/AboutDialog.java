@@ -21,10 +21,12 @@ import tiled.mapeditor.MapEditor;
 
 /**
  * The about dialog.
+ *
+ * @version $Id$
  */
 public class AboutDialog extends JFrame
 {
-    JFrame parent;
+    final JFrame parent;
 
     public AboutDialog(JFrame parent) {
         super("Tiled v" + MapEditor.version);

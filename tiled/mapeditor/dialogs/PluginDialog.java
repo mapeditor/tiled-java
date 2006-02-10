@@ -26,11 +26,13 @@ import tiled.io.MapWriter;
 import tiled.mapeditor.plugin.PluginClassLoader;
 import tiled.mapeditor.widget.VerticalStaticJPanel;
 
-
+/**
+ * @version $Id$
+ */
 public class PluginDialog extends JDialog implements ActionListener,
        ListSelectionListener
 {
-    private PluginClassLoader pluginLoader;
+    private final PluginClassLoader pluginLoader;
     private JList pluginList = null;
     private JButton closeButton, infoButton, removeButton;
 
