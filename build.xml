@@ -3,7 +3,7 @@
     A Java-based Tile Map Editor
   </description>
   <!-- set global properties for this build -->
-  <property name="src" location="tiled"/>
+  <property name="src" location="src"/>
   <property name="build" location="build"/>
   <property name="dist" location="dist"/>
   <property name="plugins" location="plugins"/>
@@ -47,7 +47,7 @@
   <target name="compile" depends="init" description="Compile the source">
     <javac srcdir="${src}" destdir="${build}"/>
     <copy todir="${build}/tiled/mapeditor/resources">
-      <fileset dir="./tiled/mapeditor/resources">
+      <fileset dir="./src/tiled/mapeditor/resources">
         <include name="*.png" />
         <include name="map.dtd" />
       </fileset>
@@ -77,11 +77,11 @@
   </target>
 
   <target name="core" depends="clean,compile"
-  	description="Generate a core I/O distribution for use in games, etc.">
-	<jar jarfile="${dist}/tiled-core.jar"
-	  basedir="${build}" includes="tiled/core/**/*.class,tiled/io/**"/>
+    description="Generate a core I/O distribution for use in games, etc.">
+    <jar jarfile="${dist}/tiled-core.jar"
+      basedir="${build}" includes="tiled/core/**/*.class,tiled/io/**"/>
   </target>
-  
+
   <target name="dist_dep" depends="clean,compile_dep"
     description="Generate the distribution and warn about deprecation">
     <mkdir dir="${dist}"/>
@@ -121,6 +121,6 @@
   </target>
 
   <target name="plugins" description="Plugins for various map formats">
-	<ant dir="${plugins}" target="dist"/>
+    <ant dir="${plugins}" target="dist"/>
   </target>
 </project>
