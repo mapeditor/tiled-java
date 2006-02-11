@@ -11,7 +11,7 @@
  *  Rainer Deyke <rainerd@eldwood.com>
  */
 
-package tiled.mapeditor;
+package tiled.mapeditor.dialogs;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -28,7 +28,6 @@ import tiled.io.MapWriter;
 import tiled.mapeditor.dialogs.TileDialog;
 import tiled.mapeditor.util.*;
 import tiled.mapeditor.plugin.PluginClassLoader;
-
 
 public class TilesetManager extends JDialog implements ActionListener,
        ListSelectionListener

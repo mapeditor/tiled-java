@@ -10,7 +10,7 @@
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
 
-package tiled.mapeditor;
+package tiled.mapeditor.dialogs;
 
 import java.awt.event.*;
 import java.awt.*;
@@ -22,7 +22,7 @@ import javax.swing.event.ListSelectionListener;
 import tiled.core.*;
 import tiled.mapeditor.util.*;
 import tiled.mapeditor.widget.*;
-
+import tiled.mapeditor.MapEditor;
 
 public class TilePaletteDialog extends JDialog implements ActionListener,
     TileSelectionListener, ListSelectionListener

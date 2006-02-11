@@ -10,7 +10,7 @@
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
 
-package tiled.mapeditor;
+package tiled.mapeditor.dialogs;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -36,6 +36,7 @@ import tiled.mapeditor.widget.BrushBrowser;
 import tiled.mapeditor.widget.IntegerSpinner;
 import tiled.mapeditor.widget.MiniMapViewer;
 import tiled.mapeditor.widget.VerticalStaticJPanel;
+import tiled.mapeditor.MapEditor;
 import tiled.util.TiledConfiguration;
 
 /**
