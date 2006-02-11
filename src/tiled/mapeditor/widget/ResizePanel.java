@@ -1,5 +1,5 @@
 /*
- *  Tiled Map Editor, (c) 2004
+ *  Tiled Map Editor, (c) 2004-2006
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -37,7 +37,6 @@ public class ResizePanel extends JPanel implements MouseListener,
     private double zoom;
 
     public ResizePanel() {
-        super();
         setLayout(new OverlayLayout(this));
         setBorder(BorderFactory.createLoweredBevelBorder());
     }
@@ -91,8 +90,8 @@ public class ResizePanel extends JPanel implements MouseListener,
         int newOffsetX = offsetX + (e.getX() - startPress.x);
         int newOffsetY = offsetY + (e.getY() - startPress.y);
 
-        newOffsetX /= (currentMap.getTileWidth() * zoom);
-        newOffsetY /= (currentMap.getTileHeight() * zoom);
+        newOffsetX /= currentMap.getTileWidth() * zoom;
+        newOffsetY /= currentMap.getTileHeight() * zoom;
 
         if (newOffsetX != offsetX) {
             firePropertyChange("offsetX", offsetX, newOffsetX);

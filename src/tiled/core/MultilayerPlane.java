@@ -1,5 +1,5 @@
 /*
- *  Tiled Map Editor, (c) 2004
+ *  Tiled Map Editor, (c) 2004-2006
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -254,6 +254,14 @@ public class MultilayerPlane
         heightInTiles = height;
     }
 
+    /**
+     * Determines wether the point (x,y) falls within the plane.
+     *
+     * @param x
+     * @param y
+     * @return <code>true</code> if the point is within the plane,
+     *         <code>false</code> otherwise
+     */
     public boolean inBounds(int x, int y) {
         return (x >= 0 && x <= widthInTiles) && (y >= 0 && y <= heightInTiles);
     }

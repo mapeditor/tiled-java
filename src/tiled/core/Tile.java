@@ -1,5 +1,5 @@
 /*
- *  Tiled Map Editor, (c) 2004
+ *  Tiled Map Editor, (c) 2004-2006
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -14,17 +14,19 @@ package tiled.core;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.*;
+import java.util.Properties;
 
 /**
  * The core class for our tiles.
+ *
+ * @version $Id$
  */
 public class Tile
 {
     private Image internalImage, scaledImage;
     private int id = -1;
     protected int tileImageId = -1;
-    private int groundHeight = 0;          // Height above/below ground
+    private int groundHeight;          // Height above/below ground
     private int tileOrientation;
     private double myZoom = 1.0;
     private Properties properties;
@@ -68,7 +70,7 @@ public class Tile
      */
     public void setImage(Image i) {
         if (tileset != null) {
-            tileset.overlayImage("" + tileImageId, i);
+            tileset.overlayImage(String.valueOf(tileImageId), i);
         } else {
             internalImage = i;
         }
@@ -81,7 +83,7 @@ public class Tile
     }
 
     public void setImageOrientation(int orientation) {
-        this.tileOrientation = orientation;
+        tileOrientation = orientation;
     }
 
     /**
@@ -187,7 +189,7 @@ public class Tile
     public int getWidth() {
         if (tileset != null) {
             Dimension d
-              = tileset.getImageDimensions("" + tileImageId, tileOrientation);
+              = tileset.getImageDimensions(String.valueOf(tileImageId), tileOrientation);
             return d.width;
         } else if (internalImage != null){
             return internalImage.getWidth(null);
@@ -198,7 +200,7 @@ public class Tile
     public int getHeight() {
         if (tileset != null) {
             Dimension d
-              = tileset.getImageDimensions("" + tileImageId, tileOrientation);
+              = tileset.getImageDimensions(String.valueOf(tileImageId), tileOrientation);
             return d.height;
         } else if (internalImage != null) {
             return internalImage.getHeight(null);
@@ -246,9 +248,6 @@ public class Tile
     }
 
     public String toString() {
-        String out = "";
-        out += "Tile: " + id + " Image: " + tileImageId + " (" + getWidth() +
-            "x" + getHeight() + ")";
-        return out;
+        return "Tile " + id + " (" + getWidth() + "x" + getHeight() + ")";
     }
 }

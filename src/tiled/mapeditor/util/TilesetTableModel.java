@@ -1,5 +1,5 @@
 /*
- *  Tiled Map Editor, (c) 2004
+ *  Tiled Map Editor, (c) 2004-2006
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,7 +18,9 @@ import javax.swing.table.AbstractTableModel;
 
 import tiled.core.*;
 
-
+/**
+ * @version $Id$
+ */
 public class TilesetTableModel extends AbstractTableModel
 {
     private Map map;
@@ -57,7 +59,7 @@ public class TilesetTableModel extends AbstractTableModel
             if (col == 0) {
                 return tileset.getName();
             } else {
-                return "" + checkSetUsage(tileset);
+                return String.valueOf(checkSetUsage(tileset));
             }
         } else {
             return null;
@@ -65,10 +67,7 @@ public class TilesetTableModel extends AbstractTableModel
     }
 
     public boolean isCellEditable(int row, int col) {
-        if (col == 0) {
-            return true;
-        }
-        return false;
+        return col == 0;
     }
 
     public void setValueAt(Object value, int row, int col) {
@@ -94,7 +93,7 @@ public class TilesetTableModel extends AbstractTableModel
                 MapLayer ml = (MapLayer)itr.next();
 
                 if (ml instanceof TileLayer) {
-                    if (((TileLayer)ml).isUsed(tile)) {
+                    if (ml.isUsed(tile)) {
                         used++;
                         break;
                     }

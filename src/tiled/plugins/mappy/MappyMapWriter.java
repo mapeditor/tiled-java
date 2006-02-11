@@ -1,5 +1,5 @@
 /*
- *  Mappy Plugin for Tiled, (c) 2004
+ *  Mappy Plugin for Tiled, (c) 2004-2006
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by

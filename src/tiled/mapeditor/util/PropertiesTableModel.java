@@ -1,5 +1,5 @@
 /*
- * Tiled Map Editor, (c) 2004
+ *  Tiled Map Editor, (c) 2004-2006
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,15 +13,16 @@
 package tiled.mapeditor.util;
 
 import java.util.Properties;
-
 import javax.swing.table.AbstractTableModel;
 
-
+/**
+ * @version $Id$
+ */
 public class PropertiesTableModel extends AbstractTableModel
 {
     private Properties properties;
 
-    private String[] columnNames = { "Name", "Value" };
+    private static final String[] columnNames = { "Name", "Value" };
 
     public PropertiesTableModel() {
         properties = new Properties();
@@ -44,7 +45,7 @@ public class PropertiesTableModel extends AbstractTableModel
      * only be edited when they have a name.
      */
     public boolean isCellEditable(int row, int col) {
-        return col == 0 || (col == 1 && getValueAt(row, 0) != null);
+        return col == 0 || col == 1 && getValueAt(row, 0) != null;
     }
 
     public Object getValueAt(int rowIndex, int columnIndex) {

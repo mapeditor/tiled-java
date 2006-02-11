@@ -1,5 +1,5 @@
 /*
- *  Tiled Map Editor, (c) 2004
+ *  Tiled Map Editor, (c) 2004-2006
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -237,7 +237,7 @@ public final class PluginClassLoader extends URLClassLoader
         return defineClass(className, buffer, 0, buffer.length);
     }
 
-    public boolean doesImplement(Class c, String interfaceName)
+    private static boolean doesImplement(Class c, String interfaceName)
         throws Exception
     {
         if (c == null) {
@@ -255,7 +255,7 @@ public final class PluginClassLoader extends URLClassLoader
     }
 
     private boolean isReader(Class c) throws Exception {
-        return doesImplement(c,"tiled.io.MapReader");
+        return doesImplement(c, "tiled.io.MapReader");
     }
 
     private void _add(Class c) throws Exception{

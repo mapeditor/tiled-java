@@ -1,5 +1,5 @@
 /*
- *  Tiled Map Editor, (c) 2004
+ *  Tiled Map Editor, (c) 2004-2006
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,15 +23,16 @@ import javax.swing.event.MouseInputListener;
 import tiled.core.*;
 import tiled.mapeditor.util.*;
 
-
+/**
+ * @version $Id$
+ */
 public class TilePalettePanel extends JPanel implements Scrollable,
        MouseInputListener
 {
     private static final int TILES_PER_ROW = 4;
     private Vector tilesets;
     private EventListenerList tileSelectionListeners;
-    private Rectangle currentClip;
-    
+
     public TilePalettePanel() {
         tileSelectionListeners = new EventListenerList();
         addMouseListener(this);
@@ -75,8 +76,8 @@ public class TilePalettePanel extends JPanel implements Scrollable,
     }
 
     public Tile getTileAtPoint(int x, int y) {
-        Tile ret = null;
-        
+        Tile ret;
+
         // TODO: This code only works if one and only one tileset is selected
         // from the list.
         TileSet tileset = (TileSet)tilesets.get(0);
@@ -86,15 +87,15 @@ public class TilePalettePanel extends JPanel implements Scrollable,
         int ty = y / theight;
         int tilesPerRow = (getWidth() - 1) / twidth;
         int tileId = ty * tilesPerRow + tx;
-        
+
         //now that we're in the right "spot", find the next valid tile
         while((ret = tileset.getTile(tileId++)) == null) if(tileId > tileset.getMaxTileId()) break;
-        
+
         return ret;
     }
 
     public void paint(Graphics g) {
-    	currentClip = g.getClipBounds();
+        Rectangle clip = g.getClipBounds();
 
         paintBackground(g);
 
@@ -107,15 +108,13 @@ public class TilePalettePanel extends JPanel implements Scrollable,
 
             if (tileset != null) {
                 // Draw the tiles
-            	int maxHeight = tileset.getMaxTileHeight();
+                int maxHeight = tileset.getMaxTileHeight();
                 int twidth = tileset.getTileWidth() + 1;
                 int theight = tileset.getTileHeight() + 1;
                 int tilesPerRow = Math.max(1, (getWidth() - 1) / twidth);
 
-                int startY = currentClip.y / maxHeight;
-                int endY = ((currentClip.y + currentClip.height) / maxHeight) + 1;
-                //int startY = currentClip.y / theight;
-                //int endY = ((currentClip.y + currentClip.height) / theight) + 1;
+                int startY = clip.y / maxHeight;
+                int endY = (clip.y + clip.height) / theight + 1;
                 int tileAt = tilesPerRow * startY;
 
                 for (int y = startY, gy = startY * maxHeight; y < endY && tileAt < tileset.getMaxTileId(); y++) {
@@ -138,7 +137,7 @@ public class TilePalettePanel extends JPanel implements Scrollable,
     /**
      * Draws checkerboard background.
      */
-    private void paintBackground(Graphics g) {
+    private static void paintBackground(Graphics g) {
         Rectangle clip = g.getClipBounds();
         int side = 10;
 
@@ -163,7 +162,7 @@ public class TilePalettePanel extends JPanel implements Scrollable,
     }
 
     public Dimension getPreferredSize() {
-        if (tilesets == null || tilesets.size() == 0) {
+        if (tilesets == null || tilesets.isEmpty()) {
             return new Dimension(0, 0);
         }
         else {
@@ -172,8 +171,8 @@ public class TilePalettePanel extends JPanel implements Scrollable,
             int theight = tileset.getTileHeight() + 1;
             int tileCount = tileset.size();
             int tilesPerRow = Math.max(1, (getWidth() - 1) / twidth);
-            int rows = (tileCount / tilesPerRow +
-                    (((tileCount) % tilesPerRow > 0) ? 1 : 0));
+            int rows = tileCount / tilesPerRow +
+                    (tileCount % tilesPerRow > 0 ? 1 : 0);
 
             return new Dimension(tilesPerRow * twidth + 1, rows * theight + 1);
         }
@@ -183,7 +182,7 @@ public class TilePalettePanel extends JPanel implements Scrollable,
     // Scrollable interface
 
     public Dimension getPreferredScrollableViewportSize() {
-        if (tilesets != null && tilesets.size() > 0) {
+        if (tilesets != null && !tilesets.isEmpty()) {
             int twidth = 35 + 1;
             TileSet tileset = (TileSet)tilesets.get(0);
             if (tileset != null) {

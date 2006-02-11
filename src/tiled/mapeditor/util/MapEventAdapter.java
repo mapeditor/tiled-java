@@ -1,5 +1,5 @@
 /*
- *  Tiled Map Editor, (c) 2004
+ *  Tiled Map Editor, (c) 2004-2006
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -12,16 +12,19 @@
  
 package tiled.mapeditor.util;
 
-import java.awt.Component;
-import java.util.*;
+import java.awt.*;
+import java.util.LinkedList;
+import java.util.ListIterator;
 
-
+/**
+ * @version $Id$
+ */
 public class MapEventAdapter
 {
     public static final int ME_MAPACTIVE   = 1;
     public static final int ME_MAPINACTIVE = 2;
 
-    private LinkedList listeners = null;
+    private LinkedList listeners;
 
     public MapEventAdapter() {
         listeners = new LinkedList();

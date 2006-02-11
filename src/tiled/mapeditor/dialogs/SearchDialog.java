@@ -1,5 +1,5 @@
 /*
- * Tiled Map Editor, (c) 2004
+ *  Tiled Map Editor, (c) 2004-2006
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,15 +13,16 @@
 package tiled.mapeditor.dialogs;
 
 import java.awt.*;
-import java.awt.event.*;
-import java.util.Vector;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Iterator;
+import java.util.Vector;
 import javax.swing.*;
 
+import tiled.core.*;
 import tiled.mapeditor.selection.SelectionLayer;
 import tiled.mapeditor.util.MultisetListRenderer;
-import tiled.mapeditor.widget.*;
-import tiled.core.*;
+import tiled.mapeditor.widget.VerticalStaticJPanel;
 
 /**
  * @version $Id$
@@ -30,11 +31,9 @@ public class SearchDialog extends JDialog implements ActionListener
 {
     private final Map myMap;
     private JComboBox searchCBox, replaceCBox;
-    private JButton bFind, bFindAll;
-    private JButton bReplace, bReplaceAll;
-    private JButton bClose;
-    private Point currentMatch = null;
+    private Point currentMatch;
     private SelectionLayer sl;
+    private static final double LIST_TILE_SCALE = 0.5;
 
     public SearchDialog(JFrame parent) {
         this(parent, null);
@@ -48,6 +47,9 @@ public class SearchDialog extends JDialog implements ActionListener
     }
 
     private void init() {
+        final MultisetListRenderer tileListRenderer;
+        tileListRenderer = new MultisetListRenderer(LIST_TILE_SCALE);
+
         /* SEARCH PANEL */
         JPanel searchPanel = new JPanel();
         searchPanel.setBorder(BorderFactory.createEtchedBorder());
@@ -58,7 +60,7 @@ public class SearchDialog extends JDialog implements ActionListener
         searchPanel.add(new JLabel("Find:"), c);
         c.gridx = 1;
         searchCBox = new JComboBox();
-        searchCBox.setRenderer(new MultisetListRenderer(myMap, .5));
+        searchCBox.setRenderer(tileListRenderer);
         //searchCBox.setSelectedIndex(1);
         searchCBox.setEditable(false);
         searchPanel.add(searchCBox, c);
@@ -67,7 +69,7 @@ public class SearchDialog extends JDialog implements ActionListener
         searchPanel.add(new JLabel("Replace:"), c);
         c.gridx = 1;
         replaceCBox = new JComboBox();
-        replaceCBox.setRenderer(new MultisetListRenderer(myMap, .5));
+        replaceCBox.setRenderer(tileListRenderer);
         //searchCBox.setSelectedIndex(1);
         replaceCBox.setEditable(false);
         searchPanel.add(replaceCBox,c);
@@ -83,11 +85,11 @@ public class SearchDialog extends JDialog implements ActionListener
                     BorderFactory.createEmptyBorder(0, 5, 5, 5)));
         */
 
-        bFind = new JButton("Find");
-        bFindAll = new JButton("Find All");
-        bReplace = new JButton("Replace");
-        bReplaceAll = new JButton("Replace All");
-        bClose = new JButton("Close");
+        final JButton bFind = new JButton("Find");
+        final JButton bFindAll = new JButton("Find All");
+        final JButton bReplace = new JButton("Replace");
+        final JButton bReplaceAll = new JButton("Replace All");
+        final JButton bClose = new JButton("Close");
 
         bFind.addActionListener(this);
         bFindAll.addActionListener(this);
@@ -145,7 +147,7 @@ public class SearchDialog extends JDialog implements ActionListener
 
         if (command.equalsIgnoreCase("close")) {
             myMap.removeLayerSpecial(sl);
-            this.dispose();
+            dispose();
         } else if (command.equalsIgnoreCase("find")) {
             if (searchCBox.getSelectedItem() instanceof Tile) {
                 find((Tile)searchCBox.getSelectedItem());
@@ -177,7 +179,7 @@ public class SearchDialog extends JDialog implements ActionListener
             if (!(searchCBox.getSelectedItem() instanceof TileSet) && !(replaceCBox.getSelectedItem() instanceof TileSet))
                 replaceAll((Tile) searchCBox.getSelectedItem(),(Tile) replaceCBox.getSelectedItem());
         } else if (command.equalsIgnoreCase("replace")) {
-            if ((searchCBox.getSelectedItem() instanceof Tile) && (replaceCBox.getSelectedItem() instanceof Tile)) {
+            if (searchCBox.getSelectedItem() instanceof Tile && replaceCBox.getSelectedItem() instanceof Tile) {
                 if (currentMatch == null) {
                     find((Tile)searchCBox.getSelectedItem());
                 }

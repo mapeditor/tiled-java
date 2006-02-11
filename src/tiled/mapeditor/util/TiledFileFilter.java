@@ -1,5 +1,5 @@
 /*
- *  Tiled Map Editor, (c) 2004
+ *  Tiled Map Editor, (c) 2004-2006
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -15,10 +15,11 @@ package tiled.mapeditor.util;
 import java.io.File;
 import java.util.Iterator;
 import java.util.LinkedList;
-
 import javax.swing.filechooser.FileFilter;
 
-
+/**
+ * @version $Id$
+ */
 public class TiledFileFilter extends FileFilter
 {
     public static final int FILTER_TMX  = 1;
@@ -45,7 +46,7 @@ public class TiledFileFilter extends FileFilter
             exts.add("tmx.gz");
         }
         if ((filter & FILTER_TSX) != 0) {
-            desc = desc + "Tiled Tileset files";
+            desc += "Tiled Tileset files";
             exts.add("tsx");
         }
     }
@@ -92,10 +93,11 @@ public class TiledFileFilter extends FileFilter
     	Iterator itr = exts.iterator();
         while (itr.hasNext()) {
         	String ext = (String)itr.next();
-        	filter = filter+"*."+ext;
-        	if(itr.hasNext())
-        		filter=filter+",";
+        	filter = filter + "*." + ext;
+        	if (itr.hasNext()) {
+                filter += ",";
+            }
         }
-        return desc+" "+filter+")";
+        return desc + " " + filter + ")";
     }
 }

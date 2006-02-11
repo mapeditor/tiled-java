@@ -1,5 +1,5 @@
 /*
- *  Tiled Map Editor, (c) 2004
+ *  Tiled Map Editor, (c) 2004-2006
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -12,17 +12,22 @@
 
 package tiled.mapeditor.undo;
 
-import javax.swing.undo.*;
+import javax.swing.undo.AbstractUndoableEdit;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+import javax.swing.undo.UndoableEdit;
 
-import tiled.core.*;
+import tiled.core.MapLayer;
 
-
+/**
+ * @version $Id$
+ */
 public class MapLayerEdit extends AbstractUndoableEdit
 {
     private MapLayer editedLayer;
-    private MapLayer layerUndo = null, layerRedo = null;
+    private MapLayer layerUndo, layerRedo;
     private String name;
-    private boolean inProgress = false;
+    private boolean inProgress;
 
     public MapLayerEdit(MapLayer layer) {
         editedLayer = layer;
@@ -66,7 +71,7 @@ public class MapLayerEdit extends AbstractUndoableEdit
     }
 
     public boolean canUndo() {
-        return (layerUndo != null && editedLayer != null);
+        return layerUndo != null && editedLayer != null;
     }
 
     public void redo() throws CannotRedoException {
@@ -77,7 +82,7 @@ public class MapLayerEdit extends AbstractUndoableEdit
     }
 
     public boolean canRedo() {
-        return (layerRedo != null && editedLayer != null);
+        return layerRedo != null && editedLayer != null;
     }
 
     public void die() {
@@ -87,7 +92,7 @@ public class MapLayerEdit extends AbstractUndoableEdit
     }
 
     public boolean addEdit(UndoableEdit anEdit) {
-        if (inProgress && anEdit.getClass() == this.getClass()) {
+        if (inProgress && anEdit.getClass() == getClass()) {
             //TODO: absorb the edit
             //return true;
         }

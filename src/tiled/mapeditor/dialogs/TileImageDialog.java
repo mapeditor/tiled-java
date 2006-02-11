@@ -1,5 +1,5 @@
 /*
- *  Tiled Map Editor, (c) 2004
+ *  Tiled Map Editor, (c) 2004-2006
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -14,19 +14,18 @@
 package tiled.mapeditor.dialogs;
 
 import java.awt.*;
-import java.awt.event.*;
-//import java.awt.image.BufferedImage;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Enumeration;
 import java.util.Vector;
-
-//import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import tiled.core.*;
-import tiled.mapeditor.util.*;
-import tiled.mapeditor.widget.*;
+import tiled.core.ImageGroup;
+import tiled.core.TileSet;
+import tiled.mapeditor.util.ImageCellRenderer;
+import tiled.mapeditor.widget.VerticalStaticJPanel;
 
 /**
  * @version $Id$
@@ -45,14 +44,14 @@ public class TileImageDialog extends JDialog
     public TileImageDialog(Dialog parent, TileSet set) {
         this(parent, set, 0, 0);
     }
-    
+
     public TileImageDialog(Dialog parent, TileSet set, int id,
         int orientation) {
         super(parent, "Choose Tile Image", true);
         tileset = set;
         imageId = id;
         imageOrientation = orientation;
-        
+
         init();
         queryImages();
         updateImageLabel();
@@ -69,7 +68,7 @@ public class TileImageDialog extends JDialog
         JScrollPane sp = new JScrollPane();
         sp.getViewport().setView(imageList);
         sp.setPreferredSize(new Dimension(150, 150));
-        
+
         // image panel
         JPanel image_panel = new JPanel();
         image_panel.setLayout(new BoxLayout(image_panel, BoxLayout.Y_AXIS));
@@ -83,7 +82,7 @@ public class TileImageDialog extends JDialog
         rotateCheck = new JCheckBox("Rotate",
             (imageOrientation & 4) == 4);
         rotateCheck.addActionListener(this);
-        
+
         image_panel.add(imageLabel);
         image_panel.add(horizFlipCheck);
         image_panel.add(vertFlipCheck);
@@ -147,10 +146,10 @@ public class TileImageDialog extends JDialog
         Object source = event.getSource();
 
         if (source == bOk) {
-            this.dispose();
+            dispose();
         } else if (source == bCancel) {
             imageId = -1;
-            this.dispose();
+            dispose();
         } else if (source == horizFlipCheck) {
             imageOrientation ^= 1;
             updateImageLabel();

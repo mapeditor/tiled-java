@@ -1,5 +1,5 @@
 /*
- *  Tiled Map Editor, (c) 2004
+ *  Tiled Map Editor, (c) 2004-2006
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,10 +18,12 @@ import java.awt.image.PixelGrabber;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Vector;
 import java.util.zip.CRC32;
 import java.util.zip.Checksum;
-
 import javax.imageio.ImageIO;
 
 import tiled.mapeditor.util.cutter.TileCutter;
@@ -49,6 +51,8 @@ import tiled.core.ImageGroup;
  * is given an id, and is added to the cache. In this way, tile images are
  * never duplicated, and multiple tiles may reference the image by id.</p>
  *
+ *
+ * @version $Id$
  */
 public class TileSet
 {
@@ -362,10 +366,9 @@ public class TileSet
      */
     public Tile getFirstTile() {
         Tile ret = null;
-        Iterator itr = iterator();
-        while (itr.hasNext()) {
+        final Iterator itr = iterator();
+        if (itr.hasNext()) {
             ret = (Tile)itr.next();
-            break;
         }
         return ret;
     }
@@ -450,7 +453,7 @@ public class TileSet
      * @param i a preloaded Image object
      * @return a String containing the checksum value
      */
-    private String checksumImage(Image i) {
+    private static String checksumImage(Image i) {
         PixelGrabber pg = new PixelGrabber(i, 0, 0, -1, -1, false);
         Checksum sum = new CRC32();
 
@@ -460,7 +463,7 @@ public class TileSet
 
             try {
                 int psize = pg.getColorModel().getPixelSize();
-                ByteArrayInputStream bais = null;
+                ByteArrayInputStream bais;
 
                 // Handle different pixel sizes
                 if (psize >= 15 ) {
@@ -470,7 +473,7 @@ public class TileSet
                     bais = new ByteArrayInputStream((byte[])pg.getPixels());
                 }
                 byte[] bytes = new byte[1024];
-                int len = 0;
+                int len;
 
                 while ((len = bais.read(bytes)) >= 0) {
                     sum.update(bytes, 0, len);

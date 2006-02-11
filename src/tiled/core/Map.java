@@ -1,5 +1,5 @@
 /*
- *  Tiled Map Editor, (c) 2004
+ *  Tiled Map Editor, (c) 2004-2006
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -12,11 +12,14 @@
 
 package tiled.core;
 
-import java.util.*;
-
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Properties;
+import java.util.Vector;
 import javax.swing.event.EventListenerList;
 
-import tiled.mapeditor.util.*;
+import tiled.mapeditor.util.MapChangeListener;
+import tiled.mapeditor.util.MapChangedEvent;
 
 
 /**
@@ -44,7 +47,7 @@ public class Map extends MultilayerPlane
     private LinkedList objects;
 
     int tileWidth, tileHeight;
-    int totalObjects = 0;
+    int totalObjects;
     int orientation = MDO_ORTHO;
     EventListenerList mapChangeListeners;
     Properties properties;
@@ -132,7 +135,7 @@ public class Map extends MultilayerPlane
      */
     public MapLayer addLayer() {
         MapLayer layer = new TileLayer(this, widthInTiles, heightInTiles);
-        layer.setName("Layer "+super.getTotalLayers());
+        layer.setName("Layer " + super.getTotalLayers());
         super.addLayer(layer);
         fireMapChanged();
         return layer;

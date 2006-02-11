@@ -1,5 +1,5 @@
 /*
- *  Tiled Map Editor, (c) 2004
+ *  Tiled Map Editor, (c) 2004-2006
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -82,7 +82,7 @@ public class HexMapView extends MapView
 
     public Dimension getPreferredSize() {
         Dimension tsize = getTileSize(zoom);
-        int border = ((modeFlags & PF_GRIDMODE) != 0) ? 1 : 0;
+        int border = (modeFlags & PF_GRIDMODE) != 0 ? 1 : 0;
         int wbhc = (int)getWidthBetweenHexCentres();
 
         return new Dimension(
@@ -94,7 +94,7 @@ public class HexMapView extends MapView
     protected void paintLayer(Graphics2D g2d, TileLayer layer, double zoom) {
         // Determine area to draw from clipping rectangle
         Dimension tsize = getTileSize(zoom);
-        int toffset = (((modeFlags & PF_GRIDMODE) != 0) ? 1 : 0);
+        int toffset = (modeFlags & PF_GRIDMODE) != 0 ? 1 : 0;
 
         Rectangle clipRect = g2d.getClipBounds();
         int startX = clipRect.x / tsize.width;
@@ -278,7 +278,7 @@ public class HexMapView extends MapView
         centrex = tx*tileSize.getWidth() + tileSize.getWidth() / 2;
         centrey = ty*tileSize.getHeight() + tileSize.getHeight() / 2;
 
-        //Go round the sides clockwise
+        // Go round the sides clockwise
         poly.addPoint(
                 (int)(centrex - tileSize.getWidth() / 2),
                 (int)centrey);
