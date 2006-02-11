@@ -176,9 +176,9 @@ public class Map extends MultilayerPlane
      * processing is complete.
      *
      * @param s TileSet to remove
-     * @throws Exception
+     * @throws LayerLockedException
      */
-    public void removeTileset(TileSet s) throws Exception{
+    public void removeTileset(TileSet s) throws LayerLockedException {
         // Sanity check
         if (tilesets.indexOf(s) == -1)
             return;

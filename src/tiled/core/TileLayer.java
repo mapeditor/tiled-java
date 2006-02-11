@@ -19,16 +19,17 @@ import java.awt.geom.Area;
 /**
  * A TileLayer is a specialized MapLayer, used for tracking two dimensional
  * tile data.
+ *
+ * @version $Id$
  */
 public class TileLayer extends MapLayer
 {
-    protected Tile map[][];
+    protected Tile[][] map;
 
     /**
      * Default contructor
      */
     public TileLayer() {
-        super();
     }
 
     /**
@@ -148,9 +149,9 @@ public class TileLayer extends MapLayer
         for (int y = 0; y < bounds.height; y++) {
             for (int x = 0; x < bounds.width; x++) {
                 if (dir == MIRROR_VERTICAL) {
-                    mirror[y][x] = map[(bounds.height - 1) - y][x];
+                    mirror[y][x] = map[bounds.height - 1 - y][x];
                 } else {
-                    mirror[y][x] = map[y][(bounds.width - 1) - x];
+                    mirror[y][x] = map[y][bounds.width - 1 - x];
                 }
             }
         }
@@ -232,11 +233,11 @@ public class TileLayer extends MapLayer
      * is locked, an exception is thrown.
      *
      * @param tile the Tile to be removed
-     * @throws Exception
+     * @throws LayerLockedException
      */
-    public void removeTile(Tile tile) throws Exception {
+    public void removeTile(Tile tile) throws LayerLockedException {
         if (getLocked()) {
-            throw new Exception(
+            throw new LayerLockedException(
                     "Attempted to remove tile when this layer is locked.");
         }
 
@@ -410,7 +411,7 @@ public class TileLayer extends MapLayer
      * @exception CloneNotSupportedException
      */
     public Object clone() throws CloneNotSupportedException {
-        TileLayer clone = null;
+        TileLayer clone;
         clone = (TileLayer)super.clone();
 
         // Clone the layer data

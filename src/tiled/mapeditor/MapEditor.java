@@ -145,8 +145,7 @@ public class MapEditor implements ActionListener, MouseListener,
 
         /*
         try {
-            Image imgPaintCursor = loadImageResource(
-                    "resources/cursor-pencil.png");
+            Image imgPaintCursor = Resources.getImage("cursor-pencil.png");
 
             curPaint = Toolkit.getDefaultToolkit().createCustomCursor(
                     imgPaintCursor, new Point(0,0), "paint");
@@ -462,13 +461,13 @@ public class MapEditor implements ActionListener, MouseListener,
      *
      */
     private void createToolbox() {
-        Icon iconMove = loadIcon("resources/gimp-tool-move-22.png");
-        Icon iconPaint = loadIcon("resources/gimp-tool-pencil-22.png");
-        Icon iconErase = loadIcon("resources/gimp-tool-eraser-22.png");
-        Icon iconPour = loadIcon("resources/gimp-tool-bucket-fill-22.png");
-        Icon iconEyed = loadIcon("resources/gimp-tool-color-picker-22.png");
-        Icon iconMarquee = loadIcon("resources/gimp-tool-rect-select-22.png");
-        Icon iconMoveObject = loadIcon("resources/gimp-tool-object-move-22.png");
+        Icon iconMove = Resources.getIcon("gimp-tool-move-22.png");
+        Icon iconPaint = Resources.getIcon("gimp-tool-pencil-22.png");
+        Icon iconErase = Resources.getIcon("gimp-tool-eraser-22.png");
+        Icon iconPour = Resources.getIcon("gimp-tool-bucket-fill-22.png");
+        Icon iconEyed = Resources.getIcon("gimp-tool-color-picker-22.png");
+        Icon iconMarquee = Resources.getIcon("gimp-tool-rect-select-22.png");
+        Icon iconMoveObject = Resources.getIcon("gimp-tool-object-move-22.png");
 
         paintButton = createToggleButton(iconPaint, "paint", "Paint");
         eraseButton = createToggleButton(iconErase, "erase", "Erase");
@@ -519,11 +518,11 @@ public class MapEditor implements ActionListener, MouseListener,
         dataPanel = new JPanel(new BorderLayout());
 
         // Try to load the icons
-        Icon imgAdd = loadIcon("resources/gnome-new.png");
-        Icon imgDel = loadIcon("resources/gnome-delete.png");
-        Icon imgDup = loadIcon("resources/gimp-duplicate-16.png");
-        Icon imgUp = loadIcon("resources/gnome-up.png");
-        Icon imgDown = loadIcon("resources/gnome-down.png");
+        Icon imgAdd = Resources.getIcon("gnome-new.png");
+        Icon imgDel = Resources.getIcon("gnome-delete.png");
+        Icon imgDup = Resources.getIcon("gimp-duplicate-16.png");
+        Icon imgUp = Resources.getIcon("gnome-up.png");
+        Icon imgDown = Resources.getIcon("gnome-down.png");
 
         //navigation and tool options
         // TODO: the minimap is prohibitively slow, need to speed this up
@@ -1332,33 +1331,33 @@ public class MapEditor implements ActionListener, MouseListener,
                     putValue(SHORT_DESCRIPTION,
                             "Rotate layer 90 degrees clockwise");
                     putValue(SMALL_ICON,
-                            loadIcon("resources/gimp-rotate-90-16.png"));
+                            Resources.getIcon("gimp-rotate-90-16.png"));
                     break;
                 case MapLayer.ROTATE_180:
                     putValue(NAME, "Rotate 180 degrees CW");
                     putValue(SHORT_DESCRIPTION,
                             "Rotate layer 180 degrees clockwise");
                     putValue(SMALL_ICON,
-                            loadIcon("resources/gimp-rotate-180-16.png"));
+                            Resources.getIcon("gimp-rotate-180-16.png"));
                     break;
                 case MapLayer.ROTATE_270:
                     putValue(NAME, "Rotate 90 degrees CCW");
                     putValue(SHORT_DESCRIPTION,
                             "Rotate layer 90 degrees counterclockwise");
                     putValue(SMALL_ICON,
-                            loadIcon("resources/gimp-rotate-270-16.png"));
+                            Resources.getIcon("gimp-rotate-270-16.png"));
                     break;
                 case MapLayer.MIRROR_VERTICAL:
                     putValue(NAME, "Flip vertically");
                     putValue(SHORT_DESCRIPTION, "Flip layer vertically");
                     putValue(SMALL_ICON,
-                            loadIcon("resources/gimp-flip-vertical-16.png"));
+                            Resources.getIcon("gimp-flip-vertical-16.png"));
                     break;
                 case MapLayer.MIRROR_HORIZONTAL:
                     putValue(NAME, "Flip horizontally");
                     putValue(SHORT_DESCRIPTION, "Flip layer horizontally");
                     putValue(SMALL_ICON,
-                            loadIcon("resources/gimp-flip-horizontal-16.png"));
+                            Resources.getIcon("gimp-flip-horizontal-16.png"));
                     break;
             }
         }
@@ -1475,7 +1474,7 @@ public class MapEditor implements ActionListener, MouseListener,
             putValue(ACCELERATOR_KEY,
                     KeyStroke.getKeyStroke("control EQUALS"));
             putValue(SHORT_DESCRIPTION, "Zoom in one level");
-            putValue(SMALL_ICON, loadIcon("resources/gnome-zoom-in.png"));
+            putValue(SMALL_ICON, Resources.getIcon("gnome-zoom-in.png"));
         }
         public void actionPerformed(ActionEvent evt) {
             if (currentMap != null) {
@@ -1495,7 +1494,7 @@ public class MapEditor implements ActionListener, MouseListener,
             putValue(ACCELERATOR_KEY,
                     KeyStroke.getKeyStroke("control MINUS"));
             putValue(SHORT_DESCRIPTION, "Zoom out one level");
-            putValue(SMALL_ICON, loadIcon("resources/gnome-zoom-out.png"));
+            putValue(SMALL_ICON, Resources.getIcon("gnome-zoom-out.png"));
         }
         public void actionPerformed(ActionEvent evt) {
             if (currentMap != null) {
@@ -1711,8 +1710,8 @@ public class MapEditor implements ActionListener, MouseListener,
     }
 
     private boolean unsavedChanges() {
-        return (currentMap != null && undoStack.canUndo() &&
-                !undoStack.isAllSaved());
+        return currentMap != null && undoStack.canUndo() &&
+                !undoStack.isAllSaved();
     }
 
     /**
@@ -1770,7 +1769,7 @@ public class MapEditor implements ActionListener, MouseListener,
                 ch = new JFileChooser(filename);
             }
 
-            MapWriter writers[] = pluginLoader.getWriters();
+            MapWriter[] writers = pluginLoader.getWriters();
             for(int i = 0; i < writers.length; i++) {
                 try {
                     ch.addChoosableFileFilter(new TiledFileFilter(
@@ -1872,12 +1871,12 @@ public class MapEditor implements ActionListener, MouseListener,
         JFileChooser ch = new JFileChooser(startLocation);
 
         try {
-            MapReader readers[] = pluginLoader.getReaders();
+            MapReader[] readers = pluginLoader.getReaders();
             for(int i = 0; i < readers.length; i++) {
                 ch.addChoosableFileFilter(new TiledFileFilter(
                             readers[i].getFilter(), readers[i].getName()));
             }
-        } catch (Throwable e) {
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(appFrame,
                     "Error while loading plugins: " + e.getMessage(),
                     "Error while loading map",
@@ -1902,7 +1901,7 @@ public class MapEditor implements ActionListener, MouseListener,
         }
     }
 
-    private MapLayer createLayerCopy(MapLayer layer) {
+    private static MapLayer createLayerCopy(MapLayer layer) {
         if (layer instanceof TileLayer) {
             return new TileLayer((TileLayer)layer);
         } else if (layer instanceof ObjectGroup) {
@@ -1957,7 +1956,7 @@ public class MapEditor implements ActionListener, MouseListener,
 
     private void setCurrentMap(Map newMap) {
         currentMap = newMap;
-        boolean mapLoaded = (currentMap != null);
+        boolean mapLoaded = currentMap != null;
 
         if (!mapLoaded) {
             mapEventAdapter.fireEvent(MapEventAdapter.ME_MAPINACTIVE);
@@ -2119,27 +2118,6 @@ public class MapEditor implements ActionListener, MouseListener,
                     mapView.setCursor(curMarquee);
                     break;
             }
-        }
-    }
-
-    /**
-     * Loads an image that is part of the distribution jar
-     * 
-     * @param fname
-     * @return A BufferedImage instance of the image
-     * @throws IOException
-     */
-    public static BufferedImage loadImageResource(String fname)
-        throws IOException {
-        return ImageIO.read(MapEditor.class.getResourceAsStream(fname));
-    }
-
-    private static ImageIcon loadIcon(String fname) {
-        try {
-            return new ImageIcon(loadImageResource(fname));
-        } catch (IOException e) {
-            System.out.println("Failed to load icon: " + fname);
-            return null;
         }
     }
 

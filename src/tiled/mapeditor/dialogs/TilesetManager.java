@@ -25,9 +25,9 @@ import javax.swing.event.ListSelectionListener;
 import tiled.core.*;
 import tiled.io.MapHelper;
 import tiled.io.MapWriter;
-import tiled.mapeditor.dialogs.TileDialog;
 import tiled.mapeditor.util.*;
 import tiled.mapeditor.plugin.PluginClassLoader;
+import tiled.mapeditor.Resources;
 
 public class TilesetManager extends JDialog implements ActionListener,
        ListSelectionListener
@@ -125,23 +125,23 @@ public class TilesetManager extends JDialog implements ActionListener,
                     int ret = JOptionPane.showConfirmDialog(this,
                             "This tileset is currently in use. " +
                             "Are you sure you wish to remove it?",
-                            "Sure?", JOptionPane.YES_NO_CANCEL_OPTION);
-                    if (ret == JOptionPane.YES_OPTION) {
-                        map.removeTileset(set);
-                        updateTilesetTable();
+                            "Sure?", JOptionPane.YES_NO_OPTION);
+                    if (ret != JOptionPane.YES_OPTION) {
+                        return;
                     }
-                } else {
-                    map.removeTileset(set);
-                    updateTilesetTable();
                 }
-            } catch (ArrayIndexOutOfBoundsException a) {
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, e.getMessage());
+                map.removeTileset(set);
+                updateTilesetTable();
+            } catch (LayerLockedException e) {
+                JOptionPane.showMessageDialog(this,
+                        Resources.getString("action.tileset.remove.error.layer-locked.message"),
+                        Resources.getString("action.tileset.remove.error.title"),
+                        JOptionPane.ERROR_MESSAGE);
             }
         } else if (command.equals("Save as...")) {
             JFileChooser ch = new JFileChooser(map.getFilename());
 
-            MapWriter writers[] = PluginClassLoader.getInstance().getWriters();
+            MapWriter[] writers = PluginClassLoader.getInstance().getWriters();
             for (int i = 0; i < writers.length; i++) {
                 try {
                     ch.addChoosableFileFilter(new TiledFileFilter(
@@ -157,11 +157,9 @@ public class TilesetManager extends JDialog implements ActionListener,
                 String filename = ch.getSelectedFile().getAbsolutePath();
                 File exist = new File(filename);
 
-                if ((exist.exists()
-                      && JOptionPane.showConfirmDialog(this,
-                        "The file already exists. Do you wish to overwrite it?"
-                        ) == JOptionPane.OK_OPTION)
-                    || !exist.exists()) {
+                if (exist.exists() && JOptionPane.showConfirmDialog(this,
+                        Resources.getString("general.file.exists.message")) ==
+                        JOptionPane.OK_OPTION || !exist.exists()) {
                     try {
                         MapHelper.saveTileset(set, filename);
                         set.setSource(filename);
