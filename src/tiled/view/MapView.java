@@ -22,7 +22,6 @@ import tiled.core.*;
 import tiled.mapeditor.selection.SelectionLayer;
 import tiled.util.TiledConfiguration;
 
-
 /**
  * The base class for map views. This is meant to be extended for different
  * tile map orientations, such as orthagonal and isometric.
@@ -39,14 +38,15 @@ public abstract class MapView extends JPanel implements Scrollable
     public static int ZOOM_NORMALSIZE = 5;
 
     protected Map myMap;
-    protected int modeFlags = 0;
+    protected int modeFlags;
     protected double zoom = 1.0;
-    protected int zoomLevel = 5;
+    protected int zoomLevel = ZOOM_NORMALSIZE;
     protected static double[] zoomLevels = {
         0.0625, 0.125, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 4.0
     };
 
     private SmoothZoomer smoothZoomer;
+    private static final Color DEFAULT_BACKGROUND_COLOR = new Color(64, 64, 64);
 
 
     public MapView(Map m) {
@@ -205,13 +205,15 @@ public abstract class MapView extends JPanel implements Scrollable
             String colorString = conf.getValue("tiled.background.color");
             g2d.setColor(Color.decode(colorString));
         } catch (NumberFormatException e) {
-            g2d.setColor(new Color(64, 64, 64));
+            g2d.setColor(DEFAULT_BACKGROUND_COLOR);
         }
 
         g2d.fillRect(clip.x, clip.y, clip.width, clip.height);
 
         while (li.hasNext()) {
-            if ((layer = (MapLayer)li.next()) != null) {
+            layer = (MapLayer)li.next();
+
+            if (layer != null) {
                 float opacity = layer.getOpacity();
                 if (layer.isVisible() && opacity > 0.0f) {
                     if (opacity < 1.0f) {

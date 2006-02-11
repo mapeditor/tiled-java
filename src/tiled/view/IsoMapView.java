@@ -21,7 +21,9 @@ import javax.swing.SwingConstants;
 import tiled.core.*;
 import tiled.mapeditor.selection.SelectionLayer;
 
-
+/**
+ * @version $Id$
+ */
 public class IsoMapView extends MapView
 {
     public IsoMapView(Map m) {
@@ -55,7 +57,7 @@ public class IsoMapView extends MapView
 
         Rectangle clipRect = g2d.getClipBounds();
         Dimension tileSize = getTileSize(zoom);
-        int tileStepY = (tileSize.height / 2 == 0) ? 1 : tileSize.height / 2;
+        int tileStepY = tileSize.height / 2 == 0 ? 1 : tileSize.height / 2;
 
         Point rowItr = screenToTileCoords(clipRect.x, clipRect.y);
         rowItr.x--;
@@ -144,7 +146,7 @@ public class IsoMapView extends MapView
 
         Rectangle clipRect = g2d.getClipBounds();
         Dimension tileSize = getTileSize(zoom);
-        int tileStepY = (tileSize.height / 2 == 0) ? 1 : tileSize.height / 2;
+        int tileStepY = tileSize.height / 2 == 0 ? 1 : tileSize.height / 2;
         Font font = new Font("SansSerif", Font.PLAIN, tileSize.height / 4);
         g2d.setFont(font);
         FontRenderContext fontRenderContext = g2d.getFontRenderContext();
@@ -214,7 +216,7 @@ public class IsoMapView extends MapView
 
     public Dimension getPreferredSize() {
         Dimension tileSize = getTileSize(zoom);
-        int border = ((modeFlags & PF_GRIDMODE) != 0) ? 1 : 0;
+        int border = (modeFlags & PF_GRIDMODE) != 0 ? 1 : 0;
         int mapSides = myMap.getHeight() + myMap.getWidth();
 
         return new Dimension(
@@ -237,8 +239,8 @@ public class IsoMapView extends MapView
         // Calculate map coords and divide by tile size (tiles assumed to
         // be square in normal projection)
         return new Point(
-                ((mx < 0) ? mx - tileSize.height : mx) / tileSize.height,
-                ((my < 0) ? my - tileSize.height : my) / tileSize.height);
+                (mx < 0 ? mx - tileSize.height : mx) / tileSize.height,
+                (my < 0 ? my - tileSize.height : my) / tileSize.height);
     }
 
     protected Polygon createGridPolygon(int tx, int ty, int border) {
@@ -247,11 +249,11 @@ public class IsoMapView extends MapView
         tileSize.height -= border * 2;
 
         Polygon poly = new Polygon();
-        poly.addPoint((tx + tileSize.width / 2 + border), ty + border);
-        poly.addPoint((tx + tileSize.width), ty + tileSize.height / 2 + border);
-        poly.addPoint((tx + tileSize.width / 2 + border),
+        poly.addPoint(tx + tileSize.width / 2 + border, ty + border);
+        poly.addPoint(tx + tileSize.width, ty + tileSize.height / 2 + border);
+        poly.addPoint(tx + tileSize.width / 2 + border,
                 ty + tileSize.height + border);
-        poly.addPoint((tx + border), ty + tileSize.height / 2 + border);
+        poly.addPoint(tx + border, ty + tileSize.height / 2 + border);
         return poly;
     }
 

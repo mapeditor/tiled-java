@@ -19,6 +19,9 @@ import tiled.core.Map;
 import tiled.core.ObjectGroup;
 import tiled.core.TileLayer;
 
+/**
+ * @version $Id$
+ */
 public class ShiftedMapView extends MapView
 {
     private int horSide;       // Length of horizontal sides

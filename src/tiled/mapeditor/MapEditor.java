@@ -47,9 +47,9 @@ import tiled.io.MapWriter;
  *
  * @version $Id$
  */
-public class MapEditor implements ActionListener,
-    MouseListener, MouseMotionListener, MapChangeListener,
-    ListSelectionListener, ChangeListener, ComponentListener
+public class MapEditor implements ActionListener, MouseListener,
+        MouseMotionListener, MapChangeListener, ListSelectionListener,
+        ChangeListener, ComponentListener
 {
     // Constants and the like
     private static final int PS_POINT   = 0;
@@ -61,12 +61,15 @@ public class MapEditor implements ActionListener,
     private static final int PS_MOVE    = 6;
     private static final int PS_MOVEOBJ = 7;
 
-    private Cursor curDefault = null;
-    private Cursor curPaint   = null;
-    private Cursor curErase   = null;
-    private Cursor curPour    = null;
-    private Cursor curEyed    = null;
-    private Cursor curMarquee = null;
+    private static final int APP_WIDTH = 600;
+    private static final int APP_HEIGHT = 400;
+
+    private Cursor curDefault;
+    private Cursor curPaint;
+    private Cursor curErase;
+    private Cursor curPour;
+    private Cursor curEyed;
+    private Cursor curMarquee;
 
     /** Current release version */
     public static final String version = "0.5.2 (bjorn)";
@@ -83,14 +86,14 @@ public class MapEditor implements ActionListener,
     int currentPointerState;
     Tile currentTile;
     int currentLayer = -1;
-    boolean bMouseIsDown = false;
+    boolean bMouseIsDown;
     SelectionLayer cursorHighlight;
     Point mousePressLocation, mouseInitialPressLocation;
     Point moveDist;
     int mouseButton;
     AbstractBrush currentBrush;
-    SelectionLayer marqueeSelection = null;
-    MapLayer clipboardLayer = null;
+    SelectionLayer marqueeSelection;
+    MapLayer clipboardLayer;
 
     // GUI components
     JMenu       fileMenu, editMenu, selectMenu, viewMenu, helpMenu;
@@ -196,7 +199,7 @@ public class MapEditor implements ActionListener,
         appFrame.setContentPane(createContentPane());
         createMenuBar();
         appFrame.setJMenuBar(menuBar);
-        appFrame.setSize(600, 400);
+        appFrame.setSize(APP_WIDTH, APP_HEIGHT);
         setCurrentMap(null);
         updateRecent(null);
 
@@ -1025,7 +1028,7 @@ public class MapEditor implements ActionListener,
 
         Point tile = mapView.screenToTileCoords(e.getX(), e.getY());
         if (currentMap.inBounds(tile.x, tile.y)) {
-            tileCoordsLabel.setText("" + tile.x + ", " + tile.y);
+            tileCoordsLabel.setText(String.valueOf(tile.x) + ", " + tile.y);
         } else {
             tileCoordsLabel.setText(" ");
         }
@@ -1038,7 +1041,7 @@ public class MapEditor implements ActionListener,
         mousePressLocation = mapView.screenToTileCoords(e.getX(), e.getY());
         Point tile = mapView.screenToTileCoords(e.getX(), e.getY());
         if (currentMap.inBounds(tile.x, tile.y)) {
-            tileCoordsLabel.setText("" + tile.x + ", " + tile.y);
+            tileCoordsLabel.setText(String.valueOf(tile.x) + ", " + tile.y);
         } else {
             tileCoordsLabel.setText(" ");
         }
@@ -1139,7 +1142,7 @@ public class MapEditor implements ActionListener,
         } else if (command.equals("Import Tileset...")) {
             if (currentMap != null) {
                 JFileChooser ch = new JFileChooser(currentMap.getFilename());
-                MapReader readers[] = pluginLoader.getReaders();
+                MapReader[] readers = pluginLoader.getReaders();
                 for(int i = 0; i < readers.length; i++) {
                     try {
                         ch.addChoosableFileFilter(new TiledFileFilter(
@@ -1244,7 +1247,8 @@ public class MapEditor implements ActionListener,
 
     public void componentResized(ComponentEvent event) {
         // This can currently only happen when the map changes size
-        zoomLabel.setText("" + (int)(mapView.getZoom() * 100) + "%");
+        String s = String.valueOf((int) (mapView.getZoom() * 100)) + "%";
+        zoomLabel.setText(s);
     }
 
     public void componentShown(ComponentEvent event) {
@@ -1985,7 +1989,7 @@ public class MapEditor implements ActionListener,
                     mapView.getMode(MapView.PF_COORDINATES));
 
             Vector tilesets = currentMap.getTilesets();
-            if (tilesets.size() > 0) {
+            if (!tilesets.isEmpty()) {
                 tilePalettePanel.setTilesets(tilesets);
                 TileSet first = (TileSet)tilesets.get(0);
                 setCurrentTile(first.getFirstTile());
@@ -1994,14 +1998,15 @@ public class MapEditor implements ActionListener,
                 setCurrentTile(null);
             }
 
-            tileCoordsLabel.setText("" + (currentMap.getWidth() - 1) + ", " +
-                    (currentMap.getHeight() - 1));
+            tileCoordsLabel.setText(String.valueOf(currentMap.getWidth() - 1)
+                    + ", " + (currentMap.getHeight() - 1));
             tileCoordsLabel.setPreferredSize(null);
             Dimension size = tileCoordsLabel.getPreferredSize();
             tileCoordsLabel.setText(" ");
             tileCoordsLabel.setMinimumSize(size);
             tileCoordsLabel.setPreferredSize(size);
-            zoomLabel.setText("" + (int)(mapView.getZoom() * 100) + "%");
+            zoomLabel.setText(
+                    String.valueOf((int) (mapView.getZoom() * 100)) + "%");
         }
 
         zoomInAction.setEnabled(mapLoaded);
@@ -2129,7 +2134,7 @@ public class MapEditor implements ActionListener,
         return ImageIO.read(MapEditor.class.getResourceAsStream(fname));
     }
 
-    private ImageIcon loadIcon(String fname) {
+    private static ImageIcon loadIcon(String fname) {
         try {
             return new ImageIcon(loadImageResource(fname));
         } catch (IOException e) {
@@ -2144,11 +2149,6 @@ public class MapEditor implements ActionListener,
      * @param args the first argument may be a map file
      */
     public static void main(String[] args) {
-        //try {
-        //    UIManager.setLookAndFeel(
-        //            UIManager.getSystemLookAndFeelClassName());
-        //} catch (Exception e) {}
-
         MapEditor editor = new MapEditor();
 
         if (args.length > 0) {

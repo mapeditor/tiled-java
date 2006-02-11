@@ -20,7 +20,9 @@ import javax.swing.event.EventListenerList;
 import tiled.core.*;
 import tiled.mapeditor.util.*;
 
-
+/**
+ * @version $Id$
+ */
 public class TileButton extends JButton
 {
     private Tile tile;
@@ -59,8 +61,8 @@ public class TileButton extends JButton
 
             if (imgWidth > w) {
                 icon = new ImageIcon(tileImg.getScaledInstance(w,
-                            ((tileImg.getHeight(null) * w) / imgWidth),
-                            Image.SCALE_SMOOTH));
+                        (tileImg.getHeight(null) * w) / imgWidth,
+                        Image.SCALE_SMOOTH));
             } else {
                 icon = new ImageIcon(tileImg);
             }

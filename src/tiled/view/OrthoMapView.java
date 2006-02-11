@@ -29,7 +29,9 @@ import javax.swing.SwingConstants;
 import tiled.core.*;
 import tiled.mapeditor.selection.SelectionLayer;
 
-
+/**
+ * @version $Id$
+ */
 public class OrthoMapView extends MapView
 {
     public OrthoMapView(Map m) {
@@ -59,7 +61,7 @@ public class OrthoMapView extends MapView
 
     public Dimension getPreferredSize() {
         Dimension tsize = getTileSize(zoom);
-        int border = ((modeFlags & PF_GRIDMODE) != 0) ? 1 : 0;
+        int border = (modeFlags & PF_GRIDMODE) != 0 ? 1 : 0;
 
         return new Dimension(
                 myMap.getWidth() * tsize.width + border,
@@ -70,7 +72,7 @@ public class OrthoMapView extends MapView
         // Determine tile size and offset
         Dimension tsize = getTileSize(zoom);
         if (tsize.width <= 0 || tsize.height <= 0) return;
-        int toffset = (((modeFlags & PF_GRIDMODE) != 0) ? 1 : 0);
+        int toffset = (modeFlags & PF_GRIDMODE) != 0 ? 1 : 0;
 
         // Determine area to draw from clipping rectangle
         Rectangle clipRect = g2d.getClipBounds();
@@ -149,7 +151,7 @@ public class OrthoMapView extends MapView
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
         // Determine tile size and offset
-        int toffset = (((modeFlags & PF_GRIDMODE) != 0) ? 1 : 0);
+        int toffset = (modeFlags & PF_GRIDMODE) != 0 ? 1 : 0;
         Font font = new Font("SansSerif", Font.PLAIN, tsize.height / 4);
         g2d.setFont(font);
         FontRenderContext fontRenderContext = g2d.getFontRenderContext();
@@ -183,7 +185,7 @@ public class OrthoMapView extends MapView
     public void repaintRegion(Rectangle region) {
         Dimension tsize = getTileSize(zoom);
         if (tsize.width <= 0 || tsize.height <= 0) return;
-        int toffset = (((modeFlags & PF_GRIDMODE) != 0) ? 1 : 0);
+        int toffset = (modeFlags & PF_GRIDMODE) != 0 ? 1 : 0;
         int maxExtraHeight =
             (int)((myMap.getTileHeightMax() * zoom + toffset) - tsize.height);
 
@@ -194,7 +196,7 @@ public class OrthoMapView extends MapView
         int endY = (region.y + region.height) * tsize.height;
 
         Rectangle dirty =
-            new Rectangle(startX, startY, (endX - startX), (endY - startY));
+            new Rectangle(startX, startY, endX - startX, endY - startY);
 
         repaint(dirty);
     }
@@ -205,7 +207,7 @@ public class OrthoMapView extends MapView
     }
 
     protected Dimension getTileSize(double zoom) {
-        int grid = (((modeFlags & PF_GRIDMODE) != 0) ? 1 : 0);
+        int grid = (modeFlags & PF_GRIDMODE) != 0 ? 1 : 0;
 
         return new Dimension(
                 (int)(myMap.getTileWidth() * zoom) + grid,
