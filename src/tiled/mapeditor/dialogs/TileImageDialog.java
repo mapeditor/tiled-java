@@ -14,19 +14,17 @@
 package tiled.mapeditor.dialogs;
 
 import java.awt.*;
-import java.awt.event.*;
-//import java.awt.image.BufferedImage;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Enumeration;
 import java.util.Vector;
-
-//import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import tiled.core.*;
-import tiled.mapeditor.util.*;
-import tiled.mapeditor.widget.*;
+import tiled.core.TileSet;
+import tiled.mapeditor.util.ImageCellRenderer;
+import tiled.mapeditor.widget.VerticalStaticJPanel;
 
 /**
  * @version $Id$
@@ -146,10 +144,10 @@ public class TileImageDialog extends JDialog
         Object source = event.getSource();
 
         if (source == bOk) {
-            this.dispose();
+            dispose();
         } else if (source == bCancel) {
             imageId = -1;
-            this.dispose();
+            dispose();
         } else if (source == horizFlipCheck) {
             imageOrientation ^= 1;
             updateImageLabel();

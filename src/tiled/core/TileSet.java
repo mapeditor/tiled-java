@@ -18,10 +18,12 @@ import java.awt.image.PixelGrabber;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Vector;
 import java.util.zip.CRC32;
 import java.util.zip.Checksum;
-
 import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageInputStream;
 
@@ -49,6 +51,8 @@ import tiled.util.Util;
  *
  * <p>The TileSet also handles 'cutting' tile images from a tileset image, and
  * can optionally create Tile objects that reference the images.</p>
+ *
+ * @version $Id$
  */
 public class TileSet
 {
@@ -346,10 +350,9 @@ public class TileSet
      */
     public Tile getFirstTile() {
         Tile ret = null;
-        Iterator itr = iterator();
-        while (itr.hasNext()) {
+        final Iterator itr = iterator();
+        if (itr.hasNext()) {
             ret = (Tile)itr.next();
-            break;
         }
         return ret;
     }
@@ -430,7 +433,7 @@ public class TileSet
      * @param i a preloaded Image object
      * @return a String containing the checksum value
      */
-    private String checksumImage(Image i) {
+    private static String checksumImage(Image i) {
         PixelGrabber pg = new PixelGrabber(i, 0, 0, -1, -1, false);
         Checksum sum = new CRC32();
 
@@ -440,7 +443,7 @@ public class TileSet
 
             try {
                 int psize = pg.getColorModel().getPixelSize();
-                ByteArrayInputStream bais = null;
+                ByteArrayInputStream bais;
 
                 // Handle different pixel sizes
                 if (psize >= 15 ) {
@@ -450,7 +453,7 @@ public class TileSet
                     bais = new ByteArrayInputStream((byte[])pg.getPixels());
                 }
                 byte[] bytes = new byte[1024];
-                int len = 0;
+                int len;
 
                 while ((len = bais.read(bytes)) >= 0) {
                     sum.update(bytes, 0, len);
@@ -602,11 +605,11 @@ public class TileSet
      * @return the id as an <code>int</code> of the image in the cache
      */
     public int addImage(Image image) {
-        int t;
-        if ((t = Integer.parseInt((String)queryImageId(image))) >= 0) {
+        int t = Integer.parseInt((String)queryImageId(image));
+        if (t >= 0) {
             return t;
         } else {
-            //image ids should be unique.
+            // Image ids should be unique.
             t = images.size();
             addImage(image, Integer.toString(t));
             return t;
@@ -656,8 +659,8 @@ public class TileSet
             } catch (InterruptedException e) {
             }
             int[] new_pixels = new int[w * h];
-            int dest_w = ((orientation & 4) != 0) ? h : w;
-            int dest_h = ((orientation & 4) != 0) ? w : h;
+            int dest_w = (orientation & 4) != 0 ? h : w;
+            int dest_h = (orientation & 4) != 0 ? w : h;
             for (int dest_y = 0; dest_y < dest_h; ++dest_y) {
                 for (int dest_x = 0; dest_x < dest_w; ++dest_x) {
                     int src_x = dest_x, src_y = dest_y;
@@ -675,7 +678,6 @@ public class TileSet
                         = old_pixels[src_x + src_y * w];
                 }
             }
-            old_pixels = null;
             BufferedImage new_img = new BufferedImage(dest_w, dest_h,
                     BufferedImage.TYPE_INT_ARGB);
             new_img.setRGB(0, 0, dest_w, dest_h, new_pixels, 0, dest_w);

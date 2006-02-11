@@ -14,111 +14,72 @@ package tiled.mapeditor.util;
 
 import java.awt.*;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
 import javax.swing.*;
 
-import tiled.core.*;
+import tiled.core.Tile;
+import tiled.core.TileSet;
 import tiled.mapeditor.MapEditor;
-import tiled.core.Map;
 
-public class MultisetListRenderer extends DefaultListCellRenderer
-{
-    private Map myMap;
-    private ImageIcon[] tileImages;
-    private Image setImage = null;
-    private int highestTileId = 0;
-    private double zoom = 1;
+/**
+ * This list renderer is used for rendering a list of tiles associated with a
+ * certain map. The list renderer produces {@link ImageIcon} instances on
+ * demand and caches them in a {@link HashMap}.
+ *
+ * todo: check whether assuming all tiles have an image is safe
+ *
+ * @version $Id$
+ */
+public class MultisetListRenderer extends DefaultListCellRenderer {
+    private Icon setIcon;
+    private final double zoom;
+    private final HashMap<Integer, Icon> tileImages;
 
-    public MultisetListRenderer() {
-        setOpaque(true);
+    /**
+     * Creates the list renderer for rendering a list of tiles.
+     *
+     * @param zoom the zoom level at which the tiles will be shown
+     */
+    public MultisetListRenderer(double zoom) {
+        tileImages = new HashMap<Integer, Icon>();
+        this.zoom = zoom;
+
         try {
-            setImage = MapEditor.loadImageResource("resources/source.png");
+            // Load the icon to show for tilesets
+            Image img = MapEditor.loadImageResource("resources/source.png");
+            setIcon = new ImageIcon(img);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public MultisetListRenderer(Map m){
-        this();
-        myMap = m;
-        buildList();
-    }
-
-    public MultisetListRenderer(Map m, double zoom) {
-        this();
-        myMap = m;
-        this.zoom = zoom;
-        buildList();
-    }
-
     public Component getListCellRendererComponent(JList list, Object value,
-            int index, boolean isSelected, boolean cellHasFocus) {
+                                                  int index, boolean isSelected,
+                                                  boolean cellHasFocus) {
+        // Let the default list cell renderer do most of the work
         super.getListCellRendererComponent(
                 list, value, index, isSelected, cellHasFocus);
 
-        if (value != null && index >= 0) {
-            Tile tile = null;
-
-            if (value instanceof Tile) {
-                tile = (Tile)value;
-                if (tile != null) {
-                    setIcon(tileImages[index]);
-                    setText("Tile " + tile.getId());
+        // Attempt to set an appropriate icon
+        if (value instanceof Tile && index >= 0) {
+            Tile tile = (Tile) value;
+            if (!isSelected || zoom == 1) {
+                // Use cached ImageIcon instance
+                if (tileImages.containsKey(index)) {
+                    setIcon(tileImages.get(index));
                 } else {
-                    setIcon(null);
-                    setText("No tile");
+                    Icon icon = new ImageIcon(tile.getScaledImage(zoom));
+                    setIcon(icon);
+                    tileImages.put(index, icon);
                 }
-            } else if (value instanceof TileSet) {
-                TileSet ts = (TileSet)value;
-                if(ts != null) {
-                    setIcon(new ImageIcon(setImage));
-                    setText("Tileset " + ts.getName());
-                } else {
-                    setIcon(null);
-                    setText("");
-                }
+            } else {
+                // Selected entry always uses unscaled image
+                setIcon(new ImageIcon(tile.getImage()));
             }
-
-            // Scale image of selected tile up
-            if (isSelected && tile != null) {
-                setIcon(new ImageIcon(tile.getScaledImage(1.0)));
-            }
+        } else if (value instanceof TileSet) {
+            setIcon(setIcon);
         }
+
         return this;
-    }
-
-
-    private void buildList() {
-        Tile t;
-        Vector sets = myMap.getTilesets();
-        int curSlot = 0;
-        Iterator itr = sets.iterator();
-        int totalSlots = sets.size();
-
-        itr = sets.iterator();
-        while (itr.hasNext()) {
-            TileSet ts = (TileSet) itr.next();
-            totalSlots += ts.size();
-        }
-        tileImages = new ImageIcon[totalSlots];
-
-        itr = sets.iterator();
-        while (itr.hasNext()) {
-            TileSet ts = (TileSet) itr.next();
-            tileImages[curSlot++] = new ImageIcon(setImage);
-
-            Iterator tileIterator = ts.iterator();
-
-            while (tileIterator.hasNext()) {
-                Tile tile = (Tile)tileIterator.next();
-                Image img = tile.getScaledImage(zoom);
-                if (img != null) {
-                    tileImages[curSlot] = new ImageIcon(img);
-                } else {
-                    tileImages[curSlot] = null;
-                }
-                curSlot++;
-            }
-        }
     }
 }

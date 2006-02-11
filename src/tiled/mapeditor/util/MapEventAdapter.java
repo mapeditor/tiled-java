@@ -12,16 +12,19 @@
  
 package tiled.mapeditor.util;
 
-import java.awt.Component;
-import java.util.*;
+import java.awt.*;
+import java.util.LinkedList;
+import java.util.ListIterator;
 
-
+/**
+ * @version $Id$
+ */
 public class MapEventAdapter
 {
     public static final int ME_MAPACTIVE   = 1;
     public static final int ME_MAPINACTIVE = 2;
 
-    private LinkedList listeners = null;
+    private LinkedList listeners;
 
     public MapEventAdapter() {
         listeners = new LinkedList();

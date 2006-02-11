@@ -16,10 +16,12 @@ package tiled.mapeditor.util;
 
 import tiled.core.Map;
 
-
+/**
+ * @version $Id$
+ */
 public class MapChangedEvent //extends EventObject
 {
-    private Map map;
+    private final Map map;
 
     public MapChangedEvent(Map map) {
         this.map = map;

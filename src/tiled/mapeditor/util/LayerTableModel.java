@@ -17,10 +17,15 @@ import javax.swing.table.AbstractTableModel;
 import tiled.core.MapLayer;
 import tiled.core.MultilayerPlane;
 
+/**
+ * @version $Id$
+ */
 public class LayerTableModel extends AbstractTableModel
 {
     private MultilayerPlane map;
-    private String[] columnNames = { "Locked", "Show", "Layer name" };
+    private static final String[] columnNames = {
+            "Locked", "Show", "Layer name"
+    };
 
     public LayerTableModel(MultilayerPlane map) {
         this.map = map;
@@ -89,7 +94,7 @@ public class LayerTableModel extends AbstractTableModel
     public boolean isCellEditable(int row, int col) {
     	MapLayer layer = map.getLayer(getRowCount() - row - 1);
 
-        return (!(col == 0 && layer != null && !layer.isVisible()));
+        return !(col == 0 && layer != null && !layer.isVisible());
     }
 
     public void setValueAt(Object value, int row, int col) {

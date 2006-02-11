@@ -12,11 +12,14 @@
 
 package tiled.core;
 
-import java.util.*;
-
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Properties;
+import java.util.Vector;
 import javax.swing.event.EventListenerList;
 
-import tiled.mapeditor.util.*;
+import tiled.mapeditor.util.MapChangeListener;
+import tiled.mapeditor.util.MapChangedEvent;
 
 
 /**
@@ -44,7 +47,7 @@ public class Map extends MultilayerPlane
     private LinkedList objects;
 
     int tileWidth, tileHeight;
-    int totalObjects = 0;
+    int totalObjects;
     int orientation = MDO_ORTHO;
     EventListenerList mapChangeListeners;
     Properties properties;
@@ -132,7 +135,7 @@ public class Map extends MultilayerPlane
      */
     public MapLayer addLayer() {
         MapLayer layer = new TileLayer(this, widthInTiles, heightInTiles);
-        layer.setName("Layer "+super.getTotalLayers());
+        layer.setName("Layer " + super.getTotalLayers());
         super.addLayer(layer);
         fireMapChanged();
         return layer;
@@ -473,11 +476,10 @@ public class Map extends MultilayerPlane
      * 
      * @param x
      * @param y
-     * @return <code>true</code> if the point is within the map boundaries, <code>false</code> otherwise
+     * @return <code>true</code> if the point is within the map boundaries,
+     *         <code>false</code> otherwise
      */
     public boolean inBounds(int x, int y) {
-        return (x >= 0 && y >= 0 &&
-                x < this.widthInTiles && y < this.heightInTiles);
+        return x >= 0 && y >= 0 && x < widthInTiles && y < heightInTiles;
     }
-
 }

@@ -13,10 +13,12 @@
 package tiled.mapeditor;
 
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -36,7 +38,9 @@ import tiled.mapeditor.widget.MiniMapViewer;
 import tiled.mapeditor.widget.VerticalStaticJPanel;
 import tiled.util.TiledConfiguration;
 
-
+/**
+ * @version $Id$
+ */
 public class BrushDialog extends JDialog implements ActionListener,
        ItemListener, ChangeListener, PropertyChangeListener,
        ListSelectionListener
@@ -50,10 +54,9 @@ public class BrushDialog extends JDialog implements ActionListener,
     private JButton bOk, bApply, bCancel;
     private BrushBrowser brushes;
     private MiniMapViewer mmv;
-    private JTable layerTable;
 
     public BrushDialog(MapEditor editor, JFrame parent,
-            AbstractBrush currentBrush)
+                       AbstractBrush currentBrush)
     {
         super(parent, "Brush Options", false);
         myBrush = currentBrush;
@@ -154,7 +157,7 @@ public class BrushDialog extends JDialog implements ActionListener,
         bCreate.setEnabled(false);
         JButton bLoad = new JButton("Load...");
         bLoad.addActionListener(this);
-        layerTable = new JTable(new LayerTableModel(myBrush));
+        JTable layerTable = new JTable(new LayerTableModel(myBrush));
         layerTable.getColumnModel().getColumn(0).setPreferredWidth(32);
         layerTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         layerTable.getSelectionModel().addListSelectionListener(this);
@@ -320,8 +323,7 @@ public class BrushDialog extends JDialog implements ActionListener,
         JFileChooser ch = new JFileChooser(startLocation);
 
         try {
-            MapReader readers[] =
-                (MapReader[])PluginClassLoader.getInstance().getReaders();
+            MapReader[] readers = PluginClassLoader.getInstance().getReaders();
             for(int i = 0; i < readers.length; i++) {
                 ch.addChoosableFileFilter(new TiledFileFilter(
                             readers[i].getFilter(), readers[i].getName()));
