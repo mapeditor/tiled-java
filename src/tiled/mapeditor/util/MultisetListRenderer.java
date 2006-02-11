@@ -33,7 +33,7 @@ import tiled.mapeditor.MapEditor;
 public class MultisetListRenderer extends DefaultListCellRenderer {
     private Icon setIcon;
     private final double zoom;
-    private final HashMap<Integer, Icon> tileImages;
+    private final HashMap tileImages;
 
     /**
      * Creates the list renderer for rendering a list of tiles.
@@ -41,7 +41,7 @@ public class MultisetListRenderer extends DefaultListCellRenderer {
      * @param zoom the zoom level at which the tiles will be shown
      */
     public MultisetListRenderer(double zoom) {
-        tileImages = new HashMap<Integer, Icon>();
+        tileImages = new HashMap();
         this.zoom = zoom;
 
         try {
@@ -65,12 +65,13 @@ public class MultisetListRenderer extends DefaultListCellRenderer {
             Tile tile = (Tile) value;
             if (!isSelected || zoom == 1) {
                 // Use cached ImageIcon instance
-                if (tileImages.containsKey(index)) {
-                    setIcon(tileImages.get(index));
+                final Integer key = Integer.valueOf(index);
+                if (tileImages.containsKey(key)) {
+                    setIcon((Icon) tileImages.get(key));
                 } else {
                     Icon icon = new ImageIcon(tile.getScaledImage(zoom));
                     setIcon(icon);
-                    tileImages.put(index, icon);
+                    tileImages.put(key, icon);
                 }
             } else {
                 // Selected entry always uses unscaled image
