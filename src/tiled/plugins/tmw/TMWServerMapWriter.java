@@ -1,5 +1,5 @@
 /*
- *  The Mana World Plugin for Tiled, (c) 2004
+ *  The Mana World Plugin for Tiled, (c) 2004-2006
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -30,6 +30,8 @@ import tiled.core.*;
  */
 public class TMWServerMapWriter implements MapWriter
 {
+    private static final int FIRST_BYTE = 0x000000FF;
+
     /**
      * Loads a map from a file.
      *
@@ -53,15 +55,15 @@ public class TMWServerMapWriter implements MapWriter
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         MapLayer layer = map.getLayer(3);
-        if (layer != null && (layer instanceof TileLayer)) {
+        if (layer != null && layer instanceof TileLayer) {
             int width = layer.getWidth();
             int height = layer.getHeight();
 
             // Write width and height
-            out.write((width      ) & 0x000000FF);
-            out.write((width  >> 8) & 0x000000FF);
-            out.write((height     ) & 0x000000FF);
-            out.write((height >> 8) & 0x000000FF);
+            out.write(width       & FIRST_BYTE);
+            out.write(width >> 8  & FIRST_BYTE);
+            out.write(height      & FIRST_BYTE);
+            out.write(height >> 8 & FIRST_BYTE);
 
             for (int y = 0; y < height; y++) {
                 for (int x= 0; x < width; x++) {

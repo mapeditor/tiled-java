@@ -1,5 +1,5 @@
 /*
- *  Tiled Map Editor, (c) 2004
+ *  Tiled Map Editor, (c) 2004-2006
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,7 +23,9 @@ import javax.swing.event.MouseInputListener;
 import tiled.core.*;
 import tiled.mapeditor.util.*;
 
-
+/**
+ * @version $Id$
+ */
 public class TilePalettePanel extends JPanel implements Scrollable,
        MouseInputListener
 {
@@ -74,7 +76,7 @@ public class TilePalettePanel extends JPanel implements Scrollable,
     }
 
     public Tile getTileAtPoint(int x, int y) {
-        Tile ret = null;
+        Tile ret;
         TileSet tileset = (TileSet)tilesets.get(0);
         int twidth = tileset.getTileWidth() + 1;
         int theight = tileset.getTileHeight() + 1;
@@ -110,7 +112,7 @@ public class TilePalettePanel extends JPanel implements Scrollable,
                 int tilesPerRow = Math.max(1, (getWidth() - 1) / twidth);
 
                 int startY = clip.y / theight;
-                int endY = ((clip.y + clip.height) / theight) + 1;
+                int endY = (clip.y + clip.height) / theight + 1;
                 int tileAt = tilesPerRow * startY;
 
                 for (int y = startY, gy = startY * theight; y < endY; y++) {
@@ -131,7 +133,7 @@ public class TilePalettePanel extends JPanel implements Scrollable,
     /**
      * Draws checkerboard background.
      */
-    private void paintBackground(Graphics g) {
+    private static void paintBackground(Graphics g) {
         Rectangle clip = g.getClipBounds();
         int side = 10;
 
@@ -156,7 +158,7 @@ public class TilePalettePanel extends JPanel implements Scrollable,
     }
 
     public Dimension getPreferredSize() {
-        if (tilesets == null || tilesets.size() == 0) {
+        if (tilesets == null || tilesets.isEmpty()) {
             return new Dimension(0, 0);
         }
         else {
@@ -165,8 +167,8 @@ public class TilePalettePanel extends JPanel implements Scrollable,
             int theight = tileset.getTileHeight() + 1;
             int tileCount = tileset.size();
             int tilesPerRow = Math.max(1, (getWidth() - 1) / twidth);
-            int rows = (tileCount / tilesPerRow +
-                    (((tileCount) % tilesPerRow > 0) ? 1 : 0));
+            int rows = tileCount / tilesPerRow +
+                    (tileCount % tilesPerRow > 0 ? 1 : 0);
 
             return new Dimension(tilesPerRow * twidth + 1, rows * theight + 1);
         }
@@ -176,7 +178,7 @@ public class TilePalettePanel extends JPanel implements Scrollable,
     // Scrollable interface
 
     public Dimension getPreferredScrollableViewportSize() {
-        if (tilesets != null && tilesets.size() > 0) {
+        if (tilesets != null && !tilesets.isEmpty()) {
             int twidth = 35 + 1;
             TileSet tileset = (TileSet)tilesets.get(0);
             if (tileset != null) {

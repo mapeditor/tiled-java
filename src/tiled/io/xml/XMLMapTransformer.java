@@ -1,5 +1,5 @@
 /*
- *  Tiled Map Editor, (c) 2004
+ *  Tiled Map Editor, (c) 2004-2006
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -43,15 +43,15 @@ import tiled.util.*;
  */
 public class XMLMapTransformer implements MapReader
 {
-    private Map map = null;
-    private String xmlPath = null;
+    private Map map;
+    private String xmlPath;
     private Stack warnings;
 
     public XMLMapTransformer() {
         warnings = new Stack();
     }
 
-    private String makeUrl(String filename) throws MalformedURLException {
+    private static String makeUrl(String filename) throws MalformedURLException {
         final String url;
         if (filename.indexOf("://") > 0 || filename.startsWith("file:")) {
             url = filename;
@@ -61,7 +61,7 @@ public class XMLMapTransformer implements MapReader
         return url;
     }
 
-    private int reflectFindMethodByName(Class c, String methodName) {
+    private static int reflectFindMethodByName(Class c, String methodName) {
         Method[] methods = c.getMethods();
         for (int i = 0; i < methods.length; i++) {
             if (methods[i].getName().equalsIgnoreCase(methodName)) {
@@ -436,17 +436,17 @@ public class XMLMapTransformer implements MapReader
                     tile.setImage(id);
                     int rotation = getAttribute(child, "rotation", 0);
                     String flipped_s = getAttributeValue(child, "flipped");
-                    boolean flipped = (flipped_s != null
-                        && flipped_s.equalsIgnoreCase("true"));
+                    boolean flipped = flipped_s != null &&
+                            flipped_s.equalsIgnoreCase("true");
                     int orientation;
                     if (rotation == 90) {
-                        orientation = (flipped ? 6 : 4);
+                        orientation = flipped ? 6 : 4;
                     } else if (rotation == 180) {
-                        orientation = (flipped ? 2 : 3);
+                        orientation = flipped ? 2 : 3;
                     } else if (rotation == 270) {
-                        orientation = (flipped ? 5 : 7);
+                        orientation = flipped ? 5 : 7;
                     } else {
-                        orientation = (flipped ? 1 : 0);
+                        orientation = flipped ? 1 : 0;
                     }
                     tile.setImageOrientation(orientation);
                 }
@@ -483,7 +483,7 @@ public class XMLMapTransformer implements MapReader
     /**
      * Loads a map layer from a layer node.
      */
-    private MapLayer unmarshalLayer(Node t) throws Exception {
+    private MapLayer readLayer(Node t) throws Exception {
         int layerWidth = getAttribute(t, "width", map.getWidth());
         int layerHeight = getAttribute(t, "height", map.getHeight());
 
@@ -645,7 +645,7 @@ public class XMLMapTransformer implements MapReader
                         getAttributeValue(sibs, "value"));
             }
             else if (sibs.getNodeName().equals("layer")) {
-                MapLayer layer = unmarshalLayer(sibs);
+                MapLayer layer = readLayer(sibs);
                 if (layer != null) {
                     map.addLayer(layer);
                 }

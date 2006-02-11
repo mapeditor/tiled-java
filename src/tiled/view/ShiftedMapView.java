@@ -1,5 +1,5 @@
 /*
- *  Tiled Map Editor, (c) 2004-2005
+ *  Tiled Map Editor, (c) 2004-2006
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -12,20 +12,12 @@
 
 package tiled.view;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Polygon;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
-import java.awt.font.FontRenderContext;
-import java.awt.geom.Rectangle2D;
-import java.util.Iterator;
+import java.awt.*;
 import javax.swing.SwingConstants;
-import tiled.core.*;
-import tiled.mapeditor.selection.SelectionLayer;
+
+import tiled.core.Map;
+import tiled.core.ObjectGroup;
+import tiled.core.TileLayer;
 
 public class ShiftedMapView extends MapView
 {
@@ -55,15 +47,15 @@ public class ShiftedMapView extends MapView
             int orientation, int direction) {
         Dimension tsize = getTileSize(zoom);
         if (orientation == SwingConstants.VERTICAL) {
-            return tsize.height - ((tsize.height - (int)(verSide * zoom)) / 2);
+            return tsize.height - (tsize.height - (int) (verSide * zoom)) / 2;
         } else {
-            return tsize.width - ((tsize.width - (int)(horSide * zoom)) / 2);
+            return tsize.width - (tsize.width - (int) (horSide * zoom)) / 2;
         }
     }
 
     public Dimension getPreferredSize() {
         Dimension tsize = getTileSize(zoom);
-        int border = ((modeFlags & PF_GRIDMODE) != 0) ? 1 : 0;
+        int border = (modeFlags & PF_GRIDMODE) != 0 ? 1 : 0;
         int onceX = (tsize.width - (int)(horSide * zoom)) / 2;
         int repeatX = tsize.width - onceX;
         int onceY = (tsize.height - (int)(verSide * zoom)) / 2;

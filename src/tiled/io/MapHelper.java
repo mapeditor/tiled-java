@@ -1,5 +1,5 @@
 /*
- *  Tiled Map Editor, (c) 2004
+ *  Tiled Map Editor, (c) 2004-2006
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -219,7 +219,7 @@ public class MapHelper {
         TiledConfiguration config = TiledConfiguration.getInstance();
 
         if (config.keyHasValue("tiled.report.io", 1)) {
-            if (s.size() > 0) {
+            if (!s.isEmpty()) {
                 Iterator itr = s.iterator();
                 StringBuffer warnings = new StringBuffer();
                 while (itr.hasNext()) {

@@ -1,5 +1,5 @@
 /*
- *  Mappy Plugin for Tiled, (c) 2004
+ *  Mappy Plugin for Tiled, (c) 2004-2006
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ public class MappyMapReader implements MapReader
 {
     private LinkedList chunks;
     private Vector blocks;
-    private static final int BLKSTR_WIDTH=32;
+    private static final int BLKSTR_WIDTH = 32;
     private int twidth, theight;
 
     public static class BlkStr {
@@ -182,7 +182,7 @@ public class MappyMapReader implements MapReader
             throw new
                 IOException("Tile bitdepths less than 16 are not supported!");
         }
-        retProps.setProperty("(s)depth", "" + depth);
+        retProps.setProperty("(s)depth", String.valueOf(depth));
         in.skip(2);
         int numBlocks = Util.readShort(in);
         int numBlocksGfx = Util.readShort(in);
@@ -196,7 +196,7 @@ public class MappyMapReader implements MapReader
         for(int i=1;i<7;i++) {
             //TODO: I believe this should be ObjectGroup
             ml = new ObjectGroup(ret, 0, 0);
-            ml.setName("ObjectLayer "+i);
+            ml.setName("ObjectLayer " + i);
             ret.addLayer(ml);
         }
         ml = new TileLayer(ret, ret.getWidth(),ret.getHeight());
@@ -227,8 +227,8 @@ public class MappyMapReader implements MapReader
     }
 
     private void readBKDTChunk(Map m, InputStream in, int num) throws IOException {
-        System.out.println("Reading "+num+" blocks...");
-        for(int i = 0;i<num;i++) {
+        System.out.println("Reading " + num + " blocks...");
+        for (int i = 0; i < num; i++) {
             blocks.add(readBLKSTR(in));
         }
     }
@@ -283,12 +283,12 @@ public class MappyMapReader implements MapReader
     }
 
     private BlkStr readBLKSTR(InputStream in) throws IOException {
-        MappyMapReader.BlkStr ret = new MappyMapReader.BlkStr();
-        long widthMod = (twidth * theight * 512);
-        ret.bg = Util.readLongReverse(in)/widthMod;
-        ret.fg0 = Util.readLongReverse(in)/widthMod;
-        ret.fg1 = Util.readLongReverse(in)/widthMod;
-        ret.fg2 = Util.readLongReverse(in)/widthMod;
+        BlkStr ret = new BlkStr();
+        long widthMod = twidth * theight * 512;
+        ret.bg = Util.readLongReverse(in) / widthMod;
+        ret.fg0 = Util.readLongReverse(in) / widthMod;
+        ret.fg1 = Util.readLongReverse(in) / widthMod;
+        ret.fg2 = Util.readLongReverse(in) / widthMod;
 
         ret.user1 = Util.readLongReverse(in);
         ret.user2 = Util.readLongReverse(in);

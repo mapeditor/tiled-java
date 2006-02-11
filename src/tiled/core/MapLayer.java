@@ -1,5 +1,5 @@
 /*
- *  Tiled Map Editor, (c) 2004
+ *  Tiled Map Editor, (c) 2004-2006
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -168,7 +168,7 @@ public abstract class MapLayer implements Cloneable
      * shift this layer from the origin of the map.
      *
      * @param xOff x offset in tiles
-     * @parem yOff y offset in tiles
+     * @param yOff y offset in tiles
      */
     public void setOffset(int xOff, int yOff) {
         bounds.x = xOff;

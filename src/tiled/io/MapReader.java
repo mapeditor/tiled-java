@@ -1,5 +1,5 @@
 /*
- *  Tiled Map Editor, (c) 2004
+ *  Tiled Map Editor, (c) 2004-2006
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@ import tiled.core.TileSet;
 /**
  * Used by Tiled to denote a plugin for reading maps. The map file
  * can have any format, as long as the MapReader implementor returns
- * instances of tiled.core.Map and tiled.core.TileSet.
+ * instances of {@link Map} and {@link TileSet}.
  */
 public interface MapReader extends PluggableMapIO, FileFilter
 {

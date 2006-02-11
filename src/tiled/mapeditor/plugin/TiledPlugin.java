@@ -1,5 +1,5 @@
 /*
- *  Tiled Map Editor, (c) 2004
+ *  Tiled Map Editor, (c) 2004-2006
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,8 +23,7 @@ import tiled.io.PluggableMapIO;
 /**
  * A true "plugin" implementation that handles both reading and
  * writing as the case may be. Instantiated for every reader/writer pair
- * by the {@link tiled.mapeditor.plugin.PluginClassLoader} when all plugins
- * are loaded.
+ * by the {@link PluginClassLoader} when all plugins are loaded.
  */
 public class TiledPlugin implements PluggableMapIO, FileFilter
 {
@@ -34,8 +33,8 @@ public class TiledPlugin implements PluggableMapIO, FileFilter
     /**
      * Instantiates a new plugin to be used internally by Tiled.
      * 
-     * @param reader The {@link tiled.io.MapReader} implementor for the plugin
-     * @param writer The {@link tiled.io.MapWriter} implementor for the plugin
+     * @param reader The {@link MapReader} implementor for the plugin
+     * @param writer The {@link MapWriter} implementor for the plugin
      */
     public TiledPlugin(MapReader reader, MapWriter writer) {
         this.reader = reader;
@@ -69,9 +68,14 @@ public class TiledPlugin implements PluggableMapIO, FileFilter
      */
     public String getFilter() throws Exception {
         String filter = "";
-        if(reader!=null) filter = filter + reader.getFilter();
+
+        if (reader != null) {
+            filter += reader.getFilter();
+        }
         
-        if(writer!=null) filter = filter + (filter.length() > 0 ? "," : "") + writer.getFilter();
+        if (writer != null) {
+            filter += (filter.length() > 0 ? "," : "") + writer.getFilter();
+        }
         
         return filter;
     }
@@ -80,19 +84,16 @@ public class TiledPlugin implements PluggableMapIO, FileFilter
      * Returns the name of the plugin as set in the reader,
      * or, if the reader does not exist, from the writer.
      * 
-     * @see tiled.io.PluggableMapIO#getName()
+     * @see PluggableMapIO#getName()
      */
     public String getName() {
-        if(reader != null) {
+        if (reader != null) {
             return reader.getName();
         }
         
         return writer.getName();
     }
 
-    /* (non-Javadoc)
-     * @see tiled.io.PluggableMapIO#getDescription()
-     */
     public String getDescription() {
         // TODO Auto-generated method stub
         return null;
@@ -105,7 +106,8 @@ public class TiledPlugin implements PluggableMapIO, FileFilter
 
     
     public boolean accept(File pathname) {
-        return (reader != null && reader.accept(pathname)) || (writer != null && writer.accept(pathname));
+        return reader != null && reader.accept(pathname) ||
+                writer != null && writer.accept(pathname);
     }
 
     
