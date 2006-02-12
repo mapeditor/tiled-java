@@ -13,33 +13,37 @@
 package tiled.mapeditor.dialogs;
 
 import java.awt.*;
-import java.awt.event.*;
-
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.prefs.Preferences;
 import javax.swing.*;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
-import tiled.util.TiledConfiguration;
 import tiled.mapeditor.widget.IntegerSpinner;
 import tiled.mapeditor.widget.VerticalStaticJPanel;
+import tiled.util.TiledConfiguration;
 
-
-public class ConfigurationDialog extends JDialog implements ActionListener,
-       ChangeListener, ItemListener
+/**
+ * @version $Id$
+ */
+public class ConfigurationDialog extends JDialog
 {
-    private JButton bOk, bApply, bCancel;
-    private JPanel layerOps, generalOps, tilesetOps, gridOps;
     private IntegerSpinner undoDepth, gridOpacity;
     private JCheckBox cbBinaryEncode, cbCompressLayerData, cbEmbedImages;
     private JCheckBox cbReportIOWarnings;
     private JRadioButton rbEmbedInTiles, rbEmbedInSet;
     private JCheckBox cbGridAA;
-    private JColorChooser gridColor;
-    private final TiledConfiguration configuration;
+    //private JColorChooser gridColor;
+
+    private final Preferences prefs = TiledConfiguration.root();
+    private final Preferences savingPrefs = prefs.node("saving");
+    private final Preferences ioPrefs = prefs.node("io");
 
     public ConfigurationDialog(JFrame parent) {
         super(parent, "Preferences", true);
-        configuration = TiledConfiguration.getInstance();
         init();
         setLocationRelativeTo(parent);
     }
@@ -60,39 +64,11 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
         cbGridAA = new JCheckBox("Antialiasing");
         gridOpacity = new IntegerSpinner(0, 0, 255);
         //gridColor = new JColorChooser();
-        cbBinaryEncode.addItemListener(this);
-        cbCompressLayerData.addItemListener(this);
-        cbEmbedImages.addItemListener(this);
-        cbReportIOWarnings.addItemListener(this);
-        cbGridAA.addItemListener(this);
-        undoDepth.addChangeListener(this);
-        gridOpacity.addChangeListener(this);
-        //gridColor.addChangeListener(this);
 
-        cbBinaryEncode.setActionCommand("tmx.save.encodeLayerData");
-        cbCompressLayerData.setActionCommand("tmx.save.layerCompression");
-        //cbEmbedImages.setActionCommand("tmx.save.embedImages");
-        cbReportIOWarnings.setActionCommand("tiled.report.io");
-
-        rbEmbedInTiles.setActionCommand("tmx.save.embedImages");
-        rbEmbedInTiles.setEnabled(false);
-        rbEmbedInSet.setActionCommand("tmx.save.tileSetImages");
-        rbEmbedInSet.setEnabled(false);
-        undoDepth.setName("tiled.undo.depth");
-        cbGridAA.setActionCommand("tiled.grid.antialias");
-        gridOpacity.setName("tiled.grid.opacity");
-        //gridColor.setName("tiled.grid.color");
-
-        bOk = new JButton("OK");
-        bApply = new JButton("Apply");
-        bCancel = new JButton("Cancel");
-        bOk.addActionListener(this);
-        bApply.addActionListener(this);
-        bCancel.addActionListener(this);
-        bApply.setEnabled(false);
+        // Set up the layout
 
         /* LAYER OPTIONS */
-        layerOps = new VerticalStaticJPanel();
+        JPanel layerOps = new VerticalStaticJPanel();
         layerOps.setLayout(new GridBagLayout());
         layerOps.setBorder(BorderFactory.createCompoundBorder(
                     BorderFactory.createTitledBorder("Layer Options"),
@@ -108,7 +84,7 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
         layerOps.add(cbCompressLayerData, c);
 
         /* GENERAL OPTIONS */
-        generalOps = new VerticalStaticJPanel();
+        JPanel generalOps = new VerticalStaticJPanel();
         generalOps.setLayout(new GridBagLayout());
         generalOps.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         c = new GridBagConstraints();
@@ -123,7 +99,7 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
         generalOps.add(cbReportIOWarnings, c);
 
         /* TILESET OPTIONS */
-        tilesetOps = new VerticalStaticJPanel();
+        JPanel tilesetOps = new VerticalStaticJPanel();
         tilesetOps.setLayout(new GridBagLayout());
         tilesetOps.setBorder(BorderFactory.createCompoundBorder(
                     BorderFactory.createTitledBorder("Tileset Options"),
@@ -138,7 +114,7 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
         tilesetOps.add(rbEmbedInSet, c);
 
         /* GRID OPTIONS */
-        gridOps = new VerticalStaticJPanel();
+        JPanel gridOps = new VerticalStaticJPanel();
         gridOps.setLayout(new GridBagLayout());
         gridOps.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         c = new GridBagConstraints();
@@ -153,16 +129,18 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
         //c.gridx = 1;
         //gridOps.add(gridColor, c);
 
+        JButton bClose = new JButton("Close");
+        bClose.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                dispose();
+            }
+        });
+
         /* BUTTONS PANEL */
         JPanel buttons = new VerticalStaticJPanel();
         buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
         buttons.add(Box.createGlue());
-        buttons.add(bOk);
-        buttons.add(Box.createRigidArea(new Dimension(5, 0)));
-        buttons.add(bApply);
-        buttons.add(Box.createRigidArea(new Dimension(5, 0)));
-        buttons.add(bCancel);
-
+        buttons.add(bClose);
 
         JPanel saving = new JPanel();
         saving.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
@@ -196,111 +174,103 @@ public class ConfigurationDialog extends JDialog implements ActionListener,
         mainPanel.add(buttons);
 
         getContentPane().add(mainPanel);
-        getRootPane().setDefaultButton(bOk);
+        getRootPane().setDefaultButton(bClose);
         pack();
+
+        // Associate listeners with the configuration widgets
+
+        cbBinaryEncode.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent itemEvent) {
+                final boolean selected = cbBinaryEncode.isSelected();
+                savingPrefs.putBoolean("encodeLayerData", selected);
+                cbCompressLayerData.setEnabled(selected);
+            }
+        });
+
+        cbCompressLayerData.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent itemEvent) {
+                savingPrefs.putBoolean("layerCompression",
+                        cbCompressLayerData.isSelected());
+            }
+        });
+
+        cbEmbedImages.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent itemEvent) {
+                final boolean embed = cbEmbedImages.isSelected();
+                savingPrefs.putBoolean("embedImages", embed);
+                rbEmbedInTiles.setSelected(embed && rbEmbedInTiles.isSelected());
+                rbEmbedInTiles.setEnabled(embed);
+                rbEmbedInSet.setSelected(embed && rbEmbedInSet.isSelected());
+                rbEmbedInSet.setEnabled(embed);
+            }
+        });
+
+        cbReportIOWarnings.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent itemEvent) {
+                ioPrefs.putBoolean("reportWarnings",
+                        cbReportIOWarnings.isSelected());
+            }
+        });
+
+        cbGridAA.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent itemEvent) {
+                prefs.putBoolean("gridAntialias", cbGridAA.isSelected());
+            }
+        });
+
+        undoDepth.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent changeEvent) {
+                prefs.putInt("undoDepth", undoDepth.intValue());
+            }
+        });
+
+        gridOpacity.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent changeEvent) {
+                prefs.putInt("gridOpacity", gridOpacity.intValue());
+            }
+        });
+
+        //gridColor.addChangeListener(...);
+
+        rbEmbedInTiles.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                savingPrefs.putBoolean("embedImages",
+                        rbEmbedInTiles.isSelected());
+            }
+        });
+
+        rbEmbedInSet.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                savingPrefs.putBoolean("tileSetImages",
+                        rbEmbedInSet.isSelected());
+            }
+        });
+
+        rbEmbedInTiles.setEnabled(false);
+        rbEmbedInSet.setEnabled(false);
+
+        //gridColor.setName("tiled.grid.color");
     }
 
     public void configure() {
-        updateFromConf();
+        updateFromConfiguration();
         setVisible(true);
     }
 
-    private void updateFromConf() {
-        undoDepth.setValue(configuration.getIntValue(undoDepth.getName(), 30));
-        gridOpacity.setValue(
-                configuration.getIntValue(gridOpacity.getName(), 255));
+    private void updateFromConfiguration() {
+        undoDepth.setValue(prefs.getInt("undoDepth", 30));
+        gridOpacity.setValue(prefs.getInt("gridOpacity", 255));
 
-        if (configuration.keyHasValue("tmx.save.embedImages", "1")) {
+        if (savingPrefs.getBoolean("embedImages", true)) {
             cbEmbedImages.setSelected(true);
             rbEmbedInTiles.setSelected(true);
         }
 
-        // Handle checkboxes
-        updateFromConf(layerOps);
-        updateFromConf(generalOps);
-        updateFromConf(tilesetOps);
-        updateFromConf(gridOps);
+        cbBinaryEncode.setSelected(savingPrefs.getBoolean("encodeLayerData", true));
+        cbCompressLayerData.setSelected(savingPrefs.getBoolean("layerCompression", true));
+        cbGridAA.setSelected(savingPrefs.getBoolean("gridAntialias", true));
+        cbReportIOWarnings.setSelected(ioPrefs.getBoolean("reportWarnings", false));
 
         cbCompressLayerData.setEnabled(cbBinaryEncode.isSelected());
-
-        bApply.setEnabled(false);
-    }
-
-    private void updateFromConf(Container container) {
-        for (int i = 0; i < container.getComponentCount(); i++) {
-            Component c = container.getComponent(i);
-            try {
-                AbstractButton b = (AbstractButton)c;
-                if (b.getClass().equals(JCheckBox.class)) {
-                    if (configuration.keyHasValue(b.getActionCommand(), "1")) {
-                        b.setSelected(true);
-                    }
-                }
-            } catch (ClassCastException e) {
-            }
-        }
-    }
-
-    private void processOptions() {
-        configuration.addConfigPair(
-                undoDepth.getName(), "" + undoDepth.intValue());
-        configuration.addConfigPair(
-                gridOpacity.getName(), "" + gridOpacity.intValue());
-
-        // Handle checkboxes
-        processOptions(layerOps);
-        processOptions(generalOps);
-        processOptions(tilesetOps);
-        processOptions(gridOps);
-
-        bApply.setEnabled(false);
-    }
-
-    private void processOptions(Container container) {
-        for (int i = 0; i < container.getComponentCount(); i++) {
-            Component c = container.getComponent(i);
-            try {
-                AbstractButton b = (AbstractButton)c;
-                if (b.getClass().equals(JCheckBox.class)) {
-                    configuration.addConfigPair(
-                            b.getActionCommand(), b.isSelected() ? "1" : "0");
-                }
-            } catch (ClassCastException e) {
-            }
-        }
-    }
-
-    public void actionPerformed(ActionEvent event) {
-        Object source = event.getSource();
-
-        if (source == bOk) {
-            processOptions();
-            dispose();
-        } else if (source == bCancel) {
-            dispose();
-        } else if (source == bApply) {
-            processOptions();
-        }
-    }
-
-    public void stateChanged(ChangeEvent event) {
-        bApply.setEnabled(true);
-    }
-
-    public void itemStateChanged(ItemEvent event) {
-        Object source = event.getItemSelectable();
-
-        if (source == cbBinaryEncode) {
-            cbCompressLayerData.setEnabled(cbBinaryEncode.isSelected());
-        } else if (source == cbEmbedImages) {
-            rbEmbedInTiles.setSelected(
-                    cbEmbedImages.isSelected() && rbEmbedInTiles.isSelected());
-            rbEmbedInTiles.setEnabled(cbEmbedImages.isSelected());
-            rbEmbedInSet.setSelected(
-                    cbEmbedImages.isSelected() && rbEmbedInSet.isSelected());
-            rbEmbedInSet.setEnabled(cbEmbedImages.isSelected());
-        }
-
-        bApply.setEnabled(true);
     }
 }

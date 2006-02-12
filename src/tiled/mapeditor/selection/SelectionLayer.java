@@ -12,16 +12,20 @@
 
 package tiled.mapeditor.selection;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Rectangle;
 import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
+import java.util.prefs.Preferences;
 
-import tiled.core.*;
+import tiled.core.Tile;
+import tiled.core.TileLayer;
 import tiled.util.TiledConfiguration;
-
 
 /**
  * A layer used to keep track of a selected area.
+ *
+ * @version $Id$
  */
 public class SelectionLayer extends TileLayer
 {
@@ -30,7 +34,6 @@ public class SelectionLayer extends TileLayer
     private Area selection;
 
     public SelectionLayer() {
-        super();
         init();
     }
 
@@ -40,11 +43,10 @@ public class SelectionLayer extends TileLayer
     }
 
     private void init() {
-        TiledConfiguration conf = TiledConfiguration.getInstance();
+        Preferences prefs = TiledConfiguration.root();
         try {
-            highlightColor = Color.decode(
-                    conf.getValue("tiled.selection.color"));
-        } catch (Throwable e) {
+            highlightColor = Color.decode(prefs.get("selectionColor", ""));
+        } catch (NumberFormatException e) {
             highlightColor = Color.blue;
         }
 
@@ -55,7 +57,7 @@ public class SelectionLayer extends TileLayer
     /**
      * Returns the selected area.
      * 
-     * @return
+     * @return the selected area
      */
     public Area getSelectedArea() {
         return selection;

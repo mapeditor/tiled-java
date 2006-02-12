@@ -15,6 +15,7 @@ package tiled.view;
 import java.awt.*;
 //import java.awt.geom.PathIterator;
 import java.util.Iterator;
+import java.util.prefs.Preferences;
 import javax.swing.Scrollable;
 import javax.swing.JPanel;
 
@@ -46,7 +47,9 @@ public abstract class MapView extends JPanel implements Scrollable
     };
 
     private SmoothZoomer smoothZoomer;
+
     private static final Color DEFAULT_BACKGROUND_COLOR = new Color(64, 64, 64);
+    private static final Color DEFAULT_GRID_COLOR = Color.black;
 
 
     public MapView(Map m) {
@@ -191,7 +194,7 @@ public abstract class MapView extends JPanel implements Scrollable
      */
     public void paintComponent(Graphics g) {
         Graphics2D g2d = (Graphics2D)g.create();
-        TiledConfiguration conf = TiledConfiguration.getInstance();
+        Preferences prefs = TiledConfiguration.root();
 
         double currentZoom = zoom;
         Iterator li = myMap.getLayers();
@@ -202,7 +205,7 @@ public abstract class MapView extends JPanel implements Scrollable
 
         // Do an initial fill with the background color
         try {
-            String colorString = conf.getValue("tiled.background.color");
+            String colorString = prefs.get("backgroundColor", "");
             g2d.setColor(Color.decode(colorString));
         } catch (NumberFormatException e) {
             g2d.setColor(DEFAULT_BACKGROUND_COLOR);
@@ -251,15 +254,15 @@ public abstract class MapView extends JPanel implements Scrollable
 
         // Grid color (also used for coordinates)
         try {
-            String colorString = conf.getValue("tiled.grid.color");
+            String colorString = prefs.get("gridColor", "");
             g2d.setColor(Color.decode(colorString));
         } catch (NumberFormatException e) {
-            g2d.setColor(Color.black);
+            g2d.setColor(DEFAULT_GRID_COLOR);
         }
 
         if (getMode(PF_GRIDMODE)) {
             // Grid opacity
-            int opacity = conf.getIntValue("tiled.grid.opacity", 255);
+            int opacity = prefs.getInt("gridOpacity", 255);
             if (opacity < 255) {
                 g2d.setComposite(AlphaComposite.getInstance(
                             AlphaComposite.SRC_ATOP, (float)opacity / 255.0f));
@@ -268,7 +271,7 @@ public abstract class MapView extends JPanel implements Scrollable
             }
 
             // Configure grid antialiasing
-            if (conf.keyHasValue("tiled.grid.antialias", 1)) {
+            if (prefs.getBoolean("gridAntialias", true)) {
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                         RenderingHints.VALUE_ANTIALIAS_ON);
             } else {

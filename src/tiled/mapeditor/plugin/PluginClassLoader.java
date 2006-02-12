@@ -23,7 +23,6 @@ import java.util.Iterator;
 import java.util.Vector;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-
 import javax.swing.JFrame;
 import javax.swing.ProgressMonitor;
 
@@ -32,7 +31,9 @@ import tiled.io.MapWriter;
 import tiled.io.PluggableMapIO;
 import tiled.util.TiledConfiguration;
 
-
+/**
+ * @version $Id$
+ */
 public final class PluginClassLoader extends URLClassLoader
 {
     private Vector plugins;
@@ -58,7 +59,7 @@ public final class PluginClassLoader extends URLClassLoader
         writerFormats = new Hashtable();
     }
 
-    public static PluginClassLoader getInstance() {
+    public static synchronized PluginClassLoader getInstance() {
         if (instance == null) {
             instance = new PluginClassLoader();
         }
@@ -70,8 +71,7 @@ public final class PluginClassLoader extends URLClassLoader
         ProgressMonitor monitor;
 
         if (base == null) {
-            baseURL = TiledConfiguration.getInstance().getValue(
-                    "tiled.plugins.dir");
+            baseURL = TiledConfiguration.root().get("pluginsDir", "plugins");
         }
 
         File dir = new File(baseURL);
@@ -99,7 +99,7 @@ public final class PluginClassLoader extends URLClassLoader
         monitor.setMillisToPopup(0);
         monitor.setMillisToDecideToPopup(0);
 
-        for (int i = 0, j = 0; i < files.length; i++) {
+        for (int i = 0; i < files.length; i++) {
             String aPath = files[i].getAbsolutePath();
             String aName =
                 aPath.substring(aPath.lastIndexOf(File.separatorChar) + 1);
@@ -246,7 +246,7 @@ public final class PluginClassLoader extends URLClassLoader
         return false;
     }
 
-    private boolean isReader(Class c) throws Exception {
+    private static boolean isReader(Class c) throws Exception {
         return doesImplement(c, "tiled.io.MapReader");
     }
 

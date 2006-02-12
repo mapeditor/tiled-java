@@ -20,6 +20,7 @@ import java.awt.print.PrinterException;
 import java.io.*;
 import java.util.Stack;
 import java.util.Vector;
+import java.util.prefs.Preferences;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -40,7 +41,6 @@ import tiled.util.Util;
 import tiled.io.MapHelper;
 import tiled.io.MapReader;
 import tiled.io.MapWriter;
-
 
 /**
  * The main class for the Tiled Map Editor.
@@ -80,8 +80,7 @@ public class MapEditor implements ActionListener, MouseListener,
     private final UndoableEditSupport undoSupport;
     private final MapEventAdapter mapEventAdapter;
     private final PluginClassLoader pluginLoader;
-    private final TiledConfiguration configuration;
-
+    private final Preferences prefs = TiledConfiguration.root();
 
     int currentPointerState;
     Tile currentTile;
@@ -140,9 +139,6 @@ public class MapEditor implements ActionListener, MouseListener,
     final Action selectAllAction, inverseAction, cancelSelectionAction;
 
     public MapEditor() {
-        // Get instance of configuration
-        configuration = TiledConfiguration.getInstance();
-
         /*
         try {
             Image imgPaintCursor = Resources.getImage("cursor-pencil.png");
@@ -164,8 +160,7 @@ public class MapEditor implements ActionListener, MouseListener,
 
         cursorHighlight = new SelectionLayer(1, 1);
         cursorHighlight.select(0, 0);
-        cursorHighlight.setVisible(configuration.keyHasValue(
-                    "tiled.cursorhighlight", 1));
+        cursorHighlight.setVisible(prefs.getBoolean("cursorhighlight", true));
 
         mapEventAdapter = new MapEventAdapter();
 
@@ -223,7 +218,7 @@ public class MapEditor implements ActionListener, MouseListener,
                 JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         mapScrollPane.setBorder(null);
 
-        createToolbox();
+        createToolBar();
         createData();
         createStatusBar();
 
@@ -241,11 +236,6 @@ public class MapEditor implements ActionListener, MouseListener,
 
     private void exit() {
         if (checkSave()) {
-            try {
-                configuration.write("tiled.conf");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
             System.exit(0);
         }
     }
@@ -408,8 +398,7 @@ public class MapEditor implements ActionListener, MouseListener,
         gridMenuItem.setAccelerator(KeyStroke.getKeyStroke("control G"));
 
         cursorMenuItem = new JCheckBoxMenuItem("Highlight Cursor");
-        cursorMenuItem.setSelected(configuration.keyHasValue(
-                    "tiled.cursorhighlight", 1));
+        cursorMenuItem.setSelected(prefs.getBoolean("cursorhighlight", true));
         cursorMenuItem.addActionListener(this);
         cursorMenuItem.setToolTipText(
                 "Toggle highlighting on-map cursor position");
@@ -457,10 +446,9 @@ public class MapEditor implements ActionListener, MouseListener,
     }
 
     /**
-     * Creates the left hand main toolbox
-     *
+     * Creates the tool bar.
      */
-    private void createToolbox() {
+    private void createToolBar() {
         Icon iconMove = Resources.getIcon("gimp-tool-move-22.png");
         Icon iconPaint = Resources.getIcon("gimp-tool-pencil-22.png");
         Icon iconErase = Resources.getIcon("gimp-tool-eraser-22.png");
@@ -1049,7 +1037,7 @@ public class MapEditor implements ActionListener, MouseListener,
     }
 
     private void updateCursorHighlight(Point tile) {
-        if (configuration.keyHasValue("tiled.cursorhighlight", 1)) {
+        if (prefs.getBoolean("cursorhighlight", true)) {
             Rectangle redraw = cursorHighlight.getBounds();
 
             if (redraw.x != tile.x || redraw.y != tile.y) {
@@ -1205,8 +1193,7 @@ public class MapEditor implements ActionListener, MouseListener,
             mapView.toggleMode(MapView.PF_COORDINATES);
             mapView.repaint();
         } else if (command.equals("Highlight Cursor")) {
-            configuration.addConfigPair("tiled.cursorhighlight",
-                    Integer.toString(cursorMenuItem.isSelected() ? 1 : 0));
+            prefs.putBoolean("cursorhighlight", cursorMenuItem.isSelected());
             cursorHighlight.setVisible(cursorMenuItem.isSelected());
         } else if (command.equals("Resize")) {
             ResizeDialog rd = new ResizeDialog(appFrame, this);
@@ -1224,11 +1211,10 @@ public class MapEditor implements ActionListener, MouseListener,
                 new PluginDialog(appFrame, pluginLoader);
             pluginDialog.setVisible(true);
         } else if (command.startsWith("_open")) {
-            try {
-                loadMap(configuration.getValue(
-                            "tiled.recent." + command.substring(5)));
-            } catch (Exception e) {
-                e.printStackTrace();
+            Preferences recentFiles = prefs.node("recent");
+            String file = recentFiles.get("file" + command.substring(5), "");
+            if (file.length() > 0) {
+                loadMap(file);
             }
         } else if (command.equals("Preferences...")) {
             ConfigurationDialog d = new ConfigurationDialog(appFrame);
@@ -1861,12 +1847,8 @@ public class MapEditor implements ActionListener, MouseListener,
     }
 
     private void openMap() {
-        String startLocation = "";
-
         // Start at the location of the most recently loaded map file
-        if (configuration.hasOption("tiled.recent.1")) {
-            startLocation = configuration.getValue("tiled.recent.1");
-        }
+        String startLocation = prefs.node("recent").get("file0", "");
 
         JFileChooser ch = new JFileChooser(startLocation);
 
@@ -1910,47 +1892,24 @@ public class MapEditor implements ActionListener, MouseListener,
         return null;
     }
 
-    private void updateRecent(String mapFile) {
-        Vector recent = new Vector();
-        try {
-            recent.add(configuration.getValue("tiled.recent.1"));
-            recent.add(configuration.getValue("tiled.recent.2"));
-            recent.add(configuration.getValue("tiled.recent.3"));
-            recent.add(configuration.getValue("tiled.recent.4"));
-        } catch (Exception e) {
+    private void updateRecent(String filename) {
+        // If a filename is given, add it to the recent files
+        if (filename != null) {
+            TiledConfiguration.addToRecentFiles(filename);
         }
 
-        // If a map file is given, add it to the recent list
-        if (mapFile != null) {
-            // Remove any existing entry that is the same
-            for (int i = 0; i < recent.size(); i++) {
-                String filename = (String)recent.get(i);
-                if (filename!=null&&filename.equals(mapFile)) {
-                    recent.remove(i);
-                    i--;
-                }
-            }
-
-            recent.add(0, mapFile);
-
-            if (recent.size() > 4) {
-                recent.setSize(4);
-            }
-        }
+        java.util.List files = TiledConfiguration.getRecentFiles();
 
         recentMenu.removeAll();
 
-        for (int i = 0; i < recent.size(); i++) {
-            String file = (String)recent.get(i);
-            if (file != null) {
-                String name =
-                    file.substring(file.lastIndexOf(File.separatorChar) + 1);
+        for (int i = 0; i < files.size(); i++) {
+            String path = (String) files.get(i);
+            String name =
+                path.substring(path.lastIndexOf(File.separatorChar) + 1);
 
-                configuration.addConfigPair("tiled.recent." + (i + 1), file);
-                JMenuItem recentOption = createMenuItem(name, null, null);
-                recentOption.setActionCommand("_open" + (i + 1));
-                recentMenu.add(recentOption);
-            }
+            JMenuItem recentOption = createMenuItem(name, null, null);
+            recentOption.setActionCommand("_open" + i);
+            recentMenu.add(recentOption);
         }
     }
 

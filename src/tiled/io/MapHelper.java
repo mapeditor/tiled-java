@@ -15,6 +15,7 @@ package tiled.io;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Stack;
+import java.util.prefs.Preferences;
 
 import javax.swing.JOptionPane;
 
@@ -214,11 +215,11 @@ public class MapHelper {
      *          had for the user
      */
     private static void reportPluginMessages(Stack s) {
-        // TODO: maybe have a nice dialog with a scrollbar, in case there are a
-        // lot of messages...
-        TiledConfiguration config = TiledConfiguration.getInstance();
+        // TODO: maybe have a nice dialog with a scrollbar, in case there are
+        // a lot of messages...
+        Preferences prefs = TiledConfiguration.node("io");
 
-        if (config.keyHasValue("tiled.report.io", 1)) {
+        if (prefs.getBoolean("reportWarnings", false)) {
             if (!s.isEmpty()) {
                 Iterator itr = s.iterator();
                 StringBuffer warnings = new StringBuffer();

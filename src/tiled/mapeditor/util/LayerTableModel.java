@@ -46,7 +46,7 @@ public class LayerTableModel extends AbstractTableModel
             /*
             for (int j = 0; j < map.getTotalLayers(); j++) {
                 if (map.getLayer(j).getClass() == SelectionLayer.class) {
-                    if (TiledConfiguration.keyHasValue("tiled.layer.showselection", "1")) {
+                    if (TiledConfiguration.root().getBoolean("layer.showselection", true)) {
                         totalLayers++;
                     }
                 } else {

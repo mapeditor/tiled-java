@@ -17,7 +17,6 @@ import java.io.Writer;
 import java.io.IOException;
 import java.util.Stack;
 
-
 /**
  * A simple helper class to write an XML file, based on
  * http://www.xmlsoft.org/html/libxml-xmlwriter.html
@@ -32,8 +31,8 @@ public class XMLWriter
     private final Writer w;
     
     private final Stack openElements;
-    private boolean bStartTagOpen = false;
-    private boolean bDocumentOpen = false;
+    private boolean bStartTagOpen;
+    private boolean bDocumentOpen;
 
 
     public XMLWriter(Writer writer) {
@@ -44,7 +43,7 @@ public class XMLWriter
 
     public void setIndent(boolean bIndent) {
         this.bIndent = bIndent;
-        newLine = ((bIndent) ? "\n" : "");
+        newLine = bIndent ? "\n" : "";
     }
 
     public void setIndentString(String indentString) {
@@ -82,7 +81,7 @@ public class XMLWriter
 
     public void endDocument() throws IOException {
         // End all open elements.
-        while (openElements.size() > 0) {
+        while (!openElements.isEmpty()) {
             endElement();
         }
     }
@@ -100,7 +99,7 @@ public class XMLWriter
         }
 
         // Set document closed when last element is closed
-        if (openElements.size() == 0) {
+        if (openElements.isEmpty()) {
             bDocumentOpen = false;
         }
     }
@@ -115,6 +114,16 @@ public class XMLWriter
             throw new XMLWriterException(
                     "Can't write attribute without open start tag.");
         }
+    }
+
+    public void writeAttribute(String name, int content)
+        throws IOException, XMLWriterException {
+        writeAttribute(name, String.valueOf(content));
+    }
+
+    public void writeAttribute(String name, float content)
+        throws IOException, XMLWriterException {
+        writeAttribute(name, String.valueOf(content));
     }
 
     public void writeCDATA(String content) throws IOException {
