@@ -21,7 +21,6 @@ import tiled.core.MultilayerPlane;
 public abstract class Brush extends MultilayerPlane
 {
     public Brush() {
-        super();
     }
 
     /**

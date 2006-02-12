@@ -5,6 +5,8 @@
 * Fixed a bug when exporting a tileset with an external image
 * Fixed two cases of hanging when using the fill tool
 * Fixed loading of layer visibility attribute
+* Fixed tileset dialog so that it is now possible to change the tile height to
+  something else than the tile height used by the map.
 
 Planned changes
 + Added the Shifted view, which emulates several tiling configurations

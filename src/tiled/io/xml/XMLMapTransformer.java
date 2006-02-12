@@ -289,9 +289,10 @@ public class XMLMapTransformer implements MapReader
 
             try {
             	//just a little check for tricky people...
-            	if(!source.substring(source.lastIndexOf('.')+1).toLowerCase().equals("tsx")) {
-            		warnings.push("WARN: tileset files should end in .tsx! ("+source+")");
-            	}
+                String extention = source.substring(source.lastIndexOf('.') + 1);
+                if (!extention.toLowerCase().equals("tsx")) {
+                    warnings.push("WARN: tileset files should end in .tsx! ("+source+")");
+                }
             	
                 InputStream in = new URL(makeUrl(filename)).openStream();
                 ext = unmarshalTilesetFile(in, filename);

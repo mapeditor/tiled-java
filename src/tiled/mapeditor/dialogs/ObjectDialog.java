@@ -14,11 +14,12 @@ package tiled.mapeditor.dialogs;
 
 import javax.swing.JDialog;
 
-
+/**
+ * @version $Id$
+ */
 public class ObjectDialog extends JDialog
 {
     ObjectDialog() {
-        super();
     }
 
     public void init() {

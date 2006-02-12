@@ -28,33 +28,48 @@ import tiled.mapeditor.util.TransparentImageFilter;
 import tiled.mapeditor.widget.IntegerSpinner;
 import tiled.mapeditor.widget.ColorButton;
 import tiled.mapeditor.widget.VerticalStaticJPanel;
-
+import tiled.mapeditor.Resources;
 
 /**
  * A dialog for creating a new tileset.
  *
  * @version $Id$
  */
-public class NewTilesetDialog extends JDialog implements ActionListener,
-       ChangeListener
+public class NewTilesetDialog extends JDialog implements ChangeListener
 {
     private final Map map;
     private TileSet newTileset;
-    private JTextField tileWidth, tileHeight;
+    private IntegerSpinner tileWidth, tileHeight;
     private IntegerSpinner tileSpacing;
     private JTextField tilesetName;
     private JTextField tilebmpFile;
-    private JLabel nameLabel, tileWidthLabel, tileHeightLabel, spacingLabel;
+    private JLabel spacingLabel;
     private JLabel tilebmpFileLabel;
     private JCheckBox tilebmpCheck, tileAutoCheck, transCheck;
-    private JRadioButton importRadio;
-    private JRadioButton referenceRadio;
-    private JButton okButton, cancelButton, browseButton;
+    private JButton browseButton;
     private ColorButton colorButton;
     private String path;
 
+    private static final String DIALOG_TITLE = Resources.getString("dialog.newtileset.title");
+    private static final String NAME_LABEL = Resources.getString("dialog.newtileset.name.label");
+    private static final String TILE_WIDTH_LABEL = Resources.getString("dialog.newtileset.tilewidth.label");
+    private static final String TILE_HEIGHT_LABEL = Resources.getString("dialog.newtileset.tileheight.label");
+    private static final String TILE_SPACING_LABEL = Resources.getString("dialog.newtileset.tilespacing.label");
+    private static final String IMAGE_LABEL = Resources.getString("dialog.newtileset.image.label");
+    private static final String UNTITLED_FILE = Resources.getString("general.file.untitled");
+    private static final String TILESET_IMG_LABEL = Resources.getString("dialog.newtileset.tilesetimgref.label");
+    private static final String AUTO_TILES_LABEL = Resources.getString("dialog.newtileset.autotiles.label");
+    private static final String USE_TRANS_COLOR_LABEL = Resources.getString("dialog.newtileset.usetransparentcolor.label");
+    private static final String OK_BUTTON = Resources.getString("general.button.ok");
+    private static final String CANCEL_BUTTON = Resources.getString("general.button.cancel");
+    private static final String BROWSE_BUTTON = Resources.getString("general.button.browse");
+    private static final String FROM_TILESET_IMG_TITLE = Resources.getString("dialog.newtileset.fromtilesetimg.title");
+    private static final String IMPORT_ERROR_MSG = Resources.getString("dialog.newtileset.import.error.message");
+    private static final String IMG_LOAD_ERROR = Resources.getString("dialog.newtileset.imgload.error.message");
+    private static final String COLOR_CHOOSE_ERROR_TITLE = Resources.getString("dialog.newtileset.colorchoose.error.title");
+
     public NewTilesetDialog(JFrame parent, Map map) {
-        super(parent, "New Tileset", true);
+        super(parent, DIALOG_TITLE, true);
         this.map = map;
         path = map.getFilename();
         init();
@@ -65,51 +80,53 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
     private void init() {
         // Create the primitives
 
-        nameLabel = new JLabel("Tileset name: ");
-        tileWidthLabel = new JLabel("Tile width: ");
-        tileHeightLabel = new JLabel("Tile height: ");
-        spacingLabel = new JLabel("Tile spacing: ");
-        tilebmpFileLabel = new JLabel("Tile image: ");
+        JLabel nameLabel = new JLabel(NAME_LABEL);
+        JLabel tileWidthLabel = new JLabel(TILE_WIDTH_LABEL);
+        JLabel tileHeightLabel = new JLabel(TILE_HEIGHT_LABEL);
+        spacingLabel = new JLabel(TILE_SPACING_LABEL);
+        tilebmpFileLabel = new JLabel(IMAGE_LABEL);
 
-        tilesetName = new JTextField("Untitled");
-        tileWidth = new JTextField("" + map.getTileWidth(), 3);
-        tileHeight = new JTextField("" + map.getTileHeight(), 3);
+        tilesetName = new JTextField(UNTITLED_FILE);
+        tileWidth = new IntegerSpinner(map.getTileWidth(), 1, 1024);
+        tileHeight = new IntegerSpinner(map.getTileHeight(), 1, 1024);
         tileSpacing = new IntegerSpinner(0, 0);
         tilebmpFile = new JTextField(10);
         tilebmpFile.setEnabled(false);
 
-        tileWidthLabel.setEnabled(false);
-        tileHeightLabel.setEnabled(false);
-        tileWidth.setEnabled(false);
-        tileHeight.setEnabled(false);
+        nameLabel.setLabelFor(tilesetName);
+        tileWidthLabel.setLabelFor(tileWidth);
+        tileHeightLabel.setLabelFor(tileHeight);
+        spacingLabel.setLabelFor(tileSpacing);
+        tilebmpFileLabel.setLabelFor(tilebmpFile);
 
-        tilebmpCheck = new JCheckBox("Reference tileset image", false);
+        tileWidthLabel.setEnabled(false);
+        tileWidth.setEnabled(false);
+
+        tilebmpCheck = new JCheckBox(TILESET_IMG_LABEL, false);
         tilebmpCheck.addChangeListener(this);
 
-        tileAutoCheck = new JCheckBox("Automatically create tiles from images",
-                                      true);
+        tileAutoCheck = new JCheckBox(AUTO_TILES_LABEL, true);
         tileAutoCheck.setEnabled(false);
 
-        transCheck = new JCheckBox("Use transparent color");
+        transCheck = new JCheckBox(USE_TRANS_COLOR_LABEL);
         transCheck.addChangeListener(this);
 
-        okButton = new JButton("OK");
-        cancelButton = new JButton("Cancel");
-        browseButton = new JButton("Browse...");
+        JButton okButton = new JButton(OK_BUTTON);
+        JButton cancelButton = new JButton(CANCEL_BUTTON);
+        browseButton = new JButton(BROWSE_BUTTON);
         colorButton = new ColorButton(new Color(255, 0, 255));
-        okButton.addActionListener(this);
-        cancelButton.addActionListener(this);
-        browseButton.addActionListener(this);
-        colorButton.addActionListener(this);
 
         // Combine browse button and tile bitmap path text field
 
         JPanel tilebmpPathPanel = new JPanel(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
-        c.gridx = 0; c.gridy = 0; c.weightx = 1;
+        c.gridx = 0;
+        c.gridy = 0;
+        c.weightx = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
         tilebmpPathPanel.add(tilebmpFile, c);
-        c.gridx = 1; c.weightx = 0;
+        c.gridx = 1;
+        c.weightx = 0;
         c.fill = GridBagConstraints.NONE;
         c.insets = new Insets(0, 5, 0, 0);
         tilebmpPathPanel.add(browseButton, c);
@@ -118,7 +135,9 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
 
         JPanel tileColorPanel = new JPanel(new GridBagLayout());
         c = new GridBagConstraints();
-        c.gridx = 0; c.gridy = 0; c.weightx = 1;
+        c.gridx = 0;
+        c.gridy = 0;
+        c.weightx = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
         tileColorPanel.add(transCheck, c);
         c.gridx = 1;
@@ -129,9 +148,11 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
         JPanel tilebmpPanel = new VerticalStaticJPanel();
         tilebmpPanel.setLayout(new GridBagLayout());
         tilebmpPanel.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createTitledBorder("From tileset image"),
-                    BorderFactory.createEmptyBorder(0, 5, 5, 5)));
-        c.gridx = 0; c.gridy = 0; c.weightx = 0;
+                BorderFactory.createTitledBorder(FROM_TILESET_IMG_TITLE),
+                BorderFactory.createEmptyBorder(0, 5, 5, 5)));
+        c.gridx = 0;
+        c.gridy = 0;
+        c.weightx = 0;
         c.insets = new Insets(5, 0, 0, 0);
         c.anchor = GridBagConstraints.EAST;
         c.fill = GridBagConstraints.HORIZONTAL;
@@ -139,19 +160,27 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
         tilebmpPanel.add(tilebmpCheck, c);
         c.gridy = 1;
         tilebmpPanel.add(tileAutoCheck, c);
-        c.gridy = 2; c.gridwidth = 1;
+        c.gridy = 2;
+        c.gridwidth = 1;
+        c.insets = new Insets(5, 0, 0, 5);
         c.fill = GridBagConstraints.NONE;
         tilebmpPanel.add(tilebmpFileLabel, c);
         c.gridy = 3;
         tilebmpPanel.add(spacingLabel, c);
-        c.gridx = 1; c.gridy = 2; c.weightx = 1;
+        c.gridx = 1;
+        c.gridy = 2;
+        c.weightx = 1;
+        c.insets = new Insets(5, 0, 0, 0);
         c.fill = GridBagConstraints.HORIZONTAL;
         tilebmpPanel.add(tilebmpPathPanel, c);
         c.gridy = 3;
         tilebmpPanel.add(tileSpacing, c);
-        c.gridx = 0; c.gridy = 4; c.gridwidth = 2;
+        c.gridx = 0;
+        c.gridy = 4;
+        c.gridwidth = 2;
         tilebmpPanel.add(tileColorPanel, c);
-        c.gridx = 1; c.gridwidth = 1;
+        c.gridx = 1;
+        c.gridwidth = 1;
 
         // OK and Cancel buttons
 
@@ -162,22 +191,26 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
         buttons.add(Box.createRigidArea(new Dimension(5, 0)));
         buttons.add(cancelButton);
 
-
         // Top part of form
 
         JPanel miscPropPanel = new VerticalStaticJPanel();
         miscPropPanel.setLayout(new GridBagLayout());
         miscPropPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
-        c.gridx = 0; c.gridy = 0; c.weightx = 0;
+        c.gridx = 0;
+        c.gridy = 0;
+        c.weightx = 0;
         c.fill = GridBagConstraints.NONE;
-        c.insets = new Insets(5, 0, 0, 0);
+        c.insets = new Insets(5, 0, 0, 5);
         miscPropPanel.add(nameLabel, c);
         c.gridy = 1;
         miscPropPanel.add(tileWidthLabel, c);
         c.gridy = 2;
         miscPropPanel.add(tileHeightLabel, c);
+        c.insets = new Insets(5, 0, 0, 0);
         c.fill = GridBagConstraints.HORIZONTAL;
-        c.gridx = 1; c.gridy = 0; c.weightx = 1;
+        c.gridx = 1;
+        c.gridy = 0;
+        c.weightx = 1;
         miscPropPanel.add(tilesetName, c);
         c.gridy = 1;
         miscPropPanel.add(tileWidth, c);
@@ -199,6 +232,38 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
         getRootPane().setDefaultButton(okButton);
 
         setUseTileBitmap(tilebmpCheck.isSelected());
+
+        // Attach the behaviour
+
+        okButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                createSetAndDispose();
+            }
+        });
+
+        cancelButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                dispose();
+            }
+        });
+
+        browseButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                JFileChooser ch = new JFileChooser(path);
+
+                int ret = ch.showOpenDialog(NewTilesetDialog.this);
+                if (ret == JFileChooser.APPROVE_OPTION) {
+                    path = ch.getSelectedFile().getAbsolutePath();
+                    tilebmpFile.setText(path);
+                }
+            }
+        });
+
+        colorButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                chooseColorFromImage();
+            }
+        });
     }
 
     public TileSet create() {
@@ -206,84 +271,68 @@ public class NewTilesetDialog extends JDialog implements ActionListener,
         return newTileset;
     }
 
-    public void actionPerformed(ActionEvent event) {
-        Object source = event.getSource();
+    private void createSetAndDispose() {
+        newTileset = new TileSet();
+        newTileset.setName(tilesetName.getText());
 
-        if (source == okButton) {
-            newTileset = new TileSet();
-            newTileset.setName(tilesetName.getText());
-
-            if (tilebmpCheck.isSelected()) {
-                String file = tilebmpFile.getText();
-                int spacing = tileSpacing.intValue();
-                try {
-                    if (!transCheck.isSelected()) {
-                        newTileset.importTileBitmap(file,
-                                                    map.getTileWidth(), map.getTileHeight(),
-                                                    spacing,
-                                                    tileAutoCheck.isSelected());
-                    } else {
-                        try {
-                            Toolkit tk = Toolkit.getDefaultToolkit();
-                            Image orig = ImageIO.read(new File(file));
-                            Image trans = tk.createImage(
-                                    new FilteredImageSource(orig.getSource(),
-                                                            new TransparentImageFilter(
-                                                                colorButton.getColor().getRGB())));
-                            BufferedImage img = new BufferedImage(
-                                    trans.getWidth(null),
-                                    trans.getHeight(null),
-                                    BufferedImage.TYPE_INT_ARGB);
-
-                            img.getGraphics().drawImage(trans, 0, 0, null);
-
-                            newTileset.importTileBitmap(img,
-                                                        map.getTileWidth(),
-                                                        map.getTileHeight(),
-                                                        spacing,
-                                                        tileAutoCheck.isSelected());
-
-                            newTileset.setTransparentColor(
-                                    colorButton.getColor());
-
-                            newTileset.setTilesetImageFilename(file);
-                        } catch (Exception e) {
-                        }
-                    }
-                } catch (Exception e) {
-                    JOptionPane.showMessageDialog(this,
-                                                  e.getMessage(), "Error while importing tileset",
-                                                  JOptionPane.ERROR_MESSAGE);
-                    newTileset = null;
-                }
-            }
-
-            dispose();
-        } else if (source == browseButton) {
-            JFileChooser ch = new JFileChooser(path);
-
-            int ret = ch.showOpenDialog(this);
-            if (ret == JFileChooser.APPROVE_OPTION) {
-                path = ch.getSelectedFile().getAbsolutePath();
-                tilebmpFile.setText(path);
-            }
-        } else if (source == colorButton) {
-            ImageColorDialog icd;
+        if (tilebmpCheck.isSelected()) {
+            String file = tilebmpFile.getText();
+            int spacing = tileSpacing.intValue();
+            int width = tileWidth.intValue();
+            int height = tileHeight.intValue();
             try {
-                icd = new ImageColorDialog(
-                        ImageIO.read(new File(tilebmpFile.getText())));
-                Color c = icd.showDialog();
-                if (c != null) {
-                    colorButton.setColor(c);
+                if (!transCheck.isSelected()) {
+                    newTileset.importTileBitmap(file, width, height, spacing,
+                            tileAutoCheck.isSelected());
+                } else {
+                    try {
+                        Toolkit tk = Toolkit.getDefaultToolkit();
+                        Image orig = ImageIO.read(new File(file));
+                        Image trans = tk.createImage(
+                                new FilteredImageSource(orig.getSource(),
+                                        new TransparentImageFilter(
+                                                colorButton.getColor().getRGB())));
+                        BufferedImage img = new BufferedImage(
+                                trans.getWidth(null),
+                                trans.getHeight(null),
+                                BufferedImage.TYPE_INT_ARGB);
+
+                        img.getGraphics().drawImage(trans, 0, 0, null);
+
+                        newTileset.importTileBitmap(img,
+                                width, height, spacing,
+                                tileAutoCheck.isSelected());
+
+                        newTileset.setTransparentColor(
+                                colorButton.getColor());
+
+                        newTileset.setTilesetImageFilename(file);
+                    } catch (IOException e) {
+                    }
                 }
-            } catch (IOException e) {
-                JOptionPane.showMessageDialog(getOwner(),
-                                              "Error while loading image: " + e.getMessage(),
-                                              "Error while choosing color",
-                                              JOptionPane.ERROR_MESSAGE);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, e.getMessage(),
+                        IMPORT_ERROR_MSG, JOptionPane.ERROR_MESSAGE);
+                newTileset = null;
             }
-        } else {
-            dispose();
+        }
+
+        dispose();
+    }
+
+    private void chooseColorFromImage() {
+        ImageColorDialog icd;
+        try {
+            icd = new ImageColorDialog(
+                    ImageIO.read(new File(tilebmpFile.getText())));
+            Color c = icd.showDialog();
+            if (c != null) {
+                colorButton.setColor(c);
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(getOwner(),
+                    IMG_LOAD_ERROR + e.getMessage(),
+                    COLOR_CHOOSE_ERROR_TITLE, JOptionPane.ERROR_MESSAGE);
         }
     }
 

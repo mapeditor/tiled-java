@@ -18,26 +18,49 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import javax.swing.JPanel;
-import javax.swing.event.MouseInputListener;
+import javax.swing.event.MouseInputAdapter;
 
 import tiled.mapeditor.brush.Brush;
 import tiled.mapeditor.brush.ShapeBrush;
 
 /**
  * A panel that allows selecting a brush from a set of presets.
+ *
+ * @version $Id$
  */
-public class BrushBrowser extends JPanel implements MouseInputListener
+public class BrushBrowser extends JPanel
 {
     private int maxWidth = 25;
     private Brush selectedBrush;
-    private LinkedList brushes;
+    private final LinkedList brushes;
 
     public BrushBrowser() {
-        super();
         brushes = new LinkedList();
         initPresets();
-        addMouseListener(this);
-        addMouseMotionListener(this);
+
+        MouseInputAdapter listener = new MouseInputAdapter() {
+            public void mousePressed(MouseEvent e) {
+                int perLine = getWidth() / maxWidth;
+                int x = e.getX() / maxWidth;
+                int y = e.getY() / maxWidth;
+                int selectedIndex =
+                    y * perLine + (x > perLine - 1 ? perLine - 1 : x);
+
+                if (selectedIndex >= 0 && selectedIndex < brushes.size()) {
+                    Brush previousBrush = selectedBrush;
+                    selectedBrush = (Brush)brushes.get(selectedIndex);
+                    firePropertyChange("selectedbrush", previousBrush, selectedBrush);
+                    repaint();
+                }
+            }
+
+            public void mouseDragged(MouseEvent e) {
+                mousePressed(e);
+            }
+        };
+
+        addMouseListener(listener);
+        addMouseMotionListener(listener);
     }
 
     public Dimension getPreferredSize() {
@@ -82,8 +105,8 @@ public class BrushBrowser extends JPanel implements MouseInputListener
             Brush b = (Brush)itr.next();
             Rectangle bb = b.getBounds();
             b.paint(g,
-                    x + ((maxWidth / 2) - bb.width / 2),
-                    y + ((maxWidth / 2) - bb.width / 2));
+                    x + (maxWidth / 2 - bb.width / 2),
+                    y + (maxWidth / 2 - bb.width / 2));
 
             if (b == selectedBrush) {
                 g.drawRect(x, y, maxWidth, maxWidth);
@@ -110,39 +133,5 @@ public class BrushBrowser extends JPanel implements MouseInputListener
 
     public Brush getSelectedBrush() {
         return selectedBrush;
-    }
-
-    public void mouseClicked(MouseEvent e) {
-        int perLine = getWidth() / maxWidth;
-        int x = e.getX() / maxWidth;
-        int y = e.getY() / maxWidth;
-        int selectedIndex =
-            y * perLine + ((x > (perLine - 1)) ? (perLine - 1) : x);
-
-        if (selectedIndex >= 0 && selectedIndex < brushes.size()) {
-            Brush previousBrush = selectedBrush;
-            selectedBrush = (Brush)brushes.get(selectedIndex);
-            firePropertyChange("selectedbrush", previousBrush, selectedBrush);
-            repaint();
-        }
-    }
-
-    public void mousePressed(MouseEvent e) {
-    }
-
-    public void mouseReleased(MouseEvent e) {
-    }
-
-    public void mouseEntered(MouseEvent e) {
-    }
-
-    public void mouseExited(MouseEvent e) {
-    }
-
-    public void mouseDragged(MouseEvent e) {
-        mouseClicked(e);
-    }
-
-    public void mouseMoved(MouseEvent e) {
     }
 }

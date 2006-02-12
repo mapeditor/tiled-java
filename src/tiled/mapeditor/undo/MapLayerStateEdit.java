@@ -26,9 +26,9 @@ public class MapLayerStateEdit extends AbstractUndoableEdit
     private String name;
 
     public MapLayerStateEdit(Map m, Vector before, Vector after, String name) {
-        this.map = m;
-        this.layersBefore = before;
-        this.layersAfter = after;
+        map = m;
+        layersBefore = before;
+        layersAfter = after;
         this.name = name;
     }
 

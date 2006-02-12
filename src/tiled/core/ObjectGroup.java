@@ -16,14 +16,15 @@ import java.awt.Rectangle;
 import java.awt.geom.Area;
 import java.util.*;
 
-
+/**
+ * @version $Id$
+ */
 public class ObjectGroup extends MapLayer
 {
     
     private LinkedList boundObjects;
     
     public ObjectGroup() {
-    	super();
     	boundObjects = new LinkedList();
     }
     /**

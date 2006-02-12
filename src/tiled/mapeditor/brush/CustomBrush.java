@@ -25,12 +25,11 @@ import tiled.core.TileLayer;
 public class CustomBrush extends AbstractBrush
 {
     public CustomBrush() {
-        super();
     }
 
     public CustomBrush(MultilayerPlane m) {
         this();
-        this.addAllLayers(m.getLayerVector());
+        addAllLayers(m.getLayerVector());
     }
 
     public void setAffectedLayers(int num) {
@@ -55,9 +54,9 @@ public class CustomBrush extends AbstractBrush
     public Rectangle commitPaint(MultilayerPlane mp, int x, int y,
             int initLayer)
     {
-        Rectangle bounds = this.getBounds();
-        int centerx = x - (bounds.width / 2);
-        int centery = y - (bounds.height / 2);
+        Rectangle bounds = getBounds();
+        int centerx = x - bounds.width / 2;
+        int centery = y - bounds.height / 2;
 
         ListIterator itr = getLayers();
         while (itr.hasNext()) {

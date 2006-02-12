@@ -28,6 +28,8 @@ import tiled.util.TiledConfiguration;
 
 /**
  * A handler for saving and loading maps.
+ *
+ * @version $Id$
  */
 public class MapHelper {
     private static PluginClassLoader pluginLoader;

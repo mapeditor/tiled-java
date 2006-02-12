@@ -34,14 +34,9 @@ public class ImageColorDialog extends JDialog implements ActionListener,
     private JButton bCancel;
     private Color color;
     private JPanel colorPanel;
-    private int pixels[];
-
-    public ImageColorDialog() {
-        super();
-    }
+    private int[] pixels;
 
     public ImageColorDialog(Image i) {
-        this();
         image = i;
         PixelGrabber pg = new PixelGrabber(i, 0, 0, -1, -1, true);
 
@@ -141,9 +136,9 @@ public class ImageColorDialog extends JDialog implements ActionListener,
         int w = image.getWidth(null);
         int h = image.getHeight(null);
         if (pixels != null && (x < w && y < h)) {
-            int r = (pixels[y * w + x] >> 16) & 0xff;
-            int g = (pixels[y * w + x] >> 8) & 0xff;
-            int b = (pixels[y * w + x]) & 0xff;
+            int r = pixels[y * w + x] >> 16 & 0xff;
+            int g = pixels[y * w + x] >> 8 & 0xff;
+            int b = pixels[y * w + x] & 0xff;
 
             color = new Color(r, g, b);
             colorPanel.setBackground(color);

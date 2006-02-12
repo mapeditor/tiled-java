@@ -32,11 +32,9 @@ public class ShapeBrush extends AbstractBrush
     protected Tile paintTile;
 
     public ShapeBrush() {
-        super();
     }
 
     public ShapeBrush(Area shape) {
-        super();
         this.shape = shape;
     }
 
@@ -55,7 +53,7 @@ public class ShapeBrush extends AbstractBrush
      */
     public void makeCircleBrush(double rad) {
         shape = new Area(new Ellipse2D.Double(0, 0, rad * 2, rad * 2));
-        this.resize((int)(rad * 2), (int)(rad * 2), 0, 0);
+        resize((int)(rad * 2), (int)(rad * 2), 0, 0);
     }
 
     /**
@@ -65,7 +63,7 @@ public class ShapeBrush extends AbstractBrush
      */
     public void makeQuadBrush(Rectangle r) {
         shape = new Area(new Rectangle2D.Double(r.x, r.y, r.width, r.height));
-        this.resize(r.width, r.height, 0, 0);
+        resize(r.width, r.height, 0, 0);
     }
 
     public void makePolygonBrush(Polygon p) {
@@ -94,12 +92,12 @@ public class ShapeBrush extends AbstractBrush
      */
     public Rectangle commitPaint(MultilayerPlane mp, int x, int y, int initLayer) {
         Rectangle bounds = shape.getBounds();
-        int centerx = x - (bounds.width / 2);
-        int centery = y - (bounds.height / 2);
+        int centerx = x - bounds.width / 2;
+        int centery = y - bounds.height / 2;
 
         // TODO: This loop does not take all edges into account
 
-        for(int l = 0; l < numLayers; l++) {
+        for (int l = 0; l < numLayers; l++) {
             TileLayer tl = (TileLayer)mp.getLayer(initLayer - l);
             if (tl != null) {
                 for (int i = 0; i <= bounds.height + 1; i++) {
