@@ -19,7 +19,7 @@ import javax.swing.*;
 
 import tiled.core.Tile;
 import tiled.core.TileSet;
-import tiled.mapeditor.MapEditor;
+import tiled.mapeditor.Resources;
 
 /**
  * This list renderer is used for rendering a list of tiles associated with a
@@ -30,10 +30,16 @@ import tiled.mapeditor.MapEditor;
  *
  * @version $Id$
  */
-public class MultisetListRenderer extends DefaultListCellRenderer {
-    private Icon setIcon;
+public class MultisetListRenderer extends DefaultListCellRenderer
+{
+    /** The icon to show for tilesets. */
+    private final Icon setIcon = Resources.getIcon("source.png");
+
+    /** The hash map used to match indexes to icons. */
+    private final HashMap tileImages = new HashMap();
+
+    /** The zoom level used for the tile image icons. */
     private final double zoom;
-    private final HashMap tileImages;
 
     /**
      * Creates the list renderer for rendering a list of tiles.
@@ -41,16 +47,7 @@ public class MultisetListRenderer extends DefaultListCellRenderer {
      * @param zoom the zoom level at which the tiles will be shown
      */
     public MultisetListRenderer(double zoom) {
-        tileImages = new HashMap();
         this.zoom = zoom;
-
-        try {
-            // Load the icon to show for tilesets
-            Image img = MapEditor.loadImageResource("resources/source.png");
-            setIcon = new ImageIcon(img);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public Component getListCellRendererComponent(JList list, Object value,
@@ -65,7 +62,7 @@ public class MultisetListRenderer extends DefaultListCellRenderer {
             Tile tile = (Tile) value;
             if (!isSelected || zoom == 1) {
                 // Use cached ImageIcon instance
-                final Integer key = Integer.valueOf(index);
+                final Integer key = new Integer(index);
                 if (tileImages.containsKey(key)) {
                     setIcon((Icon) tileImages.get(key));
                 } else {

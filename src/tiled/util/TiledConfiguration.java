@@ -5,254 +5,103 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
 
 package tiled.util;
 
-import java.util.*;
-import java.io.*;
-
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.prefs.Preferences;
 
 /**
- * A singleton class handling configuration options.
+ * This class provides access to nodes in the user tiled preferences tree. In
+ * addition it provides a number of related convenience methods.
+ *
+ * @version $Id$
  */
 public final class TiledConfiguration
 {
-    private static TiledConfiguration instance = null;
-    private Properties settings;
-    private boolean changed;
+    public static final int RECENT_FILE_COUNT = 8;
 
+    private static final Preferences prefs = Preferences.userRoot().node("tiled");
+
+    // Prevent instanciation
     private TiledConfiguration() {
-        settings = new Properties();
-        populateDefaults();
-        try {
-            parse("tiled.conf");
-        } catch (Exception e) {
-            System.out.println("Warning: could not load configuration file.");
-        }
-        changed = false;
     }
 
     /**
-     * Returns the tiled configuration class instance. Will create a new
-     * instance when it hasn't been created yet.
-     * 
-     * @return a reference to the singleton
-     */
-    public static TiledConfiguration getInstance() {
-        if (instance == null) {
-            instance = new TiledConfiguration();
-        }
-        return instance;
-    }
-
-    /**
-     * Reads config settings from the given file.
+     * Returns the node with the given path name relative from the root of
+     * Tiled configuration.
      *
-     * @param filename path of file to read configuration from
-     * @throws FileNotFoundException
-     * @throws IOException
+     * @param pathName the path name relative from the root
+     * @return the requested preferences node
      */
-    public void parse(String filename)
-        throws FileNotFoundException, IOException
-    {
-        parse(new BufferedReader(new FileReader(filename)));
+    public static Preferences node(String pathName) {
+        return prefs.node(pathName);
     }
 
     /**
-     * Reads config settings from the given buffered reader.
-     * 
-     * @param br a @link{BufferedReader} opened on the config file
-     * @throws IOException
-     */
-    public void parse(BufferedReader br) throws IOException {
-        String line;
-        while ((line = br.readLine()) != null) {
-            // Make sure it isn't a comment
-            if (!line.trim().startsWith("#") && line.trim().length() > 0){
-                String[] keyValue = line.split("[ ]*=[ ]*");
-                if (keyValue.length > 1) {
-                    addConfigPair(keyValue[0], keyValue[1]);
-                }
-            }
-        }
-    }
-
-    /**
-     * Returns wether the option is available in the config file.
+     * Returns the root node for Tiled configuration.
      *
-     * @param name the name of the option to check for
-     * @return <code>true</code> if the option has a non-<code>null</code>
-     *         value, <code>false</code> otherwise
+     * @return the root node for Tiled configuration
      */
-    public boolean hasOption(String name) {
-        return (settings.get(name) != null);
+    public static Preferences root() {
+        return prefs;
     }
 
     /**
-     * Returns the value of the given option.
+     * Adds the given filename to the top of the recent file list. It also
+     * makes sure it does not occur further down the list.
      *
-     * @param option
-     * @return String The value of the specified option as a String
+     * @param mapFile the absolute path of the file to add, must not be
+     *                <code>null</code>
      */
-    public String getValue(String option) {
-         return (String)settings.get(option);
-    }
+    public static void addToRecentFiles(String mapFile) {
+        assert mapFile != null;
 
-    /**
-     * Returns the integer value of the given option, or the given default
-     * when the option doesn't exist.
-     * 
-     * @param option
-     * @param def
-     * @return int The value of the specified option as an <code>int</code>
-     */
-    public int getIntValue(String option, int def) {
-        String str = getValue(option);
-        if (str != null) {
-            return Integer.parseInt(str);
-        } else {
-            return def;
-        }
-    }
+        // Get the existing recent file list
+        List recent = getRecentFiles();
 
-    /**
-     * Returns wether a certain option equals a certain string, ignoring case.
-     */
-    public boolean keyHasValue(String option, String comp) {
-        String check = getValue(option);
-        return (check != null && check.equalsIgnoreCase(comp));
-    }
-
-    /**
-     * Returns wether a certain option equals a certain integer.
-     */
-    public boolean keyHasValue(String option, int comp) {
-        return (hasOption(option) && getIntValue(option, 0) == comp);
-    }
-
-    /**
-     * Adds a config pair to the configuration.
-     */
-    public void addConfigPair(String key, String value) {
-        String prev = (String)settings.get(key);
-        if (prev == null || !prev.equals(value)) {
-            settings.put(key, value);
-            changed = true;
-        }
-    }
-
-    /**
-     * Removes a config pair from the configuration.
-     */
-    public void remove(String key) {
-        settings.remove(key);
-    }
-
-    /**
-     * Writes the current configuration to a file. Preserves comments and
-     * unknown options.
-     *
-     * @param filename the file to write the configuration to
-     */
-    public void write(String filename) throws IOException, Exception {
-        BufferedWriter bw;
-        Vector inputLines = new Vector();
-        HashMap availableKeys = new HashMap();
-        String line;
-
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(filename));
-            while ((line = br.readLine()) != null) {
-                inputLines.add(line);
-            }
-
-            br.close();
-        } catch (IOException ioe) {
-            // Although it's nice, it's not necessary to have a config file in
-            // existence when we go to write the config
-        }
-
-        bw = new BufferedWriter(new FileWriter(filename));
-
-        // Iterate through all existing lines in the file
-        Iterator lineItr = inputLines.iterator();
-        while (lineItr.hasNext()) {
-            line = (String)lineItr.next();
-            // Make sure it isn't a comment
-            if (!line.trim().startsWith("#") && line.trim().length() > 0) {
-                String[] keyValue = line.split("[ ]*=[ ]*");
-                availableKeys.put(keyValue[0], "Tiled is cool");
-                if (hasOption(keyValue[0])) {
-                    bw.write(keyValue[0] + " = " + getValue(keyValue[0]));
-                    bw.newLine();
-                } else {
-                    bw.write(line);
-                    bw.newLine();
-                }
-            } else {
-                bw.write(line);
-                bw.newLine();
+        // Remove all existing occurences of the file
+        Iterator iterator = recent.iterator();
+        while (iterator.hasNext()) {
+            String filename = (String) iterator.next();
+            if (filename.equals(mapFile)) {
+                iterator.remove();
             }
         }
 
-        // Iterate through configuration options, saving the options that were
-        // not yet in the file already.
-        Iterator keyItr = settings.keySet().iterator();
-        while (keyItr.hasNext()) {
-            String key = (String)keyItr.next();
-            if (!availableKeys.containsKey(key) && settings.get(key) != null) {
-                bw.write(key + " = " + settings.get(key));
-                bw.newLine();
+        // Add the given map file to the top
+        recent.add(0, mapFile);
+
+        // Store the new recent file listing
+        Preferences recentNode = prefs.node("recent");
+        for (int i = 0; i < RECENT_FILE_COUNT && i < recent.size(); i++)
+        {
+            String recentFile = (String) recent.get(i);
+            recentNode.put("file" + i, recentFile);
+        }
+    }
+
+    /**
+     * Returns the list of recently used files.
+     *
+     * @return the list of recently used files
+     */
+    public static List getRecentFiles() {
+        List recent = new ArrayList(RECENT_FILE_COUNT);
+        Preferences recentNode = prefs.node("recent");
+        for (int i = 0; i < RECENT_FILE_COUNT; i++)
+        {
+            String recentFile = recentNode.get("file" + i, "");
+            if (recentFile.length() > 0) {
+                recent.add(recentFile);
             }
         }
-
-        bw.close();
-    }
-
-    /**
-     * Sets the default values for pertinent properties.
-     */
-    public void populateDefaults() {
-        addConfigPair("tmx.save.embedImages", "1");
-        addConfigPair("tmx.save.tileImagePrefix", "tile");
-        addConfigPair("tmx.save.layerCompression", "1");
-        addConfigPair("tmx.save.encodeLayerData", "1");
-        addConfigPair("tmx.save.tileSetImages", "0");
-        addConfigPair("tmx.save.embedtileSetImages", "0");
-        addConfigPair("tiled.report.io", "0");
-        addConfigPair("tiled.undo.depth", "30");
-        addConfigPair("tiled.selection.color", "0x0000FF");
-        addConfigPair("tiled.background.color", "0x404040");
-        addConfigPair("tiled.cursorhighlight", "1");
-        addConfigPair("tiled.grid.color", "0x000000");
-        addConfigPair("tiled.grid.antialias", "1");
-        addConfigPair("tiled.grid.opacity", "255");
-        addConfigPair("tiled.plugins.dir", "plugins");
-
-        //animation prefs
-
-        addConfigPair("tiled.animation.safe", "0");
-        addConfigPair("tiled.animation.animate", "0");
-
-        // defaults for new map dialog...
-
-        addConfigPair("tiled.newmapdialog.mapwidth", "64");
-        addConfigPair("tiled.newmapdialog.mapheight", "64");
-        addConfigPair("tiled.newmapdialog.tilewidth", "35");
-        addConfigPair("tiled.newmapdialog.tileheight", "35");
-    }
-
-    /**
-     * Writes current the configuration to <code>tiled.conf</code>. Silently
-     * ignores any exception.
-     */
-    public void flush () {
-        try { write("tiled.conf"); }
-        catch (IOException ex) {}
-        catch (Exception ex) {}
+        return recent;
     }
 }

@@ -13,22 +13,24 @@
 package tiled.mapeditor.undo;
 
 import java.util.Iterator;
-import javax.swing.undo.*;
+import javax.swing.undo.UndoManager;
+import javax.swing.undo.UndoableEdit;
 
 import tiled.util.TiledConfiguration;
 
-
+/**
+ * @version $Id$
+ */
 public class UndoStack extends UndoManager
 {
     UndoableEdit savedAt;
 
     public UndoStack() {
-        setLimit(TiledConfiguration.getInstance().getIntValue(
-                    "tmx.undo.depth", 30));
+        setLimit(TiledConfiguration.root().getInt("undoDepth", 30));
     }
 
     public boolean isAllSaved() {
-        return (editToBeUndone() == savedAt);
+        return editToBeUndone() == savedAt;
     }
 
     public void commitSave() {

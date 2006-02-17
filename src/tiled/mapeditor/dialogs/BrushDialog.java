@@ -19,6 +19,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.prefs.Preferences;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -37,6 +38,7 @@ import tiled.mapeditor.widget.BrushBrowser;
 import tiled.mapeditor.widget.IntegerSpinner;
 import tiled.mapeditor.widget.MiniMapViewer;
 import tiled.mapeditor.widget.VerticalStaticJPanel;
+import tiled.mapeditor.Resources;
 import tiled.util.TiledConfiguration;
 
 /**
@@ -54,12 +56,11 @@ public class BrushDialog extends JDialog implements ActionListener,
     private JSlider sRandomAmount;
     private JButton bOk, bApply, bCancel;
     private BrushBrowser brushes;
-    private MiniMapViewer mmv;
 
     public BrushDialog(MapEditor editor, JFrame parent,
                        AbstractBrush currentBrush)
     {
-        super(parent, "Brush Options", false);
+        super(parent, Resources.getString("dialog.brush.title"), false);
         myBrush = currentBrush;
         this.editor = editor;
 
@@ -144,14 +145,14 @@ public class BrushDialog extends JDialog implements ActionListener,
     private JPanel createCustomPanel() {
         JPanel customPanel = new JPanel();
 
-        mmv = new MiniMapViewer();
+        MiniMapViewer mmv = new MiniMapViewer();
         if (myBrush instanceof CustomBrush) {
             //mmv.setView(((CustomBrush)myBrush));
         }
 
         JScrollPane miniSp = new JScrollPane();
         miniSp.getViewport().setView(mmv);
-        miniSp.setPreferredSize(new Dimension(100,100));
+        miniSp.setPreferredSize(new Dimension(100, 100));
         JButton bCreate = new JButton("Create...");
         bCreate.addActionListener(this);
         //TODO: create functionality is not available yet
@@ -313,13 +314,9 @@ public class BrushDialog extends JDialog implements ActionListener,
     }
 
     private void openMap() throws Exception {
-        String startLocation = "";
-        TiledConfiguration configuration = TiledConfiguration.getInstance();
-
         // Start at the location of the most recently loaded map file
-        if (configuration.hasOption("tiled.recent.1")) {
-            startLocation = configuration.getValue("tiled.recent.1");
-        }
+        Preferences prefs = TiledConfiguration.node("recent");
+        String startLocation = prefs.get("file0", "");
 
         JFileChooser ch = new JFileChooser(startLocation);
 
@@ -329,7 +326,7 @@ public class BrushDialog extends JDialog implements ActionListener,
                 ch.addChoosableFileFilter(new TiledFileFilter(
                             readers[i].getFilter(), readers[i].getName()));
             }
-        } catch (Throwable e) {
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(this,
                     "Error while loading plugins: " + e.getMessage(),
                     "Error while loading map",

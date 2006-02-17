@@ -30,26 +30,26 @@ public class TileButton extends JButton
     private boolean maintainAspect;
     private EventListenerList tileSelectionListeners;
 
-    public TileButton( Tile t, Dimension d ) {
+    public TileButton(Tile t, Dimension d) {
         setMargin(new Insets(0, 0, 0, 0));
         size = d;
         maintainAspect = false;
-        setTile( t );
+        setTile(t);
     }
 
-    public TileButton( Dimension d ) {
-        this( null, d );
+    public TileButton(Dimension d) {
+        this(null, d);
     }
 
-    public TileButton( Tile t ) {
-        this( t, null );
+    public TileButton(Tile t) {
+        this(t, null);
     }
 
-    public TileButton( ) {
-        this( null, null );
+    public TileButton() {
+        this(null, null);
     }
 
-    public void setTile( Tile t ) {
+    public void setTile(Tile t) {
         tile = t;
         ImageIcon icon = null;
         Insets i = getInsets();
@@ -123,11 +123,11 @@ public class TileButton extends JButton
     }
     */
 
-    public void setMaintainAspect( boolean v ) {
+    public void setMaintainAspect(boolean v) {
         maintainAspect = v;
     }
 
-    public boolean isAspectMaintained( ) {
+    public boolean isAspectMaintained() {
         return maintainAspect;
     }
 
@@ -135,27 +135,27 @@ public class TileButton extends JButton
      * Adds a tile selection listener. The listener will be notified when the
      * tile shown by the tile button changes.
      */
-    public void addTileSelectionListener( TileSelectionListener l ) {
-        tileSelectionListeners.add( TileSelectionListener.class, l );
+    public void addTileSelectionListener(TileSelectionListener l) {
+        tileSelectionListeners.add(TileSelectionListener.class, l);
     }
 
     /**
      * Removes a tile selection listener.
      */
-    public void removeTileSelectionListener( TileSelectionListener l ) {
-        tileSelectionListeners.remove( TileSelectionListener.class, l );
+    public void removeTileSelectionListener(TileSelectionListener l) {
+        tileSelectionListeners.remove(TileSelectionListener.class, l);
     }
 
     /**
      * Notifies all registered tile selection listeners about a newly selected
      * tile.
      */
-    protected void fireActionPerformed( TileSelectionEvent e ) {
-        Object[] listeners = tileSelectionListeners.getListenerList( );
+    protected void fireActionPerformed(TileSelectionEvent e) {
+        Object[] listeners = tileSelectionListeners.getListenerList();
 
-        for( int i = listeners.length - 2; i >= 0; i -= 2 ) {
-            if( listeners[i] == TileSelectionListener.class ) {
-                ((TileSelectionListener)listeners[i + 1]).tileSelected( e );
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == TileSelectionListener.class) {
+                ((TileSelectionListener)listeners[i + 1]).tileSelected(e);
             }
         }
     }

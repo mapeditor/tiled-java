@@ -29,11 +29,9 @@ public class ShapeBrush extends AbstractBrush
     protected Tile paintTile;
 
     public ShapeBrush() {
-        super();
     }
 
     public ShapeBrush(Area shape) {
-        super();
         this.shape = shape;
     }
 
@@ -52,7 +50,7 @@ public class ShapeBrush extends AbstractBrush
      */
     public void makeCircleBrush(double rad) {
         shape = new Area(new Ellipse2D.Double(0, 0, rad * 2, rad * 2));
-        this.resize((int)(rad * 2), (int)(rad * 2), 0, 0);
+        resize((int)(rad * 2), (int)(rad * 2), 0, 0);
     }
 
     /**
@@ -62,7 +60,7 @@ public class ShapeBrush extends AbstractBrush
      */
     public void makeQuadBrush(Rectangle r) {
         shape = new Area(new Rectangle2D.Double(r.x, r.y, r.width, r.height));
-        this.resize(r.width, r.height, 0, 0);
+        resize(r.width, r.height, 0, 0);
     }
 
     public void makePolygonBrush(Polygon p) {

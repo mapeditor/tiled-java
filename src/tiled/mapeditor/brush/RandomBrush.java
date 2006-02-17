@@ -27,11 +27,6 @@ public class RandomBrush extends ShapeBrush
     private final MersenneTwister mt;
     private double ratio = 0.5;
 
-    public RandomBrush() {
-        super();
-        mt = new MersenneTwister(System.currentTimeMillis());
-    }
-
     public RandomBrush(Area shape) {
         super(shape);
         mt = new MersenneTwister(System.currentTimeMillis());
@@ -69,15 +64,15 @@ public class RandomBrush extends ShapeBrush
             int initLayer)
     {
         Rectangle bounds = shape.getBounds();
-        int centerx = x - (bounds.width / 2);
-        int centery = y - (bounds.height / 2);
+        int centerx = x - bounds.width / 2;
+        int centery = y - bounds.height / 2;
 
         for (int i = 0; i < numLayers; i++) {
             TileLayer tl = (TileLayer)mp.getLayer(initLayer - i);
             if (tl != null) {
                 for (int cy = 0; cy <= bounds.height; cy++) {
                     for (int cx = 0; cx < bounds.width; cx++) {
-                        if (shape.contains(cx, cy) && (mt.genrand() % 101) <= (100 * ratio)) {
+                        if (shape.contains(cx, cy) && mt.genrand() % 101 <= 100 * ratio) {
                             tl.setTileAt(
                                     cx + centerx, cy + centery, paintTile);
                         }

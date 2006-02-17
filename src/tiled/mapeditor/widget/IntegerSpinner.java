@@ -16,11 +16,12 @@ import java.awt.Dimension;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
-
 /**
  * The integer spinner is a variation on the JSpinner that is only to be used
  * for plain integer inputs. It offers some convenience constructors and
  * methods.
+ *
+ * @version $Id$
  */
 public class IntegerSpinner extends JSpinner
 {

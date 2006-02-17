@@ -12,16 +12,20 @@
 
 package tiled.mapeditor.selection;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Rectangle;
 import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
+import java.util.prefs.Preferences;
 
-import tiled.core.*;
+import tiled.core.Tile;
+import tiled.core.TileLayer;
 import tiled.util.TiledConfiguration;
-
 
 /**
  * A layer used to keep track of a selected area.
+ *
+ * @version $Id$
  */
 public class SelectionLayer extends TileLayer
 {
@@ -30,7 +34,6 @@ public class SelectionLayer extends TileLayer
     private Area selection;
 
     public SelectionLayer() {
-        super();
         init();
     }
 
@@ -40,11 +43,10 @@ public class SelectionLayer extends TileLayer
     }
 
     private void init() {
-        TiledConfiguration conf = TiledConfiguration.getInstance();
+        Preferences prefs = TiledConfiguration.root();
         try {
-            highlightColor = Color.decode(
-                    conf.getValue("tiled.selection.color"));
-        } catch (Throwable e) {
+            highlightColor = Color.decode(prefs.get("selectionColor", ""));
+        } catch (NumberFormatException e) {
             highlightColor = Color.blue;
         }
 
@@ -54,8 +56,8 @@ public class SelectionLayer extends TileLayer
 
     /**
      * Returns the selected area.
-     * 
-     * @return Area
+     *
+     * @return the selected area
      */
     public Area getSelectedArea() {
         return selection;
@@ -63,7 +65,7 @@ public class SelectionLayer extends TileLayer
 
     /**
      * Returns the bounds of the selected area.
-     * 
+     *
      * @return A Rectangle instance
      * @see Area#getBounds()
      */
@@ -73,7 +75,7 @@ public class SelectionLayer extends TileLayer
 
     /**
      * Adds the given area via a union
-     * 
+     *
      * @param area The Area to union with the current selection
      * @see Area#add(java.awt.geom.Area)
      */
@@ -81,7 +83,7 @@ public class SelectionLayer extends TileLayer
         selection.add(area);
         fillRegion(selection, selTile);
     }
-    
+
     /**
      * Deselects the given area. This substracts the given area from the
      * existing selected area.
@@ -95,7 +97,7 @@ public class SelectionLayer extends TileLayer
 
     /**
      * Sets the selected area to the given Rectangle
-     * 
+     *
      * @param region
      */
     public void selectRegion(Rectangle region) {
@@ -107,15 +109,15 @@ public class SelectionLayer extends TileLayer
     /**
      * Selects only the given tile location (adds it to the selection
      * if one exists)
-     * 
+     *
      * @param tx
      * @param ty
      */
     public void select(int tx, int ty) {
         setTileAt(tx, ty, selTile);
-        
+
         Area a = new Area(new Rectangle2D.Double(tx, ty, 1, 1));
-        
+
         if (selection == null) {
             selection = a;
         } else {
@@ -136,7 +138,7 @@ public class SelectionLayer extends TileLayer
 
     /**
      * Returns the highlight color.
-     * 
+     *
      * @return A Color instance of the highlight color
      */
     public Color getHighlightColor() {

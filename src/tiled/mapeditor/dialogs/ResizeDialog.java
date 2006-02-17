@@ -23,6 +23,7 @@ import javax.swing.event.ChangeListener;
 
 import tiled.core.Map;
 import tiled.mapeditor.MapEditor;
+import tiled.mapeditor.Resources;
 import tiled.mapeditor.widget.*;
 
 /**
@@ -36,8 +37,19 @@ public class ResizeDialog extends JDialog implements ActionListener,
     private JButton bOk, bCancel;
     private ResizePanel orient;
 
+    private static final String DIALOG_TITLE = Resources.getString("dialog.resizemap.title");
+    private static final String OK_BUTTON = Resources.getString("general.button.ok");
+    private static final String CANCEL_BUTTON = Resources.getString("general.button.cancel");
+    private static final String OFFSET_TITLE = Resources.getString("dialog.resizemap.offset.title");
+    private static final String X_LABEL = Resources.getString("dialog.resizemap.x.label");
+    private static final String Y_LABEL = Resources.getString("dialog.resizemap.y.label");
+    private static final String NEWSIZE_TITLE = Resources.getString("dialog.resizemap.newsize.title");
+    private static final String WIDTH_LABEL = Resources.getString("dialog.resizemap.width.label");
+    private static final String HEIGHT_LABEL = Resources.getString("dialog.resizemap.height.label");
+    private static final String CURRENT_SIZE_TITLE = Resources.getString("dialog.resizemap.currentsize.title");
+
     public ResizeDialog(JFrame parent, MapEditor m) {
-        super(parent, "Resize Map", true);
+        super(parent, DIALOG_TITLE, true);
         currentMap = m.getCurrentMap();
         init();
         setLocationRelativeTo(getOwner());
@@ -46,8 +58,8 @@ public class ResizeDialog extends JDialog implements ActionListener,
     private void init() {
         // Create the primitives
 
-        bOk = new JButton("OK");
-        bCancel = new JButton("Cancel");
+        bOk = new JButton(OK_BUTTON);
+        bCancel = new JButton(CANCEL_BUTTON);
 
         width = new IntegerSpinner(currentMap.getWidth(), 1);
         height = new IntegerSpinner(currentMap.getHeight(), 1);
@@ -63,16 +75,16 @@ public class ResizeDialog extends JDialog implements ActionListener,
         // Offset panel
         JPanel offsetPanel = new VerticalStaticJPanel();
         offsetPanel.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createTitledBorder("Offset"),
+                    BorderFactory.createTitledBorder(OFFSET_TITLE),
                     BorderFactory.createEmptyBorder(0, 5, 5, 5)));
         offsetPanel.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
         c.anchor = GridBagConstraints.WEST;
         c.fill = GridBagConstraints.BOTH; c.weighty = 1;
         c.insets = new Insets(5, 0, 0, 0);
-        offsetPanel.add(new JLabel("X: "), c);
+        offsetPanel.add(new JLabel(X_LABEL), c);
         c.gridy = 1;
-        offsetPanel.add(new JLabel("Y: "), c);
+        offsetPanel.add(new JLabel(Y_LABEL), c);
         c.gridx = 1; c.gridy = 0;
         offsetPanel.add(offsetX, c);
         c.gridy = 1;
@@ -85,15 +97,15 @@ public class ResizeDialog extends JDialog implements ActionListener,
         // New size panel
         JPanel newSizePanel = new VerticalStaticJPanel(new GridBagLayout());
         newSizePanel.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createTitledBorder("New size"),
+                    BorderFactory.createTitledBorder(NEWSIZE_TITLE),
                     BorderFactory.createEmptyBorder(0, 5, 5, 5)));
         c = new GridBagConstraints();
         c.anchor = GridBagConstraints.WEST;
         c.fill = GridBagConstraints.BOTH; c.weighty = 1;
         c.insets = new Insets(5, 0, 0, 0);
-        newSizePanel.add(new JLabel("Width: "), c);
+        newSizePanel.add(new JLabel(WIDTH_LABEL), c);
         c.gridy = 1;
-        newSizePanel.add(new JLabel("Height: "), c);
+        newSizePanel.add(new JLabel(HEIGHT_LABEL), c);
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 1; c.gridy = 0; c.weightx = 1;
         newSizePanel.add(width, c);
@@ -103,21 +115,21 @@ public class ResizeDialog extends JDialog implements ActionListener,
         // Original size panel
         JPanel origSizePanel = new VerticalStaticJPanel(new GridBagLayout());
         origSizePanel.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createTitledBorder("Current size"),
+                    BorderFactory.createTitledBorder(CURRENT_SIZE_TITLE),
                     BorderFactory.createEmptyBorder(0, 5, 5, 5)));
         c = new GridBagConstraints();
         c.anchor = GridBagConstraints.EAST;
         c.fill = GridBagConstraints.BOTH; c.weighty = 1; c.weightx = 1;
         c.insets = new Insets(5, 0, 0, 0);
-        origSizePanel.add(new JLabel("Width: "), c);
+        origSizePanel.add(new JLabel(WIDTH_LABEL), c);
         c.gridy = 1;
-        origSizePanel.add(new JLabel("Height: "), c);
+        origSizePanel.add(new JLabel(HEIGHT_LABEL), c);
         c.anchor = GridBagConstraints.WEST;
         c.insets = new Insets(5, 10, 0, 0);
         c.gridx = 1; c.gridy = 0;
-        origSizePanel.add(new JLabel("" + currentMap.getWidth()), c);
+        origSizePanel.add(new JLabel(String.valueOf(currentMap.getWidth())), c);
         c.gridy = 1;
-        origSizePanel.add(new JLabel("" + currentMap.getHeight()), c);
+        origSizePanel.add(new JLabel(String.valueOf(currentMap.getHeight())), c);
 
         // Putting two size panels next to eachother
         JPanel sizePanels = new VerticalStaticJPanel(new GridBagLayout());

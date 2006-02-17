@@ -418,7 +418,7 @@ public class TileDialog extends JDialog
 
         if (source == bOk) {
             tileset.setName(tilesetNameEntry.getText());
-            this.dispose();
+            dispose();
         } else if (source == bDelete) {
             int answer = JOptionPane.showConfirmDialog(
                     this, "Delete tile?", "Are you sure?",

@@ -54,9 +54,9 @@ public class TiledFileFilter extends FileFilter
     public TiledFileFilter(String filter, String desc) {
     	exts = new LinkedList();
     	this.desc = desc;
-    	String [] ext = filter.split(",");
-    	for(int i=0;i<ext.length;i++) {
-    		exts.add(ext[i].substring(ext[i].indexOf('.')+1));
+    	String[] ext = filter.split(",");
+    	for (int i = 0; i < ext.length; i++) {
+    		exts.add(ext[i].substring(ext[i].indexOf('.') + 1));
     	}
     }
     

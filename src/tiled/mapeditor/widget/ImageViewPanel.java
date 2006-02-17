@@ -16,21 +16,19 @@ import java.awt.*;
 
 import javax.swing.JPanel;
 
-public class ImageViewPanel extends JPanel {
-	
-	private Image image;
-	
-	public ImageViewPanel() {
-		super();
-	}
-	
-	public ImageViewPanel(Image i) {
-		this();
-		image = i;
-	}
+/**
+ * @version $Id$
+ */
+public class ImageViewPanel extends JPanel
+{
+	private final Image image;
+
+    public ImageViewPanel(Image i) {
+        image = i;
+    }
 	
 	public Dimension getPreferredSize() {
-		return new Dimension(150,150);
+		return new Dimension(150, 150);
 	}
 
 	public Dimension getPreferredScrollableViewportSize() {

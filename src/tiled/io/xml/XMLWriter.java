@@ -5,7 +5,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
@@ -16,7 +16,6 @@ import java.lang.String;
 import java.io.Writer;
 import java.io.IOException;
 import java.util.Stack;
-
 
 /**
  * A simple helper class to write an XML file, based on
@@ -30,10 +29,10 @@ public class XMLWriter
     private String indentString = " ";
     private String newLine = "\n";
     private final Writer w;
-    
+
     private final Stack openElements;
-    private boolean bStartTagOpen = false;
-    private boolean bDocumentOpen = false;
+    private boolean bStartTagOpen;
+    private boolean bDocumentOpen;
 
 
     public XMLWriter(Writer writer) {
@@ -44,18 +43,18 @@ public class XMLWriter
 
     public void setIndent(boolean bIndent) {
         this.bIndent = bIndent;
-        newLine = ((bIndent) ? "\n" : "");
+        newLine = bIndent ? "\n" : "";
     }
 
     public void setIndentString(String indentString) {
         this.indentString = indentString;
     }
-    
+
 
     public void startDocument() throws IOException {
         startDocument("1.0");
     }
-    
+
     public void startDocument(String version) throws IOException {
         w.write("<?xml version=\"" + version + "\"?>" + newLine);
         bDocumentOpen = true;
@@ -74,7 +73,7 @@ public class XMLWriter
 
         writeIndent();
         w.write("<" + name);
-        
+
         openElements.push(name);
         bStartTagOpen = true;
     }
@@ -82,7 +81,7 @@ public class XMLWriter
 
     public void endDocument() throws IOException {
         // End all open elements.
-        while (openElements.size() > 0) {
+        while (!openElements.isEmpty()) {
             endElement();
         }
     }
@@ -100,7 +99,7 @@ public class XMLWriter
         }
 
         // Set document closed when last element is closed
-        if (openElements.size() == 0) {
+        if (openElements.isEmpty()) {
             bDocumentOpen = false;
         }
     }
@@ -115,6 +114,16 @@ public class XMLWriter
             throw new XMLWriterException(
                     "Can't write attribute without open start tag.");
         }
+    }
+
+    public void writeAttribute(String name, int content)
+        throws IOException, XMLWriterException {
+        writeAttribute(name, String.valueOf(content));
+    }
+
+    public void writeAttribute(String name, float content)
+        throws IOException, XMLWriterException {
+        writeAttribute(name, String.valueOf(content));
     }
 
     public void writeCDATA(String content) throws IOException {

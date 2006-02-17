@@ -12,43 +12,42 @@
 
 package tiled.mapeditor.dialogs;
 
-import java.io.IOException;
-import javax.imageio.ImageIO;
-import javax.swing.*;
+import java.awt.event.MouseEvent;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.BorderFactory;
+import javax.swing.JDialog;
+import javax.swing.event.MouseInputAdapter;
 
 import tiled.mapeditor.MapEditor;
-
+import tiled.mapeditor.Resources;
 
 /**
  * The about dialog.
  *
  * @version $Id$
  */
-public class AboutDialog extends JFrame
+public class AboutDialog extends JDialog
 {
-    final JFrame parent;
+    private final JFrame parent;
 
     public AboutDialog(JFrame parent) {
-        super("Tiled v" + MapEditor.version);
+        super(parent, "Tiled v" + MapEditor.version);
 
         this.parent = parent;
-        ImageIcon icon;
 
-        try {
-            icon = new ImageIcon(ImageIO.read(MapEditor.class.
-                        getResourceAsStream("resources/logo.png")));
+        JLabel label = new JLabel(Resources.getIcon("logo.png"));
+        label.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        label.addMouseListener(new MouseInputAdapter() {
+            public void mouseClicked(MouseEvent mouseEvent) {
+                setVisible(false);
+            }
+        });
 
-            JPanel content = new JPanel();
-            JLabel label = new JLabel(icon);
-            content.add(label);
-
-            setContentPane(content);
-            setResizable(false);
-            setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-            pack();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        setContentPane(label);
+        setResizable(false);
+        setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        pack();
     }
 
     public void setVisible(boolean visible) {

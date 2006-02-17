@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.Properties;
 import java.util.Stack;
 import java.util.Vector;
+import java.util.prefs.Preferences;
 import java.util.zip.GZIPOutputStream;
 
 import tiled.core.*;
@@ -33,6 +34,8 @@ import tiled.util.*;
  */
 public class XMLMapWriter implements MapWriter
 {
+    private static final int LAST_BYTE = 0x000000FF;
+
     /**
      * Saves a map to an XML file.
      *
@@ -99,7 +102,7 @@ public class XMLMapWriter implements MapWriter
         writer.flush();
     }
 
-    private void writeMap(Map map, XMLWriter w, String wp) throws IOException {
+    private static void writeMap(Map map, XMLWriter w, String wp) throws IOException {
         try {
             w.startElement("map");
 
@@ -118,10 +121,10 @@ public class XMLMapWriter implements MapWriter
                     w.writeAttribute("orientation", "shifted"); break;
             }
 
-            w.writeAttribute("width", "" + map.getWidth());
-            w.writeAttribute("height", "" + map.getHeight());
-            w.writeAttribute("tilewidth", "" + map.getTileWidth());
-            w.writeAttribute("tileheight", "" + map.getTileHeight());
+            w.writeAttribute("width", map.getWidth());
+            w.writeAttribute("height", map.getHeight());
+            w.writeAttribute("tilewidth", map.getTileWidth());
+            w.writeAttribute("tileheight", map.getTileHeight());
 
             Properties props = map.getProperties();
             for (Enumeration keys = props.keys(); keys.hasMoreElements();) {
@@ -158,7 +161,7 @@ public class XMLMapWriter implements MapWriter
      * degenerate case where the tileset is not stored in an external file,
      * writes the contents of the tileset instead.
      */
-    private void writeTilesetReference(TileSet set, XMLWriter w, String wp)
+    private static void writeTilesetReference(TileSet set, XMLWriter w, String wp)
         throws IOException {
 
         try {
@@ -169,7 +172,7 @@ public class XMLMapWriter implements MapWriter
             } else {
                 w.startElement("tileset");
                 try {
-                    w.writeAttribute("firstgid", "" + set.getFirstGid());
+                    w.writeAttribute("firstgid", set.getFirstGid());
                     w.writeAttribute("source", source.substring(
                                 source.lastIndexOf(File.separatorChar) + 1));
                     if (set.getBaseDir() != null) {
@@ -184,7 +187,7 @@ public class XMLMapWriter implements MapWriter
         } 
     }
 
-    private void writeTileset(TileSet set, XMLWriter w, String wp)
+    private static void writeTileset(TileSet set, XMLWriter w, String wp)
         throws IOException {
 
         try {
@@ -197,11 +200,11 @@ public class XMLMapWriter implements MapWriter
                 w.writeAttribute("name", name);
             }
 
-            w.writeAttribute("firstgid", "" + set.getFirstGid());
+            w.writeAttribute("firstgid", set.getFirstGid());
 
             if (tilebmpFile != null) {
-                w.writeAttribute("tilewidth", "" + set.getTileWidth());
-                w.writeAttribute("tileheight", "" + set.getTileHeight());
+                w.writeAttribute("tilewidth", set.getTileWidth());
+                w.writeAttribute("tileheight", set.getTileHeight());
                 //w.writeAttribute("spacing", "0");
             }
 
@@ -221,9 +224,12 @@ public class XMLMapWriter implements MapWriter
                 w.endElement();
             } else {
                 // Embedded tileset
+                Preferences prefs = TiledConfiguration.node("saving");
 
-                TiledConfiguration conf = TiledConfiguration.getInstance();
-                if (conf.keyHasValue("tmx.save.tileSetImages", "1")) {
+                boolean embedImages = prefs.getBoolean("embedImages", true);
+                boolean tileSetImages = prefs.getBoolean("tileSetImages", false);
+
+                if (tileSetImages) {
                     Enumeration ids = set.getImageIds();
                     while (ids.hasMoreElements()) {
                         String id = (String)ids.nextElement();
@@ -238,16 +244,15 @@ public class XMLMapWriter implements MapWriter
                         w.endElement();
                         w.endElement();
                     }
-                } else if (conf.keyHasValue("tmx.save.embedImages", "0")) {
-                    String imgSource = conf.getValue(
-                            "tmx.save.tileImagePrefix") + "set.png";
+                } else if (!embedImages) {
+                    String imgSource =
+                            prefs.get("tileImagePrefix", "tile") + "set.png";
 
                     w.startElement("image");
                     w.writeAttribute("source", imgSource);
 
-                    String tilesetFilename = (wp.substring(0,
-                            wp.lastIndexOf(File.separatorChar) + 1)
-                            + imgSource);
+                    String tilesetFilename = wp.substring(0,
+                            wp.lastIndexOf(File.separatorChar) + 1) + imgSource;
                     FileOutputStream fw = new FileOutputStream(new File(
                                 tilesetFilename));
                     //byte[] data = ImageHelper.imageToPNG(setImage);
@@ -261,7 +266,7 @@ public class XMLMapWriter implements MapWriter
                 Iterator tileIterator = set.iterator();
                 boolean needWrite = !set.isOneForOne();
 
-                if (conf.keyHasValue("tmx.save.embedImages", "1")) {
+                if (embedImages) {
                     needWrite = true;
                 } else {
                     while (tileIterator.hasNext()) {
@@ -290,7 +295,7 @@ public class XMLMapWriter implements MapWriter
         }
     }
 
-    private void writeObjectGroup(ObjectGroup o, XMLWriter w)
+    private static void writeObjectGroup(ObjectGroup o, XMLWriter w)
         throws IOException
     {
         Iterator itr = o.getObjects();
@@ -304,14 +309,14 @@ public class XMLMapWriter implements MapWriter
      * first global ids for the tilesets are determined, in order for the right
      * gids to be written to the layer data.
      */
-    private void writeMapLayer(MapLayer l, XMLWriter w) throws IOException {
+    private static void writeMapLayer(MapLayer l, XMLWriter w) throws IOException {
         try {
-            TiledConfiguration conf = TiledConfiguration.getInstance();
-            boolean encodeLayerData = conf.keyHasValue(
-                    "tmx.save.encodeLayerData", "1");
-            boolean compressLayerData = conf.keyHasValue(
-                    "tmx.save.layerCompression", "1") && encodeLayerData;
-
+            Preferences prefs = TiledConfiguration.node("saving");
+            boolean encodeLayerData =
+                    prefs.getBoolean("encodeLayerData", true);
+            boolean compressLayerData =
+                    prefs.getBoolean("layerCompression", true) &&
+                            encodeLayerData;
 
             Rectangle bounds = l.getBounds();
 
@@ -324,20 +329,20 @@ public class XMLMapWriter implements MapWriter
             }
 
             w.writeAttribute("name", l.getName());
-            w.writeAttribute("width", "" + bounds.width);
-            w.writeAttribute("height", "" + bounds.height);
+            w.writeAttribute("width", bounds.width);
+            w.writeAttribute("height", bounds.height);
             if (bounds.x != 0) {
-                w.writeAttribute("xoffset", "" + bounds.x);
+                w.writeAttribute("xoffset", bounds.x);
             }
             if (bounds.y != 0) {
-                w.writeAttribute("yoffset", "" + bounds.y);
+                w.writeAttribute("yoffset", bounds.y);
             }
 
             if (!l.isVisible()) {
                 w.writeAttribute("visible", "0");
             }
             if (l.getOpacity() < 1.0f) {
-                w.writeAttribute("opacity", "" + l.getOpacity());
+                w.writeAttribute("opacity", l.getOpacity());
             }
 
             Properties props = l.getProperties();
@@ -375,10 +380,10 @@ public class XMLMapWriter implements MapWriter
                                 gid = tile.getGid();
                             }
 
-                            out.write((gid      ) & 0x000000FF);
-                            out.write((gid >>  8) & 0x000000FF);
-                            out.write((gid >> 16) & 0x000000FF);
-                            out.write((gid >> 24) & 0x000000FF);
+                            out.write(gid       & LAST_BYTE);
+                            out.write(gid >> 8  & LAST_BYTE);
+                            out.write(gid >> 16 & LAST_BYTE);
+                            out.write(gid >> 24 & LAST_BYTE);
                         }
                     }
 
@@ -398,7 +403,7 @@ public class XMLMapWriter implements MapWriter
                             }
 
                             w.startElement("tile");
-                            w.writeAttribute("gid", ""+gid);
+                            w.writeAttribute("gid", gid);
                             w.endElement();
                         }
                     }
@@ -411,14 +416,14 @@ public class XMLMapWriter implements MapWriter
         }
     }
     
-    private void writeTile(Tile tile, XMLWriter w) throws IOException {
+    private static void writeTile(Tile tile, XMLWriter w) throws IOException {
     	
         try {
             w.startElement("tile");
 
             int tileId = tile.getId();
 
-            w.writeAttribute("id", "" + tileId);
+            w.writeAttribute("id", tileId);
 
             //if (groundHeight != getHeight()) {
             //    w.writeAttribute("groundheight", "" + groundHeight);
@@ -435,12 +440,14 @@ public class XMLMapWriter implements MapWriter
 
             Image tileImage = tile.getImage();
 
-            TiledConfiguration conf = TiledConfiguration.getInstance();
+            Preferences prefs = TiledConfiguration.node("saving");
+
+            boolean embedImages = prefs.getBoolean("embedImages", true);
+            boolean tileSetImages = prefs.getBoolean("tileSetImages", false);
 
             // Write encoded data
-            if (tileImage != null) {
-                if (conf.keyHasValue("tmx.save.embedImages", "1")
-                        && conf.keyHasValue("tmx.save.tileSetImages", "0")) {
+            if (tileImage != null && !tileSetImages) {
+                if (embedImages && !tileSetImages) {
                     w.startElement("image");
                     w.writeAttribute("format", "png");
                     w.startElement("data");
@@ -449,25 +456,24 @@ public class XMLMapWriter implements MapWriter
                                     ImageHelper.imageToPNG(tileImage))));
                     w.endElement();
                     w.endElement();
-                } else if(conf.keyHasValue("tmx.save.tileSetImages", "1")) {
+                } else if (tileSetImages) {
                     w.startElement("image");
-                    w.writeAttribute("id", "" + tile.getImageId());
+                    w.writeAttribute("id", tile.getImageId());
                     int orientation = tile.getImageOrientation();
                     int rotation;
                     boolean flipped =
-                        (orientation & 1) == ((orientation & 2) >> 1);
+                            (orientation & 1) == (orientation & 2) >> 1;
                     if ((orientation & 4) == 4) {
-                        rotation = ((orientation & 1) == 1) ? 270 : 90;
+                        rotation = (orientation & 1) == 1 ? 270 : 90;
                     } else {
-                        rotation = ((orientation & 2) == 2) ? 180 : 0;
+                        rotation = (orientation & 2) == 2 ? 180 : 0;
                     }
-                    if (rotation != 0) w.writeAttribute("rotation",
-                            "" + rotation);
+                    if (rotation != 0) w.writeAttribute("rotation", rotation);
                     if (flipped) w.writeAttribute("flipped", "true");
                     w.endElement();
                 } else {
-                    String prefix = conf.getValue("tmx.save.tileImagePrefix");
-                    String filename = conf.getValue("tmx.save.maplocation") +
+                    String prefix = prefs.get("tileImagePrefix", "tile");
+                    String filename = prefs.get("maplocation", "") +
                         prefix + tileId + ".png";
                     w.startElement("image");
                     w.writeAttribute("source", prefix + tileId + ".png");
@@ -490,35 +496,35 @@ public class XMLMapWriter implements MapWriter
         }
     }
 
-    private void writeAnimation(Sprite s, XMLWriter w) throws IOException {
-    	try {
-	    	w.startElement("animation");
-	    	for(int k = 0; k < s.getTotalKeys(); k++) {
-	    		Sprite.KeyFrame key = s.getKey(k);
-	    		w.startElement("keyframe");
-	    		w.writeAttribute("name", key.getName());
-	    		for(int it = 0; it < key.getTotalFrames(); it++) {
-	    			Tile stile = key.getFrame(it);
-	    			w.startElement("tile");
-	                w.writeAttribute("gid", ""+stile.getGid());
-	                w.endElement();
-	    		}
-	    		w.endElement();
-	    	}
-	    	w.endElement();
-    	} catch (XMLWriterException e) {
+    private static void writeAnimation(Sprite s, XMLWriter w) throws IOException {
+        try {
+            w.startElement("animation");
+            for (int k = 0; k < s.getTotalKeys(); k++) {
+                Sprite.KeyFrame key = s.getKey(k);
+                w.startElement("keyframe");
+                w.writeAttribute("name", key.getName());
+                for (int it = 0; it < key.getTotalFrames(); it++) {
+                    Tile stile = key.getFrame(it);
+                    w.startElement("tile");
+                    w.writeAttribute("gid", stile.getGid());
+                    w.endElement();
+                }
+                w.endElement();
+            }
+            w.endElement();
+        } catch (XMLWriterException e) {
             e.printStackTrace();
         }
     }
-    
-    private void writeObject(MapObject m, ObjectGroup o, XMLWriter w)
+
+    private static void writeObject(MapObject m, ObjectGroup o, XMLWriter w)
         throws IOException
     {
         try {
             Rectangle b = o.getBounds();
             w.startElement("object");
-            w.writeAttribute("x", "" + (m.getX() + b.x));
-            w.writeAttribute("y", "" + (m.getY() + b.y));
+            w.writeAttribute("x", m.getX() + b.x);
+            w.writeAttribute("y", m.getY() + b.y);
             w.writeAttribute("type", m.getType());
             if (m.getSource() != null) {
                 w.writeAttribute("source", m.getSource());
@@ -604,7 +610,7 @@ public class XMLMapWriter implements MapWriter
                 // Assumes: \ does not occur in filenames
                 relPath = relPath.replace('\\', '/');
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
         }
 
         return relPath;

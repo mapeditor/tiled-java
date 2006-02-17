@@ -15,16 +15,15 @@ package tiled.mapeditor.dialogs;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Properties;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import tiled.mapeditor.MapEditor;
-import tiled.mapeditor.util.*;
-import tiled.mapeditor.widget.*;
+import tiled.mapeditor.Resources;
+import tiled.mapeditor.util.PropertiesTableModel;
+import tiled.mapeditor.widget.VerticalStaticJPanel;
 
 public class PropertiesDialog extends JDialog implements ActionListener,
        ListSelectionListener
@@ -50,12 +49,8 @@ public class PropertiesDialog extends JDialog implements ActionListener,
 
         bOk = new JButton("OK");
         bCancel = new JButton("Cancel");
-        try {
-            bDel = new JButton(new ImageIcon(MapEditor.loadImageResource("resources/gnome-delete.png")));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        
+        bDel = new JButton(Resources.getIcon("gnome-delete.png"));
+
         bOk.addActionListener(this);
         bCancel.addActionListener(this);
         bDel.addActionListener(this);

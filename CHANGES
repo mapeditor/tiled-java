@@ -1,6 +1,9 @@
 0.6.0 - TBD (+ means planned change)
 
-+ Added support for localization/internationalization
+* Made a start with internationalization/localization
+* Rewrote configuration based on the Preferences class, no more tiled.conf
+* Fixed tileset dialog so that it is now possible to change the tile height to
+  something else than the tile height used by the map.
 + Added a navigation minimap
 + Added full support for animated tiles
 + Rewrote main mapeditor code

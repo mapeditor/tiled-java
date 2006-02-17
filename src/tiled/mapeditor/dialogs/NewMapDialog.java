@@ -12,22 +12,32 @@
 
 package tiled.mapeditor.dialogs;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.prefs.Preferences;
 import javax.swing.*;
 import java.io.*;
 
-import tiled.core.*;
-import tiled.util.TiledConfiguration;
+import tiled.core.Map;
 import tiled.mapeditor.widget.IntegerSpinner;
 import tiled.mapeditor.widget.VerticalStaticJPanel;
+import tiled.util.TiledConfiguration;
 
+/**
+ * @version $Id$
+ */
 public class NewMapDialog extends JDialog implements ActionListener
 {
     private Map newMap;
     private IntegerSpinner mapWidth, mapHeight;
     private IntegerSpinner tileWidth, tileHeight;
     private JComboBox mapTypeChooser;
+
+    private final Preferences prefs = TiledConfiguration.node("dialog/newmap");
 
     public NewMapDialog(JFrame parent) {
         super(parent, "New Map", true);
@@ -41,12 +51,10 @@ public class NewMapDialog extends JDialog implements ActionListener
 
         // Load dialog defaults
 
-        TiledConfiguration conf = TiledConfiguration.getInstance();
-
-        int defaultMapWidth = conf.getIntValue("tiled.newmapdialog.mapwidth", 64);
-        int defaultMapHeight = conf.getIntValue("tiled.newmapdialog.mapheight", 64);
-        int defaultTileWidth = conf.getIntValue("tiled.newmapdialog.tilewidth", 35);
-        int defaultTileHeight = conf.getIntValue("tiled.newmapdialog.tileheight", 35);
+        int defaultMapWidth = prefs.getInt("mapWidth", 64);
+        int defaultMapHeight = prefs.getInt("mapHeight", 64);
+        int defaultTileWidth = prefs.getInt("tileWidth", 35);
+        int defaultTileHeight = prefs.getInt("tileHeight", 35);
 
         // Create the primitives
 
@@ -182,13 +190,10 @@ public class NewMapDialog extends JDialog implements ActionListener
 
             // Save dialog options
 
-            TiledConfiguration conf = TiledConfiguration.getInstance();
-            conf.addConfigPair("tiled.newmapdialog.mapwidth", Integer.toString(mapWidth.intValue()));
-            conf.addConfigPair("tiled.newmapdialog.mapheight", Integer.toString(mapHeight.intValue()));
-            conf.addConfigPair("tiled.newmapdialog.tilewidth", Integer.toString(tileWidth.intValue()));
-            conf.addConfigPair("tiled.newmapdialog.tileheight", Integer.toString(tileHeight.intValue()));
-
-            conf.flush();
+            prefs.putInt("mapWidth", mapWidth.intValue());
+            prefs.putInt("mapHeight", mapHeight.intValue());
+            prefs.putInt("tileWidth", tileWidth.intValue());
+            prefs.putInt("tileHeight", tileHeight.intValue());
         }
         dispose();
     }

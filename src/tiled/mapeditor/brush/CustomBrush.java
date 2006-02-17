@@ -26,7 +26,6 @@ import tiled.view.MapView;
 public class CustomBrush extends AbstractBrush
 {
     public CustomBrush() {
-        super();
     }
 
     public CustomBrush(MultilayerPlane m) {
@@ -71,8 +70,8 @@ public class CustomBrush extends AbstractBrush
     {
         int layer = initLayer;
         Rectangle bounds = getBounds();
-        int centerx = x - (bounds.width / 2);
-        int centery = y - (bounds.height / 2);
+        int centerx = x - bounds.width / 2;
+        int centery = y - bounds.height / 2;
 
         super.doPaint(x, y);
 

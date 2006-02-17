@@ -33,7 +33,7 @@ public class PluginDialog extends JDialog implements ActionListener,
        ListSelectionListener
 {
     private final PluginClassLoader pluginLoader;
-    private JList pluginList = null;
+    private JList pluginList;
     private JButton closeButton, infoButton, removeButton;
 
     public PluginDialog(JFrame parent, PluginClassLoader pluginLoader) {
@@ -47,8 +47,8 @@ public class PluginDialog extends JDialog implements ActionListener,
 
     private void init() {
         /* LIST PANEL */
-        MapReader readers[];
-        MapWriter writers[];
+        MapReader[] readers;
+        MapWriter[] writers;
 
         try {
             readers = pluginLoader.getReaders();
@@ -108,7 +108,7 @@ public class PluginDialog extends JDialog implements ActionListener,
         Object source = event.getSource();
 
         if (source == closeButton) {
-            this.dispose();
+            dispose();
         } else if (source == removeButton) {
             // TODO: Implement plugin remove functionality
         } else if (source == infoButton) {

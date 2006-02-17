@@ -5,23 +5,21 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
 
-package tiled.mapeditor.dialogs;
-
-import javax.swing.JDialog;
+package tiled.core;
 
 /**
+ * This exception is thrown when an attempt is made to perform a modification
+ * on a locked layer.
+ *
  * @version $Id$
  */
-public class ObjectDialog extends JDialog
-{
-    ObjectDialog() {
-    }
-
-    public void init() {
+public class LayerLockedException extends Throwable {
+    public LayerLockedException(String s) {
+        super(s);
     }
 }
