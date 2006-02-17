@@ -12,17 +12,22 @@
 
 package tiled.mapeditor.dialogs;
 
-import java.awt.event.*;
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Vector;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import tiled.core.*;
-import tiled.mapeditor.util.*;
-import tiled.mapeditor.widget.*;
+import tiled.core.Map;
+import tiled.core.Tile;
 import tiled.mapeditor.MapEditor;
+import tiled.mapeditor.util.TileSelectionEvent;
+import tiled.mapeditor.util.TileSelectionListener;
+import tiled.mapeditor.widget.TilePalettePanel;
 
 public class TilePaletteDialog extends JDialog implements ActionListener,
     TileSelectionListener, ListSelectionListener

@@ -470,16 +470,4 @@ public class Map extends MultilayerPlane
             getTotalLayers() + "][" + tileWidth + "x" +
             tileHeight + "]";
     }
-
-    /**
-     * Determines wether the point (x,y) falls within the map boundaries.
-     * 
-     * @param x
-     * @param y
-     * @return <code>true</code> if the point is within the map boundaries,
-     *         <code>false</code> otherwise
-     */
-    public boolean inBounds(int x, int y) {
-        return x >= 0 && y >= 0 && x < widthInTiles && y < heightInTiles;
-    }
 }

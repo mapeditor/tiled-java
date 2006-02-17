@@ -41,14 +41,14 @@ public class ShapeBrush extends AbstractBrush
     public ShapeBrush(AbstractBrush sb) {
         super(sb);
         if (sb instanceof ShapeBrush) {
-            shape = ((ShapeBrush)sb).shape;
-            paintTile = ((ShapeBrush)sb).paintTile;
+            shape = ((ShapeBrush) sb).shape;
+            paintTile = ((ShapeBrush) sb).paintTile;
         }
     }
 
     /**
      * Makes this brush a circular brush.
-     * 
+     *
      * @param rad the radius of the circular region
      */
     public void makeCircleBrush(double rad) {
@@ -58,7 +58,7 @@ public class ShapeBrush extends AbstractBrush
 
     /**
      * Makes this brush a rectangular brush.
-     * 
+     *
      * @param r a Rectangle to use as the shape of the brush
      */
     public void makeQuadBrush(Rectangle r) {
@@ -67,7 +67,6 @@ public class ShapeBrush extends AbstractBrush
     }
 
     public void makePolygonBrush(Polygon p) {
-
     }
 
     public void setSize(int s) {

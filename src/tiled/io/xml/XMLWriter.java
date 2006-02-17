@@ -5,7 +5,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
@@ -29,7 +29,7 @@ public class XMLWriter
     private String indentString = " ";
     private String newLine = "\n";
     private final Writer w;
-    
+
     private final Stack openElements;
     private boolean bStartTagOpen;
     private boolean bDocumentOpen;
@@ -49,12 +49,12 @@ public class XMLWriter
     public void setIndentString(String indentString) {
         this.indentString = indentString;
     }
-    
+
 
     public void startDocument() throws IOException {
         startDocument("1.0");
     }
-    
+
     public void startDocument(String version) throws IOException {
         w.write("<?xml version=\"" + version + "\"?>" + newLine);
         bDocumentOpen = true;
@@ -73,7 +73,7 @@ public class XMLWriter
 
         writeIndent();
         w.write("<" + name);
-        
+
         openElements.push(name);
         bStartTagOpen = true;
     }

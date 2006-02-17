@@ -53,6 +53,22 @@ public class MultilayerPlane
         return layers.size();
     }
 
+    /**
+     * Changes the bounds of this plane to include all layers completely.
+     */
+    public void fitBoundsToLayers() {
+        int width = 0;
+        int height = 0;
+
+        for (int i = 0; i < layers.size(); i++) {
+            Rectangle layerBounds = getLayer(i).getBounds();
+            if (width < layerBounds.width) width = layerBounds.width;
+            if (height < layerBounds.height) height = layerBounds.height;
+        }
+
+        widthInTiles = width;
+        heightInTiles = height;
+    }
 
     /**
      * Returns a <code>Rectangle</code> representing the maximum bounds in
@@ -238,7 +254,15 @@ public class MultilayerPlane
         heightInTiles = height;
     }
 
+    /**
+     * Determines wether the point (x,y) falls within the plane.
+     *
+     * @param x
+     * @param y
+     * @return <code>true</code> if the point is within the plane,
+     *         <code>false</code> otherwise
+     */
     public boolean inBounds(int x, int y) {
-        return (x >= 0 && x <= widthInTiles) && (y >= 0 && y <= heightInTiles);
+        return x >= 0 && y >= 0 && x < widthInTiles && y < heightInTiles;
     }
 }

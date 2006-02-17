@@ -49,6 +49,7 @@
     <copy todir="${build}/tiled/mapeditor/resources">
       <fileset dir="./src/tiled/mapeditor/resources">
         <include name="*.png" />
+        <include name="*.properties" />
         <include name="map.dtd" />
       </fileset>
     </copy>

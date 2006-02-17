@@ -185,7 +185,7 @@ public class XMLMapTransformer implements MapReader
         Image img = null;
 
         String source = getAttributeValue(t, "source");
-        
+
         if (source != null) {
             if (Util.checkRoot(source)) {
                 source = makeUrl(source);
@@ -222,7 +222,7 @@ public class XMLMapTransformer implements MapReader
             }
         }
         */
-        
+
         return img;
     }
 
@@ -264,7 +264,7 @@ public class XMLMapTransformer implements MapReader
             warnings.push("ERROR: Could not find external tileset file " +
                     filename);
         }
-        
+
         return set;
     }
 
@@ -284,16 +284,16 @@ public class XMLMapTransformer implements MapReader
             //if (Util.checkRoot(source)) {
             //    filename = makeUrl(source);
             //}
-            
+
             TileSet ext = null;
 
             try {
-            	//just a little check for tricky people...
+                //just a little check for tricky people...
                 String extention = source.substring(source.lastIndexOf('.') + 1);
                 if (!extention.toLowerCase().equals("tsx")) {
                     warnings.push("WARN: tileset files should end in .tsx! ("+source+")");
                 }
-            	
+
                 InputStream in = new URL(makeUrl(filename)).openStream();
                 ext = unmarshalTilesetFile(in, filename);
             } catch (FileNotFoundException fnf) {
@@ -301,11 +301,11 @@ public class XMLMapTransformer implements MapReader
                         filename);
             }
 
-            if(ext == null) {
-            	warnings.push("ERROR: tileset "+source+" was not loaded correctly!");
-            	ext = new TileSet();
+            if (ext == null) {
+                warnings.push("ERROR: tileset "+source+" was not loaded correctly!");
+                ext = new TileSet();
             }
-            
+
             ext.setFirstGid(firstGid);
             return ext;
         }
@@ -467,7 +467,7 @@ public class XMLMapTransformer implements MapReader
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
+
         //Read all objects from the group, "...and in the darkness bind them."
         NodeList children = t.getChildNodes();
 
@@ -477,7 +477,7 @@ public class XMLMapTransformer implements MapReader
                 og.bindObject(unmarshalObject(child));
             }
         }
-        
+
         return og;
     }
 
@@ -498,7 +498,7 @@ public class XMLMapTransformer implements MapReader
         ml.setOffset(offsetX, offsetY);
         ml.setName(getAttributeValue(t, "name"));
         ml.setVisible(visible == 1);
-        
+
         if (opacity != null) {
             ml.setOpacity(Float.parseFloat(opacity));
         }
@@ -685,7 +685,7 @@ public class XMLMapTransformer implements MapReader
     public Map readMap(String filename) throws Exception {
         xmlPath = filename.substring(0,
                 filename.lastIndexOf(File.separatorChar) + 1);
-        
+
         String xmlFile = makeUrl(filename);
         //xmlPath = makeUrl(xmlPath);
 
@@ -699,26 +699,26 @@ public class XMLMapTransformer implements MapReader
 
         Map unmarshalledMap = unmarshal(is);
         unmarshalledMap.setFilename(filename);
-        
+
         return unmarshalledMap;
     }
 
     public Map readMap(InputStream in) throws Exception {
         xmlPath = makeUrl(".");
-        
+
         Map unmarshalledMap = unmarshal(in);
-        
+
         //unmarshalledMap.setFilename(xmlFile)
         //
         return unmarshalledMap;
     }
-    
+
     public TileSet readTileset(String filename) throws Exception {
         String xmlFile = filename;
-        
+
         xmlPath = filename.substring(0,
                 filename.lastIndexOf(File.separatorChar) + 1);
-        
+
         xmlFile = makeUrl(xmlFile);
         xmlPath = makeUrl(xmlPath);
 
@@ -730,7 +730,7 @@ public class XMLMapTransformer implements MapReader
         // TODO: The MapReader interface should be changed...
         return unmarshalTilesetFile(in, ".");
     }
-    
+
     /**
      * @see tiled.io.MapReader#getFilter()
      */
@@ -741,7 +741,7 @@ public class XMLMapTransformer implements MapReader
     public String getPluginPackage() {
         return "Tiled internal TMX reader/writer";
     }
-    
+
     /**
      * @see tiled.io.PluggableMapIO#getDescription()
      */
@@ -767,7 +767,7 @@ public class XMLMapTransformer implements MapReader
         } catch (IOException e) {}
         return false;
     }
-    
+
     public void setErrorStack(Stack es) {
         warnings = es;
     }

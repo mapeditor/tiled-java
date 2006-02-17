@@ -56,7 +56,7 @@ public class SelectionLayer extends TileLayer
 
     /**
      * Returns the selected area.
-     * 
+     *
      * @return the selected area
      */
     public Area getSelectedArea() {
@@ -65,7 +65,7 @@ public class SelectionLayer extends TileLayer
 
     /**
      * Returns the bounds of the selected area.
-     * 
+     *
      * @return A Rectangle instance
      * @see Area#getBounds()
      */
@@ -75,7 +75,7 @@ public class SelectionLayer extends TileLayer
 
     /**
      * Adds the given area via a union
-     * 
+     *
      * @param area The Area to union with the current selection
      * @see Area#add(java.awt.geom.Area)
      */
@@ -83,7 +83,7 @@ public class SelectionLayer extends TileLayer
         selection.add(area);
         fillRegion(selection, selTile);
     }
-    
+
     /**
      * Deselects the given area. This substracts the given area from the
      * existing selected area.
@@ -95,19 +95,34 @@ public class SelectionLayer extends TileLayer
         selection.subtract(area);
     }
 
+    /**
+     * Sets the selected area to the given Rectangle.
+     *
+     * @param region
+     */
     public void selectRegion(Rectangle region) {
         clearRegion(selection);
         selection = new Area(region);
         fillRegion(selection, selTile);
     }
 
+    /**
+     * Selects only the given tile location (adds it to the selection
+     * if one exists)
+     *
+     * @param tx
+     * @param ty
+     */
     public void select(int tx, int ty) {
         setTileAt(tx, ty, selTile);
+
+        Area a = new Area(new Rectangle2D.Double(tx, ty, 1, 1));
+
         if (selection == null) {
-            selection = new Area(new Rectangle2D.Double(tx, ty, 1, 1));
+            selection = a;
         } else {
             if (!selection.contains(tx, ty)) {
-                selection.add(new Area(new Rectangle2D.Double(tx, ty, 1, 1)));
+                selection.add(a);
             }
         }
     }
@@ -123,7 +138,7 @@ public class SelectionLayer extends TileLayer
 
     /**
      * Returns the highlight color.
-     * 
+     *
      * @return A Color instance of the highlight color
      */
     public Color getHighlightColor() {

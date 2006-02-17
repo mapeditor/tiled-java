@@ -19,16 +19,16 @@ import java.util.Vector;
 public class Sprite {
 
     private Vector keys;
-    KeyFrame currentKey=null;
-    private int totalFrames=0,
-    borderWidth=0,
-    fpl=0,
-    totalKeys=-1,
-    transparent=0;
+    KeyFrame currentKey = null;
+    private int totalFrames = 0;
+    private int borderWidth = 0;
+    private int fpl = 0;
+    private int totalKeys = -1;
+    private int transparent = 0;
 
     private float currentFrame=0;
     private Rectangle frameSize;
-    private Image sprite=null;
+    private Image sprite = null;
     private boolean bPlaying=true;
 
     public Sprite() {
@@ -150,15 +150,15 @@ public class Sprite {
 
         if (currentKey!=null) {
             if (bPlaying) {
-                currentFrame+=currentKey.getFrameRate();
+                currentFrame += currentKey.getFrameRate();
             }
 
             if ((int)currentFrame>currentKey.getFinishFrame()) {
-                if ((currentKey.getFlags()&KeyFrame.KEY_LOOP)==KeyFrame.KEY_LOOP) {
+                if ((currentKey.getFlags()&KeyFrame.KEY_LOOP) == KeyFrame.KEY_LOOP) {
                     currentFrame=currentKey.getStartFrame();
-                }else if ((currentKey.getFlags()&KeyFrame.KEY_REVERSE)==KeyFrame.KEY_REVERSE) {
+                } else if ((currentKey.getFlags()&KeyFrame.KEY_REVERSE) == KeyFrame.KEY_REVERSE) {
                     currentKey.setFrameRate(-currentKey.getFrameRate());
-                }else if ((currentKey.getFlags()&KeyFrame.KEY_AUTO)==KeyFrame.KEY_AUTO) {
+                } else if ((currentKey.getFlags()&KeyFrame.KEY_AUTO) == KeyFrame.KEY_AUTO) {
                 	//TODO: need to iterate to the next key
                     if (currentKey!=null) {
                         currentFrame = currentKey.getStartFrame();
@@ -167,13 +167,13 @@ public class Sprite {
                     currentFrame=currentKey.getFinishFrame();
                     bPlaying=false;
                 }
-            }else if ((int)currentFrame<currentKey.getStartFrame()) {
-                if ((currentKey.getFlags()&KeyFrame.KEY_LOOP)==KeyFrame.KEY_LOOP) {
+            } else if ((int)currentFrame<currentKey.getStartFrame()) {
+                if ((currentKey.getFlags()&KeyFrame.KEY_LOOP) == KeyFrame.KEY_LOOP) {
                     currentFrame=currentKey.getFinishFrame();
-                }else if ((currentKey.getFlags()&KeyFrame.KEY_REVERSE)==KeyFrame.KEY_REVERSE) {
+                } else if ((currentKey.getFlags()&KeyFrame.KEY_REVERSE) == KeyFrame.KEY_REVERSE) {
                     currentKey.setFrameRate(-currentKey.getFrameRate());
                 } else {
-                    bPlaying=false;
+                    bPlaying = false;
                 }
             }
 
@@ -189,7 +189,7 @@ public class Sprite {
     }
 
     public void stop() {
-        bPlaying=false;
+        bPlaying = false;
     }
 
     public void keyStepBack(int amt) {
@@ -210,9 +210,9 @@ public class Sprite {
 
     public KeyFrame getKey(String keyName) {
         Iterator itr = keys.iterator();
-        while(itr.hasNext()) {
+        while (itr.hasNext()) {
         	KeyFrame k = (KeyFrame) itr.next();
-        	if(k.equalsIgnoreCase(keyName)) {
+        	if (k.equalsIgnoreCase(keyName)) {
         		return k;
         	}
         }
@@ -236,7 +236,7 @@ public class Sprite {
     }
 
     public void draw(Graphics g) {
-        int x=0, y=0;
+        int x = 0, y = 0;
         
         if(frameSize.height>0 && frameSize.width>0) {
 	        y=(((int)currentFrame)/fpl)*(frameSize.height+borderWidth);
@@ -256,6 +256,5 @@ public class Sprite {
         s = "Frame: ("+frameSize.width+"x"+frameSize.height+")\nBorder: "+borderWidth+"\nFPL: "+fpl+"\nTotal Frames: "+totalFrames+"\nTotal keys: "+totalKeys;
         return s;
     }
-
 }
 

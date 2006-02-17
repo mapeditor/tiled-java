@@ -55,7 +55,7 @@ public class ImageHelper
     /**
      * Converts a byte array into an image. The byte array must include the image
      * header, so that a decision about format can be made.
-     * 
+     *
      * @param imageData The byte array of the data to convert.
      * @return Image The image instance created from the byte array
      * @see java.awt.Toolkit#createImage(byte[] imagedata)
@@ -63,11 +63,11 @@ public class ImageHelper
     static public Image bytesToImage(byte[] imageData) {
         return Toolkit.getDefaultToolkit().createImage(imageData);
     }
-    
+
     /**
      * This function loads the image denoted by <code>file</code>. This supports
      * PNG, GIF, JPG, and BMP (in 1.5).
-     * 
+     *
      * @param file
      * @return the (partially) loaded image
      * @throws IOException

@@ -7,6 +7,7 @@
 * Fixed loading of layer visibility attribute
 * Fixed tileset dialog so that it is now possible to change the tile height to
   something else than the tile height used by the map.
+* Fixed saving a map with no extension (now defaults to .tmx)
 
 Planned changes
 + Added the Shifted view, which emulates several tiling configurations
@@ -14,7 +15,6 @@ Planned changes
 + Added ability to select multiple layers from layer table
 + Added the ability to merge tile images when layers are merged
 + Fixed memory problems when loading several maps with many tilesets in a row
-+ Fixed NullPointerException when saving without specifying an extention
 + Localizations to Dutch and German
 
 0.5.1 - June 15th, 2005

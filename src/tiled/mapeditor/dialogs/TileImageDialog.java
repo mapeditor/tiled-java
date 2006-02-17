@@ -50,6 +50,7 @@ public class TileImageDialog extends JDialog
         tileset = set;
         imageId = id;
         imageOrientation = orientation;
+
         init();
         queryImages();
         updateImageLabel();
@@ -66,7 +67,7 @@ public class TileImageDialog extends JDialog
         JScrollPane sp = new JScrollPane();
         sp.getViewport().setView(imageList);
         sp.setPreferredSize(new Dimension(150, 150));
-        
+
         // image panel
         JPanel image_panel = new JPanel();
         image_panel.setLayout(new BoxLayout(image_panel, BoxLayout.Y_AXIS));
@@ -80,6 +81,7 @@ public class TileImageDialog extends JDialog
         rotateCheck = new JCheckBox("Rotate",
             (imageOrientation & 4) == 4);
         rotateCheck.addActionListener(this);
+
         image_panel.add(imageLabel);
         image_panel.add(horizFlipCheck);
         image_panel.add(vertFlipCheck);
@@ -113,7 +115,6 @@ public class TileImageDialog extends JDialog
 
     public void queryImages() {
         Vector listData = new Vector();
-        int curSlot = 0;
         int initialIndex = 0;
 
         Enumeration ids = tileset.getImageIds();
@@ -176,7 +177,7 @@ public class TileImageDialog extends JDialog
         updateEnabledState();
     }
 
-    int getImageId() {
+    public int getImageId() {
         return imageId;
     }
 

@@ -247,10 +247,10 @@ public class XMLMapWriter implements MapWriter
                 } else if (!embedImages) {
                     String imgSource =
                             prefs.get("tileImagePrefix", "tile") + "set.png";
-                    
+
                     w.startElement("image");
                     w.writeAttribute("source", imgSource);
-                    
+
                     String tilesetFilename = wp.substring(0,
                             wp.lastIndexOf(File.separatorChar) + 1) + imgSource;
                     FileOutputStream fw = new FileOutputStream(new File(
@@ -258,10 +258,10 @@ public class XMLMapWriter implements MapWriter
                     //byte[] data = ImageHelper.imageToPNG(setImage);
                     //fw.write(data, 0, data.length);
                     w.endElement();
-                    
+
                     fw.close();
                 }
-                
+
                 // Check to see if there is a need to write tile elements
                 if (set.isOneForOne()) {
                     Iterator tileIterator = set.iterator();
