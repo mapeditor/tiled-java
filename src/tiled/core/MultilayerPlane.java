@@ -263,6 +263,6 @@ public class MultilayerPlane
      *         <code>false</code> otherwise
      */
     public boolean inBounds(int x, int y) {
-        return (x >= 0 && x <= widthInTiles) && (y >= 0 && y <= heightInTiles);
+        return x >= 0 && y >= 0 && x < widthInTiles && y < heightInTiles;
     }
 }

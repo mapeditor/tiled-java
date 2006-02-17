@@ -29,7 +29,6 @@ import tiled.mapeditor.util.*;
 import tiled.mapeditor.plugin.PluginClassLoader;
 import tiled.mapeditor.Resources;
 
-
 public class TilesetManager extends JDialog implements ActionListener,
        ListSelectionListener
 {
@@ -75,12 +74,15 @@ public class TilesetManager extends JDialog implements ActionListener,
         GridBagConstraints c = new GridBagConstraints();
         c.fill = GridBagConstraints.BOTH;
         c.gridy = 0;
-        c.gridwidth = 7; c.gridheight = 1;
-        c.weightx = 1; c.weighty = 1;
+        c.gridwidth = 7;
+        c.gridheight = 1;
+        c.weightx = 1;
+        c.weighty = 1;
         mainPanel.add(tilesetScrollPane, c);
         c.insets = new Insets(5, 0, 0, 5);
         c.gridy = 1;
-        c.weighty = 0; c.weightx = 0;
+        c.weighty = 0;
+        c.weightx = 0;
         c.gridwidth = 1;
         mainPanel.add(saveButton, c);
         mainPanel.add(saveAsButton, c);

@@ -96,7 +96,7 @@ public class SelectionLayer extends TileLayer
     }
 
     /**
-     * Sets the selected area to the given Rectangle
+     * Sets the selected area to the given Rectangle.
      *
      * @param region
      */

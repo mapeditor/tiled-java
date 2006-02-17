@@ -40,7 +40,7 @@ import tiled.mapeditor.Resources;
  */
 public class NewTilesetDialog extends JDialog implements ChangeListener
 {
-    private Map map;
+    private final Map map;
     private TileSet newTileset;
     private IntegerSpinner tileWidth, tileHeight;
     private IntegerSpinner tileSpacing;
@@ -183,6 +183,7 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
         tilebmpPanel.add(cutterLabel, c);
         c.gridx = 1;
         c.gridy = 2;
+        c.weightx = 1;
         c.insets = new Insets(5, 0, 0, 0);
         c.fill = GridBagConstraints.HORIZONTAL;
         tilebmpPanel.add(tilebmpPathPanel, c);

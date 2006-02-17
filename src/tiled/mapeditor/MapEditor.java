@@ -30,17 +30,7 @@ import javax.swing.undo.UndoableEditSupport;
 import tiled.core.*;
 import tiled.view.*;
 import tiled.mapeditor.brush.*;
-import tiled.mapeditor.dialogs.AboutDialog;
-import tiled.mapeditor.dialogs.BrushDialog;
-import tiled.mapeditor.dialogs.ConfigurationDialog;
-import tiled.mapeditor.dialogs.NewMapDialog;
-import tiled.mapeditor.dialogs.NewTilesetDialog;
-import tiled.mapeditor.dialogs.PluginDialog;
-import tiled.mapeditor.dialogs.PropertiesDialog;
-import tiled.mapeditor.dialogs.ResizeDialog;
-import tiled.mapeditor.dialogs.SearchDialog;
-import tiled.mapeditor.dialogs.TilePaletteDialog;
-import tiled.mapeditor.dialogs.TilesetManager;
+import tiled.mapeditor.dialogs.*;
 import tiled.mapeditor.plugin.PluginClassLoader;
 import tiled.mapeditor.selection.SelectionLayer;
 import tiled.mapeditor.util.*;
@@ -55,6 +45,8 @@ import tiled.io.MapWriter;
 
 /**
  * The main class for the Tiled Map Editor.
+ *
+ * @version $Id$
  */
 public class MapEditor implements ActionListener, MouseListener,
         MouseMotionListener, MapChangeListener, ListSelectionListener,
@@ -837,7 +829,7 @@ public class MapEditor implements ActionListener, MouseListener,
                 }
             }
         } else if (command.equals("Merge All")) {
-            if( JOptionPane.showConfirmDialog(appFrame,
+            if (JOptionPane.showConfirmDialog(appFrame,
                     "Do you wish to merge tile images, and create a new tile set?",
                     "Merge Tiles?", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION ) {
                 TileMergeHelper tmh = new TileMergeHelper(currentMap);
@@ -1663,7 +1655,7 @@ public class MapEditor implements ActionListener, MouseListener,
             Tile newTile, Tile oldTile) {
         if (newTile == oldTile || layer.getLocked()) return;
 
-        Rectangle area = null;
+        Rectangle area;
         TileLayer before = new TileLayer(layer);
         TileLayer after;
 
@@ -1838,7 +1830,7 @@ public class MapEditor implements ActionListener, MouseListener,
         // Make sure that the file has an extension. If not, append .tmx
         // NOTE: we can't know anything more than the filename has at least
         //		 one '.' in it...
-        if(filename.lastIndexOf('.') == -1) {
+        if (filename.lastIndexOf('.') == -1) {
         	filename = filename.concat(".tmx");
         }
         

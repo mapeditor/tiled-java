@@ -415,9 +415,8 @@ public class XMLMapWriter implements MapWriter
             e.printStackTrace();
         }
     }
-    
+
     private static void writeTile(Tile tile, XMLWriter w) throws IOException {
-    	
         try {
             w.startElement("tile");
 

@@ -23,7 +23,7 @@ import tiled.core.TileSet;
  * can have any format, as long as the MapWriter implementor accepts
  * instances of tiled.core.Map and tiled.core.TileSet.
  */
-public interface MapWriter  extends PluggableMapIO, FileFilter
+public interface MapWriter extends PluggableMapIO, FileFilter
 {
     /**
      * Saves a map to a file.

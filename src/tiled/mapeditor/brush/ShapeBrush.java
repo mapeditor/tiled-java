@@ -38,8 +38,8 @@ public class ShapeBrush extends AbstractBrush
     public ShapeBrush(AbstractBrush sb) {
         super(sb);
         if (sb instanceof ShapeBrush) {
-            shape = ((ShapeBrush)sb).shape;
-            paintTile = ((ShapeBrush)sb).paintTile;
+            shape = ((ShapeBrush) sb).shape;
+            paintTile = ((ShapeBrush) sb).paintTile;
         }
     }
 

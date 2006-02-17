@@ -19,9 +19,9 @@ import java.util.Vector;
 public class Sprite {
 
     private Vector keys;
-    private int borderWidth=0,
-    fpl=0,
-    totalKeys=-1;
+    private int borderWidth = 0;
+    private int fpl = 0;
+    private int totalKeys = -1;
 
     private float currentFrame=0;
     private Rectangle frameSize;
@@ -29,7 +29,6 @@ public class Sprite {
 
     public class KeyFrame
     {
-    	
     	public static final int MASK_ANIMATION = 0x0000000F;
     	
         public static final int KEY_LOOP    = 0x01;
@@ -128,7 +127,7 @@ public class Sprite {
         keys = new Vector();
     }
 
-    public Sprite(Tile [] frames) {
+    public Sprite(Tile[] frames) {
     	setFrames(frames);
     }
     
@@ -166,7 +165,7 @@ public class Sprite {
     }
 
     public void setCurrentFrame(float c) {
-    	if(c < 0) {
+    	if (c < 0) {
     		switch(currentKey.flags & KeyFrame.MASK_ANIMATION) {
     			case KeyFrame.KEY_LOOP:
     				currentFrame = currentKey.getLastFrame();
@@ -184,7 +183,7 @@ public class Sprite {
     				currentFrame = 0;
     			break;
     		}
-    	} else if(c > currentKey.getLastFrame()) {
+    	} else if (c > currentKey.getLastFrame()) {
     		switch(currentKey.flags & KeyFrame.MASK_ANIMATION) {
 				case KeyFrame.KEY_LOOP:
 					currentFrame = 0;
@@ -216,9 +215,9 @@ public class Sprite {
     }
 
     public int getTotalFrames() {
-    	int total=0;
+    	int total = 0;
     	Iterator itr = keys.iterator();
-    	while(itr.hasNext()) {
+    	while (itr.hasNext()) {
     		total += ((KeyFrame)itr.next()).getTotalFrames();
     	}
     	
@@ -316,18 +315,18 @@ public class Sprite {
     }
 
     public void keyStepBack(int amt) {
-    	setCurrentFrame(currentFrame-amt);
+        setCurrentFrame(currentFrame-amt);
     }
 
     public void keyStepForward(int amt) {
-    	setCurrentFrame(currentFrame+amt);
+        setCurrentFrame(currentFrame+amt);
     }
 
     public KeyFrame getKey(String keyName) {
         Iterator itr = keys.iterator();
-        while(itr.hasNext()) {
+        while (itr.hasNext()) {
         	KeyFrame k = (KeyFrame) itr.next();
-        	if(k != null && k.equalsIgnoreCase(keyName)) {
+        	if (k != null && k.equalsIgnoreCase(keyName)) {
         		return k;
         	}
         }
@@ -343,7 +342,7 @@ public class Sprite {
     }
 
     public Rectangle getCurrentFrameRect() {
-    	int x=0, y=0;
+        int x = 0, y = 0;
         
         if(frameSize.height>0 && frameSize.width>0) {
 	        y=(((int)currentFrame)/fpl)*(frameSize.height+borderWidth);
@@ -361,7 +360,5 @@ public class Sprite {
         s = "Frame: ("+frameSize.width+"x"+frameSize.height+")\nBorder: "+borderWidth+"\nFPL: "+fpl+"\nTotal Frames: "+getTotalFrames()+"\nTotal keys: "+totalKeys;
         return s;
     }
-
-   
 }
 

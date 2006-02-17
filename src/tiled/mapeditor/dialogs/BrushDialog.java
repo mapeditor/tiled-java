@@ -29,7 +29,6 @@ import javax.swing.event.ListSelectionListener;
 import tiled.core.Tile;
 import tiled.io.MapHelper;
 import tiled.io.MapReader;
-import tiled.mapeditor.MapEditor;
 import tiled.mapeditor.brush.*;
 import tiled.mapeditor.plugin.PluginClassLoader;
 import tiled.mapeditor.util.LayerTableModel;
@@ -38,6 +37,7 @@ import tiled.mapeditor.widget.BrushBrowser;
 import tiled.mapeditor.widget.IntegerSpinner;
 import tiled.mapeditor.widget.MiniMapViewer;
 import tiled.mapeditor.widget.VerticalStaticJPanel;
+import tiled.mapeditor.MapEditor;
 import tiled.mapeditor.Resources;
 import tiled.util.TiledConfiguration;
 

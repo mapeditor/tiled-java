@@ -174,19 +174,11 @@ public final class PluginClassLoader extends URLClassLoader
     }
 
     public MapReader[] getReaders() {
-        MapReader[] result = new MapReader[readers.size()];
-        for (int i = 0; i < readers.size(); ++i) {
-          result[i] = (MapReader)(readers.elementAt(i));
-        }
-        return result;
+        return (MapReader[])readers.toArray(new MapReader[readers.size()]);
     }
 
     public MapWriter[] getWriters() {
-        MapWriter[] result = new MapWriter[writers.size()];
-        for (int i = 0; i < writers.size(); ++i) {
-          result[i] = (MapWriter)(writers.elementAt(i));
-        }
-        return result;
+        return (MapWriter[])writers.toArray(new MapWriter[writers.size()]);
     }
 
     public Object getReaderFor(String file) throws Exception {

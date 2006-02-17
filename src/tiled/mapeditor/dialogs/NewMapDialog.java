@@ -20,7 +20,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.prefs.Preferences;
 import javax.swing.*;
-import java.io.*;
 
 import tiled.core.Map;
 import tiled.mapeditor.widget.IntegerSpinner;
@@ -48,7 +47,6 @@ public class NewMapDialog extends JDialog implements ActionListener
     }
 
     private void init() {
-
         // Load dialog defaults
 
         int defaultMapWidth = prefs.getInt("mapWidth", 64);

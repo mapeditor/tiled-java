@@ -240,7 +240,6 @@ public class XMLMapTransformer implements MapReader
             //builder.setErrorHandler(new XMLErrorHandler());
             tsDoc = builder.parse(in, ".");
 
-
             String xmlPathSave = xmlPath;
             if (filename.indexOf(File.separatorChar) >= 0) {
                 xmlPath = filename.substring(0,
