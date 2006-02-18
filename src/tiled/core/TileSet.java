@@ -29,7 +29,6 @@ import javax.imageio.stream.ImageInputStream;
 
 import tiled.util.Util;
 
-
 /**
  * <p>TileSet handles operations on tiles as a set, or group. It has several
  * advanced internal functions aimed at reducing unnecessary data replication.
@@ -58,7 +57,7 @@ public class TileSet
 {
     private String base;
     private Vector tiles;
-    private Hashtable images, orientedImages, imageCache;
+    private Hashtable images, imageCache;
     private int firstGid;
     private int tileHeight;
     private int tileWidth;
@@ -266,7 +265,7 @@ public class TileSet
      * Removes a tile from this tileset. Does not invalidate other tile
      * indices. Removal is simply setting the reference at the specified
      * index to <b>null</b>
-     * 
+     *
      * @param i the index to remove
      */
     public void removeTile(int i) {
@@ -369,7 +368,7 @@ public class TileSet
 
     /**
      * Returns the base directory for the tileset
-     * 
+     *
      * @return a directory in native format as given in the tileset file or tag
      */
     public String getBaseDir() {

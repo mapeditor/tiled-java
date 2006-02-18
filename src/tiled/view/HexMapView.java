@@ -110,7 +110,7 @@ public class HexMapView extends MapView
             for (int x = startX; x < endX; x++) {
                 Tile t = layer.getTileAt(x, y);
 
-                if (t != null && t != myMap.getNullTile()) {
+                if (t != null) {
                     if (layer.getClass() == SelectionLayer.class) {
                         g2d.fillPolygon(gridPoly);
                     } else {
@@ -176,7 +176,7 @@ public class HexMapView extends MapView
                 grid.translate((int)(tileSize.getWidth() * .75), 0);
                 grid.translate(0,
                         -(int)((tileSize.getHeight() / 2) * (1 - x % 2)));
-            }            
+            }
         }
     }
 
@@ -303,7 +303,7 @@ public class HexMapView extends MapView
 
     /**
      * Returns the location on screen for the given tile.
-     * 
+     *
      * @return The point at the centre of the Hex.
      */
     public Point tileToScreenCoords(double x, double y) {

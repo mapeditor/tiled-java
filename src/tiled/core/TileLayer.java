@@ -244,7 +244,7 @@ public class TileLayer extends MapLayer
         for (int y = 0; y < bounds.height; y++) {
             for (int x = 0; x < bounds.width; x++) {
                 if (map[y][x] == tile) {
-                    setTileAt(x + bounds.x, y + bounds.y, myMap.getNullTile());
+                    setTileAt(x + bounds.x, y + bounds.y, null);
                 }
             }
         }
@@ -338,8 +338,8 @@ public class TileLayer extends MapLayer
         for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
             for (int x = bounds.x; x < bounds.x + bounds.width; x++) {
                 Tile tile = getTileAt(x, y);
-                if (myMap == null || tile != myMap.getNullTile()) {
-                    ((TileLayer)other).setTileAt(x, y, tile);
+                if (tile != null) {
+                    ((TileLayer) other).setTileAt(x, y, tile);
                 }
             }
         }
@@ -358,7 +358,7 @@ public class TileLayer extends MapLayer
 
         for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
             for (int x = bounds.x; x < bounds.x + bounds.width; x++) {
-                setTileAt(x, y, ((TileLayer)other).getTileAt(x, y));
+                setTileAt(x, y, ((TileLayer) other).getTileAt(x, y));
             }
         }
     }
@@ -379,7 +379,7 @@ public class TileLayer extends MapLayer
         for (int y = boundBox.y; y < boundBox.y + boundBox.height; y++) {
             for (int x = boundBox.x; x < boundBox.x + boundBox.width; x++) {
                 if (mask.contains(x,y)) {
-                    setTileAt(x, y, ((TileLayer)other).getTileAt(x, y));
+                    setTileAt(x, y, ((TileLayer) other).getTileAt(x, y));
                 }
             }
         }
@@ -398,7 +398,7 @@ public class TileLayer extends MapLayer
 
         for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
             for (int x = bounds.x; x < bounds.x + bounds.width; x++) {
-                ((TileLayer)other).setTileAt(x, y, getTileAt(x, y));
+                ((TileLayer) other).setTileAt(x, y, getTileAt(x, y));
             }
         }
     }

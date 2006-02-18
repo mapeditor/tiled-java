@@ -21,7 +21,6 @@ import javax.swing.event.EventListenerList;
 import tiled.mapeditor.util.MapChangeListener;
 import tiled.mapeditor.util.MapChangedEvent;
 
-
 /**
  * The Map class is the focal point of the <code>tiled.core</code> package.
  * This class also handles notifing listeners if there is a change to any layer
@@ -220,7 +219,7 @@ public class Map extends MultilayerPlane
     }
 
     /**
-     * Calls super method, and additionally fires a MapChangedEvent.
+     * Calls super method, and additionally fires a {@link MapChangedEvent}.
      *
      * @see MultilayerPlane#removeLayer(int)
      */
@@ -247,7 +246,7 @@ public class Map extends MultilayerPlane
 
     /**
      * Calls super method, and additionally fires a MapChangedEvent.
-     * 
+     *
      * @see MultilayerPlane#removeAllLayers
      */
 
@@ -331,15 +330,6 @@ public class Map extends MultilayerPlane
      */
     public Vector getTilesets() {
         return tilesets;
-    }
-
-    /**
-     * Retrieves the designated "Blank" or "Null" tile
-     *
-     * @return Tile designated Null tile, or null by default
-     */
-    public Tile getNullTile() {
-        return null;
     }
 
     /**
@@ -451,7 +441,7 @@ public class Map extends MultilayerPlane
      * Returns the orientation of this map. Orientation will be one of
      * {@link Map#MDO_ISO}, {@link Map#MDO_ORTHO}, {@link Map#MDO_HEX},
      * {@link Map#MDO_OBLIQUE} and {@link Map#MDO_SHIFTED}.
-     * 
+     *
      * @return The orientation from the enumerated set
      */
     public int getOrientation() {

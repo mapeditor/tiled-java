@@ -366,13 +366,13 @@ public class XMLMapTransformer implements MapReader
 	                                    trans.getWidth(null),
 	                                    trans.getHeight(null),
 	                                    BufferedImage.TYPE_INT_ARGB);
-	
+
 	                            img.getGraphics().drawImage(trans, 0, 0, null);
-	
+
 	                            set.importTileBitmap(img,
 	                                    tileWidth, tileHeight, tileSpacing,
 	                                    !hasTileElements);
-	
+
 	                            set.setTransparentColor(color);
 	                            set.setTilesetImageFilename(sourcePath);
                             } catch(IIOException iioe) {
@@ -542,7 +542,7 @@ public class XMLMapTransformer implements MapReader
                                     ml.setTileAt(x, y,
                                             ts.getTile(tileId - ts.getFirstGid()));
                                 } else {
-                                    ml.setTileAt(x, y, map.getNullTile());
+                                    ml.setTileAt(x, y, null);
                                 }
                             }
                         }
@@ -560,7 +560,7 @@ public class XMLMapTransformer implements MapReader
                                 ml.setTileAt(x, y,
                                         ts.getTile(tileId - ts.getFirstGid()));
                             } else {
-                                ml.setTileAt(x, y, map.getNullTile());
+                                ml.setTileAt(x, y, null);
                             }
 
                             x++;
@@ -692,7 +692,7 @@ public class XMLMapTransformer implements MapReader
         URL url = new URL(xmlFile);
         InputStream is = url.openStream();
 
-        // Wrap with GZIP decoder for .tmx.gz files 
+        // Wrap with GZIP decoder for .tmx.gz files
         if (filename.endsWith(".gz")) {
             is = new GZIPInputStream(is);
         }

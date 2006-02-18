@@ -714,7 +714,7 @@ public class MapEditor implements ActionListener, MouseListener,
 
     /**
      * Returns the currently selected tile.
-     * 
+     *
      * @return The currently selected tile.
      */
     public Tile getCurrentTile() {
@@ -723,7 +723,7 @@ public class MapEditor implements ActionListener, MouseListener,
 
     /**
      * Returns the current map.
-     * 
+     *
      * @return The currently selected map.
      */
     public Map getCurrentMap() {
@@ -732,7 +732,7 @@ public class MapEditor implements ActionListener, MouseListener,
 
     /**
      * Returns the currently selected layer.
-     * 
+     *
      * @return THe currently selected layer.
      */
     public MapLayer getCurrentLayer() {
@@ -741,7 +741,7 @@ public class MapEditor implements ActionListener, MouseListener,
 
     /**
      * Returns the main application frame.
-     * 
+     *
      * @return The frame of the main application
      */
     public Frame getAppFrame() {
@@ -871,8 +871,7 @@ public class MapEditor implements ActionListener, MouseListener,
                 case PS_ERASE:
                     paintEdit.setPresentationName("Erase");
                     if (layer instanceof TileLayer) {
-                        ((TileLayer)layer).setTileAt(tile.x, tile.y,
-                                                     currentMap.getNullTile());
+                        ((TileLayer) layer).setTileAt(tile.x, tile.y, null);
                     }
                     mapView.repaintRegion(new Rectangle(tile.x, tile.y, 1, 1));
                     break;
@@ -1564,7 +1563,7 @@ public class MapEditor implements ActionListener, MouseListener,
                     for (int i = area.y; i < area.height+area.y; i++) {
                         for (int j = area.x; j < area.width + area.x; j++){
                             if (mask.contains(j,i)) {
-                                tl.setTileAt(j, i, currentMap.getNullTile());
+                                tl.setTileAt(j, i, null);
                             }
                         }
                     }

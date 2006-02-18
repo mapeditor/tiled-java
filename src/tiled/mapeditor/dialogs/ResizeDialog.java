@@ -5,7 +5,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
@@ -81,11 +81,13 @@ public class ResizeDialog extends JDialog implements ActionListener,
         GridBagConstraints c = new GridBagConstraints();
         c.anchor = GridBagConstraints.WEST;
         c.fill = GridBagConstraints.BOTH; c.weighty = 1;
-        c.insets = new Insets(5, 0, 0, 0);
+        c.insets = new Insets(5, 0, 0, 5);
         offsetPanel.add(new JLabel(X_LABEL), c);
         c.gridy = 1;
         offsetPanel.add(new JLabel(Y_LABEL), c);
-        c.gridx = 1; c.gridy = 0;
+        c.gridx = 1;
+        c.gridy = 0;
+        c.insets = new Insets(5, 0, 0, 0);
         offsetPanel.add(offsetX, c);
         c.gridy = 1;
         offsetPanel.add(offsetY, c);
@@ -102,12 +104,13 @@ public class ResizeDialog extends JDialog implements ActionListener,
         c = new GridBagConstraints();
         c.anchor = GridBagConstraints.WEST;
         c.fill = GridBagConstraints.BOTH; c.weighty = 1;
-        c.insets = new Insets(5, 0, 0, 0);
+        c.insets = new Insets(5, 0, 0, 5);
         newSizePanel.add(new JLabel(WIDTH_LABEL), c);
         c.gridy = 1;
         newSizePanel.add(new JLabel(HEIGHT_LABEL), c);
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 1; c.gridy = 0; c.weightx = 1;
+        c.insets = new Insets(5, 0, 0, 0);
         newSizePanel.add(width, c);
         c.gridy = 1;
         newSizePanel.add(height, c);
@@ -120,7 +123,7 @@ public class ResizeDialog extends JDialog implements ActionListener,
         c = new GridBagConstraints();
         c.anchor = GridBagConstraints.EAST;
         c.fill = GridBagConstraints.BOTH; c.weighty = 1; c.weightx = 1;
-        c.insets = new Insets(5, 0, 0, 0);
+        c.insets = new Insets(5, 0, 0, 5);
         origSizePanel.add(new JLabel(WIDTH_LABEL), c);
         c.gridy = 1;
         origSizePanel.add(new JLabel(HEIGHT_LABEL), c);
@@ -195,7 +198,7 @@ public class ResizeDialog extends JDialog implements ActionListener,
             offsetY.setValue((int)(val / (currentMap.getTileHeight() * zoom)));
         }
     }
-    
+
     public void stateChanged(ChangeEvent e) {
         Object source = e.getSource();
 

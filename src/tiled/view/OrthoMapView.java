@@ -89,7 +89,7 @@ public class OrthoMapView extends MapView
                     x < endX; x++, gx += tsize.width) {
                 Tile tile = layer.getTileAt(x, y);
 
-                if (tile != null && tile != myMap.getNullTile()) {
+                if (tile != null) {
                     if (layer instanceof SelectionLayer) {
                         Polygon gridPoly = createGridPolygon(
                                 gx, gy - tsize.height, 0);

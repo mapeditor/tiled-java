@@ -5,7 +5,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  *  Rainer Deyke <rainerd@eldwood.com>
@@ -17,6 +17,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Properties;
@@ -30,7 +31,9 @@ import tiled.core.*;
 import tiled.mapeditor.util.*;
 import tiled.mapeditor.widget.*;
 
-
+/**
+ * @version $Id$
+ */
 public class TileDialog extends JDialog
     implements ActionListener, ListSelectionListener
 {
@@ -278,10 +281,10 @@ public class TileDialog extends JDialog
             return;
         }
 
-        File files[];
+        File[] files;
         JFileChooser ch = new JFileChooser(location);
         ch.setMultiSelectionEnabled(true);
-        BufferedImage image = null;
+        BufferedImage image;
 
         int ret = ch.showOpenDialog(this);
         files = ch.getSelectedFiles();
@@ -290,7 +293,7 @@ public class TileDialog extends JDialog
             try {
                 image = ImageIO.read(files[i]);
                 // TODO: Support for a transparent color
-            } catch (Exception e) {
+            } catch (IOException e) {
                 JOptionPane.showMessageDialog(this, e.getMessage(),
                         "Error!", JOptionPane.ERROR_MESSAGE);
                 return;
@@ -330,7 +333,6 @@ public class TileDialog extends JDialog
 
     public void queryTiles() {
         Vector listData;
-        int curSlot = 0;
 
         if (tileset != null && tileset.size() > 0) {
             listData = new Vector();
@@ -352,7 +354,6 @@ public class TileDialog extends JDialog
 
     public void queryImages() {
         Vector listData = new Vector();
-        int curSlot = 0;
 
         Enumeration ids = tileset.getImageIds();
         while(ids.hasMoreElements()) {
@@ -391,8 +392,8 @@ public class TileDialog extends JDialog
 
     private void updateEnabledState() {
         // boolean internal = (tileset.getSource() == null);
-        boolean tilebmp = (tileset.getTilebmpFile() != null);
-        boolean tileSelected = (currentTile != null);
+        boolean tilebmp = tileset.getTilebmpFile() != null;
+        boolean tileSelected = currentTile != null;
         boolean sharedImages = tileset.usesSharedImages();
         boolean atLeastOneSharedImage = sharedImages
           && tileset.getTotalImages() >= 1;
@@ -540,7 +541,7 @@ public class TileDialog extends JDialog
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE);
             if (answer == JOptionPane.YES_OPTION) {
-           
+
             	Enumeration ids = tileset.getImageIds();
                 while (ids.hasMoreElements()) {
                 	int id = Integer.parseInt((String)ids.nextElement());
