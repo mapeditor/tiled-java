@@ -22,7 +22,6 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import tiled.core.ImageGroup;
 import tiled.core.TileSet;
 import tiled.mapeditor.util.ImageCellRenderer;
 import tiled.mapeditor.widget.VerticalStaticJPanel;
@@ -128,7 +127,7 @@ public class TileImageDialog extends JDialog
 
         for (int i = 0; i < imageIds.length; ++i) {
             if (imageIds[i] == imageId) initialIndex = i;
-            Image img = tileset.getImageById(Integer.toString(imageIds[i]));
+            Image img = tileset.getImageById(imageIds[i]);
             // assert img != null;
             listData.add(img);
         }
@@ -166,8 +165,7 @@ public class TileImageDialog extends JDialog
 
     private void updateImageLabel() {
         if (imageId >= 0) {
-            Image img = tileset.getImageById(Integer.toString(imageId));
-            img = ImageGroup.orientImage(img, imageOrientation);
+            Image img = tileset.getImageById(imageId);
             imageLabel.setIcon(new ImageIcon(img));
         }
     }

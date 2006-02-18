@@ -16,6 +16,10 @@ import java.io.File;
 import java.io.IOException;
 
 
+/**
+ * Various utility functions
+ *
+ */
 public class Util
 {
     /**

@@ -37,6 +37,7 @@ public class TileDialog extends JDialog
 {
     private Tile currentTile;
     private TileSet tileset;
+    private Map map;
     private JList tileList, imageList;
     private JTable tileProperties;
     private JButton bOk, bNew, bDelete, bChangeI, bDuplicate;
@@ -49,10 +50,11 @@ public class TileDialog extends JDialog
     private JTabbedPane tabs;
     private int currentImageIndex = -1;
 
-    public TileDialog(Dialog parent, TileSet s) {
+    public TileDialog(Dialog parent, TileSet s, Map m) {
         super(parent, "Edit Tileset '" + s.getName() + "'", true);
         location = "";
         tileset = s;    //unofficial
+        map = m;        //also unofficial
         init();
         setTileset(s);
         setCurrentTile(null);
@@ -282,8 +284,8 @@ public class TileDialog extends JDialog
             // Find new tile images at the location of the tileset
             if (tileset.getSource() != null) {
                 location = tileset.getSource();
-            } else if (tileset.getMap() != null) {
-                location = tileset.getMap().getFilename();
+            } else if (map != null) {
+                location = map.getFilename();
             }
             tilesetNameEntry.setText(tileset.getName());
             //sharedImagesCheck.setSelected(tileset.usesSharedImages());
@@ -321,7 +323,7 @@ public class TileDialog extends JDialog
 
         Enumeration ids = tileset.getImageIds();
         while(ids.hasMoreElements()) {
-        	Image img = tileset.getImageById(ids.nextElement());
+        	Image img = tileset.getImageById(Integer.parseInt((String) ids.nextElement()));
         	if(img != null)
         		listData.add(img);
         }
@@ -500,7 +502,7 @@ public class TileDialog extends JDialog
                 JOptionPane.QUESTION_MESSAGE);
             if (answer == JOptionPane.YES_OPTION) {
             	Image img = (Image)imageList.getSelectedValue();
-                tileset.removeImage(Integer.toString(tileset.getIdByImage(img)));
+                tileset.removeImage(tileset.getIdByImage(img));
                 queryImages();
             }
         } else if (source == bDeleteAllUnusedImages) {
@@ -525,7 +527,7 @@ public class TileDialog extends JDialog
                     }
 
                     if (!image_used) {
-                        tileset.removeImage(Integer.toString(id));
+                        tileset.removeImage(id);
                     }
                 }
 

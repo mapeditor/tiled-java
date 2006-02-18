@@ -14,44 +14,24 @@ package tiled.core;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.PixelGrabber;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
-import java.util.zip.CRC32;
-import java.util.zip.Checksum;
 import javax.imageio.ImageIO;
 
 import tiled.mapeditor.util.cutter.TileCutter;
-import tiled.util.Util;
 import tiled.util.NumberedSet;
-
-import tiled.core.ImageGroup;
 
 /**
  * <p>TileSet handles operations on tiles as a set, or group. It has several
  * advanced internal functions aimed at reducing unnecessary data replication.
- * A 'tile' is represented internally as three distinct pieces of data. The
+ * A 'tile' is represented internally as two distinct pieces of data. The
  * first and most important is a tiled.core.Tile object, and these are held in
- * a java.util.Vector.</p>
- *
- * <p>Tile objects contain an id that can be used to look up the second piece
- * of data, the tile image hash. The tile image hash is a unique CRC32
- * checksum. A checksum is generated for each image that is added to the set.
- * A java.util.Hashtable keeps the key-value pair of id and checksum. A second
- * java.util.Hashtable (the imageCache) maintains a key-value pair with the
- * checksum as key and the actual java.awt.Image as value.</p>
- *
- * <p>When a new image is added, a checksum is created and checked against the
- * checksums in the cache. If the checksum does not already exist, the image
- * is given an id, and is added to the cache. In this way, tile images are
- * never duplicated, and multiple tiles may reference the image by id.</p>
- *
- *
+ * a java.util.Vector.</p><br/>
+ * <p> The other is the tile image.</p>
+ * 
  * @version $Id$
  */
 public class TileSet
@@ -59,11 +39,9 @@ public class TileSet
     private String base;
     private NumberedSet tiles, images;
     private int firstGid;
-    private int tileHeight;
-    private int tileWidth;
+    private Rectangle tileDimensions;
     private String externalSource, tilebmpFile;
     private String name;
-    private Map map;
     private Color transparentColor;
 
     /**
@@ -72,6 +50,7 @@ public class TileSet
     public TileSet() {
         tiles = new NumberedSet();
         images = new NumberedSet();
+        tileDimensions = new Rectangle();
     }
 
     /**
@@ -119,8 +98,7 @@ public class TileSet
         	throw new Exception("No cutter!");
         }
         
-        tileHeight = cutter.getDimensions().height;
-        tileWidth = cutter.getDimensions().width;
+        tileDimensions = new Rectangle(cutter.getDimensions());
         
         BufferedImage tile;
         
@@ -218,16 +196,6 @@ public class TileSet
     }
 
     /**
-     * Sets the map this tileset is part of.
-     * 
-     * @param map
-     * @deprecated
-     */
-    public void setMap(Map map) {
-        this.map = map;
-    }
-
-    /**
      * Sets the transparent color in the tileset image.
      * 
      * @param color
@@ -248,12 +216,12 @@ public class TileSet
             t.setId(tiles.getMaxId());
         }
         
-        if (tileHeight < t.getHeight()) {
-            tileHeight = t.getHeight();
+        if (tileDimensions.height < t.getHeight()) {
+        	tileDimensions.height = t.getHeight();
         }
 
-        if (tileWidth < t.getWidth()) {
-            tileWidth = t.getWidth();
+        if (tileDimensions.width < t.getWidth()) {
+        	tileDimensions.width = t.getWidth();
         }
         
         tiles.put(t.getId(), t);
@@ -322,7 +290,7 @@ public class TileSet
      * @return int - The maximum tile width
      */
     public int getTileWidth() {
-        return tileWidth;
+        return tileDimensions.width;
     }
 
     /**
@@ -336,7 +304,7 @@ public class TileSet
      * @return int - The max height of the tiles in the set
      */
     public int getTileHeight() {
-        return tileHeight;
+        return tileDimensions.height;
     }
 
     /**
@@ -355,7 +323,10 @@ public class TileSet
      *         tile exists with that id
      */
     public Tile getTile(int i) {
-        return (Tile)tiles.get(i);
+    	try {
+    		return (Tile)tiles.get(i);
+    	} catch (ArrayIndexOutOfBoundsException a) {}
+    	return null;
     }
 
     /**
@@ -419,15 +390,6 @@ public class TileSet
     }
 
     /**
-     * Returns the map this tileset is part of.
-     * @deprecated
-     * @return int
-     */
-    public Map getMap() {
-        return map;
-    }
-
-    /**
      * Returns the transparent color of the tileset image, or <code>null</code>
      * if none is set.
      * 
@@ -444,49 +406,6 @@ public class TileSet
         return getName() + " [" + size() + "]";
     }
 
-
-    // TILE IMAGE CODE
-
-    /**
-     * Provides a CRC32 checksum of the given image.
-     *
-     * @param i a preloaded Image object
-     * @return a String containing the checksum value
-     */
-    private static String checksumImage(Image i) {
-        PixelGrabber pg = new PixelGrabber(i, 0, 0, -1, -1, false);
-        Checksum sum = new CRC32();
-
-        try {
-            pg.grabPixels();
-            //ImageInputStream is;
-
-            try {
-                int psize = pg.getColorModel().getPixelSize();
-                ByteArrayInputStream bais;
-
-                // Handle different pixel sizes
-                if (psize >= 15 ) {
-                    bais = new ByteArrayInputStream(
-                            Util.convertIntegersToBytes((int[])pg.getPixels()));
-                } else {
-                    bais = new ByteArrayInputStream((byte[])pg.getPixels());
-                }
-                byte[] bytes = new byte[1024];
-                int len;
-
-                while ((len = bais.read(bytes)) >= 0) {
-                    sum.update(bytes, 0, len);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        return Long.toHexString(sum.getValue());
-    }
 
     /**
      * Returns the number of images in the set.
@@ -508,6 +427,8 @@ public class TileSet
         return v.elements();
     }
 
+    // TILE IMAGE CODE
+
     /**
      * This function uses the CRC32 checksums to find the cached version of the
      * image supplied.
@@ -517,90 +438,61 @@ public class TileSet
      *         the set
      */
     public int getIdByImage(Image i) {
-        return images.indexOf(new ImageGroup(i));
+        return images.indexOf(i);
     }
 
     /**
-     * @param key a key identifying the image to get
+     * @param id
      * @return the image identified by the key, or <code>null</code> when
      *         there is no such image
      * @see TileSet#getImageByIdAndOrientation(Object, int)
      */
-    public Image getImageById(Object key) {
-        return getImageByIdAndOrientation(key, 0);
+    public Image getImageById(int id) {
+        return (Image) images.get(id);
     }
 
     /**
      * Returns the image referred to by the given key, and automatically
      * sets it to the given orientation.
      * 
+     * @deprecated
      * @param key
      * @param orientation
      * @return Image
      */
     public Image getImageByIdAndOrientation(Object key, int orientation) {
-        int img_id = Integer.parseInt((String)key);
+        /*int img_id = Integer.parseInt((String)key);
         ImageGroup img = (ImageGroup)images.get(img_id);
         if (img == null) return null;
-        return img.getImage(orientation);
+        return img.getImage(orientation);*/
+    	return null;
     }
 
     /**
      * Overlays the image in the set referred to by the given key.
      * 
-     * @param key
+     * @param id
      * @param i
      */
-    public void overlayImage(Object key, Image i) {
-        int img_id = Integer.parseInt((String)key);
-        images.put(img_id, new ImageGroup(i));
+    public void overlayImage(int id, Image i) {
+        images.put(id, i);
     }
 
     /**
      * Returns the dimensions of an image as specified by the id
      * <code>key</code>.
      *
-     * @param key
+     * @param id
      * @param orientation
      * @return dimensions of image with referenced by given key
      */
-    public Dimension getImageDimensions(Object key, int orientation) {
-        Image i = getImageByIdAndOrientation(key, orientation);
+    public Dimension getImageDimensions(int id, int orientation) {
+        Image i = (Image) images.get(id);
         if (i != null) {
             return new Dimension(i.getWidth(null), i.getHeight(null));
         } else {
             return new Dimension(0, 0);
         }
-    }
-
-    /**
-     * Attempt to retrieve an image matching the given image from the image
-     * cache.
-     *
-     * @param image the image to match
-     * @return a matching image from the cache if it exists, <code>null</code>
-     *         otherwise
-     */
-    public Image queryImage(Image image) {
-        int id = images.indexOf(new ImageGroup(image));
-        ImageGroup img = (ImageGroup)images.get(id);
-        return img.getImage(0);
-    }
-
-    /*
-     * Note: The following function only works for images in default
-     * orientation.
-     */
-
-    /**
-     * Find the id of the given image in the image cache.
-     *
-     * @param image the java.awt.Image to find the id for.
-     * @return an java.lang.Object that represents the id of the image
-     */
-    public Object queryImageId(Image image) {
-        ImageGroup img = new ImageGroup(image);
-        return Integer.toString(images.indexOf(img));
     }
 
     /**
@@ -612,24 +504,21 @@ public class TileSet
      * @return the id as an <code>int</code> of the image in the cache
      */
     public int addImage(Image image) {
-        return images.findOrAdd(new ImageGroup(image));
+        return images.findOrAdd(image);
     }
 
-    public int addImage(Image image, Object key) {
-        if (key == null) {
-            return addImage(image);
-        } else {
-            int id = Integer.parseInt((String)key);
-            images.put(id, new ImageGroup(image));
-            return id;
-        }
+    public int addImage(Image image, int id) {
+        return images.put(id, image);
     }
-
-    public void removeImage(Object key) {
-        int id = Integer.parseInt((String)key);
+    
+    public void removeImage(int id) {
         images.remove(id);
     }
 
+    /**
+     * @deprecated
+     * @return
+     */
     public boolean usesSharedImages() {
         // TODO: Currently only uses shared sets...
         return true;
@@ -638,6 +527,7 @@ public class TileSet
     /**
      * Checks whether each image has a one to one relationship with the tiles.
      *
+     * @deprecated
      * @return <code>true</code> if each image is associated with one and only
      *         one tile, <code>false</code> otherwise.
      */

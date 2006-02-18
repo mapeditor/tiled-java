@@ -108,7 +108,7 @@ public class TilePalettePanel extends JPanel implements Scrollable,
 
             if (tileset != null) {
                 // Draw the tiles
-                int maxHeight = tileset.getMaxTileHeight();
+                int maxHeight = tileset.getTileHeight();
                 int twidth = tileset.getTileWidth() + 1;
                 int theight = tileset.getTileHeight() + 1;
                 int tilesPerRow = Math.max(1, (getWidth() - 1) / twidth);

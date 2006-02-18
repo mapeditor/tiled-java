@@ -386,7 +386,7 @@ public class XMLMapTransformer implements MapReader
 
                     } else {
                         set.addImage(unmarshalImage(child, tilesetBaseDir),
-                                getAttributeValue(child, "id"));
+                                Integer.parseInt(getAttributeValue(child, "id")));
                     }
                 }
             }

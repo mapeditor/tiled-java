@@ -26,7 +26,7 @@ public class Tile
     private Image internalImage, scaledImage;
     private int id = -1;
     protected int tileImageId = -1;
-    private int groundHeight;          // Height above/below ground
+    private int groundHeight;          // Height above/below "ground"
     private int tileOrientation;
     private double myZoom = 1.0;
     private Properties properties;
@@ -41,6 +41,11 @@ public class Tile
         setTileSet(set);
     }
 
+    /**
+     * Copy constructor
+     * 
+     * @param t
+     */
     public Tile(Tile t) {
         properties = (Properties)t.properties.clone();
         tileImageId = t.tileImageId;
@@ -70,7 +75,7 @@ public class Tile
      */
     public void setImage(Image i) {
         if (tileset != null) {
-            tileset.overlayImage(String.valueOf(tileImageId), i);
+            tileset.overlayImage(tileImageId, i);
         } else {
             internalImage = i;
         }
@@ -82,6 +87,11 @@ public class Tile
         groundHeight = getHeight();
     }
 
+    /**
+     * 
+     * @deprecated
+     * @param orientation
+     */
     public void setImageOrientation(int orientation) {
         tileOrientation = orientation;
     }
@@ -113,10 +123,22 @@ public class Tile
         return properties;
     }
 
+    /**
+     * Returns the tile id of this tile, relative to
+     * tileset.
+     * 
+     * @return id
+     */
     public int getId() {
         return id;
     }
 
+    /**
+     * Returns the global tile id by adding the
+     * tile id to the map-assigned 
+     * 
+     * @return id
+     */
     public int getGid() {
         if (tileset != null) {
             return id + tileset.getFirstGid();
@@ -189,7 +211,7 @@ public class Tile
     public int getWidth() {
         if (tileset != null) {
             Dimension d
-              = tileset.getImageDimensions(String.valueOf(tileImageId), tileOrientation);
+              = tileset.getImageDimensions(tileImageId, tileOrientation);
             return d.width;
         } else if (internalImage != null){
             return internalImage.getWidth(null);
@@ -200,7 +222,7 @@ public class Tile
     public int getHeight() {
         if (tileset != null) {
             Dimension d
-              = tileset.getImageDimensions(String.valueOf(tileImageId), tileOrientation);
+              = tileset.getImageDimensions(tileImageId, tileOrientation);
             return d.height;
         } else if (internalImage != null) {
             return internalImage.getHeight(null);
@@ -212,6 +234,10 @@ public class Tile
         return tileImageId;
     }
 
+    /**
+     * @deprecated
+     * @return int
+     */
     public int getImageOrientation() {
         return tileOrientation;
     }
@@ -223,8 +249,7 @@ public class Tile
      */
     public Image getImage() {
         if (tileset != null) {
-            return tileset.getImageByIdAndOrientation(
-                Integer.toString(tileImageId), tileOrientation);
+        	return tileset.getImageById(tileImageId);
         } else {
             return internalImage;
         }
@@ -232,6 +257,9 @@ public class Tile
 
     /**
      * Returns a scaled instance of the tile image.
+     * 
+     * @param zoom
+     * @return Image
      */
     public Image getScaledImage(double zoom) {
         Image i = getImage();
@@ -247,6 +275,9 @@ public class Tile
         return null;
     }
 
+    /**
+     * @see java.lang.Object#toString()
+     */
     public String toString() {
         return "Tile " + id + " (" + getWidth() + "x" + getHeight() + ")";
     }

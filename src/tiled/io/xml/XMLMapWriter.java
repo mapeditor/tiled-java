@@ -240,7 +240,7 @@ public class XMLMapWriter implements MapWriter
                         w.writeAttribute("encoding", "base64");
                         w.writeCDATA(new String(Base64.encode(
                                         ImageHelper.imageToPNG(
-                                            set.getImageById(id)))));
+                                            set.getImageById(Integer.parseInt(id))))));
                         w.endElement();
                         w.endElement();
                     }

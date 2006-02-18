@@ -166,7 +166,6 @@ public class Map extends MultilayerPlane
         }
 
         tilesets.add(s);
-        s.setMap(this);
         fireMapChanged();
     }
 
