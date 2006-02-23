@@ -34,8 +34,13 @@ import tiled.mapeditor.selection.SelectionLayer;
  */
 public class OrthoMapView extends MapView
 {
-    public OrthoMapView(Map m) {
-        super(m);
+    /**
+     * Creates a new orthographic map view that displays the specified map.
+     *
+     * @param map the map to be displayed by this map view
+     */
+    public OrthoMapView(Map map) {
+        super(map);
     }
 
     public int getScrollableBlockIncrement(Rectangle visibleRect,

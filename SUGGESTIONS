@@ -160,10 +160,14 @@ Suggestor:  bjorn
 Date:       18/02/06
 Summary:    Removing of stupid features.
 State:      Discussed and partly in progress.
-Problems:   * Get rid of #getNullTile in favour of actually using null.
+Problems:   * Get rid of #getNullTile in favour of actually using null. - DONE
             * Dump the whole tile image checksumming stuff in favour of
               straightforward code and behaviour.
             * Do not support embedding of tilesets or tile images and neither
               multiple external individual tile images in a single tileset.
             * Remove option for XML-based layer data storage.
             * Do not support tile image rotation or flipping.
+            * Rename HexMapView to HexagonalMapView, IsoMapView to
+              IsometricMapView and OrthoMapView to OrthographicMapView.
+            * Remove the zoom argument from all the MapView drawing methods
+              and get rid of the SmoothZoomer.

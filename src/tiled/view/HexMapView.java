@@ -20,7 +20,6 @@ import javax.swing.SwingConstants;
 import tiled.core.*;
 import tiled.mapeditor.selection.SelectionLayer;
 
-
 /**
  * A View for displaying Hex based maps.
  * The Hexs are layed out horizontally (i.e. the pointy sides are on the sides
@@ -55,8 +54,13 @@ public class HexMapView extends MapView
 {
     private static final double HEX_SLOPE = Math.tan(Math.toRadians(60));
 
-    public HexMapView(Map m) {
-        super(m);
+    /**
+     * Creates a new hexagonal map view that displays the specified map.
+     *
+     * @param map the map to be displayed by this map view
+     */
+    public HexMapView(Map map) {
+        super(map);
     }
 
     public int getScrollableBlockIncrement(Rectangle visibleRect,

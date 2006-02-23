@@ -51,9 +51,13 @@ public abstract class MapView extends JPanel implements Scrollable
     private static final Color DEFAULT_BACKGROUND_COLOR = new Color(64, 64, 64);
     private static final Color DEFAULT_GRID_COLOR = Color.black;
 
-
-    public MapView(Map m) {
-        myMap = m;
+    /**
+     * Creates a new <code>MapView</code> that displays the specified map.
+     *
+     * @param map the map to be displayed by this map view
+     */
+    protected MapView(Map map) {
+        myMap = map;
         setSize(getPreferredSize());
     }
 
