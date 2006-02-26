@@ -5,7 +5,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  *  Rainer Deyke <rainerd@eldwood.com>
@@ -31,7 +31,9 @@ import tiled.mapeditor.animation.AnimationDialog;
 import tiled.mapeditor.util.*;
 import tiled.mapeditor.widget.*;
 
-
+/**
+ * @version $Id$
+ */
 public class TileDialog extends JDialog
     implements ActionListener, ListSelectionListener
 {
@@ -274,7 +276,7 @@ public class TileDialog extends JDialog
 
     private void newTile() {
     	NewTileDialog d = new NewTileDialog(this, tileset);
-    	if(d.createTile() != null) queryTiles();
+    	if (d.createTile() != null) queryTiles();
     }
 
     public void setTileset(TileSet s) {
@@ -358,8 +360,8 @@ public class TileDialog extends JDialog
 
     private void updateEnabledState() {
         // boolean internal = (tileset.getSource() == null);
-        boolean tilebmp = (tileset.getTilebmpFile() != null);
-        boolean tileSelected = (currentTile != null);
+        boolean tilebmp = tileset.getTilebmpFile() != null;
+        boolean tileSelected = currentTile != null;
         boolean sharedImages = tileset.usesSharedImages();
         boolean atLeastOneSharedImage = sharedImages
           && tileset.getTotalImages() >= 1;
@@ -512,7 +514,7 @@ public class TileDialog extends JDialog
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE);
             if (answer == JOptionPane.YES_OPTION) {
-           
+
             	Enumeration ids = tileset.getImageIds();
                 while (ids.hasMoreElements()) {
                 	int id = Integer.parseInt((String)ids.nextElement());

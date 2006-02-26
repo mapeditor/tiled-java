@@ -20,7 +20,6 @@ import javax.swing.SwingConstants;
 import tiled.core.*;
 import tiled.mapeditor.selection.SelectionLayer;
 
-
 /**
  * A View for displaying Hex based maps.
  * The Hexs are layed out horizontally (i.e. the pointy sides are on the sides
@@ -55,8 +54,13 @@ public class HexMapView extends MapView
 {
     private static final double HEX_SLOPE = Math.tan(Math.toRadians(60));
 
-    public HexMapView(Map m) {
-        super(m);
+    /**
+     * Creates a new hexagonal map view that displays the specified map.
+     *
+     * @param map the map to be displayed by this map view
+     */
+    public HexMapView(Map map) {
+        super(map);
     }
 
     public int getScrollableBlockIncrement(Rectangle visibleRect,
@@ -110,7 +114,7 @@ public class HexMapView extends MapView
             for (int x = startX; x < endX; x++) {
                 Tile t = layer.getTileAt(x, y);
 
-                if (t != null && t != myMap.getNullTile()) {
+                if (t != null) {
                     if (layer.getClass() == SelectionLayer.class) {
                         g2d.fillPolygon(gridPoly);
                     } else {
@@ -176,7 +180,7 @@ public class HexMapView extends MapView
                 grid.translate((int)(tileSize.getWidth() * .75), 0);
                 grid.translate(0,
                         -(int)((tileSize.getHeight() / 2) * (1 - x % 2)));
-            }            
+            }
         }
     }
 
@@ -303,7 +307,7 @@ public class HexMapView extends MapView
 
     /**
      * Returns the location on screen for the given tile.
-     * 
+     *
      * @return The point at the centre of the Hex.
      */
     public Point tileToScreenCoords(double x, double y) {

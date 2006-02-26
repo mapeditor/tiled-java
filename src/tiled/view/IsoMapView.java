@@ -5,7 +5,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
@@ -26,8 +26,13 @@ import tiled.mapeditor.selection.SelectionLayer;
  */
 public class IsoMapView extends MapView
 {
-    public IsoMapView(Map m) {
-        super(m);
+    /**
+     * Creates a new isometric map view that displays the specified map.
+     *
+     * @param map the map to be displayed by this map view
+     */
+    public IsoMapView(Map map) {
+        super(map);
     }
 
     public int getScrollableBlockIncrement(Rectangle visibleRect,

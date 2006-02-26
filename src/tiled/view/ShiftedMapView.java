@@ -27,8 +27,13 @@ public class ShiftedMapView extends MapView
     private int horSide;       // Length of horizontal sides
     private int verSide;       // Length of vertical sides
 
-    public ShiftedMapView(Map m) {
-        super(m);
+    /**
+     * Creates a new shifted map view that displays the specified map.
+     *
+     * @param map the map to be displayed by this map view
+     */
+    public ShiftedMapView(Map map) {
+        super(map);
 
         horSide = 16;
         verSide = 0;

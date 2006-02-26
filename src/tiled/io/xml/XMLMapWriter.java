@@ -184,7 +184,7 @@ public class XMLMapWriter implements MapWriter
             }
         } catch (XMLWriterException e) {
             e.printStackTrace();
-        } 
+        }
     }
 
     private static void writeTileset(TileSet set, XMLWriter w, String wp)

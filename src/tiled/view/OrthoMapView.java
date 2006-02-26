@@ -34,8 +34,13 @@ import tiled.mapeditor.selection.SelectionLayer;
  */
 public class OrthoMapView extends MapView
 {
-    public OrthoMapView(Map m) {
-        super(m);
+    /**
+     * Creates a new orthographic map view that displays the specified map.
+     *
+     * @param map the map to be displayed by this map view
+     */
+    public OrthoMapView(Map map) {
+        super(map);
     }
 
     public int getScrollableBlockIncrement(Rectangle visibleRect,
@@ -89,7 +94,7 @@ public class OrthoMapView extends MapView
                     x < endX; x++, gx += tsize.width) {
                 Tile tile = layer.getTileAt(x, y);
 
-                if (tile != null && tile != myMap.getNullTile()) {
+                if (tile != null) {
                     if (layer instanceof SelectionLayer) {
                         Polygon gridPoly = createGridPolygon(
                                 gx, gy - tsize.height, 0);

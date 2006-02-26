@@ -248,7 +248,7 @@ public class TileSet
      * Removes a tile from this tileset. Does not invalidate other tile
      * indices. Removal is simply setting the reference at the specified
      * index to <b>null</b>
-     * 
+     *
      * @param i the index to remove
      */
     public void removeTile(int i) {
@@ -356,7 +356,7 @@ public class TileSet
 
     /**
      * Returns the base directory for the tileset
-     * 
+     *
      * @return a directory in native format as given in the tileset file or tag
      */
     public String getBaseDir() {

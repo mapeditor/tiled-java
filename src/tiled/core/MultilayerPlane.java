@@ -15,15 +15,16 @@ package tiled.core;
 import java.awt.Rectangle;
 import java.util.*;
 
-
 /**
  * MultilayerPlane makes up the core functionality of both Maps and Brushes.
  * This class handles the order of layers as a group.
+ *
+ * @version $Id$
  */
 public class MultilayerPlane
 {
     private Vector layers;
-    protected int widthInTiles = 0, heightInTiles = 0;
+    protected int widthInTiles, heightInTiles;
 
     /**
      * Default constructor.
@@ -95,7 +96,7 @@ public class MultilayerPlane
      * Adds the MapLayer <code>l</code> after the MapLayer <code>after</code>.
      *
      * @param l the layer to add
-     * @param after specifies the layer to add <code>l</code> after 
+     * @param after specifies the layer to add <code>l</code> after
      */
     public void addLayerAfter(MapLayer l, MapLayer after) {
         layers.add(layers.indexOf(after) + 1, l);
