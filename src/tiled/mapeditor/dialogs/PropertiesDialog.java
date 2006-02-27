@@ -33,8 +33,12 @@ public class PropertiesDialog extends JDialog implements ActionListener,
     private final Properties properties;
     private final PropertiesTableModel tableModel = new PropertiesTableModel();
 
+    private static final String DIALOG_TITLE = Resources.getString("dialog.properties.title");
+    private static final String OK_BUTTON = Resources.getString("general.button.ok");
+    private static final String CANCEL_BUTTON = Resources.getString("general.button.cancel");
+
     public PropertiesDialog(JFrame parent, Properties p) {
-        super(parent, "Properties", true);
+        super(parent, DIALOG_TITLE, true);
         properties = p;
         init();
         pack();
@@ -47,8 +51,8 @@ public class PropertiesDialog extends JDialog implements ActionListener,
         JScrollPane propScrollPane = new JScrollPane(tProperties);
         propScrollPane.setPreferredSize(new Dimension(200, 150));
 
-        bOk = new JButton("OK");
-        bCancel = new JButton("Cancel");
+        bOk = new JButton(OK_BUTTON);
+        bCancel = new JButton(CANCEL_BUTTON);
         bDel = new JButton(Resources.getIcon("gnome-delete.png"));
 
         bOk.addActionListener(this);

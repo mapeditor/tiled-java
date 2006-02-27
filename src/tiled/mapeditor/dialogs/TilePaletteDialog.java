@@ -25,6 +25,7 @@ import javax.swing.event.ListSelectionListener;
 import tiled.core.Map;
 import tiled.core.Tile;
 import tiled.mapeditor.MapEditor;
+import tiled.mapeditor.Resources;
 import tiled.mapeditor.util.TileSelectionEvent;
 import tiled.mapeditor.util.TileSelectionListener;
 import tiled.mapeditor.widget.TilePalettePanel;
@@ -36,10 +37,11 @@ public class TilePaletteDialog extends JDialog implements ActionListener,
     private Map currentMap;
     private TilePalettePanel pc;
     private JList sets;
-    private Tile currentTile;
+
+    private static final String DIALOG_TITLE = Resources.getString("dialog.tilepalette.title");
 
     public TilePaletteDialog(MapEditor editor, Map map) {
-        super(editor.getAppFrame(), "Palette", false);
+        super(editor.getAppFrame(), DIALOG_TITLE, false);
         this.editor = editor;
         init();
         setMap(map);

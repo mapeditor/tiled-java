@@ -334,12 +334,13 @@ public class MapEditor implements ActionListener, MouseListener,
         mapEventAdapter.addListener(mapMenu);
 
 
-        layerAdd = createMenuItem("Add Layer", null, "Add a layer");
-        layerClone = createMenuItem("Duplicate Layer", null,
-                "Duplicate current layer");
-        layerDel = createMenuItem("Delete Layer", null,
-                "Delete current layer");
-        layerUp = createMenuItem("Move Layer Up", null,
+        layerAdd = createMenuItem(Resources.getString("action.layer.add.name"), null,
+                Resources.getString("action.layer.add.tooltip"));
+        layerClone = createMenuItem(Resources.getString("action.layer.duplicate.name"), null,
+                Resources.getString("action.layer.duplicate.tooltip"));
+        layerDel = createMenuItem(Resources.getString("action.layer.delete.name"), null,
+                Resources.getString("action.layer.delete.tooltip"));
+        layerUp = createMenuItem(Resources.getString("action.layer.moveup.name"), null,
                 "Move layer up one in layer stack", "shift PAGE_UP");
         layerDown = createMenuItem("Move Layer Down", null,
                 "Move layer down one in layer stack", "shift PAGE_DOWN");
@@ -542,11 +543,11 @@ public class MapEditor implements ActionListener, MouseListener,
                     sliderPanel.getPreferredSize().height));
 
         // Layer buttons
-        layerAddButton = createButton(imgAdd, "Add Layer", "Add Layer");
-        layerDelButton = createButton(imgDel, "Delete Layer", "Delete Layer");
-        layerCloneButton = createButton(imgDup, "Duplicate Layer",
+        layerAddButton = createButton(imgAdd, Resources.getString("action.layer.add.name"), "Add Layer");
+        layerDelButton = createButton(imgDel, Resources.getString("action.layer.delete.name"), "Delete Layer");
+        layerCloneButton = createButton(imgDup, Resources.getString("action.layer.duplicate.name"),
                 "Duplicate Layer");
-        layerUpButton = createButton(imgUp, "Move Layer Up", "Move Layer Up");
+        layerUpButton = createButton(imgUp, Resources.getString("action.layer.moveup.name"), "Move Layer Up");
         layerDownButton = createButton(imgDown, "Move Layer Down",
                 "Move Layer Down");
 
@@ -765,10 +766,10 @@ public class MapEditor implements ActionListener, MouseListener,
         String command = event.getActionCommand();
         Vector layersBefore = new Vector(currentMap.getLayerVector());
 
-        if (command.equals("Add Layer")) {
+        if (command.equals(Resources.getString("action.layer.add.name"))) {
             currentMap.addLayer();
             setCurrentLayer(currentMap.getTotalLayers() - 1);
-        } else if (command.equals("Duplicate Layer")) {
+        } else if (command.equals(Resources.getString("action.layer.duplicate.name"))) {
             if (currentLayer >= 0) {
                 try {
                     MapLayer clone =
@@ -780,7 +781,7 @@ public class MapEditor implements ActionListener, MouseListener,
                 }
                 setCurrentLayer(currentMap.getTotalLayers() - 1);
             }
-        } else if (command.equals("Move Layer Up")) {
+        } else if (command.equals(Resources.getString("action.layer.moveup.name"))) {
             if (currentLayer >= 0) {
                 try {
                     currentMap.swapLayerUp(currentLayer);
@@ -798,7 +799,7 @@ public class MapEditor implements ActionListener, MouseListener,
                     System.out.println(ex.toString());
                 }
             }
-        } else if (command.equals("Delete Layer")) {
+        } else if (command.equals(Resources.getString("action.layer.delete.name"))) {
             if (currentLayer >= 0) {
                 currentMap.removeLayer(currentLayer);
                 setCurrentLayer(currentLayer < 0 ? 0 : currentLayer);
@@ -1457,7 +1458,7 @@ public class MapEditor implements ActionListener, MouseListener,
 
     private class ZoomInAction extends AbstractAction {
         public ZoomInAction() {
-            super("Zoom In");
+            super(Resources.getString("action.zoom.in.name"));
             putValue(ACCELERATOR_KEY,
                     KeyStroke.getKeyStroke("control EQUALS"));
             putValue(SHORT_DESCRIPTION, "Zoom in one level");
@@ -1477,7 +1478,7 @@ public class MapEditor implements ActionListener, MouseListener,
 
     private class ZoomOutAction extends AbstractAction {
         public ZoomOutAction() {
-            super("Zoom Out");
+            super(Resources.getString("action.zoom.out.name"));
             putValue(ACCELERATOR_KEY,
                     KeyStroke.getKeyStroke("control MINUS"));
             putValue(SHORT_DESCRIPTION, "Zoom out one level");

@@ -24,6 +24,7 @@ import javax.swing.event.ChangeListener;
 
 import tiled.mapeditor.widget.IntegerSpinner;
 import tiled.mapeditor.widget.VerticalStaticJPanel;
+import tiled.mapeditor.Resources;
 import tiled.util.TiledConfiguration;
 
 /**
@@ -42,8 +43,10 @@ public class ConfigurationDialog extends JDialog
     private final Preferences savingPrefs = prefs.node("saving");
     private final Preferences ioPrefs = prefs.node("io");
 
+    private static final String DIALOG_TITLE = Resources.getString("dialog.preferences.title");
+
     public ConfigurationDialog(JFrame parent) {
-        super(parent, "Preferences", true);
+        super(parent, DIALOG_TITLE, true);
         init();
         setLocationRelativeTo(parent);
     }
