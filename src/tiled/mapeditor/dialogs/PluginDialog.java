@@ -5,7 +5,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
@@ -40,7 +40,7 @@ public class PluginDialog extends JDialog implements ActionListener,
     private static final String DIALOG_TITLE = Resources.getString("dialog.plugins.title");
     private static final String INFO_BUTTON = Resources.getString("dialog.plugins.info.button");
     private static final String REMOVE_BUTTON = Resources.getString("dialog.plugins.remove.button");
-    private static final String CLOSE_BUTTON = Resources.getString("dialog.plugins.close.button");
+    private static final String CLOSE_BUTTON = Resources.getString("general.button.close");
 
     public PluginDialog(JFrame parent, PluginClassLoader pluginLoader) {
         super(parent, DIALOG_TITLE, true);
