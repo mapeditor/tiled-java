@@ -8,6 +8,8 @@
 * Fixed tileset dialog so that it is now possible to change the tile height to
   something else than the tile height used by the map.
 * Fixed saving a map with no extension (now defaults to .tmx)
+* Fixed saving of tile spacing property for tileset images and added spacing
+  example for testing.
 
 Planned changes
 + Added the Shifted view, which emulates several tiling configurations

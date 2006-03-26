@@ -61,6 +61,7 @@ public class TileSet
     private int firstGid;
     private int tileHeight;
     private int tileWidth;
+    private int tileSpacing;
     private Image setImage;
     private String externalSource, tilebmpFile;
     private String name;
@@ -121,6 +122,7 @@ public class TileSet
 
         int iw = tilebmp.getWidth();
         int ih = tilebmp.getHeight();
+        tileSpacing = spacing;
 
         BufferedImage tilesetImage = new BufferedImage(
                 iw, ih,
@@ -132,8 +134,8 @@ public class TileSet
         //Image tilesetImage = config.createCompatibleImage(tileWidth, tileHeight);
         //Graphics tg = tilesetImage.getGraphics();
 
-        tg.drawImage(tilebmp, 0, 0,
-                iw, ih,
+        tg.drawImage(tilebmp,
+                0, 0, iw, ih,
                 0, 0, iw, ih,
                 null);
 
@@ -205,6 +207,8 @@ public class TileSet
 
     /**
      * Sets the map this tileset is part of.
+     *
+     * @param map the map this tileset is part of
      */
     public void setMap(Map map) {
         this.map = map;
@@ -212,6 +216,8 @@ public class TileSet
 
     /**
      * Sets the transparent color in the tileset image.
+     *
+     * @param color the color to use for transparency
      */
     public void setTransparentColor(Color color) {
         transparentColor = color;
@@ -222,7 +228,7 @@ public class TileSet
      * value of id is -1.
      *
      * @param t the tile to add
-     * @return int The <b>local</b> id of the tile
+     * @return int the <b>local</b> id of the tile
      */
     public int addTile(Tile t) {
         if (t.getId() < 0) {
@@ -234,7 +240,6 @@ public class TileSet
         }
 
         tiles.set(t.getId(), t);
-        //System.out.println("adding tile " +t.getId());
         t.setTileSet(this);
 
         if (tileHeight < t.getHeight()) {
@@ -324,6 +329,15 @@ public class TileSet
      */
     public int getTileHeight() {
         return tileHeight;
+    }
+
+    /**
+     * Returns the space between the tiles used while parsing the tileset
+     * image.
+     * @return the space in pixels between the tiles on the tileset image
+     */
+    public int getTileSpacing() {
+        return tileSpacing;
     }
 
     /**

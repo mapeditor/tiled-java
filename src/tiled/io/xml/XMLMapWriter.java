@@ -205,7 +205,11 @@ public class XMLMapWriter implements MapWriter
             if (tilebmpFile != null) {
                 w.writeAttribute("tilewidth", set.getTileWidth());
                 w.writeAttribute("tileheight", set.getTileHeight());
-                //w.writeAttribute("spacing", "0");
+
+                int tileSpacing = set.getTileSpacing();
+                if (tileSpacing != 0) {
+                    w.writeAttribute("spacing", tileSpacing);
+                }
             }
 
             if (set.getBaseDir() != null) {
