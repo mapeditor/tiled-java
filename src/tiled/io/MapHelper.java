@@ -49,7 +49,7 @@ public class MapHelper {
      * Saves the current map. Use the extension (.xxx) of the filename to
      * determine the plugin to use when writing the file. Throws an exception
      * when the extension is not supported by either the TMX writer or a
-     * plugin.
+     * plugin. (Unlikely)
      *
      * @param filename filename to save the current map to
      * @param currentMap {@link tiled.core.Map} instance to save to the file
@@ -110,6 +110,27 @@ public class MapHelper {
         }
     }
 
+    /**
+     * Saves a map. Ignores the extension of the filename, and instead uses the
+     * passed plugin to write the file. Plugins can still refuse to save the file
+     * based on the extension, but this is not recommended practice.
+     * 
+     * @param currentMap
+     * @param pmio
+     * @param filename
+     * @throws Exception 
+     */
+    public static void saveMap(Map currentMap, PluggableMapIO pmio, String filename) 
+    	throws Exception {
+    	MapWriter mw = (MapWriter)pmio;
+    	
+        Stack errors = new Stack();
+        mw.setErrorStack(errors);
+        mw.writeMap(currentMap, filename);
+        currentMap.setFilename(filename);
+        reportPluginMessages(errors);
+    }
+    
     /**
      * Loads a map. Use the extension (.xxx) of the filename to determine
      * the plugin to use when reading the file. Throws an exception when the

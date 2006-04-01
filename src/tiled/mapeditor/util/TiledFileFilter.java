@@ -17,17 +17,23 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import javax.swing.filechooser.FileFilter;
 
+import tiled.io.PluggableMapIO;
+
 /**
  * @version $Id$
  */
 public class TiledFileFilter extends FileFilter
 {
+	public static final int FILTER_EXT  = 0;
     public static final int FILTER_TMX  = 1;
     public static final int FILTER_TSX  = 2;
     public static final int FILTER_BOTH = 3;
-
+    public static final int FILTER_PLUG = 4;
+    
     private String desc;
     private LinkedList exts;
+    private PluggableMapIO pmio;
+    private int type = FILTER_EXT;
     
     public TiledFileFilter() {
         desc = "Tiled files";
@@ -40,19 +46,36 @@ public class TiledFileFilter extends FileFilter
     public TiledFileFilter(int filter) {		
         exts = new LinkedList();
         desc = "";
+        type = filter;
+        
         if ((filter & FILTER_TMX) != 0) {
             desc = "Tiled Maps files ";
             exts.add("tmx");
             exts.add("tmx.gz");
         }
+        
         if ((filter & FILTER_TSX) != 0) {
             desc += "Tiled Tileset files";
             exts.add("tsx");
         }
+        
+        if(filter == FILTER_EXT) {
+        	desc = "By Extension";
+        }
     }
 
+    public TiledFileFilter(PluggableMapIO p) throws Exception {
+    	exts = new LinkedList();
+    	pmio = p;
+    	buildFilter(p.getFilter(), p.getName());
+    }
+    
     public TiledFileFilter(String filter, String desc) {
     	exts = new LinkedList();
+    	buildFilter(filter, desc);
+    }
+    
+    private void buildFilter(String filter, String desc) {
     	this.desc = desc;
     	String[] ext = filter.split(",");
     	for (int i = 0; i < ext.length; i++) {
@@ -68,8 +91,20 @@ public class TiledFileFilter extends FileFilter
         exts.add(e);
     }
 
+    public PluggableMapIO getPlugin() {
+    	return pmio;
+    }
+    
+    public String getFirstExtention() {
+    	return (String) exts.getFirst();
+    }
+    
+    public int getType() {
+    	return type;
+    }
+    
     public boolean accept(File f) {
-        if (f.isFile()) {
+        if (f.isFile() || !f.exists()) {
             if (f.getAbsolutePath().lastIndexOf('.') == -1) {
                 return false;
             }
@@ -89,15 +124,22 @@ public class TiledFileFilter extends FileFilter
     }
 
     public String getDescription() {
-    	String filter = "(";
-    	Iterator itr = exts.iterator();
-        while (itr.hasNext()) {
-        	String ext = (String)itr.next();
-        	filter = filter + "*." + ext;
-        	if (itr.hasNext()) {
-                filter += ",";
-            }
-        }
-        return desc + " " + filter + ")";
+    	String filter = "";
+    		
+    	if(!exts.isEmpty()) {
+	    	filter = filter + " (";
+	    	Iterator itr = exts.iterator();
+	        while (itr.hasNext()) {
+	        	String ext = (String)itr.next();
+	        	filter = filter + "*." + ext;
+	        	if (itr.hasNext()) {
+	                filter += ",";
+	            }
+	        }
+	        
+	        filter = filter+")";
+    	}
+    	
+        return desc + filter;
     }
 }

@@ -1796,65 +1796,102 @@ public class MapEditor implements ActionListener, MouseListener,
      *                 a "Save As" dialog.
      */
     public void saveMap(String filename, boolean bSaveAs) {
-        if (bSaveAs || filename == null) {
-            JFileChooser ch;
-
-            if (filename == null) {
-                ch = new JFileChooser();
-            } else {
-                ch = new JFileChooser(filename);
-            }
-
-            MapWriter[] writers = pluginLoader.getWriters();
-            for(int i = 0; i < writers.length; i++) {
-                try {
-                    ch.addChoosableFileFilter(new TiledFileFilter(
-                                writers[i].getFilter(), writers[i].getName()));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-            ch.addChoosableFileFilter(
-                    new TiledFileFilter(TiledFileFilter.FILTER_TMX));
-
-            if (ch.showSaveDialog(appFrame) == JFileChooser.APPROVE_OPTION) {
-                filename = ch.getSelectedFile().getAbsolutePath();
-            } else {
-                // User cancelled operation, do nothing
-                return;
-            }
-        }
-
-        // Make sure that the file has an extension. If not, append .tmx
-        // NOTE: we can't know anything more than the filename has at least
-        //		 one '.' in it...
-        if (filename.lastIndexOf('.') == -1) {
-        	filename = filename.concat(".tmx");
-        }
-        
-        try {
-            // Check if file exists
-            File exist = new File(filename);
-            if (exist.exists() && bSaveAs) {
-                int result = JOptionPane.showConfirmDialog(appFrame,
-                        "The file already exists. Are you sure you want to " +
-                        "overwrite it?", "Overwrite file?",
-                        JOptionPane.YES_NO_OPTION);
-                if (result != JOptionPane.OK_OPTION) {
-                    return;
-                }
-            }
-
-            MapHelper.saveMap(currentMap, filename);
-            currentMap.setFilename(filename);
-            updateRecent(filename);
-            undoStack.commitSave();
-            updateTitle();
-        } catch (Exception e) {
+    	
+    	TiledFileFilter saver = new TiledFileFilter(TiledFileFilter.FILTER_EXT);
+    	boolean saveOk = false;
+    	JFileChooser ch = null;
+    	
+    	try {
+	    	while(!saveOk) {
+		        if (bSaveAs || filename == null) {
+		
+		        	if(ch == null) {
+			            if (filename == null) {
+			                ch = new JFileChooser();
+			            } else {
+			                ch = new JFileChooser(filename);
+			            }
+			
+			            MapWriter[] writers = pluginLoader.getWriters();
+			            for(int i = 0; i < writers.length; i++) {
+			                try {
+			                    ch.addChoosableFileFilter(new TiledFileFilter(writers[i]));
+			                } catch (Exception e) {
+			                    e.printStackTrace();
+			                }
+			            }
+			
+			            ch.addChoosableFileFilter(
+			                    new TiledFileFilter(TiledFileFilter.FILTER_TMX));
+			
+			            ch.addChoosableFileFilter(saver);
+		        	}
+		        	
+		            if (ch.showSaveDialog(appFrame) == JFileChooser.APPROVE_OPTION) {
+		                filename = ch.getSelectedFile().getAbsolutePath();
+		                saver = (TiledFileFilter) ch.getFileFilter();
+		            } else {
+		                // User cancelled operation, do nothing
+		                return;
+		            }
+		            
+		            // Make sure that the file has an extension. If not, append extension
+		            // chosen from dropdown.
+		            // NOTE: we can't know anything more than the filename has at least
+		            //		 one '.' in it, or at least we won't go to the trouble...
+		            if (filename.lastIndexOf('.') == -1) {
+		            	if(saver.getType() == TiledFileFilter.FILTER_EXT) {
+		            		//impossible to tell
+		            		JOptionPane.showMessageDialog(appFrame, "Save failed, unknown type");
+		            		continue;
+		            	}
+		            	filename = filename.concat("."+saver.getFirstExtention());
+		            }
+		        }
+		        
+		        
+	            // Check if file exists
+	            File exist = new File(filename);
+	            if (exist.exists() && bSaveAs) {
+	                int result = JOptionPane.showConfirmDialog(appFrame,
+	                        "The file already exists. Are you sure you want to " +
+	                        "overwrite it?", "Overwrite file?",
+	                        JOptionPane.YES_NO_OPTION);
+	                if (result != JOptionPane.OK_OPTION) {
+	                    continue;
+	                }
+	            }
+	            
+	            // Do we want to just go by extention?
+	            if(saver.getType() == TiledFileFilter.FILTER_EXT) {
+	            	MapHelper.saveMap(currentMap, filename);
+	            } else {
+	                // Check that chosen plugin and extension match.
+	            	// If they don't, ask the user if they want to shoot themselves in the foot
+	                if(!saver.accept(exist)) {
+	                	int result = JOptionPane.showConfirmDialog(appFrame,
+	                            "The file extension does not match the plugin."+
+	                            " Do you wish to continue?",
+	                            "Force save?",
+	                            JOptionPane.YES_NO_OPTION);
+	                	if (result != JOptionPane.OK_OPTION) {
+		                    continue;
+		                }
+	                }
+	                
+	                MapHelper.saveMap(currentMap, saver.getPlugin(), filename);
+	            }
+	            
+	            currentMap.setFilename(filename);
+	            updateRecent(filename);
+	            undoStack.commitSave();
+	            updateTitle();
+	            saveOk = true;
+	    	}
+    	} catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(appFrame,
-                    "Error while saving " + filename + ": " + e.toString(),
+                    "Error while attempting to save " + filename + ": " + e.toString(),
                     "Error while saving map",
                     JOptionPane.ERROR_MESSAGE);
         }
