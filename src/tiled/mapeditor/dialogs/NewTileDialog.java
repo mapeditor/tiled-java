@@ -57,7 +57,6 @@ public class NewTileDialog extends JDialog implements ActionListener {
             if (d.getImageId() >= 0) {
                 currentTile = new Tile(tileset);
                 currentTile.setImage(d.getImageId());
-                currentTile.setImageOrientation(d.getImageOrientation());
             }
             return;
         }

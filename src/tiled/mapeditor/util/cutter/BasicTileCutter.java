@@ -37,6 +37,10 @@ public class BasicTileCutter implements TileCutter
         nextY = offset + frame;
     }
 
+    public String getName() {
+    	return "Basic";
+    }
+    
     public void setImage(Image image) {
         int iw = image.getWidth(null);
         int ih = image.getHeight(null);

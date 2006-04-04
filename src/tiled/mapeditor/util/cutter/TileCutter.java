@@ -23,4 +23,5 @@ public interface TileCutter
     public void setImage(Image image);
     public Image getNextTile() throws Exception;
     public Dimension getDimensions();
+    public String getName();
 }

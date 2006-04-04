@@ -18,6 +18,7 @@ import java.util.LinkedList;
 import javax.swing.filechooser.FileFilter;
 
 import tiled.io.PluggableMapIO;
+import tiled.io.xml.XMLMapWriter;
 
 /**
  * @version $Id$
@@ -41,6 +42,7 @@ public class TiledFileFilter extends FileFilter
         exts.add("tmx");
         exts.add("tmx.gz");
         exts.add("tsx");
+        pmio = new XMLMapWriter();
     }
 
     public TiledFileFilter(int filter) {		
@@ -52,11 +54,13 @@ public class TiledFileFilter extends FileFilter
             desc = "Tiled Maps files ";
             exts.add("tmx");
             exts.add("tmx.gz");
+            pmio = new XMLMapWriter();
         }
         
         if ((filter & FILTER_TSX) != 0) {
             desc += "Tiled Tileset files";
             exts.add("tsx");
+            if(pmio == null) pmio = new XMLMapWriter();
         }
         
         if(filter == FILTER_EXT) {

@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.Properties;
 import java.util.Vector;
 import javax.imageio.ImageIO;
 
@@ -43,7 +44,8 @@ public class TileSet
     private String externalSource, tilebmpFile;
     private String name;
     private Color transparentColor;
-
+    private Properties defaultTileProperties;
+    
     /**
      * Default constructor
      */
@@ -78,9 +80,7 @@ public class TileSet
     }
 
     /**
-     * Creates a tileset from a buffered image. This is a linear cutter that
-     * goes left to right, top to bottom when cutting. It can optionally create
-     * tiled.core.Tile objects that reference the images as it is cutting them.
+     * Creates a tileset from a buffered image. Tiles are cut by the passed cutter.
      *
      * @param tilebmp     the image to be used
      * @param cutter

@@ -20,6 +20,10 @@ import java.awt.Image;
  */
 public class BorderTileCutter implements TileCutter
 {
+	
+	public String getName() {
+		return "Border";
+	}
     public void setImage(Image image) {
         // TODO Auto-generated method stub
 

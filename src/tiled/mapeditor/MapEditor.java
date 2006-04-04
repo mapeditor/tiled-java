@@ -1719,7 +1719,7 @@ public class MapEditor implements ActionListener, MouseListener,
             if (filename != null) {
                 title += currentMap.getFilename();
             } else {
-                title += "Untitled";
+                title += Resources.getString("general.file.untitled");
             }
             if (unsavedChanges()) {
                 title += "*";
@@ -1758,6 +1758,16 @@ public class MapEditor implements ActionListener, MouseListener,
      *         an error occured
      */
     public boolean loadMap(String file) {
+    	
+    	File exist = new File(file);
+        if (!exist.exists()) {
+        	JOptionPane.showMessageDialog(appFrame,
+        			Resources.getString("general.file.notexists.message"), 
+					Resources.getString("dialog.openmap.error.title"),
+                    JOptionPane.ERROR_MESSAGE);
+        	return false;
+        }
+    	
         try {
             Map m = MapHelper.loadMap(file);
 
@@ -1769,15 +1779,16 @@ public class MapEditor implements ActionListener, MouseListener,
                 return true;
             } else {
                 JOptionPane.showMessageDialog(appFrame,
-                        "Unsupported map format", "Error while loading map",
+                        "Unsupported map format", 
+						Resources.getString("dialog.openmap.error.title"),
                         JOptionPane.ERROR_MESSAGE);
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(appFrame,
                     "Error while loading " + file + ": " +
-                    e.getMessage() + (e.getCause() != null ? "\nCause: " +
-                        e.getCause().getMessage() : ""),
-                    "Error while loading map",
+                    e.getLocalizedMessage() + (e.getCause() != null ? "\nCause: " +
+                        e.getCause().getLocalizedMessage() : ""),
+                    Resources.getString("dialog.openmap.error.title"),
                     JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
@@ -1798,11 +1809,10 @@ public class MapEditor implements ActionListener, MouseListener,
     public void saveMap(String filename, boolean bSaveAs) {
     	
     	TiledFileFilter saver = new TiledFileFilter(TiledFileFilter.FILTER_EXT);
-    	boolean saveOk = false;
     	JFileChooser ch = null;
     	
     	try {
-	    	while(!saveOk) {
+	    	while(true) {
 		        if (bSaveAs || filename == null) {
 		
 		        	if(ch == null) {
@@ -1835,6 +1845,11 @@ public class MapEditor implements ActionListener, MouseListener,
 		                return;
 		            }
 		            
+		            // Don't let users be tricky (no foo. files)
+		            if(filename.substring(filename.lastIndexOf('.')+1).length() == 0) {
+		            	filename = filename.substring(0,filename.lastIndexOf('.'));
+		            }
+		            
 		            // Make sure that the file has an extension. If not, append extension
 		            // chosen from dropdown.
 		            // NOTE: we can't know anything more than the filename has at least
@@ -1842,9 +1857,11 @@ public class MapEditor implements ActionListener, MouseListener,
 		            if (filename.lastIndexOf('.') == -1) {
 		            	if(saver.getType() == TiledFileFilter.FILTER_EXT) {
 		            		//impossible to tell
-		            		JOptionPane.showMessageDialog(appFrame, "Save failed, unknown type");
+		            		JOptionPane.showMessageDialog(appFrame, Resources.getString("dialog.saveas.unknown-type.message"));
 		            		continue;
 		            	}
+		            	
+		            	//we will also be lazy about picking a valid extention...
 		            	filename = filename.concat("."+saver.getFirstExtention());
 		            }
 		        }
@@ -1854,8 +1871,8 @@ public class MapEditor implements ActionListener, MouseListener,
 	            File exist = new File(filename);
 	            if (exist.exists() && bSaveAs) {
 	                int result = JOptionPane.showConfirmDialog(appFrame,
-	                        "The file already exists. Are you sure you want to " +
-	                        "overwrite it?", "Overwrite file?",
+	                        Resources.getString("general.file.exists.message"), 
+	                        Resources.getString("general.file.exists.title"),
 	                        JOptionPane.YES_NO_OPTION);
 	                if (result != JOptionPane.OK_OPTION) {
 	                    continue;
@@ -1870,8 +1887,7 @@ public class MapEditor implements ActionListener, MouseListener,
 	            	// If they don't, ask the user if they want to shoot themselves in the foot
 	                if(!saver.accept(exist)) {
 	                	int result = JOptionPane.showConfirmDialog(appFrame,
-	                            "The file extension does not match the plugin."+
-	                            " Do you wish to continue?",
+	                			Resources.getString("dialog.saveas.confirm.mismatch"),
 	                            "Force save?",
 	                            JOptionPane.YES_NO_OPTION);
 	                	if (result != JOptionPane.OK_OPTION) {
@@ -1882,17 +1898,20 @@ public class MapEditor implements ActionListener, MouseListener,
 	                MapHelper.saveMap(currentMap, saver.getPlugin(), filename);
 	            }
 	            
+	            // If we make it to the bottom, the user and Tiled have agreed on something,
+	            // and the file was saved successfully. Update UI.
 	            currentMap.setFilename(filename);
 	            updateRecent(filename);
 	            undoStack.commitSave();
 	            updateTitle();
-	            saveOk = true;
+	            break;
 	    	}
     	} catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             JOptionPane.showMessageDialog(appFrame,
-                    "Error while attempting to save " + filename + ": " + e.toString(),
-                    "Error while saving map",
+            		Resources.getString("dialog.saveas.error.message") +
+					" " + filename + ": " + e.getLocalizedMessage(),
+					Resources.getString("dialog.saveas.error.title"),
                     JOptionPane.ERROR_MESSAGE);
         }
     }
