@@ -27,6 +27,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import tiled.core.*;
+import tiled.mapeditor.Resources;
 import tiled.mapeditor.animation.AnimationDialog;
 import tiled.mapeditor.util.*;
 import tiled.mapeditor.widget.*;
@@ -42,18 +43,33 @@ public class TileDialog extends JDialog
     private Map map;
     private JList tileList, imageList;
     private JTable tileProperties;
-    private JButton bOk, bNew, bDelete, bChangeI, bDuplicate;
-    private JButton bAddImage, bDeleteImage, bDeleteAllUnusedImages;
-    private JButton bAnimation;
+    private JButton okButton, newTileButton, deleteTileButton, changeImageButton, duplicateTileButton;
+    private JButton createTileButton;
+    private JButton animationButton;
     private String location;
     private JTextField tilesetNameEntry;
     private JCheckBox externalBitmapCheck;
-    //private JCheckBox sharedImagesCheck;
     private JTabbedPane tabs;
     private int currentImageIndex = -1;
 
+    /* LANGUAGE PACK */
+    private static final String DIALOG_TITLE = Resources.getString("dialog.tile.title");
+    private static final String OK_BUTTON = Resources.getString("general.button.ok");
+    private static final String DELETE_BUTTON = Resources.getString("dialog.tile.button.deletetile");
+    private static final String CI_BUTTON = Resources.getString("dialog.tile.button.changeimage");
+    private static final String NEW_BUTTON = Resources.getString("dialog.tile.button.newtile");
+    private static final String CREATE_BUTTON = Resources.getString("dialog.tile.button.createtile");
+    private static final String DUPLICATE_BUTTON = Resources.getString("dialog.tile.button.duptile");
+    private static final String ANIMATION_BUTTON = Resources.getString("dialog.tile.button.animation");
+    private static final String PREVIEW_TAB = Resources.getString("general.button.preview");
+    private static final String TILES_TAB = Resources.getString("general.tile.tiles");
+    private static final String TILESET_TAB = Resources.getString("general.tile.tileset");
+    private static final String NAME_LABEL = Resources.getString("dialog.newtileset.name.label");
+    
+    /* -- */
+    
     public TileDialog(Dialog parent, TileSet s, Map m) {
-        super(parent, "Edit Tileset '" + s.getName() + "'", true);
+        super(parent, DIALOG_TITLE + " '" + s.getName() + "'", true);
         location = "";
         tileset = s;    //unofficial
         map = m;        //also unofficial
@@ -67,17 +83,17 @@ public class TileDialog extends JDialog
     private JPanel createTilePanel() {
         // Create the buttons
 
-        bDelete = new JButton("Delete Tile");
-        bChangeI = new JButton("Change Image");
-        bDuplicate = new JButton("Duplicate Tile");
-        bNew = new JButton("Add Tile");
-        bAnimation = new JButton("Animation");
+        deleteTileButton = new JButton(DELETE_BUTTON);
+        changeImageButton = new JButton(CI_BUTTON);
+        duplicateTileButton = new JButton(DUPLICATE_BUTTON);
+        newTileButton = new JButton(NEW_BUTTON);
+        animationButton = new JButton(ANIMATION_BUTTON);
         
-        bDelete.addActionListener(this);
-        bChangeI.addActionListener(this);
-        bDuplicate.addActionListener(this);
-        bNew.addActionListener(this);
-        bAnimation.addActionListener(this);
+        deleteTileButton.addActionListener(this);
+        changeImageButton.addActionListener(this);
+        duplicateTileButton.addActionListener(this);
+        newTileButton.addActionListener(this);
+        animationButton.addActionListener(this);
         
         tileList = new JList();
         tileList.setCellRenderer(new TileDialogListRenderer());
@@ -113,15 +129,15 @@ public class TileDialog extends JDialog
         JPanel buttons = new VerticalStaticJPanel();
         buttons.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
         buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
-        buttons.add(bNew);
+        buttons.add(newTileButton);
         buttons.add(Box.createRigidArea(new Dimension(5, 0)));
-        buttons.add(bDelete);
+        buttons.add(deleteTileButton);
         buttons.add(Box.createRigidArea(new Dimension(5, 0)));
-        buttons.add(bChangeI);
+        buttons.add(changeImageButton);
         buttons.add(Box.createRigidArea(new Dimension(5, 0)));
-        buttons.add(bDuplicate);
+        buttons.add(duplicateTileButton);
         buttons.add(Box.createRigidArea(new Dimension(5, 0)));
-        buttons.add(bAnimation);
+        buttons.add(animationButton);
         buttons.add(Box.createRigidArea(new Dimension(5, 0)));
         buttons.add(Box.createGlue());
 
@@ -137,13 +153,13 @@ public class TileDialog extends JDialog
         mainPanel.add(splitPane, c);
         c.weightx = 0; c.weighty = 0; c.gridy = 1;
         mainPanel.add(buttons, c);
-
+        
         return mainPanel;
     }
 
     private JPanel createTilesetPanel()
     {
-        JLabel name_label = new JLabel("Name: ");
+        JLabel name_label = new JLabel(NAME_LABEL+" ");
         tilesetNameEntry = new JTextField(32);
         //sharedImagesCheck = new JCheckBox("Use shared images");
         externalBitmapCheck = new JCheckBox("Use external bitmap");
@@ -176,20 +192,12 @@ public class TileDialog extends JDialog
         sp.setPreferredSize(new Dimension(150, 150));
 
         // Buttons
-        bAddImage = new JButton("Add Image");
-        bAddImage.addActionListener(this);
-        bDeleteImage = new JButton("Delete Image");
-        bDeleteImage.addActionListener(this);
-        bDeleteAllUnusedImages = new JButton("Delete Unused Images");
-        bDeleteAllUnusedImages.addActionListener(this);
+        createTileButton = new JButton(CREATE_BUTTON);
+        createTileButton.addActionListener(this);
         JPanel buttons = new VerticalStaticJPanel();
         buttons.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
         buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
-        buttons.add(bAddImage);
-        buttons.add(Box.createRigidArea(new Dimension(5, 0)));
-        buttons.add(bDeleteImage);
-        buttons.add(Box.createRigidArea(new Dimension(5, 0)));
-        buttons.add(bDeleteAllUnusedImages);
+        buttons.add(createTileButton);
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new GridBagLayout());
@@ -205,17 +213,16 @@ public class TileDialog extends JDialog
 
     private void init() {
         tabs = new JTabbedPane(JTabbedPane.TOP);
-        tabs.addTab("Tileset", createTilesetPanel());
-        tabs.addTab("Tiles", createTilePanel());
-        tabs.addTab("Images", createImagePanel());
+        tabs.addTab(TILESET_TAB, createTilesetPanel());
+        tabs.addTab(TILES_TAB, createTilePanel());
+        tabs.addTab(PREVIEW_TAB, createImagePanel());
 
-        bOk = new JButton("OK");
-        bOk.addActionListener(this);
+        okButton = new JButton(OK_BUTTON);
 
         JPanel buttons = new VerticalStaticJPanel();
         buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
         buttons.add(Box.createGlue());
-        buttons.add(bOk);
+        buttons.add(okButton);
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
@@ -225,20 +232,28 @@ public class TileDialog extends JDialog
         mainPanel.add(buttons);
 
         getContentPane().add(mainPanel);
-        getRootPane().setDefaultButton(bOk);
+        getRootPane().setDefaultButton(okButton);
+        
+        //create actionlisteners
+        okButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+            	tileset.setName(tilesetNameEntry.getText());
+                dispose();
+            }
+        });
     }
 
     private void changeImage() {
         if (currentTile == null) {
             return;
         }
-        if (tileset.usesSharedImages()) {
+
+        if (tileset.isSetFromImage()) {
             TileImageDialog d = new TileImageDialog(this, tileset,
                 currentTile.getImageId());
             d.setVisible(true);
             if (d.getImageId() >= 0) {
                 currentTile.setImage(d.getImageId());
-                currentTile.setImageOrientation(d.getImageOrientation());
             }
         } else {
             Image img = loadImage();
@@ -266,7 +281,7 @@ public class TileDialog extends JDialog
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(this, e.getMessage(),
+                JOptionPane.showMessageDialog(this, e.getLocalizedMessage(),
                         "Error loading image", JOptionPane.ERROR_MESSAGE);
             }
         }
@@ -362,37 +377,22 @@ public class TileDialog extends JDialog
         // boolean internal = (tileset.getSource() == null);
         boolean tilebmp = tileset.getTilebmpFile() != null;
         boolean tileSelected = currentTile != null;
-        boolean sharedImages = tileset.usesSharedImages();
-        boolean atLeastOneSharedImage = sharedImages
+        boolean setImages = tileset.isSetFromImage();
+        boolean atLeastOneSharedImage = setImages
           && tileset.getTotalImages() >= 1;
 
-        bNew.setEnabled(atLeastOneSharedImage || !tilebmp);
-        bDelete.setEnabled((sharedImages || !tilebmp) && tileSelected);
-        bChangeI.setEnabled((atLeastOneSharedImage || !tilebmp)
+        newTileButton.setEnabled(atLeastOneSharedImage || !tilebmp);
+        deleteTileButton.setEnabled((setImages || !tilebmp) && tileSelected);
+        changeImageButton.setEnabled((atLeastOneSharedImage || !tilebmp)
             && tileSelected);
-        bDuplicate.setEnabled((sharedImages || !tilebmp) && tileSelected);
-        bAnimation.setEnabled((sharedImages || !tilebmp) && tileSelected &&
+        duplicateTileButton.setEnabled((setImages || !tilebmp) && tileSelected);
+        animationButton.setEnabled((setImages || !tilebmp) && tileSelected &&
         		currentTile instanceof AnimatedTile);
-        tileProperties.setEnabled((sharedImages || !tilebmp) && tileSelected);
+        tileProperties.setEnabled((setImages || !tilebmp) && tileSelected);
         externalBitmapCheck.setEnabled(tilebmp); // Can't turn this off yet
-        //sharedImagesCheck.setEnabled(!tilebmp || !sharedImages
-        //    || tileset.safeToDisableSharedImages());
-        tabs.setEnabledAt(2, sharedImages);
-        if (sharedImages) {
-            bAddImage.setEnabled(!tilebmp);
-            bDeleteAllUnusedImages.setEnabled(!tilebmp);
-            boolean image_used = false;
-            Iterator tileIterator = tileset.iterator();
-
-            while (tileIterator.hasNext()) {
-                Tile tile = (Tile)tileIterator.next();
-                if (tile.getImageId() == currentImageIndex) {
-                    image_used = true;
-                }
-            }
-            bDeleteImage.setEnabled(!tilebmp && currentImageIndex >= 0
-                && !image_used);
-        }
+        //setImagesCheck.setEnabled(!tilebmp || !setImages
+        //    || tileset.safeToDisablesetImages());
+        tabs.setEnabledAt(2, setImages);
     }
 
     /**
@@ -420,10 +420,10 @@ public class TileDialog extends JDialog
     public void actionPerformed(ActionEvent event) {
         Object source = event.getSource();
 
-        if (source == bOk) {
+        if (source == okButton) {
             tileset.setName(tilesetNameEntry.getText());
             dispose();
-        } else if (source == bDelete) {
+        } else if (source == deleteTileButton) {
             int answer = JOptionPane.showConfirmDialog(
                     this, "Delete tile?", "Are you sure?",
                     JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
@@ -434,11 +434,11 @@ public class TileDialog extends JDialog
                 }
                 queryTiles();
             }
-        } else if (source == bChangeI) {
+        } else if (source == changeImageButton) {
             changeImage();
-        } else if (source == bNew) {
+        } else if (source == newTileButton) {
             newTile();
-        } else if (source == bDuplicate) {
+        } else if (source == duplicateTileButton) {
             Tile n = new Tile(currentTile);
             tileset.addNewTile(n);
             queryTiles();
@@ -461,18 +461,18 @@ public class TileDialog extends JDialog
                     externalBitmapCheck.setSelected(true);
                 }
             }
-        } else if (source == bAnimation) {
+        } else if (source == animationButton) {
         	AnimationDialog ad = new AnimationDialog(this, ((AnimatedTile)currentTile).getSprite());
         	ad.setVisible(true);
         }
         /*
-        else if (source == sharedImagesCheck) {
-            if (sharedImagesCheck.isSelected()) {
-                tileset.enableSharedImages();
+        else if (source == setImagesCheck) {
+            if (setImagesCheck.isSelected()) {
+                tileset.enablesetImages();
                 updateEnabledState();
             } else {
                 int answer = JOptionPane.YES_OPTION;
-                if (!tileset.safeToDisableSharedImages()) {
+                if (!tileset.safeToDisablesetImages()) {
                     answer = JOptionPane.showConfirmDialog(
                         this, "This tileset uses features that require the "
                         + "use of shared images.  Disable the use of shared "
@@ -482,59 +482,28 @@ public class TileDialog extends JDialog
                         JOptionPane.QUESTION_MESSAGE);
                 }
                 if (answer == JOptionPane.YES_OPTION) {
-                    tileset.disableSharedImages();
+                    tileset.disablesetImages();
                     updateEnabledState();
                 } else {
-                    sharedImagesCheck.setSelected(true);
+                    setImagesCheck.setSelected(true);
                 }
             }
         }
         */
-        else if (source == bAddImage) {
-            Image img = loadImage();
-            if (img != null) {
-                tileset.addImage(img);
-            }
-            queryImages();
-        } else if (source == bDeleteImage) {
-            int answer = JOptionPane.showConfirmDialog(
-                this, "Delete this image?",
-                "Are you sure?",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE);
-            if (answer == JOptionPane.YES_OPTION) {
-            	Image img = (Image)imageList.getSelectedValue();
-                tileset.removeImage(tileset.getIdByImage(img));
-                queryImages();
-            }
-        } else if (source == bDeleteAllUnusedImages) {
-            int answer = JOptionPane.showConfirmDialog(
-                this, "Delete all unused images?",
-                "Are you sure?",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE);
-            if (answer == JOptionPane.YES_OPTION) {
-
-            	Enumeration ids = tileset.getImageIds();
-                while (ids.hasMoreElements()) {
-                	int id = Integer.parseInt((String)ids.nextElement());
-                	boolean image_used = false;
-                    Iterator tileIterator = tileset.iterator();
-
-                    while (tileIterator.hasNext()) {
-                        Tile tile = (Tile)tileIterator.next();
-                        if (tile.getImageId() == id) {
-                            image_used = true;
-                        }
-                    }
-
-                    if (!image_used) {
-                        tileset.removeImage(id);
-                    }
-                }
-
-                queryImages();
-            }
+        else if (source == createTileButton) {
+        	Image img = (Image)imageList.getSelectedValue();
+        	Tile n = new Tile(tileset);
+        	
+        	n.setImage(tileset.getIdByImage(img));
+        	tileset.addNewTile(n);
+        	queryTiles();
+            // Select the last (cloned) tile
+            tileList.setSelectedIndex(tileset.size() - 1);
+            tileList.ensureIndexIsVisible(tileset.size() - 1);
+            JOptionPane.showMessageDialog(this, 
+            		"Tile created with id "+n.getId(),
+            		"Created Tile",
+            		JOptionPane.INFORMATION_MESSAGE);
         }
 
         repaint();

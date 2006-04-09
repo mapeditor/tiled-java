@@ -71,6 +71,10 @@ public class NumberedSet {
 	 */
 	public int put(int id, Object o) throws IllegalArgumentException {
 		if (id < 0) throw new IllegalArgumentException();
+		
+		//make sure there is sufficient space to overlay
+		for(int i=id-data.size();i>0;i--) data.add(null);
+		
 		data.add(id, o);
 		return id;
 	}

@@ -51,7 +51,7 @@ public class NewTileDialog extends JDialog implements ActionListener {
 	}
 	
 	private void pickImage() {
-		if (tileset.usesSharedImages()) {
+		if (tileset.isSetFromImage()) {
             TileImageDialog d = new TileImageDialog(this, tileset);
             d.setVisible(true);
             if (d.getImageId() >= 0) {
@@ -75,7 +75,7 @@ public class NewTileDialog extends JDialog implements ActionListener {
 		            image = ImageIO.read(files[i]);
 		            // TODO: Support for a transparent color
 		        } catch (Exception e) {
-		            JOptionPane.showMessageDialog(this, e.getMessage(),
+		            JOptionPane.showMessageDialog(this, e.getLocalizedMessage(),
 		                    "Error!", JOptionPane.ERROR_MESSAGE);
 		            return;
 		        }

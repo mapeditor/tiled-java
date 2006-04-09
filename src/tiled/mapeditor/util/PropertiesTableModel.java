@@ -15,14 +15,17 @@ package tiled.mapeditor.util;
 import java.util.Properties;
 import javax.swing.table.AbstractTableModel;
 
+import tiled.mapeditor.Resources;
+
 /**
  * @version $Id$
  */
 public class PropertiesTableModel extends AbstractTableModel
 {
     private Properties properties;
-
-    private static final String[] columnNames = { "Name", "Value" };
+    
+    private static final String[] columnNames = { Resources.getString("dialog.properties.column.name"), 
+    												Resources.getString("dialog.properties.column.value") };
 
     public PropertiesTableModel() {
         properties = new Properties();

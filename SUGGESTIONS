@@ -158,7 +158,7 @@ Problems:   Do we store these properties on the map level, the layer level or
 - 28 --------------------------------------------------------------------------
 Suggestor:  bjorn
 Date:       18/02/06
-Summary:    Removing of stupid features.
+Summary:    Removing of stupid features. (like this suggestion)
 State:      Discussed and partly in progress.
 Problems:   * Get rid of #getNullTile in favour of actually using null. - DONE
             * Dump the whole tile image checksumming stuff in favour of

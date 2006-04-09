@@ -45,6 +45,7 @@ public class TileSet
     private String name;
     private Color transparentColor;
     private Properties defaultTileProperties;
+    private Image tileSetImage; 
     
     /**
      * Default constructor
@@ -53,6 +54,7 @@ public class TileSet
         tiles = new NumberedSet();
         images = new NumberedSet();
         tileDimensions = new Rectangle();
+        defaultTileProperties = new Properties();
     }
 
     /**
@@ -100,6 +102,8 @@ public class TileSet
         
         tileDimensions = new Rectangle(cutter.getDimensions());
         
+        tileSetImage = tilebmp;
+        
         BufferedImage tile;
         
         cutter.setImage(tilebmp);
@@ -145,7 +149,7 @@ public class TileSet
      * @param i
      */
     public void setTilesetImage(Image i) {
-        //setImage = i;
+        tileSetImage = i;
     }
 
     /**
@@ -223,6 +227,9 @@ public class TileSet
         if (tileDimensions.width < t.getWidth()) {
         	tileDimensions.width = t.getWidth();
         }
+        
+        //add any default properties
+        t.getProperties().putAll(defaultTileProperties);
         
         tiles.put(t.getId(), t);
         //System.out.println("adding tile " +t.getId());
@@ -516,12 +523,11 @@ public class TileSet
     }
 
     /**
-     * @deprecated
-     * @return
+     * @return boolean 
      */
-    public boolean usesSharedImages() {
+    public boolean isSetFromImage() {
         // TODO: Currently only uses shared sets...
-        return true;
+        return tileSetImage != null;
     }
 
     /**
@@ -561,4 +567,8 @@ public class TileSet
 
         return true;
     }
+
+	public void setDefaultProperties(Properties defaultSetProperties) {
+		defaultTileProperties = defaultSetProperties;
+	}
 }

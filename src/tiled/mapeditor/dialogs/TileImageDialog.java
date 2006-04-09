@@ -23,29 +23,34 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import tiled.core.TileSet;
+import tiled.mapeditor.Resources;
 import tiled.mapeditor.util.ImageCellRenderer;
 import tiled.mapeditor.widget.VerticalStaticJPanel;
 
 /**
  * @version $Id$
  */
-public class TileImageDialog extends JDialog
-    implements ActionListener, ListSelectionListener
+public class TileImageDialog extends JDialog implements ListSelectionListener
 {
     private JList imageList;
-    private JButton bOk, bCancel;
-    private JCheckBox horizFlipCheck, vertFlipCheck, rotateCheck;
-    private int imageId, imageOrientation;
+    private JButton okButton, cancelButton;
+    private int imageId;
     private final TileSet tileset;
     private JLabel imageLabel;
     private int[] imageIds;
 
+    /* LANGUAGE PACK */
+    private static final String DIALOG_TITLE = Resources.getString("dialog.tileimage.title");
+    private static final String OK_BUTTON = Resources.getString("general.button.ok");
+    private static final String CANCEL_BUTTON = Resources.getString("general.button.cancel");
+    /* -- */
+    
     public TileImageDialog(Dialog parent, TileSet set) {
         this(parent, set, 0);
     }
 
     public TileImageDialog(Dialog parent, TileSet set, int id) {
-        super(parent, "Choose Tile Image", true);
+        super(parent, DIALOG_TITLE, true);
         tileset = set;
         imageId = id;
 
@@ -70,31 +75,17 @@ public class TileImageDialog extends JDialog
         JPanel image_panel = new JPanel();
         image_panel.setLayout(new BoxLayout(image_panel, BoxLayout.Y_AXIS));
         imageLabel = new JLabel(new ImageIcon());
-        horizFlipCheck = new JCheckBox("Flip horizontally",
-            (imageOrientation & 1) == 1);
-        horizFlipCheck.addActionListener(this);
-        vertFlipCheck = new JCheckBox("Flip vertically",
-            (imageOrientation & 2) == 2);
-        vertFlipCheck.addActionListener(this);
-        rotateCheck = new JCheckBox("Rotate",
-            (imageOrientation & 4) == 4);
-        rotateCheck.addActionListener(this);
 
         image_panel.add(imageLabel);
-        image_panel.add(horizFlipCheck);
-        image_panel.add(vertFlipCheck);
-        image_panel.add(rotateCheck);
 
         // buttons
-        bOk = new JButton("OK");
-        bOk.addActionListener(this);
-        bCancel = new JButton("Cancel");
-        bCancel.addActionListener(this);
+        okButton = new JButton(OK_BUTTON);
+        cancelButton = new JButton(CANCEL_BUTTON);
         JPanel buttons = new VerticalStaticJPanel();
         buttons.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
         buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
-        buttons.add(bCancel);
-        buttons.add(bOk);
+        buttons.add(cancelButton);
+        buttons.add(okButton);
 
         // main panel
         JPanel mainPanel = new JPanel();
@@ -108,7 +99,21 @@ public class TileImageDialog extends JDialog
         c.gridx = 0; c.weighty = 0; c.gridy = 1; c.gridwidth = 2;
         mainPanel.add(buttons, c);
         getContentPane().add(mainPanel);
-        getRootPane().setDefaultButton(bOk);
+        getRootPane().setDefaultButton(okButton);
+        
+        //create action listeners
+        okButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+            	dispose();
+            }
+        });
+        
+        cancelButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+            	imageId = -1;
+            	dispose();
+            }
+        });
     }
 
     public void queryImages() {
@@ -136,29 +141,7 @@ public class TileImageDialog extends JDialog
     }
 
     private void updateEnabledState() {
-        bOk.setEnabled(imageId >= 0);
-    }
-
-    public void actionPerformed(ActionEvent event) {
-        Object source = event.getSource();
-
-        if (source == bOk) {
-            dispose();
-        } else if (source == bCancel) {
-            imageId = -1;
-            dispose();
-        } else if (source == horizFlipCheck) {
-            imageOrientation ^= 1;
-            updateImageLabel();
-        } else if (source == vertFlipCheck) {
-            imageOrientation ^= 2;
-            updateImageLabel();
-        } else if (source == rotateCheck) {
-            imageOrientation ^= 4;
-            updateImageLabel();
-        }
-
-        repaint();
+        okButton.setEnabled(imageId >= 0);
     }
 
     private void updateImageLabel() {
@@ -176,9 +159,5 @@ public class TileImageDialog extends JDialog
 
     public int getImageId() {
         return imageId;
-    }
-
-    int getImageOrientation() {
-        return imageOrientation;
     }
 }

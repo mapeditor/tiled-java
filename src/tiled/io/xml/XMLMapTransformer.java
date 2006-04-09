@@ -226,7 +226,7 @@ public class XMLMapTransformer implements MapReader
 
         return img;
     }
-
+    
     private TileSet unmarshalTilesetFile(InputStream in, String filename)
         throws Exception
     {
@@ -354,6 +354,8 @@ public class XMLMapTransformer implements MapReader
                         }
 
                         if (transStr != null) {
+                        	//in this case, the tileset image needs special handling for
+                        	//transparency
                             Color color = new Color(
                                     Integer.parseInt(transStr, 16));
                             Toolkit tk = Toolkit.getDefaultToolkit();
@@ -377,7 +379,7 @@ public class XMLMapTransformer implements MapReader
                                 set.setTransparentColor(color);
                                 set.setTilesetImageFilename(sourcePath);
                             } catch (IIOException iioe) {
-                                warnings.push("ERROR: "+iioe.getMessage()+" ("+sourcePath+")");
+                                warnings.push("ERROR: "+iioe.getLocalizedMessage()+" ("+sourcePath+")");
                             }
                         } else {
                             set.importTileBitmap(sourcePath, new BasicTileCutter( 
@@ -766,7 +768,7 @@ public class XMLMapTransformer implements MapReader
     public String getDescription() {
         return "This is the core Tiled TMX format reader\n" +
             "\n" +
-            "Tiled Map Editor, (c) 2005\n" +
+            "Tiled Map Editor, (c) 2004-2006\n" +
             "Adam Turk\n" +
             "Bjorn Lindeijer";
     }

@@ -18,6 +18,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.FilteredImageSource;
 import java.io.File;
 import java.io.IOException;
+import java.util.Properties;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -50,11 +51,15 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
     private JLabel tilebmpFileLabel, cutterLabel;
     private JCheckBox tilebmpCheck, tileAutoCheck, transCheck;
     private JComboBox cutterBox;
+    private JButton previewButton;
     private JButton browseButton;
     private JButton propsButton;
     private ColorButton colorButton;
     private String path;
+    
+    private Properties defaultSetProperties;
 
+    /* LANGUAGE PACK */
     private static final String DIALOG_TITLE = Resources.getString("dialog.newtileset.title");
     private static final String NAME_LABEL = Resources.getString("dialog.newtileset.name.label");
     private static final String TILE_WIDTH_LABEL = Resources.getString("dialog.newtileset.tilewidth.label");
@@ -66,17 +71,22 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
     private static final String AUTO_TILES_LABEL = Resources.getString("dialog.newtileset.autotiles.label");
     private static final String USE_TRANS_COLOR_LABEL = Resources.getString("dialog.newtileset.usetransparentcolor.label");
     private static final String OK_BUTTON = Resources.getString("general.button.ok");
+    private static final String PREVIEW_BUTTON = Resources.getString("general.button.preview");
     private static final String CANCEL_BUTTON = Resources.getString("general.button.cancel");
     private static final String BROWSE_BUTTON = Resources.getString("general.button.browse");
     private static final String FROM_TILESET_IMG_TITLE = Resources.getString("dialog.newtileset.fromtilesetimg.title");
     private static final String IMPORT_ERROR_MSG = Resources.getString("dialog.newtileset.import.error.message");
     private static final String IMG_LOAD_ERROR = Resources.getString("dialog.newtileset.imgload.error.message");
     private static final String COLOR_CHOOSE_ERROR_TITLE = Resources.getString("dialog.newtileset.colorchoose.error.title");
-
+    private static final String PROPERTIES_TITLE = Resources.getString("dialog.properties.default.title");
+    private static final String PROPERTIES_BUTTON = Resources.getString("dialog.newtileset.button.properties");
+    /* -- */
+    
     public NewTilesetDialog(JFrame parent, Map map) {
         super(parent, DIALOG_TITLE, true);
         this.map = map;
         path = map.getFilename();
+        defaultSetProperties = new Properties();
         init();
         pack();
         setLocationRelativeTo(parent);
@@ -123,9 +133,10 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
         transCheck.addChangeListener(this);
 
         JButton okButton = new JButton(OK_BUTTON);
+        previewButton = new JButton(PREVIEW_BUTTON);
         JButton cancelButton = new JButton(CANCEL_BUTTON);
         browseButton = new JButton(BROWSE_BUTTON);
-        propsButton = new JButton("Set Default Properties...");
+        propsButton = new JButton(PROPERTIES_BUTTON);
         colorButton = new ColorButton(new Color(255, 0, 255));
 
         // Combine browse button and tile bitmap path text field
@@ -205,6 +216,8 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
         buttons.add(Box.createGlue());
         buttons.add(okButton);
         buttons.add(Box.createRigidArea(new Dimension(5, 0)));
+        buttons.add(previewButton);
+        buttons.add(Box.createRigidArea(new Dimension(5, 0)));
         buttons.add(cancelButton);
 
         // Top part of form
@@ -259,6 +272,12 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
             }
         });
 
+        previewButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                System.out.println("TilesetPreviewDialog");
+            }
+        });
+        
         cancelButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
                 dispose();
@@ -282,6 +301,15 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
                 chooseColorFromImage();
             }
         });
+        
+        propsButton.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent actionEvent) {
+        		PropertiesDialog lpd =
+                    new PropertiesDialog(null, defaultSetProperties);
+        		lpd.setTitle(PROPERTIES_TITLE);
+        		lpd.getProps();
+            }
+        });
     }
 
     public TileSet create() {
@@ -301,52 +329,65 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
     }
 
     private void createSetAndDispose() {
-        newTileset = new TileSet();
+    	newTileset = new TileSet();
         newTileset.setName(tilesetName.getText());
-
-        if (tilebmpCheck.isSelected()) {
-            String file = tilebmpFile.getText();
-            int spacing = tileSpacing.intValue();
-            int width = tileWidth.intValue();
-            int height = tileHeight.intValue();
-            try {
-                if (!transCheck.isSelected()) {
-                    newTileset.importTileBitmap(file,
-                            getCutter(width, height, spacing),
-                            tileAutoCheck.isSelected());
-                } else {
-                    try {
-                        Toolkit tk = Toolkit.getDefaultToolkit();
-                        Image orig = ImageIO.read(new File(file));
-                        Image trans = tk.createImage(
-                                new FilteredImageSource(orig.getSource(),
-                                        new TransparentImageFilter(
-                                                colorButton.getColor().getRGB())));
-                        BufferedImage img = new BufferedImage(
-                                trans.getWidth(null),
-                                trans.getHeight(null),
-                                BufferedImage.TYPE_INT_ARGB);
-
-                        img.getGraphics().drawImage(trans, 0, 0, null);
-
-                        newTileset.importTileBitmap(img,
-                                getCutter(width, height, spacing),
-                                tileAutoCheck.isSelected());
-
-                        newTileset.setTransparentColor(
-                                colorButton.getColor());
-
-                        newTileset.setTilesetImageFilename(file);
-                    } catch (IOException e) {
-                    }
-                }
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, e.getMessage(),
-                        IMPORT_ERROR_MSG, JOptionPane.ERROR_MESSAGE);
-                newTileset = null;
-            }
-        }
-
+        newTileset.setDefaultProperties(defaultSetProperties);
+        
+        // In the off chance that something goes wrong,
+        // keep working.
+    	while(true) {
+	
+	        if (tilebmpCheck.isSelected()) {
+	            String file = tilebmpFile.getText();
+	            int spacing = tileSpacing.intValue();
+	            int width = tileWidth.intValue();
+	            int height = tileHeight.intValue();
+	            try {
+	                if (!transCheck.isSelected()) {
+	                    newTileset.importTileBitmap(file,
+	                            getCutter(width, height, spacing),
+	                            tileAutoCheck.isSelected());
+	                } else {
+	                    try {
+	                        Toolkit tk = Toolkit.getDefaultToolkit();
+	                        Image orig = ImageIO.read(new File(file));
+	                        Image trans = tk.createImage(
+	                                new FilteredImageSource(orig.getSource(),
+	                                        new TransparentImageFilter(
+	                                                colorButton.getColor().getRGB())));
+	                        BufferedImage img = new BufferedImage(
+	                                trans.getWidth(null),
+	                                trans.getHeight(null),
+	                                BufferedImage.TYPE_INT_ARGB);
+	
+	                        img.getGraphics().drawImage(trans, 0, 0, null);
+	
+	                        newTileset.importTileBitmap(img,
+	                                getCutter(width, height, spacing),
+	                                tileAutoCheck.isSelected());
+	
+	                        newTileset.setTransparentColor(
+	                                colorButton.getColor());
+	
+	                        newTileset.setTilesetImageFilename(file);
+	                    } catch (IOException e) {
+	                    	JOptionPane.showMessageDialog(this, e.getLocalizedMessage(),
+	                                IMPORT_ERROR_MSG, JOptionPane.WARNING_MESSAGE);
+	                    	continue;
+	                    }
+	                }
+	                
+	            } catch (Exception e) {
+	                JOptionPane.showMessageDialog(this, e.getLocalizedMessage(),
+	                        IMPORT_ERROR_MSG, JOptionPane.ERROR_MESSAGE);
+	                newTileset = null;
+	                return;
+	            }
+	        }
+	
+	        break;
+    	}
+    	
         dispose();
     }
 
@@ -361,7 +402,7 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
             }
         } catch (IOException e) {
             JOptionPane.showMessageDialog(getOwner(),
-                    IMG_LOAD_ERROR + e.getMessage(),
+                    IMG_LOAD_ERROR + " " + e.getLocalizedMessage(),
                     COLOR_CHOOSE_ERROR_TITLE, JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -389,5 +430,6 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
         colorButton.setEnabled(value && transCheck.isSelected());
         cutterBox.setEnabled(value && tileAutoCheck.isSelected());
         cutterLabel.setEnabled(value && tileAutoCheck.isSelected());
+        previewButton.setEnabled(value);
     }
 }

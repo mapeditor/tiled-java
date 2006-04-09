@@ -19,12 +19,16 @@ import javax.swing.JList;
 import javax.swing.DefaultListCellRenderer;
 
 import tiled.core.*;
+import tiled.mapeditor.Resources;
 
 
 public class TileDialogListRenderer extends DefaultListCellRenderer
 {
+	private static final String TILE = Resources.getString("general.tile.tile");
+	private static final String NOTILE = Resources.getString("general.tile.notile");
+	
     private double zoom = 1;
-
+    
     public TileDialogListRenderer() {
         setOpaque(true);
     }
@@ -46,10 +50,10 @@ public class TileDialogListRenderer extends DefaultListCellRenderer
             if (scaledImage != null) {
                 setIcon(new ImageIcon(scaledImage));
             }
-            setText("Tile " + tile.getId());
+            setText(TILE + " " + tile.getId());
         } else {
             setIcon(null);
-            setText("No tile?");
+            setText(NOTILE);
         }
 
         return this;
