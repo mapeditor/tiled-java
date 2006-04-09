@@ -24,8 +24,8 @@ import java.util.Vector;
  *
  * @author rainerd
  */
-public class NumberedSet {
-
+public class NumberedSet
+{
 	private Vector data;
 
 	/**
@@ -73,8 +73,10 @@ public class NumberedSet {
 	public int put(int id, Object o) throws IllegalArgumentException {
 		if (id < 0) throw new IllegalArgumentException();
 
-		//make sure there is sufficient space to overlay
-		for(int i=id-data.size();i>0;i--) data.add(null);
+		// Make sure there is sufficient space to overlay
+		for (int i = id - data.size(); i > 0; i--) {
+            data.add(null);
+        }
 
 		data.add(id, o);
 		return id;
@@ -97,11 +99,11 @@ public class NumberedSet {
 	 */
 	public int getMaxId() {
 		int id = -1;
-		for(int i=0;i<data.size();i++) {
-			if(data.get(i) != null) id = i;
+		for (int i = 0; i < data.size(); i++) {
+			if (data.get(i) != null) id = i;
 		}
 
-		return id+1;
+		return id + 1;
 	}
 
 	/**

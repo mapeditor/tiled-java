@@ -5,7 +5,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
@@ -88,8 +88,13 @@ public class TilePalettePanel extends JPanel implements Scrollable,
         int tilesPerRow = (getWidth() - 1) / twidth;
         int tileId = ty * tilesPerRow + tx;
 
-        //now that we're in the right "spot", find the next valid tile
-        while((ret = tileset.getTile(tileId++)) == null) if(tileId > tileset.getMaxTileId()) break;
+        // Now that we're in the right "spot", find the next valid tile
+        // todo: Assumes to gab is so big that a tile can be found between the
+        // todo: right spot and the tile that was actually clicked, actually
+        // todo: I'm not sure whether this works at all. - Bjorn
+        while ((ret = tileset.getTile(tileId++)) == null) {
+            if (tileId > tileset.getMaxTileId()) break;
+        }
 
         return ret;
     }
@@ -104,31 +109,30 @@ public class TilePalettePanel extends JPanel implements Scrollable,
         }
 
         for (int i = 0; i < tilesets.size(); i++) {
-            TileSet tileset = (TileSet)tilesets.get(i);
+            TileSet tileset = (TileSet) tilesets.get(i);
 
             if (tileset != null) {
                 // Draw the tiles
-                int maxHeight = tileset.getTileHeight();
                 int twidth = tileset.getTileWidth() + 1;
                 int theight = tileset.getTileHeight() + 1;
                 int tilesPerRow = Math.max(1, (getWidth() - 1) / twidth);
 
-                int startY = clip.y / maxHeight;
+                int startY = clip.y / theight;
                 int endY = (clip.y + clip.height) / theight + 1;
                 int tileAt = tilesPerRow * startY;
 
-                for (int y = startY, gy = startY * maxHeight; y < endY && tileAt < tileset.getMaxTileId(); y++) {
+                for (int y = startY, gy = startY * theight; y < endY && tileAt < tileset.getMaxTileId(); y++) {
                     for (int x = 0, gx = 1; x < tilesPerRow; x++) {
                         Tile tile = null;
-                        while((tile = tileset.getTile(tileAt++)) == null) 
+                        while ((tile = tileset.getTile(tileAt++)) == null)
                         	if(tileAt > tileset.getMaxTileId() || tileAt-1 == 0) break;
-                        
+
                         if (tile != null) {
                             tile.drawRaw(g, gx, gy + theight, 1.0);
                         }
                         gx += twidth;
                     }
-                    gy += maxHeight;
+                    gy += theight;
                 }
             }
         }

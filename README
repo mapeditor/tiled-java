@@ -7,9 +7,9 @@ pretty capable and flexible, we don't expect it to be able to do enough for
 most people at the moment. We need your feedback!
 
 
-Website:     http://tiled.rpgdx.net/
-Subversion:  svn://www.biggeruniverse.com/tiled/
-Bugtracker:  http://www.biggeruniverse.com/projects/flyspray/
+Website:     http://mapeditor.org/
+Subversion:  svn://svn.mapeditor.org/
+Bugtracker:  http://bugs.mapeditor.org/
 
 
 -----------------
@@ -48,3 +48,5 @@ Bugtracker:  http://www.biggeruniverse.com/projects/flyspray/
 - GNOME and GIMP for their magnificent icons
 - Nephilim for suggesting layer opacity
 - Rainer Deyke for useful suggestions and many code contributions
+- Matthias Hartmann for the German translation
+- ElvenProgrammer for the Italian translation

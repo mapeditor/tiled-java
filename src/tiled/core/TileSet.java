@@ -67,7 +67,8 @@ public class TileSet
      * @throws Exception
      * @see TileSet#importTileBitmap(BufferedImage, TileCutter, boolean)
      */
-    public void importTileBitmap(String imgFilename, TileCutter cutter, boolean createTiles) throws Exception
+    public void importTileBitmap(String imgFilename, TileCutter cutter,
+                                 boolean createTiles) throws Exception
     {
         File imgFile = null;
         try {
@@ -83,7 +84,8 @@ public class TileSet
     }
 
     /**
-     * Creates a tileset from a buffered image. Tiles are cut by the passed cutter.
+     * Creates a tileset from a buffered image. Tiles are cut by the passed
+     * cutter.
      *
      * @param tilebmp     the image to be used
      * @param cutter
@@ -91,8 +93,9 @@ public class TileSet
      *                    Tiles
      * @throws Exception
      */
-    public void importTileBitmap(BufferedImage tilebmp, TileCutter cutter, boolean createTiles) throws Exception{
-
+    public void importTileBitmap(BufferedImage tilebmp, TileCutter cutter,
+                                 boolean createTiles) throws Exception
+    {
         if (tilebmp == null) {
             throw new Exception("Failed to load " + tilebmpFile);
         }
@@ -141,14 +144,6 @@ public class TileSet
                 }
             }
         }*/
-    }
-
-    /**
-     * @deprecated
-     * @param i
-     */
-    public void setTilesetImage(Image i) {
-        tileSetImage = i;
     }
 
     /**
@@ -219,12 +214,12 @@ public class TileSet
             t.setId(tiles.getMaxId());
         }
 
-        if (tileDimensions.height < t.getHeight()) {
-        	tileDimensions.height = t.getHeight();
-        }
-
         if (tileDimensions.width < t.getWidth()) {
         	tileDimensions.width = t.getWidth();
+        }
+
+        if (tileDimensions.height < t.getHeight()) {
+        	tileDimensions.height = t.getHeight();
         }
 
         // Add any default properties
@@ -468,14 +463,16 @@ public class TileSet
     }
 
     /**
-     * Returns the dimensions of an image as specified by the id
-     * <code>key</code>.
+     * Returns the dimensions of an image as specified by the id.
      *
-     * @param id
-     * @param orientation
+     * @deprecated Unless somebody can explain the purpose of this function in
+     *             its documentation, I consider this function deprecated. It
+     *             is only used by tiles, but they should in my opinion just
+     *             use their "internalImage". - Bjorn
+     * @param id the image id
      * @return dimensions of image with referenced by given key
      */
-    public Dimension getImageDimensions(int id, int orientation) {
+    public Dimension getImageDimensions(int id) {
         Image i = (Image) images.get(id);
         if (i != null) {
             return new Dimension(i.getWidth(null), i.getHeight(null));

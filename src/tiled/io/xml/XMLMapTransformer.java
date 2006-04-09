@@ -449,6 +449,7 @@ public class XMLMapTransformer implements MapReader
         }
 
         tile.setTileSet(set);
+
         Properties tileProps = tile.getProperties();
 
         for (int i = 0; i < children.getLength(); i++) {
@@ -460,7 +461,8 @@ public class XMLMapTransformer implements MapReader
                 }
                 tile.setImage(id);
             } else if (child.getNodeName().equalsIgnoreCase("property")) {
-                tileProps.setProperty(getAttributeValue(child, "name"),
+                tileProps.setProperty(
+                        getAttributeValue(child, "name"),
                         getAttributeValue(child, "value"));
             } else if (child.getNodeName().equalsIgnoreCase("animation")) {
                 // TODO: fill this in once XMLMapWriter is complete

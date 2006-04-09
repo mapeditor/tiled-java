@@ -54,7 +54,6 @@ public class Tile
             scaledImage = getImage().getScaledInstance(
                     -1, -1, Image.SCALE_DEFAULT);
         }
-        groundHeight = getHeight();
     }
 
     /**
@@ -79,12 +78,10 @@ public class Tile
         } else {
             internalImage = i;
         }
-        groundHeight = getHeight();
     }
 
     public void setImage(int id) {
         tileImageId = id;
-        groundHeight = getHeight();
     }
 
     /**
@@ -164,28 +161,12 @@ public class Tile
      * @param zoom Zoom level to draw the tile
      */
     public void drawRaw(Graphics g, int x, int y, double zoom) {
-        if (scaledImage == null || zoom != myZoom) {
-            scaledImage = getScaledImage(zoom);
-            myZoom = zoom;
-            if (scaledImage != null) {
-                MediaTracker mediaTracker = new MediaTracker(new Canvas());
-                mediaTracker.addImage(scaledImage, 0);
-                try {
-                    mediaTracker.waitForID(0);
-                }
-                catch (InterruptedException ie) {
-                    System.err.println(ie);
-                    return;
-                }
-                mediaTracker.removeImage(scaledImage);
-                g.drawImage(
-                        scaledImage, x, y, null);
-            } else {
-                // TODO: Allow drawing IDs when no image data exists as a
-                // config option
-            }
+        Image img = getScaledImage(zoom);
+        if (img != null) {
+            g.drawImage(img, x, y - img.getHeight(null), null);
         } else {
-            g.drawImage(scaledImage, x, y, null);
+            // TODO: Allow drawing IDs when no image data exists as a
+            // config option
         }
     }
 
@@ -206,8 +187,7 @@ public class Tile
 
     public int getWidth() {
         if (tileset != null) {
-            Dimension d
-              = tileset.getImageDimensions(tileImageId, tileOrientation);
+            Dimension d = tileset.getImageDimensions(tileImageId);
             return d.width;
         } else if (internalImage != null){
             return internalImage.getWidth(null);
@@ -217,8 +197,7 @@ public class Tile
 
     public int getHeight() {
         if (tileset != null) {
-            Dimension d
-              = tileset.getImageDimensions(tileImageId, tileOrientation);
+            Dimension d = tileset.getImageDimensions(tileImageId);
             return d.height;
         } else if (internalImage != null) {
             return internalImage.getHeight(null);
@@ -252,22 +231,42 @@ public class Tile
     }
 
     /**
-     * Returns a scaled instance of the tile image.
+     * Returns a scaled instance of the tile image. Using a MediaTracker
+     * instance, this function waits until the scaling operation is done.
+     * <p/>
+     * Internally it caches the scaled image in order to optimize the common
+     * case, where the same scale is requested as the last time.
      *
-     * @param zoom
+     * @param zoom the requested zoom level
      * @return Image
      */
     public Image getScaledImage(double zoom) {
-        Image i = getImage();
-        if (i != null) {
-            if (zoom == 1.0) {
-                return i;
-            } else {
-                return i.getScaledInstance(
+        if (zoom == 1.0) {
+            return getImage();
+        } else if (zoom == myZoom && scaledImage != null) {
+            return scaledImage;
+        } else {
+            Image img = getImage();
+            if (img != null)
+            {
+                scaledImage = img.getScaledInstance(
                         (int)(getWidth() * zoom), (int)(getHeight() * zoom),
                         BufferedImage.SCALE_SMOOTH);
+
+                MediaTracker mediaTracker = new MediaTracker(new Canvas());
+                mediaTracker.addImage(scaledImage, 0);
+                try {
+                    mediaTracker.waitForID(0);
+                }
+                catch (InterruptedException ie) {
+                    System.err.println(ie);
+                }
+                mediaTracker.removeImage(scaledImage);
+                myZoom = zoom;
+                return scaledImage;
             }
         }
+
         return null;
     }
 

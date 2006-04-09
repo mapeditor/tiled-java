@@ -120,7 +120,7 @@ public class OrthoMapView extends MapView
             g.fillOval((int)ox, (int)oy, (int)(10 * zoom), (int)(10 * zoom));
             if (zoom > 0.0625) {
                 g.setColor(Color.white);
-                g.drawString(mo.getType(),(int)(ox - 12),(int)(oy - 5));
+                g.drawString(mo.getType(), (int)(ox - 12), (int)(oy - 5));
             }
         }
     }

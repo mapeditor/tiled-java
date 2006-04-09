@@ -41,9 +41,14 @@ public class TileDialog extends JDialog
     private Tile currentTile;
     private TileSet tileset;
     private Map map;
-    private JList tileList, imageList;
+    private JList tileList;
+    private JList imageList;
     private JTable tileProperties;
-    private JButton okButton, newTileButton, deleteTileButton, changeImageButton, duplicateTileButton;
+    private JButton okButton;
+    private JButton newTileButton;
+    private JButton deleteTileButton;
+    private JButton changeImageButton;
+    private JButton duplicateTileButton;
     private JButton createTileButton;
     private JButton animationButton;
     private String location;

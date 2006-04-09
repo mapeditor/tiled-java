@@ -1,5 +1,5 @@
 /*
- *  Tiled Map Editor, (c) 2005
+ *  Tiled Map Editor, (c) 2005-2006
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,21 +19,24 @@ import javax.swing.*;
 
 import tiled.core.*;
 
-public class KeyDialog extends JDialog implements ActionListener,MouseListener {
-
+/**
+ * $Id$
+ */
+public class KeyDialog extends JDialog implements ActionListener, MouseListener
+{
 	private Sprite sprite;
 	private JDialog owner;
 	private JList keysList;
-	private JTextField tName,tStart,tFinish,tRate;
-	private JRadioButton rbLoop,rbStop,rbReverse,rbAuto;
-	
-	public KeyDialog(JDialog o, Sprite s){
+	private JTextField tName, tStart, tFinish, tRate;
+	private JRadioButton rbLoop, rbStop, rbReverse, rbAuto;
+
+	public KeyDialog(JDialog o, Sprite s) {
 		owner = o;
 		sprite = s;
 	}
 
-	private void init(){
-		JButton b;			
+	private void init() {
+		JButton b;
 		ButtonGroup bg = new ButtonGroup();
 		setSize(380,180);
 		GridBagConstraints c=new GridBagConstraints();
@@ -41,8 +44,8 @@ public class KeyDialog extends JDialog implements ActionListener,MouseListener {
 		c.fill=GridBagConstraints.BOTH;
 		getContentPane().setLayout(new GridBagLayout());
 		sp.setSize(50,200);
-		keysList = new JList();	
-		queryKeys();		
+		keysList = new JList();
+		queryKeys();
 		keysList.addMouseListener(this);
 		c.weightx=1;
 		c.weighty=1;
@@ -89,15 +92,15 @@ public class KeyDialog extends JDialog implements ActionListener,MouseListener {
 		b=new JButton("OK");
 		b.addActionListener(this);
 		getContentPane().add(b,c);
-		
+
 		c.gridheight=1;
 		c.gridwidth=1;
 		c.gridx=3;
 		c.gridy=0;
-		
+
 		rbLoop = new JRadioButton("Looping");
 		rbLoop.setActionCommand("loop");
-		rbLoop.addActionListener(this);		
+		rbLoop.addActionListener(this);
 		getContentPane().add(rbLoop,c);
 		bg.add(rbLoop);
 		rbStop = new JRadioButton("Stop");
@@ -118,16 +121,16 @@ public class KeyDialog extends JDialog implements ActionListener,MouseListener {
 		c.gridy=3;
 		getContentPane().add(rbAuto,c);
 		bg.add(rbAuto);
-		
+
 	}
-	
-	private void updateFields(){
+
+	private void updateFields() {
 		Sprite.KeyFrame key = sprite.getKey((String)keysList.getSelectedValue());
-		if(key!=null){		
+		if(key!=null){
 			tName.setText(key.getName());
 			//tStart.setText(""+key.getStartFrame());
 			//tFinish.setText(""+key.getFinishFrame());
-			tRate.setText(""+key.getFrameRate());
+			tRate.setText(String.valueOf(key.getFrameRate()));
 			rbLoop.setSelected(false);
 			rbStop.setSelected(false);
 			rbReverse.setSelected(false);
@@ -148,36 +151,36 @@ public class KeyDialog extends JDialog implements ActionListener,MouseListener {
 			}
 		}
 	}
-	
-	private void queryKeys(){
-		try{		
-			//keysList.setListData(sprite.getKeys());		
+
+	private void queryKeys() {
+		try{
+			//keysList.setListData(sprite.getKeys());
 			repaint();
 		}catch(Exception e){
 			System.out.println("Message: " + e.getMessage());
 		}
 	}
-	
-	public void doKeys(){
+
+	public void doKeys() {
 		init();
-		show();
+		setVisible(true);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
 	public void actionPerformed(ActionEvent e) {
-		if(e.getActionCommand().equalsIgnoreCase("New Key")){
+		if (e.getActionCommand().equalsIgnoreCase("New Key")) {
 			//sprite.createKey("(new)",0,0,Sprite.KeyFrame.KEY_LOOP);
 			queryKeys();
-			owner.repaint();			
-		}else if(e.getActionCommand().equalsIgnoreCase("Delete Key")){
 			owner.repaint();
-		}else if(e.getActionCommand().equalsIgnoreCase("OK")){
-			this.dispose();
-		}else if(e.getActionCommand().equalsIgnoreCase("Apply")){
+		} else if (e.getActionCommand().equalsIgnoreCase("Delete Key")) {
+			owner.repaint();
+		} else if (e.getActionCommand().equalsIgnoreCase("OK")) {
+			dispose();
+		} else if (e.getActionCommand().equalsIgnoreCase("Apply")) {
 			Sprite.KeyFrame k = sprite.getKey((String)keysList.getSelectedValue());
-			if(k!=null){ 			
+			if (k != null) {
 				k.setName(tName.getText());
 				//k.setStartFinish(Integer.parseInt(tStart.getText()),Integer.parseInt(tFinish.getText()));
 				k.setFrameRate(Float.parseFloat(tRate.getText()));
@@ -204,7 +207,6 @@ public class KeyDialog extends JDialog implements ActionListener,MouseListener {
 	 */
 	public void mouseClicked(MouseEvent e) {
 		updateFields();
-		
 	}
 
 	/* (non-Javadoc)
@@ -212,7 +214,6 @@ public class KeyDialog extends JDialog implements ActionListener,MouseListener {
 	 */
 	public void mousePressed(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	/* (non-Javadoc)
@@ -220,7 +221,6 @@ public class KeyDialog extends JDialog implements ActionListener,MouseListener {
 	 */
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	/* (non-Javadoc)
@@ -228,7 +228,6 @@ public class KeyDialog extends JDialog implements ActionListener,MouseListener {
 	 */
 	public void mouseEntered(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	/* (non-Javadoc)
@@ -236,7 +235,5 @@ public class KeyDialog extends JDialog implements ActionListener,MouseListener {
 	 */
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
 	}
-
 }
