@@ -16,7 +16,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
-import java.awt.print.PrinterException;
 import java.io.*;
 import java.util.Stack;
 import java.util.Vector;
@@ -264,8 +263,6 @@ public class MapEditor implements ActionListener, MouseListener,
                 "Save current map as an image", "control shift I");
         JMenuItem close = createMenuItem("Close", null, "Close this map",
                 "control W");
-        JMenuItem print =
-            createMenuItem("Print...", null, "Print the map", "control P");
 
         recentMenu = new JMenu("Open Recent");
 
@@ -273,7 +270,6 @@ public class MapEditor implements ActionListener, MouseListener,
         mapEventAdapter.addListener(saveAs);
         mapEventAdapter.addListener(saveAsImage);
         mapEventAdapter.addListener(close);
-        mapEventAdapter.addListener(print);
 
         fileMenu = new JMenu("File");
         fileMenu.add(createMenuItem("New...", null, "Start a new map",
@@ -284,10 +280,6 @@ public class MapEditor implements ActionListener, MouseListener,
         fileMenu.add(save);
         fileMenu.add(saveAs);
         fileMenu.add(saveAsImage);
-        // TODO: Re-add print menuitem when printing is functional
-        //fileMenu.addSeparator();
-        //fileMenu.add(print);
-        //mapEventAdapter.addListener(print);
         fileMenu.addSeparator();
         fileMenu.add(close);
         fileMenu.add(createMenuItem("Exit", null, "Exit the map editor",
@@ -1130,6 +1122,8 @@ public class MapEditor implements ActionListener, MouseListener,
         }
     }
 
+    // Todo: Most if not all of the below should be moved into action objects,
+    // Todo: and properly internationalized.
     private void handleEvent(ActionEvent event) {
         String command = event.getActionCommand();
 
@@ -1146,13 +1140,6 @@ public class MapEditor implements ActionListener, MouseListener,
         } else if (command.equals("New...")) {
             if (checkSave()) {
                 newMap();
-            }
-        } else if (command.equals("Print...")) {
-            try {
-                MapPrinter mp = new MapPrinter();
-                mp.print(mapView);
-            } catch (PrinterException e) {
-                e.printStackTrace();
             }
         } else if (command.equals("Brush...")) {
             BrushDialog bd = new BrushDialog(this, appFrame, currentBrush);
