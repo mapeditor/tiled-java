@@ -20,7 +20,9 @@ import java.awt.Rectangle;
 
 import tiled.core.*;
 
-
+/**
+ * @version $Id$
+ */
 public class ObliqueMapView extends MapView
 {
     /**

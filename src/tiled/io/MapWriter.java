@@ -21,7 +21,9 @@ import tiled.core.TileSet;
 /**
  * Used by Tiled to denote a plugin for writing maps. The map file
  * can have any format, as long as the MapWriter implementor accepts
- * instances of tiled.core.Map and tiled.core.TileSet.
+ * instances of {@link tiled.core.Map} and {@link TileSet}.
+ *
+ * $Id$
  */
 public interface MapWriter extends PluggableMapIO, FileFilter
 {

@@ -23,8 +23,8 @@ import java.util.Random;
         notice, this list of conditions and the following disclaimer in the
         documentation and/or other materials provided with the distribution.
 
-     3. The names of its contributors may not be used to endorse or promote 
-        products derived from this software without specific prior written 
+     3. The names of its contributors may not be used to endorse or promote
+        products derived from this software without specific prior written
         permission.
 
    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -54,7 +54,7 @@ public class MersenneTwister extends Random {
     public static final int UPPER_MASK = 0x80000000; /* most significant w-r bits */
     public static final int LOWER_MASK = 0x7fffffff; /* least significant r bits */
 
-    private long mt[];
+    private long[] mt;
     private int mti=N+1; /* mti==N+1 means mt[N] is not initialized */
 
     public MersenneTwister() {
@@ -86,7 +86,7 @@ public class MersenneTwister extends Random {
     /* init_key is the array for initializing keys */
     /* key_length is its length */
     /* slight change for C++, 2004/2/26 */
-    public void initByArray(long init_key[], int key_length)
+    public void initByArray(long[] init_key, int key_length)
     {
         int i, j, k;
         initGenRand(19650218);
@@ -108,14 +108,14 @@ public class MersenneTwister extends Random {
             if (i>=N) { mt[0] = mt[N-1]; i=1; }
         }
 
-        mt[0] = 0x80000000; /* MSB is 1; assuring non-zero initial array */ 
+        mt[0] = 0x80000000; /* MSB is 1; assuring non-zero initial array */
     }
 
     /* generates a random number on [0,0xffffffff]-interval */
     public long genrand()
     {
         int y;
-        long mag01[]={0x0, MATRIX_A};
+        long[] mag01={0x0, MATRIX_A};
         /* mag01[x] = x * MATRIX_A  for x=0,1 */
 
         if (mti >= N) { /* generate N words at one time */
@@ -148,8 +148,8 @@ public class MersenneTwister extends Random {
 
         return y;
     }
-    
- 	synchronized protected int next(int bits) {
-		return (int)genrand();
-	}
+
+    synchronized protected int next(int bits) {
+        return (int)genrand();
+    }
 }
