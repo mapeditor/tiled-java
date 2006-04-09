@@ -5,7 +5,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
@@ -25,6 +25,7 @@ import tiled.io.MapReader;
 import tiled.io.MapWriter;
 import tiled.mapeditor.plugin.PluginClassLoader;
 import tiled.mapeditor.widget.VerticalStaticJPanel;
+import tiled.mapeditor.Resources;
 
 /**
  * @version $Id$
@@ -36,8 +37,13 @@ public class PluginDialog extends JDialog implements ActionListener,
     private JList pluginList;
     private JButton closeButton, infoButton, removeButton;
 
+    private static final String DIALOG_TITLE = Resources.getString("dialog.plugins.title");
+    private static final String INFO_BUTTON = Resources.getString("dialog.plugins.info.button");
+    private static final String REMOVE_BUTTON = Resources.getString("dialog.plugins.remove.button");
+    private static final String CLOSE_BUTTON = Resources.getString("general.button.close");
+
     public PluginDialog(JFrame parent, PluginClassLoader pluginLoader) {
-        super(parent, "Available Plugins", true);
+        super(parent, DIALOG_TITLE, true);
         this.pluginLoader = pluginLoader;
 
         init();
@@ -75,9 +81,9 @@ public class PluginDialog extends JDialog implements ActionListener,
 
 
         /* BUTTON PANEL */
-        infoButton = new JButton("Info");
-        removeButton = new JButton("Remove");
-        closeButton = new JButton("Close");
+        infoButton = new JButton(INFO_BUTTON);
+        removeButton = new JButton(REMOVE_BUTTON);
+        closeButton = new JButton(CLOSE_BUTTON);
         infoButton.addActionListener(this);
         removeButton.addActionListener(this);
         closeButton.addActionListener(this);

@@ -5,7 +5,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
@@ -24,6 +24,7 @@ import javax.swing.*;
 import tiled.core.Map;
 import tiled.mapeditor.widget.IntegerSpinner;
 import tiled.mapeditor.widget.VerticalStaticJPanel;
+import tiled.mapeditor.Resources;
 import tiled.util.TiledConfiguration;
 
 /**
@@ -38,8 +39,22 @@ public class NewMapDialog extends JDialog implements ActionListener
 
     private final Preferences prefs = TiledConfiguration.node("dialog/newmap");
 
+    private static final String DIALOG_TITLE = Resources.getString("dialog.newmap.title");
+    private static final String MAPSIZE_TITLE = Resources.getString("dialog.newmap.mapsize.title");
+    private static final String TILESIZE_TITLE = Resources.getString("dialog.newmap.tilesize.title");
+    private static final String WIDTH_LABEL = Resources.getString("dialog.newmap.width.label");
+    private static final String HEIGHT_LABEL = Resources.getString("dialog.newmap.height.label");
+    private static final String MAPTYPE_LABEL = Resources.getString("dialog.newmap.maptype.label");
+    private static final String OK_BUTTON = Resources.getString("general.button.ok");
+    private static final String CANCEL_BUTTON = Resources.getString("general.button.cancel");
+    private static final String ISOMETRIC_MAPTYPE = Resources.getString("general.maptype.isometric");
+    private static final String OBLIQUE_MAPTYPE = Resources.getString("general.maptype.oblique");
+    private static final String HEXAGONAL_MAPTYPE = Resources.getString("general.maptype.hexagonal");
+    private static final String SHIFTED_MAPTYPE = Resources.getString("general.maptype.shifted");
+    private static final String ORTHOGONAL_MAPTYPE = Resources.getString("general.maptype.orthogonal");
+
     public NewMapDialog(JFrame parent) {
-        super(parent, "New Map", true);
+        super(parent, DIALOG_TITLE, true);
         init();
         pack();
         setResizable(false);
@@ -66,15 +81,16 @@ public class NewMapDialog extends JDialog implements ActionListener
         JPanel mapSize = new VerticalStaticJPanel();
         mapSize.setLayout(new GridBagLayout());
         mapSize.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createTitledBorder("Map size"),
+                    BorderFactory.createTitledBorder(MAPSIZE_TITLE),
                     BorderFactory.createEmptyBorder(0, 5, 5, 5)));
         GridBagConstraints c = new GridBagConstraints();
         c.anchor = GridBagConstraints.EAST;
         c.fill = GridBagConstraints.NONE;
-        c.insets = new Insets(5, 0, 0, 0);
-        mapSize.add(new JLabel("Width: "), c);
+        c.insets = new Insets(5, 0, 0, 5);
+        mapSize.add(new JLabel(WIDTH_LABEL), c);
         c.gridy = 1;
-        mapSize.add(new JLabel("Height: "), c);
+        mapSize.add(new JLabel(HEIGHT_LABEL), c);
+	    c.insets = new Insets(5, 0, 0, 0);
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 1; c.gridy = 0; c.weightx = 1;
         mapSize.add(mapWidth, c);
@@ -86,13 +102,15 @@ public class NewMapDialog extends JDialog implements ActionListener
         JPanel tileSize = new VerticalStaticJPanel();
         tileSize.setLayout(new GridBagLayout());
         tileSize.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createTitledBorder("Tile size"),
+                    BorderFactory.createTitledBorder(TILESIZE_TITLE),
                     BorderFactory.createEmptyBorder(0, 5, 5, 5)));
         c.gridx = 0; c.gridy = 0; c.weightx = 0;
         c.fill = GridBagConstraints.NONE;
-        tileSize.add(new JLabel("Width: "), c);
+	    c.insets = new Insets(5, 0, 0, 5);
+        tileSize.add(new JLabel(WIDTH_LABEL), c);
         c.gridy = 1;
-        tileSize.add(new JLabel("Height: "), c);
+        tileSize.add(new JLabel(HEIGHT_LABEL), c);
+	    c.insets = new Insets(5, 0, 0, 0);
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 1; c.gridy = 0; c.weightx = 1;
         tileSize.add(tileWidth, c);
@@ -101,8 +119,8 @@ public class NewMapDialog extends JDialog implements ActionListener
 
         // OK and Cancel buttons
 
-        JButton okButton = new JButton("OK");
-        JButton cancelButton = new JButton("Cancel");
+        JButton okButton = new JButton(OK_BUTTON);
+        JButton cancelButton = new JButton(CANCEL_BUTTON);
         okButton.addActionListener(this);
         cancelButton.addActionListener(this);
 
@@ -116,19 +134,21 @@ public class NewMapDialog extends JDialog implements ActionListener
         // Map type and name inputs
 
         mapTypeChooser = new JComboBox();
-        mapTypeChooser.addItem("Orthogonal");
-        mapTypeChooser.addItem("Isometric");
-        mapTypeChooser.addItem("Shifted (iso and hex)");
+        mapTypeChooser.addItem(ORTHOGONAL_MAPTYPE);
+        mapTypeChooser.addItem(ISOMETRIC_MAPTYPE);
+        mapTypeChooser.addItem(SHIFTED_MAPTYPE);
         // TODO: Enable when view is implemented
-        //mapTypeChooser.addItem("Oblique");
-        mapTypeChooser.addItem("Hexagonal (experimental)");
+        mapTypeChooser.addItem(OBLIQUE_MAPTYPE);
+        mapTypeChooser.addItem(HEXAGONAL_MAPTYPE);
 
         JPanel miscPropPanel = new VerticalStaticJPanel();
         miscPropPanel.setLayout(new GridBagLayout());
         miscPropPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
         c.gridx = 0; c.gridy = 0; c.weightx = 0;
         c.fill = GridBagConstraints.NONE;
-        miscPropPanel.add(new JLabel("Map type: "), c);
+	    c.insets = new Insets(5, 0, 0, 5);
+        miscPropPanel.add(new JLabel(MAPTYPE_LABEL), c);
+	    c.insets = new Insets(5, 0, 0, 0);
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 1; c.gridy = 0; c.weightx = 1;
         miscPropPanel.add(mapTypeChooser, c);
@@ -162,7 +182,7 @@ public class NewMapDialog extends JDialog implements ActionListener
     }
 
     public void actionPerformed(ActionEvent e) {
-        if (e.getActionCommand().equals("OK")) {
+        if (e.getActionCommand().equals(OK_BUTTON)) {
             int w = mapWidth.intValue();
             int h = mapHeight.intValue();
             int twidth = tileWidth.intValue();
@@ -170,13 +190,13 @@ public class NewMapDialog extends JDialog implements ActionListener
             int orientation = Map.MDO_ORTHO;
             String mapTypeString = (String)mapTypeChooser.getSelectedItem();
 
-            if (mapTypeString.equals("Isometric")) {
+            if (mapTypeString.equals(ISOMETRIC_MAPTYPE)) {
                 orientation = Map.MDO_ISO;
-            } else if (mapTypeString.equals("Oblique")) {
+            } else if (mapTypeString.equals(OBLIQUE_MAPTYPE)) {
                 orientation = Map.MDO_OBLIQUE;
-            } else if (mapTypeString.equals("Hexagonal (experimental)")) {
+            } else if (mapTypeString.equals(HEXAGONAL_MAPTYPE)) {
                 orientation = Map.MDO_HEX;
-            } else if (mapTypeString.equals("Shifted (iso and hex)")) {
+            } else if (mapTypeString.equals(SHIFTED_MAPTYPE)) {
                 orientation = Map.MDO_SHIFTED;
             }
 
