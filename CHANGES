@@ -1,39 +1,37 @@
-0.6.0 - TBD (+ means planned change)
-
+UNDONE
 + Fixed memory problems when loading several maps with many tilesets in a row
-* Fixed tileset dialog so that it is now possible to change the tile height to
-  something else than the tile height used by the map.
-+ Fixed tile palette bug of displaying multiple tilesets over eachother
-* Improved usability
-+ Rewrote main mapeditor code
-* Rewrote configuration based on the Preferences class, no more tiled.conf
-+ Added a navigation minimap
-+ Added full support for animated tiles
-* Rearranged classes in packages
-+ Moved actions out of MapEditor, and created a package for them
-* Cleaned up TileSet- removed checksumming and rotation/orienation code
-* Added internationalization/localization support
++ Added ability to select multiple layers from layer table
++ Added the ability to merge tile images when layers are merged
++ Added preview of new tileset when creating a tileset
++ Added tile cutter GUI
 + Added more useful visual feedback for some brushes
 + Added the Shifted view, which emulates several tiling configurations
 + Added "stamp" tool
-+ Added ability to select multiple layers from layer table
-+ Added the ability to merge tile images when layers are merged
-* Added "global properties" for tilesets (properties set for all tiles)
-+ Added preview of new tileset when creating a tileset
-+ Added tile cutter GUI
++ Moved actions out of MapEditor, and created a package for them
++ Added a navigation minimap
++ Added full support for animated tiles
++ Rewrote main mapeditor code
++ Fixed tile palette bug of displaying multiple tilesets over eachother
 
-0.5.2 - (Rolled into the 0.6.0 release)
+0.6.0 - WIP
 
-* Fixed a bug when exporting a tileset with an external image
-* Fixed two cases of hanging when using the fill tool
-* Fixed tile palette bug of not accounting for gaps in tile ids (old bug)
-* Fixed bug of adding a new tile even if cancelling out of new tile dialog
-* Fixed NPE when saving a map with no extension - default to .tmx
+* Added internationalization/localization support, with translations to Dutch,
+  German and Italian.
 * Added stamp function for pencil: right-click, drag now creates a stamp
   for easy copying
 * Added core support for animated tiles
 * Added more error-checking to XMLMapTransformer, the default map reader
 * Added support for "tile cutters"
+* Added global properties for tilesets (properties set for all tiles)
+* Fixed tileset dialog so that it is now possible to change the tile height to
+  something else than the tile height used by the map.
+* Fixed a bug when exporting a tileset with an external image
+* Fixed two cases of hanging when using the fill tool
+* Fixed tile palette bug of not accounting for gaps in tile ids (old bug)
+* Fixed bug of adding a new tile even if cancelling out of new tile dialog
+* Fixed NPE when saving a map with no extension - default to .tmx
+* Rewrote configuration based on the Preferences class, no more tiled.conf
+* Cleaned up TileSet- removed checksumming and rotation/orienation code
 
 0.5.1 - June 15th, 2005
 

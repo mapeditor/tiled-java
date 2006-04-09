@@ -65,9 +65,9 @@ public class TileDialog extends JDialog
     private static final String TILES_TAB = Resources.getString("general.tile.tiles");
     private static final String TILESET_TAB = Resources.getString("general.tile.tileset");
     private static final String NAME_LABEL = Resources.getString("dialog.newtileset.name.label");
-    
+
     /* -- */
-    
+
     public TileDialog(Dialog parent, TileSet s, Map m) {
         super(parent, DIALOG_TITLE + " '" + s.getName() + "'", true);
         location = "";
@@ -88,13 +88,13 @@ public class TileDialog extends JDialog
         duplicateTileButton = new JButton(DUPLICATE_BUTTON);
         newTileButton = new JButton(NEW_BUTTON);
         animationButton = new JButton(ANIMATION_BUTTON);
-        
+
         deleteTileButton.addActionListener(this);
         changeImageButton.addActionListener(this);
         duplicateTileButton.addActionListener(this);
         newTileButton.addActionListener(this);
         animationButton.addActionListener(this);
-        
+
         tileList = new JList();
         tileList.setCellRenderer(new TileDialogListRenderer());
 
@@ -153,7 +153,7 @@ public class TileDialog extends JDialog
         mainPanel.add(splitPane, c);
         c.weightx = 0; c.weighty = 0; c.gridy = 1;
         mainPanel.add(buttons, c);
-        
+
         return mainPanel;
     }
 
@@ -233,8 +233,8 @@ public class TileDialog extends JDialog
 
         getContentPane().add(mainPanel);
         getRootPane().setDefaultButton(okButton);
-        
-        //create actionlisteners
+
+        // Create actionlisteners
         okButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
             	tileset.setName(tilesetNameEntry.getText());
@@ -493,14 +493,14 @@ public class TileDialog extends JDialog
         else if (source == createTileButton) {
         	Image img = (Image)imageList.getSelectedValue();
         	Tile n = new Tile(tileset);
-        	
+
         	n.setImage(tileset.getIdByImage(img));
         	tileset.addNewTile(n);
         	queryTiles();
             // Select the last (cloned) tile
             tileList.setSelectedIndex(tileset.size() - 1);
             tileList.ensureIndexIsVisible(tileset.size() - 1);
-            JOptionPane.showMessageDialog(this, 
+            JOptionPane.showMessageDialog(this,
             		"Tile created with id "+n.getId(),
             		"Created Tile",
             		JOptionPane.INFORMATION_MESSAGE);

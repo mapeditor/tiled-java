@@ -118,7 +118,7 @@ public class XMLMapTransformer implements MapReader
         }
     }
 
-    private String getAttributeValue(Node node, String attribname) {
+    private static String getAttributeValue(Node node, String attribname) {
         NamedNodeMap attributes = node.getAttributes();
         String att = null;
         if (attributes != null) {
@@ -130,7 +130,7 @@ public class XMLMapTransformer implements MapReader
         return att;
     }
 
-    private int getAttribute(Node node, String attribname, int def) {
+    private static int getAttribute(Node node, String attribname, int def) {
         String attr = getAttributeValue(node, attribname);
         if (attr != null) {
             return Integer.parseInt(attr);
@@ -226,7 +226,7 @@ public class XMLMapTransformer implements MapReader
 
         return img;
     }
-    
+
     private TileSet unmarshalTilesetFile(InputStream in, String filename)
         throws Exception
     {
@@ -354,8 +354,8 @@ public class XMLMapTransformer implements MapReader
                         }
 
                         if (transStr != null) {
-                        	//in this case, the tileset image needs special handling for
-                        	//transparency
+                            // In this case, the tileset image needs special
+                            // handling for transparency
                             Color color = new Color(
                                     Integer.parseInt(transStr, 16));
                             Toolkit tk = Toolkit.getDefaultToolkit();
@@ -372,17 +372,19 @@ public class XMLMapTransformer implements MapReader
 
                                 img.getGraphics().drawImage(trans, 0, 0, null);
 
-                                set.importTileBitmap(img, new BasicTileCutter( 
+                                set.importTileBitmap(img, new BasicTileCutter(
                                             tileWidth, tileHeight, tileSpacing, 0),
                                         !hasTileElements);
 
                                 set.setTransparentColor(color);
                                 set.setTilesetImageFilename(sourcePath);
                             } catch (IIOException iioe) {
-                                warnings.push("ERROR: "+iioe.getLocalizedMessage()+" ("+sourcePath+")");
+                                warnings.push("ERROR: " +
+                                        iioe.getLocalizedMessage() + " (" +
+                                        sourcePath + ")");
                             }
                         } else {
-                            set.importTileBitmap(sourcePath, new BasicTileCutter( 
+                            set.importTileBitmap(sourcePath, new BasicTileCutter(
                                     tileWidth, tileHeight, tileSpacing, 0), !hasTileElements);
                         }
 
@@ -403,6 +405,7 @@ public class XMLMapTransformer implements MapReader
             obj = (MapObject)unmarshalClass(MapObject.class, t);
         } catch (Exception e) {
             e.printStackTrace();
+            return obj;
         }
 
         Properties objProps = obj.getProperties();
@@ -411,7 +414,8 @@ public class XMLMapTransformer implements MapReader
         for (int i = 0; i < children.getLength(); i++) {
             Node child = children.item(i);
             if (child.getNodeName().equalsIgnoreCase("property")) {
-                objProps.setProperty(getAttributeValue(child, "name"),
+                objProps.setProperty(
+                        getAttributeValue(child, "name"),
                         getAttributeValue(child, "value"));
             }
         }
@@ -434,13 +438,14 @@ public class XMLMapTransformer implements MapReader
         }
 
         try {
-            if(isAnimated) {
+            if (isAnimated) {
                 tile = (Tile)unmarshalClass(AnimatedTile.class, t);
             } else {
                 tile = (Tile)unmarshalClass(Tile.class, t);
             }
         } catch (Exception e) {
             e.printStackTrace();
+            return tile;
         }
 
         tile.setTileSet(set);
@@ -454,26 +459,11 @@ public class XMLMapTransformer implements MapReader
                     id = set.addImage(unmarshalImage(child, baseDir));
                 }
                 tile.setImage(id);
-                int rotation = getAttribute(child, "rotation", 0);
-                String flipped_s = getAttributeValue(child, "flipped");
-                boolean flipped = (flipped_s != null
-                    && flipped_s.equalsIgnoreCase("true"));
-                int orientation;
-                if (rotation == 90) {
-                    orientation = flipped ? 6 : 4;
-                } else if (rotation == 180) {
-                    orientation = flipped ? 2 : 3;
-                } else if (rotation == 270) {
-                    orientation = flipped ? 5 : 7;
-                } else {
-                    orientation = flipped ? 1 : 0;
-                }
-                tile.setImageOrientation(orientation);
             } else if (child.getNodeName().equalsIgnoreCase("property")) {
                 tileProps.setProperty(getAttributeValue(child, "name"),
                         getAttributeValue(child, "value"));
             } else if (child.getNodeName().equalsIgnoreCase("animation")) {
-                //TODO: fill this in once XMLMapWriter is complete
+                // TODO: fill this in once XMLMapWriter is complete
             }
         }
 
@@ -486,6 +476,7 @@ public class XMLMapTransformer implements MapReader
             og = (ObjectGroup)unmarshalClass(ObjectGroup.class, t);
         } catch (Exception e) {
             e.printStackTrace();
+            return og;
         }
 
         //Read all objects from the group, "...and in the darkness bind them."

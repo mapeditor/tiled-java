@@ -43,7 +43,7 @@ public class Tile
 
     /**
      * Copy constructor
-     * 
+     *
      * @param t
      */
     public Tile(Tile t) {
@@ -59,7 +59,7 @@ public class Tile
 
     /**
      * Sets the id of the tile as long as it is at least 0.
-     * 
+     *
      * @param i The id of the tile
      */
     public void setId(int i) {
@@ -88,7 +88,6 @@ public class Tile
     }
 
     /**
-     * 
      * @deprecated
      * @param orientation
      */
@@ -100,7 +99,7 @@ public class Tile
      * Sets the parent tileset for a tile. If the tile is already
      * a member of a set, and this method is called with a different
      * set as argument, the tile image is transferred to the new set.
-     * 
+     *
      * @param set
      */
     public void setTileSet(TileSet set) {
@@ -124,9 +123,8 @@ public class Tile
     }
 
     /**
-     * Returns the tile id of this tile, relative to
-     * tileset.
-     * 
+     * Returns the tile id of this tile, relative to tileset.
+     *
      * @return id
      */
     public int getId() {
@@ -134,9 +132,8 @@ public class Tile
     }
 
     /**
-     * Returns the global tile id by adding the
-     * tile id to the map-assigned 
-     * 
+     * Returns the global tile id by adding the tile id to the map-assigned.
+     *
      * @return id
      */
     public int getGid() {
@@ -147,8 +144,7 @@ public class Tile
     }
 
     /**
-     * Returns the {@link tiled.core.TileSet} that this tile is
-     * part of.
+     * Returns the {@link tiled.core.TileSet} that this tile is part of.
      *
      * @return TileSet
      */
@@ -157,9 +153,9 @@ public class Tile
     }
 
     /**
-     * This drawing function handles drawing the tile image at the 
-     * specified zoom level. It will attempt to use a cached copy, 
-     * but will rescale if the requested zoom does not equal the 
+     * This drawing function handles drawing the tile image at the
+     * specified zoom level. It will attempt to use a cached copy,
+     * but will rescale if the requested zoom does not equal the
      * current cache zoom.
      *
      * @param g Graphics instance to draw to
@@ -196,7 +192,7 @@ public class Tile
     /**
      * Draws the tile at the given pixel coordinates in the given
      * graphics context, and at the given zoom level
-     * 
+     *
      * @param g
      * @param x
      * @param y
@@ -257,7 +253,7 @@ public class Tile
 
     /**
      * Returns a scaled instance of the tile image.
-     * 
+     *
      * @param zoom
      * @return Image
      */

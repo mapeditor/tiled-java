@@ -38,7 +38,6 @@ import tiled.mapeditor.widget.*;
 import tiled.mapeditor.undo.*;
 import tiled.util.TileMergeHelper;
 import tiled.util.TiledConfiguration;
-import tiled.util.Util;
 import tiled.io.MapHelper;
 import tiled.io.MapReader;
 import tiled.io.MapWriter;
@@ -142,7 +141,6 @@ public class MapEditor implements ActionListener, MouseListener,
     final Action undoAction, redoAction;
     final Action rot90Action, rot180Action, rot270Action;
     final Action flipHorAction, flipVerAction;
-    final Action copyAction, cutAction, pasteAction;
     final Action selectAllAction, inverseAction, cancelSelectionAction;
 
     public MapEditor() {
@@ -191,9 +189,6 @@ public class MapEditor implements ActionListener, MouseListener,
         rot270Action = new LayerTransformAction(MapLayer.ROTATE_270);
         flipHorAction = new LayerTransformAction(MapLayer.MIRROR_HORIZONTAL);
         flipVerAction = new LayerTransformAction(MapLayer.MIRROR_VERTICAL);
-        copyAction = new CopyAction();
-        pasteAction = new PasteAction();
-        cutAction = new CutAction();
         selectAllAction = new SelectAllAction();
         cancelSelectionAction = new CancelSelectionAction();
         inverseAction = new InverseSelectionAction();
@@ -303,9 +298,9 @@ public class MapEditor implements ActionListener, MouseListener,
         undoMenuItem.setEnabled(false);
         redoMenuItem.setEnabled(false);
 
-        copyMenuItem = new TMenuItem(copyAction);
-        cutMenuItem = new TMenuItem(cutAction);
-        pasteMenuItem = new TMenuItem(pasteAction);
+        copyMenuItem = new TMenuItem(new CopyAction());
+        cutMenuItem = new TMenuItem(new CutAction());
+        pasteMenuItem = new TMenuItem(new PasteAction());
         copyMenuItem.setEnabled(false);
         cutMenuItem.setEnabled(false);
         pasteMenuItem.setEnabled(false);
@@ -851,8 +846,10 @@ public class MapEditor implements ActionListener, MouseListener,
             setCurrentLayer(0);
         }
 
-        undoSupport.postEdit(new MapLayerStateEdit(currentMap, layersBefore,
-                    new Vector(currentMap.getLayerVector()), command));
+        MapLayerStateEdit mapLayerStateEdit = new MapLayerStateEdit(
+                currentMap, layersBefore,
+                new Vector(currentMap.getLayerVector()), command);
+        undoSupport.postEdit(mapLayerStateEdit);
     }
 
     private void doMouse(MouseEvent event) {
@@ -1058,7 +1055,7 @@ public class MapEditor implements ActionListener, MouseListener,
             Rectangle oldArea = null;
 
             if (currentBrush instanceof CustomBrush) {
-                oldArea = ((CustomBrush)currentBrush).getBounds();
+                oldArea = currentBrush.getBounds();
             }
 
             Rectangle bounds = new Rectangle(
@@ -1759,16 +1756,16 @@ public class MapEditor implements ActionListener, MouseListener,
      *         an error occured
      */
     public boolean loadMap(String file) {
-    	
+
     	File exist = new File(file);
         if (!exist.exists()) {
         	JOptionPane.showMessageDialog(appFrame,
-        			Resources.getString("general.file.notexists.message"), 
+        			Resources.getString("general.file.notexists.message"),
 					Resources.getString("dialog.openmap.error.title"),
                     JOptionPane.ERROR_MESSAGE);
         	return false;
         }
-    	
+
         try {
             Map m = MapHelper.loadMap(file);
 
@@ -1780,7 +1777,7 @@ public class MapEditor implements ActionListener, MouseListener,
                 return true;
             } else {
                 JOptionPane.showMessageDialog(appFrame,
-                        "Unsupported map format", 
+                        "Unsupported map format",
 						Resources.getString("dialog.openmap.error.title"),
                         JOptionPane.ERROR_MESSAGE);
             }
@@ -1808,21 +1805,21 @@ public class MapEditor implements ActionListener, MouseListener,
      *                 a "Save As" dialog.
      */
     public void saveMap(String filename, boolean bSaveAs) {
-    	
+
     	TiledFileFilter saver = new TiledFileFilter(TiledFileFilter.FILTER_EXT);
     	JFileChooser ch = null;
-    	
+
     	try {
 	    	while(true) {
 		        if (bSaveAs || filename == null) {
-		
+
 		        	if(ch == null) {
 			            if (filename == null) {
 			                ch = new JFileChooser();
 			            } else {
 			                ch = new JFileChooser(filename);
 			            }
-			
+
 			            MapWriter[] writers = pluginLoader.getWriters();
 			            for(int i = 0; i < writers.length; i++) {
 			                try {
@@ -1831,13 +1828,13 @@ public class MapEditor implements ActionListener, MouseListener,
 			                    e.printStackTrace();
 			                }
 			            }
-			
+
 			            ch.addChoosableFileFilter(
 			                    new TiledFileFilter(TiledFileFilter.FILTER_TMX));
-			
+
 			            ch.addChoosableFileFilter(saver);
 		        	}
-		        	
+
 		            if (ch.showSaveDialog(appFrame) == JFileChooser.APPROVE_OPTION) {
 		                filename = ch.getSelectedFile().getAbsolutePath();
 		                saver = (TiledFileFilter) ch.getFileFilter();
@@ -1845,12 +1842,12 @@ public class MapEditor implements ActionListener, MouseListener,
 		                // User cancelled operation, do nothing
 		                return;
 		            }
-		            
+
 		            // Don't let users be tricky (no foo. files)
 		            if(filename.substring(filename.lastIndexOf('.')+1).length() == 0) {
 		            	filename = filename.substring(0,filename.lastIndexOf('.'));
 		            }
-		            
+
 		            // Make sure that the file has an extension. If not, append extension
 		            // chosen from dropdown.
 		            // NOTE: we can't know anything more than the filename has at least
@@ -1861,25 +1858,25 @@ public class MapEditor implements ActionListener, MouseListener,
 		            		JOptionPane.showMessageDialog(appFrame, Resources.getString("dialog.saveas.unknown-type.message"));
 		            		continue;
 		            	}
-		            	
+
 		            	//we will also be lazy about picking a valid extention...
 		            	filename = filename.concat("."+saver.getFirstExtention());
 		            }
 		        }
-		        
-		        
+
+
 	            // Check if file exists
 	            File exist = new File(filename);
 	            if (exist.exists() && bSaveAs) {
 	                int result = JOptionPane.showConfirmDialog(appFrame,
-	                        Resources.getString("general.file.exists.message"), 
+	                        Resources.getString("general.file.exists.message"),
 	                        Resources.getString("general.file.exists.title"),
 	                        JOptionPane.YES_NO_OPTION);
 	                if (result != JOptionPane.OK_OPTION) {
 	                    continue;
 	                }
 	            }
-	            
+
 	            // Do we want to just go by extention?
 	            if(saver.getType() == TiledFileFilter.FILTER_EXT) {
 	            	MapHelper.saveMap(currentMap, filename);
@@ -1895,10 +1892,10 @@ public class MapEditor implements ActionListener, MouseListener,
 		                    continue;
 		                }
 	                }
-	                
+
 	                MapHelper.saveMap(currentMap, saver.getPlugin(), filename);
 	            }
-	            
+
 	            // If we make it to the bottom, the user and Tiled have agreed on something,
 	            // and the file was saved successfully. Update UI.
 	            currentMap.setFilename(filename);
@@ -2203,15 +2200,14 @@ public class MapEditor implements ActionListener, MouseListener,
         MapEditor editor = new MapEditor();
 
         if (args.length > 0) {
-            String toLoad = args[0];
-            if (!Util.checkRoot(toLoad) || toLoad.startsWith(".")) {
-                if (toLoad.startsWith(".")) {
-                    toLoad = toLoad.substring(1);
-                }
-                toLoad = System.getProperty("user.dir") +
-                    File.separatorChar + toLoad;
+            File file = new File(args[0]);
+
+            try {
+                editor.loadMap(file.getCanonicalPath());
             }
-            editor.loadMap(toLoad);
+            catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

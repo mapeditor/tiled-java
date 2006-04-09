@@ -29,10 +29,11 @@ import tiled.util.NumberedSet;
  * <p>TileSet handles operations on tiles as a set, or group. It has several
  * advanced internal functions aimed at reducing unnecessary data replication.
  * A 'tile' is represented internally as two distinct pieces of data. The
- * first and most important is a tiled.core.Tile object, and these are held in
- * a java.util.Vector.</p><br/>
- * <p> The other is the tile image.</p>
- * 
+ * first and most important is a {@link Tile} object, and these are held in
+ * a {@link java.util.Vector}.</p>
+ *
+ * <p>The other is the tile image.</p>
+ *
  * @version $Id$
  */
 public class TileSet
@@ -45,8 +46,8 @@ public class TileSet
     private String name;
     private Color transparentColor;
     private Properties defaultTileProperties;
-    private Image tileSetImage; 
-    
+    private Image tileSetImage;
+
     /**
      * Default constructor
      */
@@ -59,7 +60,7 @@ public class TileSet
 
     /**
      * Creates a tileset from a tile bitmap file.
-     * 
+     *
      * @param imgFilename
      * @param cutter
      * @param createTiles
@@ -77,7 +78,7 @@ public class TileSet
         }
 
         System.out.println("Importing " + imgFilename + "...");
-        
+
         importTileBitmap(ImageIO.read(imgFile.toURL()), cutter, createTiles);
     }
 
@@ -96,20 +97,18 @@ public class TileSet
             throw new Exception("Failed to load " + tilebmpFile);
         }
 
-        if(cutter == null) {
+        if (cutter == null) {
         	throw new Exception("No cutter!");
         }
-        
+
         tileDimensions = new Rectangle(cutter.getDimensions());
-        
         tileSetImage = tilebmp;
-        
-        BufferedImage tile;
-        
+
         cutter.setImage(tilebmp);
-        
+
         try {
-	        while((tile = (BufferedImage) cutter.getNextTile()) != null) {
+            BufferedImage tile;
+	        while ((tile = (BufferedImage) cutter.getNextTile()) != null) {
 	        	int newId = addImage(tile);
 	        	if (createTiles) {
                     Tile newTile = new Tile();
@@ -117,7 +116,7 @@ public class TileSet
                     addNewTile(newTile);
                 }
 	        }
-        } catch(Exception e) {
+        } catch (Exception e) {
         	e.printStackTrace();
         }
 
@@ -174,7 +173,7 @@ public class TileSet
     /**
      * Sets the filename of the tileset image. Doesn't change the tileset in
      * any other way.
-     * 
+     *
      * @param name
      */
     public void setTilesetImageFilename(String name) {
@@ -201,7 +200,7 @@ public class TileSet
 
     /**
      * Sets the transparent color in the tileset image.
-     * 
+     *
      * @param color
      */
     public void setTransparentColor(Color color) {
@@ -219,7 +218,7 @@ public class TileSet
         if (t.getId() < 0) {
             t.setId(tiles.getMaxId());
         }
-        
+
         if (tileDimensions.height < t.getHeight()) {
         	tileDimensions.height = t.getHeight();
         }
@@ -227,12 +226,12 @@ public class TileSet
         if (tileDimensions.width < t.getWidth()) {
         	tileDimensions.width = t.getWidth();
         }
-        
-        //add any default properties
+
+        // Add any default properties
+        // todo: use parent properties instead?
         t.getProperties().putAll(defaultTileProperties);
-        
+
         tiles.put(t.getId(), t);
-        //System.out.println("adding tile " +t.getId());
         t.setTileSet(this);
 
         return t.getId();
@@ -293,7 +292,7 @@ public class TileSet
      * Returns the width of tiles in this tileset. All tiles in a tileset
      * should be the same width, and the same as the tile width of the map the
      * tileset is used with.
-     * 
+     *
      * @return int - The maximum tile width
      */
     public int getTileWidth() {
@@ -307,21 +306,22 @@ public class TileSet
      *
      * If there are tiles with varying heights in this tileset, the returned
      * height will be the maximum.
-     * 
-     * @return int - The max height of the tiles in the set
+     *
+     * @return the max height of the tiles in the set
      */
     public int getTileHeight() {
         return tileDimensions.height;
     }
 
     /**
-     * @deprecated
-     * @return int
+     * Returns the spacing between the tiles on the tileset image.
+     * @return the spacing in pixels between the tiles on the tileset image
      */
-    public int getMaxTileHeight() {
-    	return getTileHeight();
+    public int getTileSpacing() {
+        // todo: make this functional
+        return 0;
     }
-    
+
     /**
      * Gets the tile with <b>local</b> id <code>i</code>.
      *
@@ -399,7 +399,7 @@ public class TileSet
     /**
      * Returns the transparent color of the tileset image, or <code>null</code>
      * if none is set.
-     * 
+     *
      * @return Color - The transparent color of the set
      */
     public Color getTransparentColor() {
@@ -452,32 +452,14 @@ public class TileSet
      * @param id
      * @return the image identified by the key, or <code>null</code> when
      *         there is no such image
-     * @see TileSet#getImageByIdAndOrientation(Object, int)
      */
     public Image getImageById(int id) {
         return (Image) images.get(id);
     }
 
     /**
-     * Returns the image referred to by the given key, and automatically
-     * sets it to the given orientation.
-     * 
-     * @deprecated
-     * @param key
-     * @param orientation
-     * @return Image
-     */
-    public Image getImageByIdAndOrientation(Object key, int orientation) {
-        /*int img_id = Integer.parseInt((String)key);
-        ImageGroup img = (ImageGroup)images.get(img_id);
-        if (img == null) return null;
-        return img.getImage(orientation);*/
-    	return null;
-    }
-
-    /**
      * Overlays the image in the set referred to by the given key.
-     * 
+     *
      * @param id
      * @param i
      */
@@ -517,16 +499,17 @@ public class TileSet
     public int addImage(Image image, int id) {
         return images.put(id, image);
     }
-    
+
     public void removeImage(int id) {
         images.remove(id);
     }
 
     /**
-     * @return boolean 
+     * Returns whether the tileset is derived from a tileset image.
+     *
+     * @return tileSetImage != null
      */
     public boolean isSetFromImage() {
-        // TODO: Currently only uses shared sets...
         return tileSetImage != null;
     }
 
@@ -541,14 +524,15 @@ public class TileSet
         Iterator itr = iterator();
 
         //[ATURK] I don't think that this check makes complete sense...
-        /*while (itr.hasNext()) {
+        /*
+        while (itr.hasNext()) {
             Tile t = (Tile)itr.next();
             if (t.countAnimationFrames() != 1 || t.getImageId() != t.getId()
                     || t.getImageOrientation() != 0) {
                 return false;
             }
-        }*/
-
+        }
+        */
 
         for (int id = 0; id <= images.getMaxId(); ++id) {
             int relations = 0;

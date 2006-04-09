@@ -45,12 +45,12 @@ public class Map extends MultilayerPlane
     private Vector tilesets;
     private LinkedList objects;
 
-    int tileWidth, tileHeight;
-    int totalObjects;
-    int orientation = MDO_ORTHO;
-    EventListenerList mapChangeListeners;
-    Properties properties;
-    String filename;
+    private int tileWidth, tileHeight;
+    private int totalObjects;
+    private int orientation = MDO_ORTHO;
+    private EventListenerList mapChangeListeners;
+    private Properties properties;
+    private String filename;
 
     /**
      * @param width  the map width in tiles.
@@ -58,14 +58,7 @@ public class Map extends MultilayerPlane
      */
     public Map(int width, int height) {
         super(width, height);
-        init();
-    }
 
-    /**
-     * Internal initialization of the Map
-     *
-     */
-    private void init() {
         mapChangeListeners = new EventListenerList();
         properties = new Properties();
         tilesets = new Vector();
@@ -76,8 +69,8 @@ public class Map extends MultilayerPlane
     /**
      * Adds a change listener. The listener will be notified when the map
      * changes in certain ways.
-     * @param l
      *
+     * @param l the change listener to add
      * @see MapChangeListener#mapChanged(MapChangedEvent)
      */
     public void addMapChangeListener(MapChangeListener l) {
@@ -128,7 +121,8 @@ public class Map extends MultilayerPlane
     }
 
     /**
-     * Create a new empty TileLayer with the dimensions of the map. By default, the new layer's name is set to "Layer [layer index]"
+     * Create a new empty TileLayer with the dimensions of the map. By default,
+     * the new layer's name is set to "Layer [layer index]"
      *
      * @return The new TileLayer instance.
      */
@@ -228,14 +222,10 @@ public class Map extends MultilayerPlane
         return layer;
     }
 
-    public MapLayer removeLayerSpecial(MapLayer l) {
-        try {
-            if (specialLayers.remove(l)) {
-                fireMapChanged();
-            }
-        } catch (ArrayIndexOutOfBoundsException e) {
+    public void removeLayerSpecial(MapLayer layer) {
+        if (specialLayers.remove(layer)) {
+            fireMapChanged();
         }
-        return l;
     }
 
     public void removeAllSpecialLayers() {
@@ -244,22 +234,28 @@ public class Map extends MultilayerPlane
     }
 
     /**
-     * Calls super method, and additionally fires a MapChangedEvent.
+     * Calls super method, and additionally fires a {@link MapChangedEvent}.
      *
      * @see MultilayerPlane#removeAllLayers
      */
-
     public void removeAllLayers() {
         super.removeAllLayers();
         fireMapChanged();
     }
 
+    /**
+     * Calls super method, and additionally fires a {@link MapChangedEvent}.
+     *
+     * @see MultilayerPlane#setLayerVector
+     */
     public void setLayerVector(Vector layers) {
         super.setLayerVector(layers);
         fireMapChanged();
     }
 
     /**
+     * Calls super method, and additionally fires a {@link MapChangedEvent}.
+     *
      * @see MultilayerPlane#swapLayerUp
      */
     public void swapLayerUp(int index) throws Exception {
@@ -268,6 +264,8 @@ public class Map extends MultilayerPlane
     }
 
     /**
+     * Calls super method, and additionally fires a {@link MapChangedEvent}.
+     *
      * @see MultilayerPlane#swapLayerDown
      */
     public void swapLayerDown(int index) throws Exception {
@@ -276,6 +274,8 @@ public class Map extends MultilayerPlane
     }
 
     /**
+     * Calls super method, and additionally fires a {@link MapChangedEvent}.
+     *
      * @see MultilayerPlane#mergeLayerDown
      */
     public void mergeLayerDown(int index) throws Exception {
@@ -304,6 +304,8 @@ public class Map extends MultilayerPlane
     }
 
     /**
+     * Calls super method, and additionally fires a {@link MapChangedEvent}.
+     *
      * @see MultilayerPlane#resize
      */
     public void resize(int width, int height, int dx, int dy) {

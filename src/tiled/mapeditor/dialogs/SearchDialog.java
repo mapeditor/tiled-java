@@ -29,7 +29,7 @@ import tiled.mapeditor.widget.VerticalStaticJPanel;
  */
 public class SearchDialog extends JDialog implements ActionListener
 {
-    private final Map myMap;
+    private final Map map;
     private JComboBox searchCBox, replaceCBox;
     private Point currentMatch;
     private SelectionLayer sl;
@@ -41,7 +41,7 @@ public class SearchDialog extends JDialog implements ActionListener
 
     public SearchDialog(JFrame parent, Map map) {
         super(parent, "Search/Replace", false);
-        myMap = map;
+        this.map = map;
         init();
         setLocationRelativeTo(parent);
     }
@@ -127,7 +127,7 @@ public class SearchDialog extends JDialog implements ActionListener
     }
 
     private void queryTiles(JComboBox b) {
-        final Vector sets = myMap.getTilesets();
+        final Vector sets = map.getTilesets();
         final Iterator itr = sets.iterator();
 
         while (itr.hasNext()) {
@@ -146,7 +146,7 @@ public class SearchDialog extends JDialog implements ActionListener
         String command = e.getActionCommand();
 
         if (command.equalsIgnoreCase("close")) {
-            myMap.removeLayerSpecial(sl);
+            map.removeLayerSpecial(sl);
             dispose();
         } else if (command.equalsIgnoreCase("find")) {
             if (searchCBox.getSelectedItem() instanceof Tile) {
@@ -154,11 +154,11 @@ public class SearchDialog extends JDialog implements ActionListener
             }
         } else if (command.equalsIgnoreCase("find all")) {
             if (sl != null) {
-                myMap.removeLayerSpecial(sl);
+                map.removeLayerSpecial(sl);
             }
 
-            sl = new SelectionLayer(myMap.getWidth(), myMap.getHeight());
-            final Iterator itr = myMap.getLayers();
+            sl = new SelectionLayer(map.getWidth(), map.getHeight());
+            final Iterator itr = map.getLayers();
             while (itr.hasNext()) {
                 MapLayer layer = (MapLayer) itr.next();
                 if (layer instanceof TileLayer) {
@@ -172,8 +172,8 @@ public class SearchDialog extends JDialog implements ActionListener
                     }
                 }
             }
-            myMap.addLayerSpecial(sl);
-            myMap.touch();
+            map.addLayerSpecial(sl);
+            map.touch();
 
         } else if (command.equalsIgnoreCase("replace all")) {
             if (!(searchCBox.getSelectedItem() instanceof TileSet) && !(replaceCBox.getSelectedItem() instanceof TileSet))
@@ -186,7 +186,7 @@ public class SearchDialog extends JDialog implements ActionListener
 
                 // run through the layers, look for the first instance of the
                 // tile we need to replace
-                final Iterator itr = myMap.getLayers();
+                final Iterator itr = map.getLayers();
                 while (itr.hasNext()) {
                     MapLayer layer = (MapLayer) itr.next();
                     if (layer instanceof TileLayer) {
@@ -206,33 +206,33 @@ public class SearchDialog extends JDialog implements ActionListener
 
     private void replaceAll(Tile f, Tile r) {
         // TODO: Allow for "scopes" of one or more layers, rather than all layers
-        final Iterator itr = myMap.getLayers();
+        final Iterator itr = map.getLayers();
         while (itr.hasNext()) {
             MapLayer layer = (MapLayer) itr.next();
             if (layer instanceof TileLayer) {
                 ((TileLayer)layer).replaceTile(f,r);
             }
         }
-        myMap.touch();
+        map.touch();
     }
 
     private void find(Tile f) {
         boolean bFound = false;
 
         if (sl != null) {
-            myMap.removeLayerSpecial(sl);
-            myMap.touch();
+            map.removeLayerSpecial(sl);
+            map.touch();
         }
 
-        sl = new SelectionLayer(myMap.getWidth(), myMap.getHeight());
+        sl = new SelectionLayer(map.getWidth(), map.getHeight());
 
 
         int startx = currentMatch == null ? 0 : currentMatch.x;
         int starty = currentMatch == null ? 0 : currentMatch.y;
 
-        for (int y = starty; y < myMap.getHeight() && !bFound; y++) {
-            for (int x = startx; x < myMap.getWidth() && !bFound; x++) {
-                final Iterator itr = myMap.getLayers();
+        for (int y = starty; y < map.getHeight() && !bFound; y++) {
+            for (int x = startx; x < map.getWidth() && !bFound; x++) {
+                final Iterator itr = map.getLayers();
                 while (itr.hasNext()) {
                     MapLayer layer = (MapLayer) itr.next();
 
@@ -256,8 +256,8 @@ public class SearchDialog extends JDialog implements ActionListener
         }
 
         if (bFound) {
-            myMap.addLayerSpecial(sl);
-            myMap.touch();
+            map.addLayerSpecial(sl);
+            map.touch();
         }
     }
 }

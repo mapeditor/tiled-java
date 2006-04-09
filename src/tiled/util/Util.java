@@ -15,10 +15,10 @@ package tiled.util;
 import java.io.File;
 import java.io.IOException;
 
-
 /**
  * Various utility functions
  *
+ * $Id$
  */
 public class Util
 {
@@ -26,19 +26,19 @@ public class Util
      * This function converts an <code>int</code> integer array to a
      * <code>byte</code> array. Each integer element is broken into 4 bytes and
      * stored in the byte array in litte endian byte order.
-     * 
+     *
      * @param integers an integer array
      * @return a byte array containing the values of the int array. The byte
-     *         array is 4x the length of the integer array. 
+     *         array is 4x the length of the integer array.
      */
     public static byte[] convertIntegersToBytes (int[] integers) {
         if (integers != null) {
-            byte outputBytes[] = new byte[integers.length * 4];
+            byte[] outputBytes = new byte[integers.length * 4];
 
             for(int i = 0, k = 0; i < integers.length; i++) {
                 int integerTemp = integers[i];
                 for(int j = 0; j < 4; j++, k++) {
-                    outputBytes[k] = (byte)((integerTemp >> (8*j)) & 0xFF);
+                    outputBytes[k] = (byte)((integerTemp >> (8 * j)) & 0xFF);
                 }
             }
             return outputBytes;
@@ -51,7 +51,7 @@ public class Util
      * This utility function will check the specified string to see if it
      * starts with one of the OS root designations. (Ex.: '/' on Unix, 'C:' on
      * Windows)
-     * 
+     *
      * @param filename a filename to check for absolute or relative path
      * @return <code>true</code> if the specified filename starts with a
      *         filesystem root, <code>false</code> otherwise.
@@ -61,7 +61,8 @@ public class Util
 
         for (int i = 0; i < roots.length; i++) {
             try {
-                if (filename.toLowerCase().startsWith(roots[i].getCanonicalPath().toLowerCase())) {
+                String root = roots[i].getCanonicalPath().toLowerCase();
+                if (filename.toLowerCase().startsWith(root)) {
                     return true;
                 }
             } catch (IOException e) {

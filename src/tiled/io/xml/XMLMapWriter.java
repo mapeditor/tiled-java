@@ -205,7 +205,11 @@ public class XMLMapWriter implements MapWriter
             if (tilebmpFile != null) {
                 w.writeAttribute("tilewidth", set.getTileWidth());
                 w.writeAttribute("tileheight", set.getTileHeight());
-                //w.writeAttribute("spacing", "0");
+
+                int tileSpacing = set.getTileSpacing();
+                if (tileSpacing != 0) {
+                    w.writeAttribute("spacing", tileSpacing);
+                }
             }
 
             if (set.getBaseDir() != null) {
@@ -458,17 +462,6 @@ public class XMLMapWriter implements MapWriter
                 } else if (tileSetImages) {
                     w.startElement("image");
                     w.writeAttribute("id", tile.getImageId());
-                    int orientation = tile.getImageOrientation();
-                    int rotation;
-                    boolean flipped =
-                            (orientation & 1) == (orientation & 2) >> 1;
-                    if ((orientation & 4) == 4) {
-                        rotation = (orientation & 1) == 1 ? 270 : 90;
-                    } else {
-                        rotation = (orientation & 2) == 2 ? 180 : 0;
-                    }
-                    if (rotation != 0) w.writeAttribute("rotation", rotation);
-                    if (flipped) w.writeAttribute("flipped", "true");
                     w.endElement();
                 } else {
                     String prefix = prefs.get("tileImagePrefix", "tile");
