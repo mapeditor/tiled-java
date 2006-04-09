@@ -90,8 +90,8 @@ public class HexMapView extends MapView
         int wbhc = (int)getWidthBetweenHexCentres();
 
         return new Dimension(
-                myMap.getWidth() * wbhc + border + wbhc,
-                myMap.getHeight() * tsize.height + border +
+                map.getWidth() * wbhc + border + wbhc,
+                map.getHeight() * tsize.height + border +
                 tsize.height / 2);
     }
 
@@ -145,13 +145,13 @@ public class HexMapView extends MapView
      * Hexes.
      */
     private double getWidthBetweenHexCentres() {
-        return myMap.getTileWidth() * 3 / 4;
+        return map.getTileWidth() * 3 / 4;
     }
 
     private Dimension getTileSize(double zoom) {
         return new Dimension(
-                (int)(myMap.getTileWidth() * zoom),
-                (int)(myMap.getTileHeight() * zoom));
+                (int)(map.getTileWidth() * zoom),
+                (int)(map.getTileHeight() * zoom));
     }
 
     protected void paintGrid(Graphics2D g2d, double zoom) {
@@ -194,7 +194,7 @@ public class HexMapView extends MapView
         int x = (int)(screenX / zoom);
         int y = (int)(screenY / zoom);
         double hexWidth = getWidthBetweenHexCentres();
-        double hexHeight = myMap.getTileHeight();
+        double hexHeight = map.getTileHeight();
 
         double tw = hexWidth * 2 / 3;
         double cw = hexWidth / 3;
@@ -255,7 +255,7 @@ public class HexMapView extends MapView
     }
 
     private double getTileHeight() {
-        return myMap.getTileHeight();
+        return map.getTileHeight();
     }
 
     public void repaintRegion(Rectangle region) {

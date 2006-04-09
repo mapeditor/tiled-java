@@ -70,8 +70,8 @@ public class ShiftedMapView extends MapView
         int repeatY = tsize.height - onceY;
 
         return new Dimension(
-                myMap.getWidth() * repeatX + onceX + border,
-                myMap.getHeight() * repeatY + onceY + border);
+                map.getWidth() * repeatX + onceX + border,
+                map.getHeight() * repeatY + onceY + border);
     }
 
     protected void paintLayer(Graphics2D g2d, TileLayer layer, double zoom) {
@@ -127,8 +127,8 @@ public class ShiftedMapView extends MapView
 
     protected Dimension getTileSize(double zoom) {
         return new Dimension(
-                (int)(myMap.getTileWidth() * zoom),
-                (int)(myMap.getTileHeight() * zoom));
+                (int)(map.getTileWidth() * zoom),
+                (int)(map.getTileHeight() * zoom));
     }
 
     protected Polygon createGridPolygon(int tx, int ty, int border) {

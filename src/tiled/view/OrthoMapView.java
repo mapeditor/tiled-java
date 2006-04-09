@@ -69,8 +69,8 @@ public class OrthoMapView extends MapView
         int border = (modeFlags & PF_GRIDMODE) != 0 ? 1 : 0;
 
         return new Dimension(
-                myMap.getWidth() * tsize.width + border,
-                myMap.getHeight() * tsize.height + border);
+                map.getWidth() * tsize.width + border,
+                map.getHeight() * tsize.height + border);
     }
 
     protected void paintLayer(Graphics2D g2d, TileLayer layer, double zoom) {
@@ -108,8 +108,8 @@ public class OrthoMapView extends MapView
         }
     }
 
-    protected void paintLayer(Graphics2D g, ObjectGroup layer, double zoom) {
-        Iterator itr = layer.getObjects();
+    protected void paintLayer(Graphics2D g, ObjectGroup og, double zoom) {
+        Iterator itr = og.getObjects();
 
         while (itr.hasNext()) {
             MapObject mo = (MapObject) itr.next();
@@ -192,7 +192,7 @@ public class OrthoMapView extends MapView
         if (tsize.width <= 0 || tsize.height <= 0) return;
         int toffset = (modeFlags & PF_GRIDMODE) != 0 ? 1 : 0;
         int maxExtraHeight =
-            (int)((myMap.getTileHeightMax() * zoom + toffset) - tsize.height);
+            (int)((map.getTileHeightMax() * zoom + toffset) - tsize.height);
 
         // Calculate the visible corners of the region
         int startX = region.x * tsize.width + toffset;
@@ -215,8 +215,8 @@ public class OrthoMapView extends MapView
         int grid = (modeFlags & PF_GRIDMODE) != 0 ? 1 : 0;
 
         return new Dimension(
-                (int)(myMap.getTileWidth() * zoom) + grid,
-                (int)(myMap.getTileHeight() * zoom) + grid);
+                (int)(map.getTileWidth() * zoom) + grid,
+                (int)(map.getTileHeight() * zoom) + grid);
     }
 
     protected Polygon createGridPolygon(int tx, int ty, int border) {
@@ -233,6 +233,6 @@ public class OrthoMapView extends MapView
 
     public Point tileToScreenCoords(double x, double y) {
         Dimension tsize = getTileSize(zoom);
-        return new Point((int)x*tsize.width, (int)y*tsize.height);
+        return new Point((int)x * tsize.width, (int)y * tsize.height);
     }
 }

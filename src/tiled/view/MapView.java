@@ -39,7 +39,7 @@ public abstract class MapView extends JPanel implements Scrollable
 
     public static int ZOOM_NORMALSIZE = 5;
 
-    protected Map myMap;
+    protected Map map;
     protected Brush currentBrush;
     protected int modeFlags;
     protected double zoom = 1.0;
@@ -59,7 +59,7 @@ public abstract class MapView extends JPanel implements Scrollable
      * @param map the map to be displayed by this map view
      */
     protected MapView(Map map) {
-        myMap = map;
+        this.map = map;
         setSize(getPreferredSize());
     }
 
@@ -227,10 +227,10 @@ public abstract class MapView extends JPanel implements Scrollable
 
         g2d.fillRect(clip.x, clip.y, clip.width, clip.height);
 
-        paintSubMap(myMap, g2d, 1.0f);
+        paintSubMap(map, g2d, 1.0f);
 
         if (!getMode(PF_NOSPECIAL)) {
-            Iterator li = myMap.getLayersSpecial();
+            Iterator li = map.getLayersSpecial();
 
             while (li.hasNext()) {
                 layer = (MapLayer) li.next();

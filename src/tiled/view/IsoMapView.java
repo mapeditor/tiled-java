@@ -72,7 +72,7 @@ public class IsoMapView extends MapView
 
         // Determine area to draw from clipping rectangle
         int columns = clipRect.width / tileSize.width + 3;
-        int rows = (clipRect.height + (int)(myMap.getTileHeightMax() * zoom)) /
+        int rows = (clipRect.height + (int)(map.getTileHeightMax() * zoom)) /
             tileStepY + 4;
 
         // Draw this map layer
@@ -127,10 +127,10 @@ public class IsoMapView extends MapView
         int startX = Math.max(0, screenToTileCoords(clipRect.x, clipRect.y).x);
         int startY = Math.max(0, screenToTileCoords(
                     clipRect.x + clipRect.width, clipRect.y).y);
-        int endX = Math.min(myMap.getWidth(), screenToTileCoords(
+        int endX = Math.min(map.getWidth(), screenToTileCoords(
                     clipRect.x + clipRect.width,
                     clipRect.y + clipRect.height).x);
-        int endY = Math.min(myMap.getHeight(), screenToTileCoords(
+        int endY = Math.min(map.getHeight(), screenToTileCoords(
                     clipRect.x, clipRect.y + clipRect.height).y);
 
         for (int y = startY; y <= endY; y++) {
@@ -170,7 +170,7 @@ public class IsoMapView extends MapView
             Point columnItr = new Point(rowItr);
 
             for (int x = 0; x < columns; x++) {
-                if (myMap.contains(columnItr.x, columnItr.y)) {
+                if (map.contains(columnItr.x, columnItr.y)) {
                     String coords =
                         "(" + columnItr.x + "," + columnItr.y + ")";
                     Rectangle2D textSize =
@@ -204,7 +204,7 @@ public class IsoMapView extends MapView
     public void repaintRegion(Rectangle region) {
         Dimension tileSize = getTileSize(zoom);
         int maxExtraHeight =
-            (int)(myMap.getTileHeightMax() * zoom) - tileSize.height;
+            (int)(map.getTileHeightMax() * zoom) - tileSize.height;
 
         int mapX1 = region.x;
         int mapY1 = region.y;
@@ -222,7 +222,7 @@ public class IsoMapView extends MapView
     public Dimension getPreferredSize() {
         Dimension tileSize = getTileSize(zoom);
         int border = (modeFlags & PF_GRIDMODE) != 0 ? 1 : 0;
-        int mapSides = myMap.getHeight() + myMap.getWidth();
+        int mapSides = map.getHeight() + map.getWidth();
 
         return new Dimension(
                 (mapSides * tileSize.width) / 2 + border,
@@ -237,7 +237,7 @@ public class IsoMapView extends MapView
         double r = getTileRatio();
 
         // Translate origin to top-center
-        x -= myMap.getHeight() * (tileSize.width / 2);
+        x -= map.getHeight() * (tileSize.width / 2);
         int mx = y + (int)(x / r);
         int my = y - (int)(x / r);
 
@@ -264,12 +264,12 @@ public class IsoMapView extends MapView
 
     protected Dimension getTileSize(double zoom) {
         return new Dimension(
-                (int)(myMap.getTileWidth() * zoom),
-                (int)(myMap.getTileHeight() * zoom));
+                (int)(map.getTileWidth() * zoom),
+                (int)(map.getTileHeight() * zoom));
     }
 
     protected double getTileRatio() {
-        return (double)myMap.getTileWidth() / (double)myMap.getTileHeight();
+        return (double)map.getTileWidth() / (double)map.getTileHeight();
     }
 
     /**
@@ -277,7 +277,7 @@ public class IsoMapView extends MapView
      */
     public Point tileToScreenCoords(double x, double y) {
         Dimension tileSize = getTileSize(zoom);
-        int originX = (myMap.getHeight() * tileSize.width) / 2;
+        int originX = (map.getHeight() * tileSize.width) / 2;
         return new Point(
                 (int)((x - y) * tileSize.width / 2) + originX,
                 (int)((x + y) * tileSize.height / 2));

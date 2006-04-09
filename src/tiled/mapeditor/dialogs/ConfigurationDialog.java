@@ -44,6 +44,7 @@ public class ConfigurationDialog extends JDialog
     private final Preferences ioPrefs = prefs.node("io");
 
     private static final String DIALOG_TITLE = Resources.getString("dialog.preferences.title");
+    private static final String CLOSE_BUTTON = Resources.getString("general.button.close");
 
     public ConfigurationDialog(JFrame parent) {
         super(parent, DIALOG_TITLE, true);
@@ -132,8 +133,8 @@ public class ConfigurationDialog extends JDialog
         //c.gridx = 1;
         //gridOps.add(gridColor, c);
 
-        JButton bClose = new JButton("Close");
-        bClose.addActionListener(new ActionListener() {
+        JButton closeButton = new JButton(CLOSE_BUTTON);
+        closeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
                 dispose();
             }
@@ -143,7 +144,7 @@ public class ConfigurationDialog extends JDialog
         JPanel buttons = new VerticalStaticJPanel();
         buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
         buttons.add(Box.createGlue());
-        buttons.add(bClose);
+        buttons.add(closeButton);
 
         JPanel saving = new JPanel();
         saving.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
@@ -177,7 +178,7 @@ public class ConfigurationDialog extends JDialog
         mainPanel.add(buttons);
 
         getContentPane().add(mainPanel);
-        getRootPane().setDefaultButton(bClose);
+        getRootPane().setDefaultButton(closeButton);
         pack();
 
         // Associate listeners with the configuration widgets
