@@ -15,7 +15,6 @@ package tiled.core;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Properties;
@@ -70,17 +69,13 @@ public class TileSet
     public void importTileBitmap(String imgFilename, TileCutter cutter,
                                  boolean createTiles) throws Exception
     {
-        File imgFile = null;
-        try {
-            imgFile = new File(imgFilename);
-            tilebmpFile = imgFile.getCanonicalPath();
-        } catch (IOException e) {
-            tilebmpFile = imgFilename;
-        }
+        // IOException will propagate upwards when file cannot be found
+        File imgFile = new File(imgFilename);
+        tilebmpFile = imgFile.getCanonicalPath();
 
         System.out.println("Importing " + imgFilename + "...");
 
-        importTileBitmap(ImageIO.read(imgFile.toURL()), cutter, createTiles);
+        importTileBitmap(ImageIO.read(imgFile), cutter, createTiles);
     }
 
     /**
@@ -112,7 +107,7 @@ public class TileSet
         try {
             BufferedImage tile;
 	        while ((tile = (BufferedImage) cutter.getNextTile()) != null) {
-	        	int newId = addImage(tile);
+                int newId = addImage(tile);
 	        	if (createTiles) {
                     Tile newTile = new Tile();
                     newTile.setImage(newId);

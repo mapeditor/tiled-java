@@ -26,13 +26,15 @@ public class BasicTileCutter implements TileCutter
     private BufferedImage image;
     private int tileWidth, tileHeight, frame, offset;
 
-    public BasicTileCutter(int width, int height, int frame, int offset) {
-        this.tileWidth = width;
-        this.tileHeight = height;
+    public BasicTileCutter(int tileWidth, int tileHeight, int frame,
+                           int offset)
+    {
+        this.tileWidth = tileWidth;
+        this.tileHeight = tileHeight;
         this.frame = frame;
         this.offset = offset;
 
-        //do initial setup
+        // Do initial setup
         nextX = offset + frame;
         nextY = offset + frame;
     }
@@ -40,7 +42,7 @@ public class BasicTileCutter implements TileCutter
     public String getName() {
     	return "Basic";
     }
-    
+
     public void setImage(Image image) {
         int iw = image.getWidth(null);
         int ih = image.getHeight(null);
@@ -59,14 +61,14 @@ public class BasicTileCutter implements TileCutter
     }
 
     public Image getNextTile() throws Exception {
-        if (nextY + tileHeight < image.getHeight()) {
+        if (nextY + tileHeight <= image.getHeight()) {
             BufferedImage tile =
                 image.getSubimage(nextX, nextY, tileWidth, tileHeight);
-            nextX += tileWidth+frame;
+            nextX += tileWidth + frame;
 
             if (nextX + tileWidth > image.getWidth()) {
                 nextX = offset + frame;
-                nextY += tileHeight+frame;
+                nextY += tileHeight + frame;
             }
 
             return tile;

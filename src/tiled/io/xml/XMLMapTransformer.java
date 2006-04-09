@@ -384,8 +384,10 @@ public class XMLMapTransformer implements MapReader
                                         sourcePath + ")");
                             }
                         } else {
-                            set.importTileBitmap(sourcePath, new BasicTileCutter(
-                                    tileWidth, tileHeight, tileSpacing, 0), !hasTileElements);
+                            set.importTileBitmap(sourcePath,
+                                    new BasicTileCutter(tileWidth, tileHeight,
+                                            tileSpacing, 0),
+                                    !hasTileElements);
                         }
 
                     } else {
