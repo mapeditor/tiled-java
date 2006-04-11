@@ -642,6 +642,6 @@ public class XMLMapWriter implements MapWriter
         return false;
     }
 
-    public void setErrorStack(Stack es) {
+    public void setLogger(PluginLogger logger) {
     }
 }

@@ -13,8 +13,10 @@
 package tiled.io;
 
 import java.awt.Image;
+import java.awt.MediaTracker;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.File;
@@ -58,10 +60,11 @@ public class ImageHelper
      *
      * @param imageData The byte array of the data to convert.
      * @return Image The image instance created from the byte array
+     * @throws IOException 
      * @see java.awt.Toolkit#createImage(byte[] imagedata)
      */
-    static public Image bytesToImage(byte[] imageData) {
-        return Toolkit.getDefaultToolkit().createImage(imageData);
+    static public Image bytesToImage(byte[] imageData) throws IOException {
+        return ImageIO.read(new ByteArrayInputStream(imageData));
     }
 
     /**

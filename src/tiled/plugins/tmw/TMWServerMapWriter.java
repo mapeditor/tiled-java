@@ -13,9 +13,9 @@
 package tiled.plugins.tmw;
 
 import java.io.*;
-import java.util.Stack;
 
 import tiled.io.MapWriter;
+import tiled.io.PluginLogger;
 import tiled.core.*;
 
 /**
@@ -32,6 +32,8 @@ public class TMWServerMapWriter implements MapWriter
 {
     private static final int FIRST_BYTE = 0x000000FF;
 
+    private PluginLogger logger;
+    
     /**
      * Loads a map from a file.
      *
@@ -47,8 +49,8 @@ public class TMWServerMapWriter implements MapWriter
      * @param filename the filename of the tileset file
      */
     public void writeTileset(TileSet set, String filename) throws Exception {
-        System.out.println("Tilesets are not supported!");
-        System.out.println("(asked to write " + filename + ")");
+        logger.error("Tilesets are not supported!");
+        logger.error("(asked to write " + filename + ")");
     }
 
     public void writeMap(Map map, OutputStream out) throws Exception {
@@ -121,7 +123,7 @@ public class TMWServerMapWriter implements MapWriter
         return false;
     }
 
-    public void setErrorStack(Stack es) {
-        // TODO: implement setErrorStack
+    public void setLogger(PluginLogger logger) {
+        this.logger = logger;
     }
 }

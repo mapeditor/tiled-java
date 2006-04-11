@@ -18,6 +18,7 @@ import java.util.LinkedList;
 import java.util.Stack;
 
 import tiled.io.MapWriter;
+import tiled.io.PluginLogger;
 import tiled.plugins.mappy.MappyMapReader.BlkStr;
 import tiled.core.Map;
 import tiled.core.TileSet;
@@ -96,7 +97,7 @@ public class MappyMapWriter implements MapWriter
         return false;
     }
 
-    public void setErrorStack(Stack es) {
+    public void setLogger(PluginLogger logger) {
         // TODO: implement setErrorStack
     }
 

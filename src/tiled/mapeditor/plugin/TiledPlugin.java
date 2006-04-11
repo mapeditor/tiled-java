@@ -14,11 +14,11 @@ package tiled.mapeditor.plugin;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.util.Stack;
 
 import tiled.io.MapReader;
 import tiled.io.MapWriter;
 import tiled.io.PluggableMapIO;
+import tiled.io.PluginLogger;
 
 /**
  * A true "plugin" implementation that handles both reading and
@@ -114,7 +114,7 @@ public class TiledPlugin implements PluggableMapIO, FileFilter
     /* (non-Javadoc)
      * @see tiled.io.PluggableMapIO#setErrorStack(java.util.Stack)
      */
-    public void setErrorStack(Stack es) {
+    public void setLogger(PluginLogger logger) {
         // TODO Auto-generated method stub
     }
     

@@ -15,11 +15,11 @@ package tiled.plugins.mappy;
 import java.io.*;
 import java.util.LinkedList;
 import java.util.Properties;
-import java.util.Stack;
 import java.util.Vector;
 import java.util.Iterator;
 
 import tiled.io.MapReader;
+import tiled.io.PluginLogger;
 import tiled.core.*;
 
 public class MappyMapReader implements MapReader
@@ -29,6 +29,8 @@ public class MappyMapReader implements MapReader
     private static final int BLKSTR_WIDTH = 32;
     private int twidth, theight;
 
+    private PluginLogger logger;
+    
     public static class BlkStr {
         public BlkStr() {
         }
@@ -91,12 +93,12 @@ public class MappyMapReader implements MapReader
      * @param filename the filename of the tileset file
      */
     public TileSet readTileset(String filename) throws Exception {
-        System.out.println("Tilesets aren't supported!");
+        logger.error("Tilesets aren't supported!");
         return null;
     }
 
     public TileSet readTileset(InputStream in) {
-        System.out.println("Tilesets aren't supported!");
+    	logger.error("Tilesets aren't supported!");
         return null;
     }
 
@@ -141,8 +143,8 @@ public class MappyMapReader implements MapReader
         return false;
     }
 
-    public void setErrorStack(Stack es) {
-        // TODO: implement setErrorStack
+    public void setLogger(PluginLogger logger) {
+        this.logger = logger;
     }
 
 
@@ -218,7 +220,7 @@ public class MappyMapReader implements MapReader
             throw new IOException("No BGFX chunk found!");
         }
 
-        System.out.println(ret.toString());
+        logger.debug(ret.toString());
         return ret;
     }
 
@@ -227,7 +229,7 @@ public class MappyMapReader implements MapReader
     }
 
     private void readBKDTChunk(Map m, InputStream in, int num) throws IOException {
-        System.out.println("Reading " + num + " blocks...");
+    	logger.debug("Reading " + num + " blocks...");
         for (int i = 0; i < num; i++) {
             blocks.add(readBLKSTR(in));
         }

@@ -54,13 +54,20 @@ public class BrushDialog extends JDialog implements ActionListener,
     private JCheckBox cbRandomBrush;
     private IntegerSpinner affectLayers, brushSize;
     private JSlider sRandomAmount;
-    private JButton bOk, bApply, bCancel;
+    private JButton okButton, bApply, bCancel;
     private BrushBrowser brushes;
 
+    private static final String DIALOG_TITLE = Resources.getString("dialog.brush.title");
+    private static final String OK_BUTTON = Resources.getString("general.button.ok");
+    private static final String APPLY_BUTTON = Resources.getString("general.button.apply");
+    private static final String CANCEL_BUTTON = Resources.getString("general.button.cancel");
+    private static final String SHAPE_TAB = Resources.getString("dialog.brush.tab.shape");
+    private static final String CUSTOM_TAB = Resources.getString("dialog.brush.tab.custom");
+    
     public BrushDialog(MapEditor editor, JFrame parent,
                        AbstractBrush currentBrush)
     {
-        super(parent, Resources.getString("dialog.brush.title"), false);
+        super(parent, DIALOG_TITLE, false);
         myBrush = currentBrush;
         this.editor = editor;
 
@@ -182,12 +189,14 @@ public class BrushDialog extends JDialog implements ActionListener,
     }
 
     private void init() {
-        createCustomPanel();
+    	JTabbedPane tabs = new JTabbedPane(JTabbedPane.TOP);
+        tabs.addTab(SHAPE_TAB, createShapePanel());
+        tabs.addTab(CUSTOM_TAB, createCustomPanel());
 
-        bOk = new JButton("OK");
-        bApply = new JButton("Apply");
-        bCancel = new JButton("Cancel");
-        bOk.addActionListener(this);
+        okButton = new JButton(OK_BUTTON);
+        bApply = new JButton(APPLY_BUTTON);
+        bCancel = new JButton(CANCEL_BUTTON);
+        okButton.addActionListener(this);
         bApply.addActionListener(this);
         bCancel.addActionListener(this);
         bApply.setEnabled(false);
@@ -196,7 +205,7 @@ public class BrushDialog extends JDialog implements ActionListener,
         JPanel buttons = new VerticalStaticJPanel();
         buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
         buttons.add(Box.createGlue());
-        buttons.add(bOk);
+        buttons.add(okButton);
         buttons.add(Box.createRigidArea(new Dimension(5, 0)));
         buttons.add(bApply);
         buttons.add(Box.createRigidArea(new Dimension(5, 0)));
@@ -205,12 +214,12 @@ public class BrushDialog extends JDialog implements ActionListener,
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        mainPanel.add(createShapePanel());
+        mainPanel.add(tabs);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         mainPanel.add(buttons);
 
         getContentPane().add(mainPanel);
-        getRootPane().setDefaultButton(bOk);
+        getRootPane().setDefaultButton(okButton);
     }
 
     private void createFromOptions() {
@@ -257,7 +266,7 @@ public class BrushDialog extends JDialog implements ActionListener,
     public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
 
-        if (source == bOk) {
+        if (source == okButton) {
             createFromOptions();
             editor.setBrush(myBrush);
             dispose();

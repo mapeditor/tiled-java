@@ -14,6 +14,7 @@ package tiled.io;
 
 import java.util.Stack;
 
+
 /**
  * This is the interface for all Tiled I/O plugins, whether they load, save, or
  * both. The PluginClassLoader also uses this to check the supported file
@@ -55,12 +56,11 @@ public interface PluggableMapIO
     public String getPluginPackage();
     
     /**
-     * The Stack object passed by the editor when the plugin is called to load
+     * The PluginLogger object passed by the editor when the plugin is called to load
      * or save a map can be used by the plugin to notify the user of any
      * problems or messages.
      * 
-     * @param es an initialized Stack that will be used by the editor to 
-     *           print messages from the plugin 
+     * @param logger 
      */
-    public void setErrorStack(Stack es);
+    public void setLogger(PluginLogger logger);
 }

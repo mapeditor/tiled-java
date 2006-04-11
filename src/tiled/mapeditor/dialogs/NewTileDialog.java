@@ -23,6 +23,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 
 import tiled.core.*;
+import tiled.mapeditor.Resources;
 
 /**
  * $Id$
@@ -32,11 +33,13 @@ public class NewTileDialog extends JDialog implements ActionListener
 	private TileSet tileset;
 	private Tile currentTile;
 	private String location;
-
-	private JButton bAddTiles, bCancel;
-
+	
+	/* LANGUAGE PACK */
+    private static final String DIALOG_TITLE = Resources.getString("dialog.newtile.title");
+    /* -- */
+    
 	public NewTileDialog(Dialog parent, TileSet set) {
-		super(parent, "New Tile", true);
+		super(parent, DIALOG_TITLE, true);
 		tileset = set;
 		location = "";
 

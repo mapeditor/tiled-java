@@ -32,7 +32,6 @@ public class PropertiesDialog extends JDialog implements ListSelectionListener
     private final Properties properties;
     private final PropertiesTableModel tableModel = new PropertiesTableModel();
 
-    /* LANGUAGE PACK */
     private static final String DIALOG_TITLE = Resources.getString("dialog.properties.title");
     private static final String OK_BUTTON = Resources.getString("general.button.ok");
     private static final String DELETE_BUTTON = Resources.getString("general.button.delete");

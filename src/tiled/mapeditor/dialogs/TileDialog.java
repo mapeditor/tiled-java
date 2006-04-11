@@ -57,7 +57,6 @@ public class TileDialog extends JDialog
     private JTabbedPane tabs;
     private int currentImageIndex = -1;
 
-    /* LANGUAGE PACK */
     private static final String DIALOG_TITLE = Resources.getString("dialog.tile.title");
     private static final String OK_BUTTON = Resources.getString("general.button.ok");
     private static final String DELETE_BUTTON = Resources.getString("dialog.tile.button.deletetile");

@@ -21,21 +21,27 @@ import java.awt.event.*;
 import java.awt.image.PixelGrabber;
 import javax.swing.*;
 
+import tiled.mapeditor.Resources;
 import tiled.mapeditor.widget.ImageViewPanel;
 import tiled.mapeditor.widget.VerticalStaticJPanel;
 
 /**
  * @version $Id$
  */
-public class ImageColorDialog extends JDialog implements ActionListener,
-        MouseListener, MouseMotionListener
+public class ImageColorDialog extends JDialog implements MouseListener, 
+		MouseMotionListener
 {
     private Image image;
-    private JButton bCancel;
+    private JButton cancelButton;
     private Color color;
     private JPanel colorPanel;
     private int[] pixels;
 
+    /* LANGUAGE PACK */
+    private static final String DIALOG_TITLE = Resources.getString("dialog.imagecolor.title");
+    private static final String CANCEL_BUTTON = Resources.getString("general.button.cancel");
+    /* -- */
+    
     public ImageColorDialog(Image i) {
         image = i;
         PixelGrabber pg = new PixelGrabber(i, 0, 0, -1, -1, true);
@@ -60,15 +66,14 @@ public class ImageColorDialog extends JDialog implements ActionListener,
         imagePanel.addMouseListener(this);
         imagePanel.addMouseMotionListener(this);
 
-        setTitle("Color Chooser");
+        setTitle(DIALOG_TITLE);
 
         color = new Color(255, 103, 139);  //Evil pink
         colorPanel = new JPanel();
         colorPanel.setPreferredSize(new Dimension(25, 25));
         colorPanel.setBackground(color);
 
-        bCancel = new JButton("Cancel");
-        bCancel.addActionListener(this);
+        cancelButton = new JButton(CANCEL_BUTTON);
 
         JScrollPane imageScrollPane = new JScrollPane(imagePanel);
         imageScrollPane.setAutoscrolls(true);
@@ -88,23 +93,24 @@ public class ImageColorDialog extends JDialog implements ActionListener,
         c.gridx = 1;
         buttonPanel.add(Box.createRigidArea(new Dimension(25, 5)));
         c.gridx = 2;
-        buttonPanel.add(bCancel);
+        buttonPanel.add(cancelButton);
 
         mainPanel.add(buttonPanel);
 
         setContentPane(mainPanel);
+        
+        //create actionlisteners
+        cancelButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+            	color = null;
+                dispose();
+            }
+        });
     }
 
     public Color showDialog() {
         setVisible(true);
         return color;
-    }
-
-    public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == bCancel) {
-            color = null;
-            dispose();
-        }
     }
 
     public void mouseClicked(MouseEvent e) {

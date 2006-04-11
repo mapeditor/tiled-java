@@ -15,6 +15,7 @@ package tiled.core;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Properties;
@@ -40,8 +41,10 @@ public class TileSet
     private String base;
     private NumberedSet tiles, images;
     private int firstGid;
+    private long tilebmpFileLastModified;
     private Rectangle tileDimensions;
-    private String externalSource, tilebmpFile;
+    private String externalSource;
+    private File tilebmpFile;
     private String name;
     private Color transparentColor;
     private Properties defaultTileProperties;
@@ -70,12 +73,9 @@ public class TileSet
                                  boolean createTiles) throws Exception
     {
         // IOException will propagate upwards when file cannot be found
-        File imgFile = new File(imgFilename);
-        tilebmpFile = imgFile.getCanonicalPath();
-
-        System.out.println("Importing " + imgFilename + "...");
-
-        importTileBitmap(ImageIO.read(imgFile), cutter, createTiles);
+        tilebmpFile = new File(imgFilename);
+        tilebmpFileLastModified = tilebmpFile.lastModified();
+        importTileBitmap(ImageIO.read(tilebmpFile), cutter, createTiles);
     }
 
     /**
@@ -167,7 +167,8 @@ public class TileSet
      * @param name
      */
     public void setTilesetImageFilename(String name) {
-        tilebmpFile = name;
+        tilebmpFile = new File(name);
+        tilebmpFileLastModified = tilebmpFile.lastModified();
     }
 
     /**
@@ -218,7 +219,7 @@ public class TileSet
         }
 
         // Add any default properties
-        // todo: use parent properties instead?
+        // TODO: use parent properties instead?
         t.getProperties().putAll(defaultTileProperties);
 
         tiles.put(t.getId(), t);
@@ -367,7 +368,12 @@ public class TileSet
      *         tileset doesn't reference a tile bitmap
      */
     public String getTilebmpFile() {
-        return tilebmpFile;
+        try {
+			return tilebmpFile.getCanonicalPath();
+		} catch (IOException e) {
+		}
+		
+		return "";
     }
 
     /**

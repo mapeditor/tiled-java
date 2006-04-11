@@ -23,6 +23,7 @@ import tiled.core.Map;
 import tiled.core.TileSet;
 import tiled.io.xml.XMLMapTransformer;
 import tiled.io.xml.XMLMapWriter;
+import tiled.mapeditor.dialogs.PluginLogDialog;
 import tiled.mapeditor.plugin.PluginClassLoader;
 import tiled.util.TiledConfiguration;
 
@@ -68,11 +69,11 @@ public class MapHelper {
         }
 
         if (mw != null) {
-            Stack errors = new Stack();
-            mw.setErrorStack(errors);
+        	PluginLogger logger = new PluginLogger();
+            mw.setLogger(logger);
             mw.writeMap(currentMap, filename);
             currentMap.setFilename(filename);
-            reportPluginMessages(errors);
+            reportPluginMessages(logger);
         } else {
             throw new Exception("Unsupported map format");
         }
@@ -100,11 +101,11 @@ public class MapHelper {
         }
 
         if (mw != null) {
-            Stack errors = new Stack();
-            mw.setErrorStack(errors);
+        	PluginLogger logger = new PluginLogger();
+            mw.setLogger(logger);
             mw.writeTileset(set, filename);
             set.setSource(filename);
-            reportPluginMessages(errors);
+            reportPluginMessages(logger);
         } else {
             throw new Exception("Unsupported tileset format");
         }
@@ -124,11 +125,11 @@ public class MapHelper {
     	throws Exception {
     	MapWriter mw = (MapWriter)pmio;
     	
-        Stack errors = new Stack();
-        mw.setErrorStack(errors);
+    	PluginLogger logger = new PluginLogger();
+        mw.setLogger(logger);
         mw.writeMap(currentMap, filename);
         currentMap.setFilename(filename);
-        reportPluginMessages(errors);
+        reportPluginMessages(logger);
     }
     
     /**
@@ -153,11 +154,11 @@ public class MapHelper {
             }
 
             if (mr != null) {
-                Stack errors = new Stack();
-                mr.setErrorStack(errors);
+            	PluginLogger logger = new PluginLogger();
+                mr.setLogger(logger);
                 ret = mr.readMap(file);
                 ret.setFilename(file);
-                reportPluginMessages(errors);
+                reportPluginMessages(logger);
             } else {
                 throw new Exception("Unsupported map format");
             }
@@ -203,11 +204,11 @@ public class MapHelper {
             }
 
             if (mr != null) {
-                Stack errors = new Stack();
-                mr.setErrorStack(errors);
+            	PluginLogger logger = new PluginLogger();
+                mr.setLogger(logger);
                 ret = mr.readTileset(file);
                 ret.setSource(file);
-                reportPluginMessages(errors);
+                reportPluginMessages(logger);
             } else {
                 throw new Exception("Unsupported tileset format");
             }
@@ -237,13 +238,14 @@ public class MapHelper {
      * @param s A Stack which was used by the plugin to record any messages it
      *          had for the user
      */
-    private static void reportPluginMessages(Stack s) {
+    private static void reportPluginMessages(PluginLogger logger) {
         // TODO: maybe have a nice dialog with a scrollbar, in case there are
         // a lot of messages...
         Preferences prefs = TiledConfiguration.node("io");
 
         if (prefs.getBoolean("reportWarnings", false)) {
-            if (!s.isEmpty()) {
+        	PluginLogDialog pld = new PluginLogDialog();
+            /*if (!s.isEmpty()) {
                 Iterator itr = s.iterator();
                 StringBuffer warnings = new StringBuffer();
                 while (itr.hasNext()) {
@@ -252,7 +254,7 @@ public class MapHelper {
                 JOptionPane.showMessageDialog(null, warnings.toString(),
                         "Loading Messages",
                         JOptionPane.INFORMATION_MESSAGE);
-            }
+            }*/
         }
     }
 }
