@@ -1358,10 +1358,11 @@ public class MapEditor implements ActionListener, MouseListener,
 
     private class CancelSelectionAction extends AbstractAction {
         public CancelSelectionAction() {
-            super("None");
+            super(Resources.getString("action.select.none.name"));
             putValue(ACCELERATOR_KEY,
                     KeyStroke.getKeyStroke("control shift A"));
-            putValue(SHORT_DESCRIPTION, "Cancel selection");
+            putValue(SHORT_DESCRIPTION,
+                     Resources.getString("action.select.none.tooltip"));
         }
 
         public void actionPerformed(ActionEvent e) {
@@ -1377,10 +1378,11 @@ public class MapEditor implements ActionListener, MouseListener,
 
     private class SelectAllAction extends AbstractAction {
         public SelectAllAction() {
-            super("All");
+            super(Resources.getString("action.select.all.name"));
             putValue(ACCELERATOR_KEY,
                     KeyStroke.getKeyStroke("control A"));
-            putValue(SHORT_DESCRIPTION, "Select entire map");
+            putValue(SHORT_DESCRIPTION,
+                     Resources.getString("action.select.all.tooltip"));
         }
 
         public void actionPerformed(ActionEvent e) {
@@ -1398,10 +1400,11 @@ public class MapEditor implements ActionListener, MouseListener,
 
     private class InverseSelectionAction extends AbstractAction {
         public InverseSelectionAction() {
-            super("Invert");
+            super(Resources.getString("action.select.invert.name"));
             putValue(ACCELERATOR_KEY,
                     KeyStroke.getKeyStroke("control I"));
-            putValue(SHORT_DESCRIPTION, "Inverse of the current selection");
+            putValue(SHORT_DESCRIPTION,
+                     Resources.getString("action.select.invert.tooltip"));
         }
 
         public void actionPerformed(ActionEvent e) {
@@ -1417,7 +1420,8 @@ public class MapEditor implements ActionListener, MouseListener,
             super(Resources.getString("action.zoom.in.name"));
             putValue(ACCELERATOR_KEY,
                     KeyStroke.getKeyStroke("control EQUALS"));
-            putValue(SHORT_DESCRIPTION, "Zoom in one level");
+            putValue(SHORT_DESCRIPTION,
+                     Resources.getString("action.zoom.in.tooltip"));
             putValue(SMALL_ICON, Resources.getIcon("gnome-zoom-in.png"));
         }
         public void actionPerformed(ActionEvent evt) {
@@ -1437,7 +1441,8 @@ public class MapEditor implements ActionListener, MouseListener,
             super(Resources.getString("action.zoom.out.name"));
             putValue(ACCELERATOR_KEY,
                     KeyStroke.getKeyStroke("control MINUS"));
-            putValue(SHORT_DESCRIPTION, "Zoom out one level");
+            putValue(SHORT_DESCRIPTION,
+                     Resources.getString("action.zoom.out.tooltip"));
             putValue(SMALL_ICON, Resources.getIcon("gnome-zoom-out.png"));
         }
         public void actionPerformed(ActionEvent evt) {
@@ -1454,10 +1459,11 @@ public class MapEditor implements ActionListener, MouseListener,
 
     private class ZoomNormalAction extends AbstractAction {
         public ZoomNormalAction() {
-            super("Zoom Normalsize");
+            super(Resources.getString("action.zoom.normal.name"));
             putValue(ACCELERATOR_KEY,
                     KeyStroke.getKeyStroke("control 0"));
-            putValue(SHORT_DESCRIPTION, "Zoom 100%");
+            putValue(SHORT_DESCRIPTION,
+                     Resources.getString("action.zoom.normal.tooltip"));
         }
         public void actionPerformed(ActionEvent evt) {
             if (currentMap != null) {
@@ -1471,10 +1477,11 @@ public class MapEditor implements ActionListener, MouseListener,
 
     private class CopyAction extends AbstractAction {
         public CopyAction() {
-            super("Copy");
+            super(Resources.getString("action.copy.name"));
             putValue(ACCELERATOR_KEY,
                     KeyStroke.getKeyStroke("control C"));
-            putValue(SHORT_DESCRIPTION, "Copy");
+            putValue(SHORT_DESCRIPTION,
+                     Resources.getString("action.copy.tooltip"));
         }
         public void actionPerformed(ActionEvent evt) {
             if (currentMap != null && marqueeSelection != null) {
@@ -1494,10 +1501,11 @@ public class MapEditor implements ActionListener, MouseListener,
 
     private class CutAction extends AbstractAction {
         public CutAction() {
-            super("Cut");
+            super(Resources.getString("action.cut.name"));
             putValue(ACCELERATOR_KEY,
                     KeyStroke.getKeyStroke("control X"));
-            putValue(SHORT_DESCRIPTION, "Cut");
+            putValue(SHORT_DESCRIPTION,
+                     Resources.getString("action.cut.tooltip"));
         }
         public void actionPerformed(ActionEvent evt) {
             if (currentMap != null && marqueeSelection != null) {
@@ -1532,10 +1540,11 @@ public class MapEditor implements ActionListener, MouseListener,
 
     private class PasteAction extends AbstractAction {
         public PasteAction() {
-            super("Paste");
+            super(Resources.getString("action.paste.name"));
             putValue(ACCELERATOR_KEY,
                     KeyStroke.getKeyStroke("control V"));
-            putValue(SHORT_DESCRIPTION, "Paste");
+            putValue(SHORT_DESCRIPTION,
+                     Resources.getString("action.paste.tooltip"));
         }
         public void actionPerformed(ActionEvent evt) {
             if (currentMap != null && clipboardLayer != null) {

@@ -26,6 +26,11 @@ import tiled.mapeditor.undo.MapLayerStateEdit;
  * configuration. It makes sure the undo/redo information is properly
  * maintained.
  *
+ * todo: These actions will need to listen to changing of the current selected
+ * todo: layer index as well as changes to the opened map. Action should always
+ * todo: be disabled when no map is opened. More specific checks should be
+ * todo: included in subclasses.
+ *
  * @version $Id$
  */
 public abstract class AbstractLayerAction extends AbstractAction
