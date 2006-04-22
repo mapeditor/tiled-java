@@ -35,6 +35,7 @@ import tiled.mapeditor.selection.SelectionLayer;
 import tiled.mapeditor.util.*;
 import tiled.mapeditor.widget.*;
 import tiled.mapeditor.undo.*;
+import tiled.mapeditor.actions.*;
 import tiled.util.TileMergeHelper;
 import tiled.util.TiledConfiguration;
 import tiled.io.MapHelper;
@@ -81,66 +82,69 @@ public class MapEditor implements ActionListener, MouseListener,
     private final PluginClassLoader pluginLoader;
     private final Preferences prefs = TiledConfiguration.root();
 
-    int currentPointerState;
-    Tile currentTile;
-    int currentLayer = -1;
-    boolean bMouseIsDown;
-    SelectionLayer cursorHighlight;
-    Point mousePressLocation, mouseInitialPressLocation;
-    Point moveDist;
-    int mouseButton;
-    AbstractBrush currentBrush;
-    SelectionLayer marqueeSelection;
-    MapLayer clipboardLayer;
+    private int currentPointerState;
+    private Tile currentTile;
+    private int currentLayer = -1;
+    private boolean bMouseIsDown;
+    private SelectionLayer cursorHighlight;
+    private Point mousePressLocation, mouseInitialPressLocation;
+    private Point moveDist;
+    private int mouseButton;
+    private AbstractBrush currentBrush;
+    private SelectionLayer marqueeSelection;
+    private MapLayer clipboardLayer;
 
     // GUI components
-    JMenu       fileMenu, editMenu, selectMenu, viewMenu, helpMenu;
-    JMenu       mapMenu, layerMenu, tilesetMenu;
-    JPanel      mainPanel;
-    JPanel      toolPanel;
-    JPanel      dataPanel;
-    JPanel      statusBar;
-    JMenuBar    menuBar;
-    JMenuItem   undoMenuItem, redoMenuItem;
-    JMenuItem   copyMenuItem, cutMenuItem, pasteMenuItem;
-    JCheckBoxMenuItem gridMenuItem, boundaryMenuItem, cursorMenuItem;
-    JCheckBoxMenuItem coordinatesMenuItem;
-    JMenuItem   layerAdd, layerClone, layerDel;
-    JMenuItem   layerUp, layerDown;
-    JMenuItem   layerMerge, layerMergeAll;
-    JMenuItem   layerProperties;
-    JMenu       recentMenu;
-    JScrollPane mapScrollPane;
-    JTable      layerTable;
-    JList       editHistoryList;
-    MiniMapViewer miniMap;
+    private JMenu       fileMenu, editMenu, selectMenu, viewMenu, helpMenu;
+    private JMenu       mapMenu, layerMenu, tilesetMenu;
+    private JPanel      mainPanel;
+    private JPanel      toolPanel;
+    private JPanel      dataPanel;
+    private JPanel      statusBar;
+    private JMenuBar    menuBar;
+    private JMenuItem   undoMenuItem, redoMenuItem;
+    private JMenuItem   copyMenuItem, cutMenuItem, pasteMenuItem;
+    private JCheckBoxMenuItem gridMenuItem, boundaryMenuItem, cursorMenuItem;
+    private JCheckBoxMenuItem coordinatesMenuItem;
+    private JMenuItem   layerAdd, layerClone, layerDel;
+    private JMenuItem   layerUp, layerDown;
+    private JMenuItem   layerMerge, layerMergeAll;
+    private JMenuItem   layerProperties;
+    private JMenu       recentMenu;
+    private JScrollPane mapScrollPane;
+    private JTable      layerTable;
+    private JList       editHistoryList;
+    private MiniMapViewer miniMap;
 
-    TileButton  tilePaletteButton;
-    JFrame      appFrame;
-    JSlider     opacitySlider;
-    JLabel      zoomLabel, tileCoordsLabel;
+    private TileButton  tilePaletteButton;
+    private JFrame      appFrame;
+    private JSlider     opacitySlider;
+    private JLabel      zoomLabel, tileCoordsLabel;
 
-    AbstractButton layerAddButton, layerCloneButton, layerDelButton;
-    AbstractButton layerUpButton, layerDownButton;
-    AbstractButton paintButton, eraseButton, pourButton;
-    AbstractButton eyedButton, marqueeButton, moveButton;
-    AbstractButton objectMoveButton, objectAddButton;
+    private AbstractButton layerAddButton, layerCloneButton, layerDelButton;
+    private AbstractButton layerUpButton, layerDownButton;
+    private AbstractButton paintButton, eraseButton, pourButton;
+    private AbstractButton eyedButton, marqueeButton, moveButton;
+    private AbstractButton objectMoveButton, objectAddButton;
 
-    TilePalettePanel tilePalettePanel;
-    TilePaletteDialog tilePaletteDialog;
-    AboutDialog aboutDialog;
-    MapLayerEdit paintEdit;
+    private TilePalettePanel tilePalettePanel;
+    private TilePaletteDialog tilePaletteDialog;
+    private AboutDialog aboutDialog;
+    private MapLayerEdit paintEdit;
 
     /** Available brushes */
-    Vector brushes = new Vector();
-    Brush eraserBrush;
+    private Vector brushes = new Vector();
+    private Brush eraserBrush;
 
     // Actions
-    final Action zoomInAction, zoomOutAction, zoomNormalAction;
-    final Action undoAction, redoAction;
-    final Action rot90Action, rot180Action, rot270Action;
-    final Action flipHorAction, flipVerAction;
-    final Action selectAllAction, inverseAction, cancelSelectionAction;
+    private final Action zoomInAction, zoomOutAction, zoomNormalAction;
+    private final Action undoAction, redoAction;
+    private final Action rot90Action, rot180Action, rot270Action;
+    private final Action flipHorAction, flipVerAction;
+    private final Action selectAllAction, inverseAction, cancelSelectionAction;
+    private final Action addLayerAction, cloneLayerAction, deleteLayerAction;
+    private final Action moveLayerDownAction, moveLayerUpAction;
+    private final Action mergeLayerDownAction, mergeAllLayersAction;
 
     public MapEditor() {
         /*eraserBrush = new Eraser();
@@ -191,9 +195,16 @@ public class MapEditor implements ActionListener, MouseListener,
         selectAllAction = new SelectAllAction();
         cancelSelectionAction = new CancelSelectionAction();
         inverseAction = new InverseSelectionAction();
+        addLayerAction = new AddLayerAction(this);
+        cloneLayerAction = new CloneLayerAction(this);
+        deleteLayerAction = new DeleteLayerAction(this);
+        moveLayerUpAction = new MoveLayerUpAction(this);
+        moveLayerDownAction = new MoveLayerDownAction(this);
+        mergeLayerDownAction = new MergeLayerDownAction(this);
+        mergeAllLayersAction = new MergeAllLayersAction(this);
 
         // Create our frame
-        appFrame = new JFrame("Tiled");
+        appFrame = new JFrame(Resources.getString("dialog.main.title"));
         appFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         appFrame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent event) {
@@ -337,19 +348,13 @@ public class MapEditor implements ActionListener, MouseListener,
         mapEventAdapter.addListener(mapMenu);
 
 
-        layerAdd = createMenuItem(Resources.getString("action.layer.add.name"), null,
-                Resources.getString("action.layer.add.tooltip"));
-        layerClone = createMenuItem(Resources.getString("action.layer.duplicate.name"), null,
-                Resources.getString("action.layer.duplicate.tooltip"));
-        layerDel = createMenuItem(Resources.getString("action.layer.delete.name"), null,
-                Resources.getString("action.layer.delete.tooltip"));
-        layerUp = createMenuItem(Resources.getString("action.layer.moveup.name"), null,
-                "Move layer up one in layer stack", "shift PAGE_UP");
-        layerDown = createMenuItem("Move Layer Down", null,
-                "Move layer down one in layer stack", "shift PAGE_DOWN");
-        layerMerge = createMenuItem("Merge Down", null,
-                "Merge current layer onto next lower", "shift control M");
-        layerMergeAll = createMenuItem("Merge All", null, "Merge all layers");
+        layerAdd = new TMenuItem(addLayerAction);
+        layerClone = new TMenuItem(cloneLayerAction);
+        layerDel = new TMenuItem(deleteLayerAction);
+        layerUp = new TMenuItem(moveLayerUpAction);
+        layerDown = new TMenuItem(moveLayerDownAction);
+        layerMerge = new TMenuItem(mergeLayerDownAction);
+        layerMergeAll = new TMenuItem(mergeAllLayersAction);
         layerProperties = createMenuItem("Layer Properties", null,
                 "Current layer properties");
 
@@ -509,13 +514,6 @@ public class MapEditor implements ActionListener, MouseListener,
 
         dataPanel = new JPanel(new BorderLayout());
 
-        // Try to load the icons
-        Icon imgAdd = Resources.getIcon("gnome-new.png");
-        Icon imgDel = Resources.getIcon("gnome-delete.png");
-        Icon imgDup = Resources.getIcon("gimp-duplicate-16.png");
-        Icon imgUp = Resources.getIcon("gnome-up.png");
-        Icon imgDown = Resources.getIcon("gnome-down.png");
-
         //navigation and tool options
         // TODO: the minimap is prohibitively slow, need to speed this up
         // before it can be used
@@ -534,7 +532,8 @@ public class MapEditor implements ActionListener, MouseListener,
         // Opacity slider
         opacitySlider = new JSlider(0, 100, 100);
         opacitySlider.addChangeListener(this);
-        JLabel opacityLabel = new JLabel("Opacity: ");
+        JLabel opacityLabel = new JLabel(
+                Resources.getString("dialog.main.opacity.label"));
         opacityLabel.setLabelFor(opacitySlider);
 
         JPanel sliderPanel = new JPanel();
@@ -546,13 +545,11 @@ public class MapEditor implements ActionListener, MouseListener,
                     sliderPanel.getPreferredSize().height));
 
         // Layer buttons
-        layerAddButton = createButton(imgAdd, Resources.getString("action.layer.add.name"), "Add Layer");
-        layerDelButton = createButton(imgDel, Resources.getString("action.layer.delete.name"), "Delete Layer");
-        layerCloneButton = createButton(imgDup, Resources.getString("action.layer.duplicate.name"),
-                "Duplicate Layer");
-        layerUpButton = createButton(imgUp, Resources.getString("action.layer.moveup.name"), "Move Layer Up");
-        layerDownButton = createButton(imgDown, "Move Layer Down",
-                "Move Layer Down");
+        layerAddButton = new TButton(addLayerAction);
+        layerDelButton = new TButton(deleteLayerAction);
+        layerCloneButton = new TButton(cloneLayerAction);
+        layerUpButton = new TButton(moveLayerUpAction);
+        layerDownButton = new TButton(moveLayerDownAction);
 
         mapEventAdapter.addListener(layerAddButton);
 
@@ -719,7 +716,7 @@ public class MapEditor implements ActionListener, MouseListener,
     /**
      * Returns the currently selected tile.
      *
-     * @return The currently selected tile.
+     * @return the currently selected tile
      */
     public Tile getCurrentTile() {
         return currentTile;
@@ -728,7 +725,7 @@ public class MapEditor implements ActionListener, MouseListener,
     /**
      * Returns the current map.
      *
-     * @return The currently selected map.
+     * @return the currently selected map
      */
     public Map getCurrentMap() {
         return currentMap;
@@ -737,16 +734,33 @@ public class MapEditor implements ActionListener, MouseListener,
     /**
      * Returns the currently selected layer.
      *
-     * @return THe currently selected layer.
+     * @return the currently selected layer
      */
     public MapLayer getCurrentLayer() {
         return currentMap.getLayer(currentLayer);
     }
 
     /**
+     * Returns the currently selected layer index.
+     *
+     * @return the currently selected layer index
+     */
+    public int getCurrentLayerIndex() {
+        return currentLayer;
+    }
+
+    /**
+     * Returns the {@link UndoableEditSupport} instance.
+     * @return the undo support
+     */
+    public UndoableEditSupport getUndoSupport() {
+        return undoSupport;
+    }
+
+    /**
      * Returns the main application frame.
      *
-     * @return The frame of the main application
+     * @return the frame of the main application
      */
     public Frame getAppFrame() {
         return appFrame;
@@ -759,89 +773,6 @@ public class MapEditor implements ActionListener, MouseListener,
         undoMenuItem.setEnabled(undoStack.canUndo());
         redoMenuItem.setEnabled(undoStack.canRedo());
         updateTitle();
-    }
-
-    private void doLayerStateChange(ActionEvent event) {
-        if (currentMap == null) {
-            return;
-        }
-
-        String command = event.getActionCommand();
-        Vector layersBefore = new Vector(currentMap.getLayerVector());
-
-        if (command.equals(Resources.getString("action.layer.add.name"))) {
-            currentMap.addLayer();
-            setCurrentLayer(currentMap.getTotalLayers() - 1);
-        } else if (command.equals(Resources.getString("action.layer.duplicate.name"))) {
-            if (currentLayer >= 0) {
-                try {
-                    MapLayer clone =
-                        (MapLayer)getCurrentLayer().clone();
-                    clone.setName(clone.getName() + " copy");
-                    currentMap.addLayer(clone);
-                } catch (CloneNotSupportedException ex) {
-                    ex.printStackTrace();
-                }
-                setCurrentLayer(currentMap.getTotalLayers() - 1);
-            }
-        } else if (command.equals(Resources.getString("action.layer.moveup.name"))) {
-            if (currentLayer >= 0) {
-                try {
-                    currentMap.swapLayerUp(currentLayer);
-                    setCurrentLayer(currentLayer + 1);
-                } catch (Exception ex) {
-                    System.out.println(ex.toString());
-                }
-            }
-        } else if (command.equals("Move Layer Down")) {
-            if (currentLayer >= 0) {
-                try {
-                    currentMap.swapLayerDown(currentLayer);
-                    setCurrentLayer(currentLayer - 1);
-                } catch (Exception ex) {
-                    System.out.println(ex.toString());
-                }
-            }
-        } else if (command.equals(Resources.getString("action.layer.delete.name"))) {
-            if (currentLayer >= 0) {
-                currentMap.removeLayer(currentLayer);
-                setCurrentLayer(currentLayer < 0 ? 0 : currentLayer);
-            }
-        } else if (command.equals("Merge Down")) {
-            if (currentLayer >= 0) {
-                try {
-                    currentMap.mergeLayerDown(currentLayer);
-                    setCurrentLayer(currentLayer - 1);
-                } catch (Exception ex) {
-                    System.out.println(ex.toString());
-                }
-            }
-        } else if (command.equals("Merge All")) {
-            if (JOptionPane.showConfirmDialog(appFrame,
-                    "Do you wish to merge tile images, and create a new tile set?",
-                    "Merge Tiles?", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION ) {
-                TileMergeHelper tmh = new TileMergeHelper(currentMap);
-                int len = currentMap.getTotalLayers();
-                //TODO: Add a dialog option: "Yes, visible only"
-                TileLayer newLayer = tmh.merge(0, len, true);
-                currentMap.removeAllLayers();
-                currentMap.addLayer(newLayer);
-                currentMap.addTileset(tmh.getSet());
-            } else {
-                while (currentMap.getTotalLayers() > 1) {
-                    try {
-                        currentMap.mergeLayerDown(
-                                currentMap.getTotalLayers() - 1);
-                    } catch (Exception ex) {}
-                }
-            }
-            setCurrentLayer(0);
-        }
-
-        MapLayerStateEdit mapLayerStateEdit = new MapLayerStateEdit(
-                currentMap, layersBefore,
-                new Vector(currentMap.getLayerVector()), command);
-        undoSupport.postEdit(mapLayerStateEdit);
     }
 
     private void doMouse(MouseEvent event) {
@@ -867,10 +798,10 @@ public class MapEditor implements ActionListener, MouseListener,
                     paintEdit.setPresentationName("Paint");
                     if (layer instanceof TileLayer) {
                         try {
-							mapView.repaintRegion(currentBrush.doPaint(tile.x, tile.y));
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
+                            mapView.repaintRegion(currentBrush.doPaint(tile.x, tile.y));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                     break;
                 case PS_ERASE:
@@ -1144,14 +1075,6 @@ public class MapEditor implements ActionListener, MouseListener,
         } else if (command.equals("Brush...")) {
             BrushDialog bd = new BrushDialog(this, appFrame, currentBrush);
             bd.setVisible(true);
-        } else if (command.equals("Add Layer") ||
-                command.equals("Duplicate Layer") ||
-                command.equals("Delete Layer") ||
-                command.equals("Move Layer Up") ||
-                command.equals("Move Layer Down") ||
-                command.equals("Merge Down") ||
-                command.equals("Merge All")) {
-            doLayerStateChange(event);
         } else if (command.equals("New Tileset...")) {
             if (currentMap != null) {
                 NewTilesetDialog dialog =
@@ -1209,7 +1132,7 @@ public class MapEditor implements ActionListener, MouseListener,
         } else if (command.equals("Properties")) {
             PropertiesDialog pd = new PropertiesDialog(appFrame,
                     currentMap.getProperties());
-            pd.setTitle("Map Properties");
+            pd.setTitle(Resources.getString("dialog.properties.map.title"));
             pd.getProps();
         } else if (command.equals("Layer Properties")) {
             MapLayer layer = getCurrentLayer();
@@ -1696,7 +1619,7 @@ public class MapEditor implements ActionListener, MouseListener,
     }
 
     private void updateTitle() {
-        String title = "Tiled";
+        String title = Resources.getString("dialog.main.title");
 
         if (currentMap != null) {
             String filename = currentMap.getFilename();
@@ -2090,7 +2013,7 @@ public class MapEditor implements ActionListener, MouseListener,
         updateHistory();
     }
 
-    private void setCurrentLayer(int index) {
+    public void setCurrentLayer(int index) {
         if (currentMap != null) {
             int totalLayers = currentMap.getTotalLayers();
             if (totalLayers > index && index >= 0) {

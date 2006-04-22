@@ -30,7 +30,7 @@ public class MappyMapReader implements MapReader
     private int twidth, theight;
 
     private PluginLogger logger;
-    
+
     public static class BlkStr {
         public BlkStr() {
         }
@@ -252,10 +252,10 @@ public class MappyMapReader implements MapReader
 
         for (int i = 0; i < m.getHeight(); i++) {
             for (int j = 0; j < m.getWidth(); j++) {
-                int block = (int)((Util.readShort(in)&0x00FF) / BLKSTR_WIDTH);
-                //System.out.print(""+block);
+                int block = (Util.readShort(in) & 0x00FF) / BLKSTR_WIDTH;
+                //System.out.print("" + block);
                 BlkStr blk = (BlkStr)blocks.get(block);
-                //System.out.println("bg: "+blk.bg);
+                //System.out.println("bg: " + blk.bg);
                 bg.setTileAt(j,i, set.getTile((int)blk.bg));
                 fg0.setTileAt(j,i, set.getTile((int)blk.fg0));
                 fg1.setTileAt(j,i, set.getTile((int)blk.fg1));
@@ -267,7 +267,7 @@ public class MappyMapReader implements MapReader
 
     /**
      * BGFX blocks are synonymous with {@link tiled.core.Tile}s
-     * 
+     *
      * @param m The Map to add Tiles to
      * @param in
      * @param num Number of Tiles to read

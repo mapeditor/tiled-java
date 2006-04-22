@@ -161,11 +161,10 @@ public class MultilayerPlane
      * Moves the layer at <code>index</code> up one in the vector.
      *
      * @param index the index of the layer to swap up
-     * @throws Exception
      */
-    public void swapLayerUp(int index) throws Exception {
+    public void swapLayerUp(int index) {
         if (index + 1 == layers.size()) {
-            throw new Exception(
+            throw new RuntimeException(
                     "Can't swap up when already at the top.");
         }
 
@@ -178,11 +177,11 @@ public class MultilayerPlane
      * Moves the layer at <code>index</code> down one in the vector.
      *
      * @param index the index of the layer to swap down
-     * @throws Exception
      */
-    public void swapLayerDown(int index) throws Exception {
+    public void swapLayerDown(int index) {
         if (index - 1 < 0) {
-            throw new Exception("Can't swap down when already at the bottom.");
+            throw new RuntimeException(
+                    "Can't swap down when already at the bottom.");
         }
 
         MapLayer hold = (MapLayer)layers.get(index - 1);
@@ -193,13 +192,12 @@ public class MultilayerPlane
     /**
      * Merges the layer at <code>index</code> with the layer below it
      *
-     * @see tiled.core.MapLayer#mergeOnto
+     * @see MapLayer#mergeOnto
      * @param index the index of the layer to merge down
-     * @throws Exception
      */
-    public void mergeLayerDown(int index) throws Exception {
+    public void mergeLayerDown(int index) {
         if (index - 1 < 0) {
-            throw new Exception("Can't merge down bottom layer.");
+            throw new RuntimeException("Can't merge down bottom layer.");
         }
 
         getLayer(index).mergeOnto(getLayer(index - 1));

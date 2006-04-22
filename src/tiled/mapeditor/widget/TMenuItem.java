@@ -5,7 +5,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
@@ -16,14 +16,15 @@ import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.JMenuItem;
 
-
 /**
  * Tiled menu item extends on JMenuItem in that it allows for not accepting
  * any icon from an attached action.
+ *
+ * @version $Id$
  */
 public class TMenuItem extends JMenuItem
 {
-    private boolean showIcon = false;
+    private boolean showIcon;
 
     public TMenuItem(boolean showIcon) {
         this.showIcon = showIcon;

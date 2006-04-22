@@ -258,7 +258,7 @@ public class Map extends MultilayerPlane
      *
      * @see MultilayerPlane#swapLayerUp
      */
-    public void swapLayerUp(int index) throws Exception {
+    public void swapLayerUp(int index) {
         super.swapLayerUp(index);
         fireMapChanged();
     }
@@ -268,7 +268,7 @@ public class Map extends MultilayerPlane
      *
      * @see MultilayerPlane#swapLayerDown
      */
-    public void swapLayerDown(int index) throws Exception {
+    public void swapLayerDown(int index) {
         super.swapLayerDown(index);
         fireMapChanged();
     }
@@ -278,7 +278,7 @@ public class Map extends MultilayerPlane
      *
      * @see MultilayerPlane#mergeLayerDown
      */
-    public void mergeLayerDown(int index) throws Exception {
+    public void mergeLayerDown(int index) {
         super.mergeLayerDown(index);
         fireMapChanged();
     }

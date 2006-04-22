@@ -5,7 +5,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
@@ -16,14 +16,15 @@ import java.awt.Insets;
 import javax.swing.Action;
 import javax.swing.JButton;
 
-
 /**
  * Tiled button extends on JButton in that it allows for not accepting
  * any text from an attached action. It also doesn't display any margins.
+ *
+ * @version $Id$
  */
 public class TButton extends JButton
 {
-    private boolean showText = false;
+    private boolean showText;
 
     public TButton() {
         setMargin(new Insets(0, 0, 0, 0));
