@@ -21,11 +21,10 @@ import java.util.*;
  */
 public class ObjectGroup extends MapLayer
 {
-    
     private LinkedList boundObjects;
-    
+
     public ObjectGroup() {
-    	boundObjects = new LinkedList();
+        boundObjects = new LinkedList();
     }
     /**
      * Creates an object group that is part of the given map and has the given
@@ -58,9 +57,9 @@ public class ObjectGroup extends MapLayer
      * @param group the group to clone
      */
     public ObjectGroup(ObjectGroup group) {
-    	boundObjects = new LinkedList();
+        boundObjects = new LinkedList();
     }
-    
+
     /**
      * @see MapLayer#rotate(int)
      */
@@ -105,7 +104,7 @@ public class ObjectGroup extends MapLayer
     public MapLayer createDiff(MapLayer ml) {
         return null;
     }
-    
+
     public void bindObject(MapObject o) {
         boundObjects.add(o);
     }
@@ -117,7 +116,7 @@ public class ObjectGroup extends MapLayer
     public void unbindAll() {
         boundObjects.clear();
     }
-    
+
     public ListIterator getObjects() {
         return (ListIterator) boundObjects.iterator();
     }

@@ -95,21 +95,14 @@ public class MapEditor implements ActionListener, MouseListener,
     private MapLayer clipboardLayer;
 
     // GUI components
-    private JMenu       fileMenu, editMenu, selectMenu, viewMenu, helpMenu;
-    private JMenu       mapMenu, layerMenu, tilesetMenu;
     private JPanel      mainPanel;
     private JPanel      toolPanel;
     private JPanel      dataPanel;
     private JPanel      statusBar;
     private JMenuBar    menuBar;
     private JMenuItem   undoMenuItem, redoMenuItem;
-    private JMenuItem   copyMenuItem, cutMenuItem, pasteMenuItem;
     private JCheckBoxMenuItem gridMenuItem, boundaryMenuItem, cursorMenuItem;
     private JCheckBoxMenuItem coordinatesMenuItem;
-    private JMenuItem   layerAdd, layerClone, layerDel;
-    private JMenuItem   layerUp, layerDown;
-    private JMenuItem   layerMerge, layerMergeAll;
-    private JMenuItem   layerProperties;
     private JMenu       recentMenu;
     private JScrollPane mapScrollPane;
     private JTable      layerTable;
@@ -121,8 +114,6 @@ public class MapEditor implements ActionListener, MouseListener,
     private JSlider     opacitySlider;
     private JLabel      zoomLabel, tileCoordsLabel;
 
-    private AbstractButton layerAddButton, layerCloneButton, layerDelButton;
-    private AbstractButton layerUpButton, layerDownButton;
     private AbstractButton paintButton, eraseButton, pourButton;
     private AbstractButton eyedButton, marqueeButton, moveButton;
     private AbstractButton objectMoveButton, objectAddButton;
@@ -176,7 +167,7 @@ public class MapEditor implements ActionListener, MouseListener,
 
         mapEventAdapter = new MapEventAdapter();
 
-        //Create a default brush
+        // Create a default brush
         ShapeBrush sb = new ShapeBrush();
         sb.makeQuadBrush(new Rectangle(0, 0, 1, 1));
         setBrush(sb);
@@ -282,7 +273,7 @@ public class MapEditor implements ActionListener, MouseListener,
         mapEventAdapter.addListener(saveAsImage);
         mapEventAdapter.addListener(close);
 
-        fileMenu = new JMenu("File");
+        JMenu fileMenu = new JMenu("File");
         fileMenu.add(createMenuItem("New...", null, "Start a new map",
                     "control N"));
         fileMenu.add(createMenuItem("Open...", null, "Open a map",
@@ -301,9 +292,9 @@ public class MapEditor implements ActionListener, MouseListener,
         undoMenuItem.setEnabled(false);
         redoMenuItem.setEnabled(false);
 
-        copyMenuItem = new TMenuItem(new CopyAction());
-        cutMenuItem = new TMenuItem(new CutAction());
-        pasteMenuItem = new TMenuItem(new PasteAction());
+        JMenuItem copyMenuItem = new TMenuItem(new CopyAction());
+        JMenuItem cutMenuItem = new TMenuItem(new CutAction());
+        JMenuItem pasteMenuItem = new TMenuItem(new PasteAction());
         copyMenuItem.setEnabled(false);
         cutMenuItem.setEnabled(false);
         pasteMenuItem.setEnabled(false);
@@ -317,7 +308,7 @@ public class MapEditor implements ActionListener, MouseListener,
         transformSub.add(new TMenuItem(flipVerAction, true));
         mapEventAdapter.addListener(transformSub);
 
-        editMenu = new JMenu("Edit");
+        JMenu editMenu = new JMenu("Edit");
         editMenu.add(undoMenuItem);
         editMenu.add(redoMenuItem);
         editMenu.addSeparator();
@@ -339,7 +330,7 @@ public class MapEditor implements ActionListener, MouseListener,
         mapEventAdapter.addListener(pasteMenuItem);
 
 
-        mapMenu = new JMenu("Map");
+        JMenu mapMenu = new JMenu("Map");
         mapMenu.add(createMenuItem("Resize", null, "Modify map dimensions"));
         mapMenu.add(createMenuItem("Search", null,
                     "Search for/Replace tiles"));
@@ -348,32 +339,24 @@ public class MapEditor implements ActionListener, MouseListener,
         mapEventAdapter.addListener(mapMenu);
 
 
-        layerAdd = new TMenuItem(addLayerAction);
-        layerClone = new TMenuItem(cloneLayerAction);
-        layerDel = new TMenuItem(deleteLayerAction);
-        layerUp = new TMenuItem(moveLayerUpAction);
-        layerDown = new TMenuItem(moveLayerDownAction);
-        layerMerge = new TMenuItem(mergeLayerDownAction);
-        layerMergeAll = new TMenuItem(mergeAllLayersAction);
-        layerProperties = createMenuItem("Layer Properties", null,
-                "Current layer properties");
-
+        JMenuItem layerAdd = new TMenuItem(addLayerAction);
         mapEventAdapter.addListener(layerAdd);
 
-        layerMenu = new JMenu("Layer");
+        JMenu layerMenu = new JMenu("Layer");
         layerMenu.add(layerAdd);
-        layerMenu.add(layerClone);
-        layerMenu.add(layerDel);
+        layerMenu.add(new TMenuItem(cloneLayerAction));
+        layerMenu.add(new TMenuItem(deleteLayerAction));
         layerMenu.addSeparator();
-        layerMenu.add(layerUp);
-        layerMenu.add(layerDown);
+        layerMenu.add(new TMenuItem(moveLayerUpAction));
+        layerMenu.add(new TMenuItem(moveLayerDownAction));
         layerMenu.addSeparator();
-        layerMenu.add(layerMerge);
-        layerMenu.add(layerMergeAll);
+        layerMenu.add(new TMenuItem(mergeLayerDownAction));
+        layerMenu.add(new TMenuItem(mergeAllLayersAction));
         layerMenu.addSeparator();
-        layerMenu.add(layerProperties);
+        layerMenu.add(createMenuItem("Layer Properties", null,
+                                     "Current layer properties"));
 
-        tilesetMenu = new JMenu("Tilesets");
+        JMenu tilesetMenu = new JMenu("Tilesets");
         tilesetMenu.add(createMenuItem("New Tileset...", null,
                     "Add a new internal tileset"));
         tilesetMenu.add(createMenuItem("Import Tileset...", null,
@@ -393,7 +376,7 @@ public class MapEditor implements ActionListener, MouseListener,
         modifySub.add(createMenuItem("Contract Selection", null, ""));
         */
 
-        selectMenu = new JMenu("Select");
+        JMenu selectMenu = new JMenu("Select");
         selectMenu.add(new TMenuItem(selectAllAction, true));
         selectMenu.add(new TMenuItem(cancelSelectionAction, true));
         selectMenu.add(new TMenuItem(inverseAction, true));
@@ -421,7 +404,7 @@ public class MapEditor implements ActionListener, MouseListener,
         coordinatesMenuItem.addActionListener(this);
         coordinatesMenuItem.setToolTipText("Toggle tile coordinates");
 
-        viewMenu = new JMenu("View");
+        JMenu viewMenu = new JMenu("View");
         viewMenu.add(new TMenuItem(zoomInAction));
         viewMenu.add(new TMenuItem(zoomOutAction));
         viewMenu.add(new TMenuItem(zoomNormalAction));
@@ -437,7 +420,7 @@ public class MapEditor implements ActionListener, MouseListener,
         mapEventAdapter.addListener(selectMenu);
         mapEventAdapter.addListener(viewMenu);
 
-        helpMenu = new JMenu("Help");
+        JMenu helpMenu = new JMenu("Help");
         helpMenu.add(createMenuItem("About Plug-ins", null,
                     "Show plugin window"));
         helpMenu.add(createMenuItem("About Tiled", null, "Show about window"));
@@ -545,12 +528,7 @@ public class MapEditor implements ActionListener, MouseListener,
                     sliderPanel.getPreferredSize().height));
 
         // Layer buttons
-        layerAddButton = new TButton(addLayerAction);
-        layerDelButton = new TButton(deleteLayerAction);
-        layerCloneButton = new TButton(cloneLayerAction);
-        layerUpButton = new TButton(moveLayerUpAction);
-        layerDownButton = new TButton(moveLayerDownAction);
-
+        AbstractButton layerAddButton = new TButton(addLayerAction);
         mapEventAdapter.addListener(layerAddButton);
 
         JPanel layerButtons = new JPanel();
@@ -559,10 +537,10 @@ public class MapEditor implements ActionListener, MouseListener,
         c.fill = GridBagConstraints.BOTH;
         c.weightx = 1;
         layerButtons.add(layerAddButton, c);
-        layerButtons.add(layerUpButton, c);
-        layerButtons.add(layerDownButton, c);
-        layerButtons.add(layerCloneButton, c);
-        layerButtons.add(layerDelButton, c);
+        layerButtons.add(new TButton(moveLayerUpAction), c);
+        layerButtons.add(new TButton(moveLayerDownAction), c);
+        layerButtons.add(new TButton(cloneLayerAction), c);
+        layerButtons.add(new TButton(deleteLayerAction), c);
         layerButtons.setMaximumSize(new Dimension(Integer.MAX_VALUE,
                     layerButtons.getPreferredSize().height));
 
@@ -653,17 +631,12 @@ public class MapEditor implements ActionListener, MouseListener,
         boolean notBottom = currentLayer > 0;
         boolean notTop = currentLayer < nrLayers - 1 && validSelection;
 
-        layerClone.setEnabled(validSelection);
-        layerDel.setEnabled(validSelection);
-        layerUp.setEnabled(notTop);
-        layerDown.setEnabled(notBottom);
-        layerMerge.setEnabled(notBottom);
-        layerMergeAll.setEnabled(nrLayers > 1);
-
-        layerCloneButton.setEnabled(validSelection);
-        layerDelButton.setEnabled(validSelection);
-        layerUpButton.setEnabled(notTop);
-        layerDownButton.setEnabled(notBottom);
+        cloneLayerAction.setEnabled(validSelection);
+        deleteLayerAction.setEnabled(validSelection);
+        moveLayerUpAction.setEnabled(notTop);
+        moveLayerDownAction.setEnabled(notBottom);
+        mergeLayerDownAction.setEnabled(notBottom);
+        mergeAllLayersAction.setEnabled(nrLayers > 1);
 
         opacitySlider.setEnabled(validSelection);
     }
@@ -879,7 +852,7 @@ public class MapEditor implements ActionListener, MouseListener,
     }
 
     public void mousePressed(MouseEvent e) {
-    	Point tile = mapView.screenToTileCoords(e.getX(), e.getY());
+        Point tile = mapView.screenToTileCoords(e.getX(), e.getY());
         mouseButton = e.getButton();
         bMouseIsDown = true;
         mousePressLocation = mapView.screenToTileCoords(e.getX(), e.getY());
@@ -888,7 +861,7 @@ public class MapEditor implements ActionListener, MouseListener,
         if (mouseButton == MouseEvent.BUTTON1) {
             switch (currentPointerState) {
                 case PS_PAINT:
-                	currentBrush.startPaint(currentMap, tile.x, tile.y, mouseButton, currentLayer);
+                    currentBrush.startPaint(currentMap, tile.x, tile.y, mouseButton, currentLayer);
                 case PS_ERASE:
                 case PS_POUR:
                     MapLayer layer = getCurrentLayer();
@@ -932,7 +905,7 @@ public class MapEditor implements ActionListener, MouseListener,
                 undoSupport.postEdit(new MoveLayerEdit(layer, moveDist));
             }
         } else if (currentPointerState == PS_PAINT) {
-        	currentBrush.endPaint();
+            currentBrush.endPaint();
         }
 
         if (paintEdit != null) {
@@ -1675,14 +1648,13 @@ public class MapEditor implements ActionListener, MouseListener,
      *         an error occured
      */
     public boolean loadMap(String file) {
-
-    	File exist = new File(file);
+        File exist = new File(file);
         if (!exist.exists()) {
         	JOptionPane.showMessageDialog(appFrame,
         			Resources.getString("general.file.notexists.message"),
 					Resources.getString("dialog.openmap.error.title"),
                     JOptionPane.ERROR_MESSAGE);
-        	return false;
+            return false;
         }
 
         try {
@@ -1692,7 +1664,7 @@ public class MapEditor implements ActionListener, MouseListener,
                 setCurrentMap(m);
                 updateRecent(file);
                 //This is to try and clean up any previously loaded stuffs
-            	System.gc();
+                System.gc();
                 return true;
             } else {
                 JOptionPane.showMessageDialog(appFrame,
@@ -1724,11 +1696,10 @@ public class MapEditor implements ActionListener, MouseListener,
      *                 a "Save As" dialog.
      */
     public void saveMap(String filename, boolean bSaveAs) {
+        TiledFileFilter saver = new TiledFileFilter(TiledFileFilter.FILTER_EXT);
+        JFileChooser ch = null;
 
-    	TiledFileFilter saver = new TiledFileFilter(TiledFileFilter.FILTER_EXT);
-    	JFileChooser ch = null;
-
-    	try {
+        try {
 	    	while(true) {
 		        if (bSaveAs || filename == null) {
 
