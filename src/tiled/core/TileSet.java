@@ -75,29 +75,29 @@ public class TileSet
         // IOException will propagate upwards when file cannot be found
         tilebmpFile = new File(imgFilename);
         tilebmpFileLastModified = tilebmpFile.lastModified();
-        importTileBitmap(ImageIO.read(tilebmpFile), cutter, createTiles);
+
+        BufferedImage tilebmp = ImageIO.read(tilebmpFile);
+        if (tilebmp == null) {
+            throw new Exception("Failed to load " + tilebmpFile);
+        }
+
+        importTileBitmap(tilebmp, cutter, createTiles);
     }
 
     /**
      * Creates a tileset from a buffered image. Tiles are cut by the passed
      * cutter.
      *
-     * @param tilebmp     the image to be used
-     * @param cutter      != null
+     * @param tilebmp     the image to be used, must not be null
+     * @param cutter      the tile cutter, must not be null
      * @param createTiles set to <code>true</code> to have the function create
      *                    Tiles
-     * @throws Exception
      */
     public void importTileBitmap(BufferedImage tilebmp, TileCutter cutter,
-                                 boolean createTiles) throws Exception
+                                 boolean createTiles)
     {
-        if (tilebmp == null) {
-            throw new Exception("Failed to load " + tilebmpFile);
-        }
-
-        if (cutter == null) {
-        	throw new Exception("No cutter!");
-        }
+        assert (tilebmp != null);
+        assert (cutter != null);
 
         tileDimensions = new Rectangle(cutter.getDimensions());
         tileSetImage = tilebmp;

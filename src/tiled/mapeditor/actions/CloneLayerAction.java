@@ -43,7 +43,7 @@ public class CloneLayerAction extends AbstractLayerAction
                 MapLayer clone = (MapLayer) currentLayer.clone();
                 String newName = Resources.getString(
                         "action.layer.duplicate.newlayer.name");
-                clone.setName(MessageFormat.format(newName, clone.getName()));
+                clone.setName(MessageFormat.format(newName, new Object[]{clone.getName()}));
                 currentMap.addLayer(clone);
             } catch (CloneNotSupportedException ex) {
                 ex.printStackTrace();

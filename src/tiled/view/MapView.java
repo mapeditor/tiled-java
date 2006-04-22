@@ -203,7 +203,7 @@ public abstract class MapView extends JPanel implements Scrollable
      * layers.
      *
      * @param g the Graphics2D object to paint to
-     * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
+     * @see javax.swing.JComponent#paintComponent(Graphics)
      * @see MapLayer
      * @see SelectionLayer
      */
@@ -292,7 +292,7 @@ public abstract class MapView extends JPanel implements Scrollable
     	Iterator li = m.getLayers();
     	MapLayer layer;
     	double currentZoom = zoom;
-    	
+
     	while (li.hasNext()) {
             if ((layer = (MapLayer)li.next()) != null) {
                 float opacity = layer.getOpacity() * mapOpacity;
@@ -313,7 +313,7 @@ public abstract class MapView extends JPanel implements Scrollable
             }
         }
     }
-    
+
     /**
      * Draws a TileLayer. Implemented in a subclass.
      *

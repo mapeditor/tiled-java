@@ -353,10 +353,10 @@ public class XMLMapTransformer implements MapReader
                             sourcePath = tilesetBaseDir + imgSource;
                         }
 
-                        logger.info("Importing "+sourcePath+"...");
-                        
+                        logger.info("Importing " + sourcePath + "...");
+
                         BufferedImage tilesetImage = ImageIO.read(new File(sourcePath));
-                        
+
                         if (transStr != null) {
                             // In this case, the tileset image needs special
                             // handling for transparency
@@ -375,7 +375,7 @@ public class XMLMapTransformer implements MapReader
                             img.getGraphics().drawImage(trans, 0, 0, null);
 
                             tilesetImage = img;
-                            
+
                             set.setTransparentColor(color);
                         }
 
@@ -384,7 +384,7 @@ public class XMLMapTransformer implements MapReader
                             !hasTileElements);
 
                         set.setTilesetImageFilename(sourcePath);
-                        
+
                     } else {
                         set.addImage(unmarshalImage(child, tilesetBaseDir),
                                 Integer.parseInt(getAttributeValue(child, "id")));
