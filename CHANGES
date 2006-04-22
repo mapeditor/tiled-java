@@ -30,8 +30,9 @@ UNDONE
 * Fixed tile palette bug of not accounting for gaps in tile ids (old bug)
 * Fixed bug of adding a new tile even if cancelling out of new tile dialog
 * Fixed NPE when saving a map with no extension - default to .tmx
+* Fixed the zooming so that it keeps the center in place
 * Rewrote configuration based on the Preferences class, no more tiled.conf
-* Cleaned up TileSet- removed checksumming and rotation/orienation code
+* Cleaned up TileSet (removed checksumming and rotation/orienation code)
 
 0.5.1 - June 15th, 2005
 

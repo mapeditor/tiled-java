@@ -71,7 +71,7 @@ public class MapEditor implements ActionListener, MouseListener,
     private Cursor curEyed;
     private Cursor curMarquee;
 
-    /** Current release version */
+    /** Current release version. */
     public static final String version = "0.6.0";
 
     private Map currentMap;
@@ -93,6 +93,7 @@ public class MapEditor implements ActionListener, MouseListener,
     private AbstractBrush currentBrush;
     private SelectionLayer marqueeSelection;
     private MapLayer clipboardLayer;
+    private float relativeMidX, relativeMidY;
 
     // GUI components
     private JPanel      mainPanel;
@@ -138,9 +139,11 @@ public class MapEditor implements ActionListener, MouseListener,
     private final Action mergeLayerDownAction, mergeAllLayersAction;
 
     public MapEditor() {
-        /*eraserBrush = new Eraser();
+        /*
+        eraserBrush = new Eraser();
         brushes.add(eraserBrush());
-        setBrush(eraserBrush);*/
+        setBrush(eraserBrush);
+        */
 
         /*
         try {
@@ -1165,6 +1168,13 @@ public class MapEditor implements ActionListener, MouseListener,
         // This can currently only happen when the map changes size
         String s = String.valueOf((int) (mapView.getZoom() * 100)) + "%";
         zoomLabel.setText(s);
+
+        // Restore the midpoint
+        JViewport mapViewPort = mapScrollPane.getViewport();
+        Rectangle viewRect = mapViewPort.getViewRect();
+        int absMidX = Math.max(0, Math.round(relativeMidX * mapView.getWidth()) - viewRect.width / 2);
+        int absMidY = Math.max(0, Math.round(relativeMidY * mapView.getHeight()) - viewRect.height / 2);
+        mapViewPort.setViewPosition(new Point(absMidX, absMidY));
     }
 
     public void componentShown(ComponentEvent event) {
@@ -1198,15 +1208,25 @@ public class MapEditor implements ActionListener, MouseListener,
     }
 
     public void stateChanged(ChangeEvent e) {
-        // At the moment, this can only be movement in the opacity slider
+        JViewport mapViewport = mapScrollPane.getViewport();
 
-        if (currentMap != null && currentLayer >= 0) {
-            MapLayer layer = getCurrentLayer();
-            layer.setOpacity(opacitySlider.getValue() / 100.0f);
+        if (e.getSource() == opacitySlider) {
+            if (currentMap != null && currentLayer >= 0) {
+                MapLayer layer = getCurrentLayer();
+                layer.setOpacity(opacitySlider.getValue() / 100.0f);
 
-            /*MapLayerStateEdit mlse = new MapLayerStateEdit(currentMap);
-            mlse.setPresentationName("Opacity Change");
-            undoSupport.postEdit(mlse);*/
+                /*
+                MapLayerStateEdit mlse = new MapLayerStateEdit(currentMap);
+                mlse.setPresentationName("Opacity Change");
+                undoSupport.postEdit(mlse);
+                */
+            }
+        }
+        else if (e.getSource() == mapViewport) {
+            // Store the point in the middle for zooming purposes
+            Rectangle viewRect = mapViewport.getViewRect();
+            relativeMidX = Math.min(1, (viewRect.x + viewRect.width / 2) / (float)mapView.getWidth());
+            relativeMidY = Math.min(1, (viewRect.y + viewRect.height / 2) / (float)mapView.getHeight());
         }
     }
 
@@ -1650,9 +1670,9 @@ public class MapEditor implements ActionListener, MouseListener,
     public boolean loadMap(String file) {
         File exist = new File(file);
         if (!exist.exists()) {
-        	JOptionPane.showMessageDialog(appFrame,
-        			Resources.getString("general.file.notexists.message"),
-					Resources.getString("dialog.openmap.error.title"),
+            JOptionPane.showMessageDialog(appFrame,
+                    Resources.getString("general.file.notexists.message"),
+                    Resources.getString("dialog.openmap.error.title"),
                     JOptionPane.ERROR_MESSAGE);
             return false;
         }
@@ -1669,7 +1689,7 @@ public class MapEditor implements ActionListener, MouseListener,
             } else {
                 JOptionPane.showMessageDialog(appFrame,
                         "Unsupported map format",
-						Resources.getString("dialog.openmap.error.title"),
+                        Resources.getString("dialog.openmap.error.title"),
                         JOptionPane.ERROR_MESSAGE);
             }
         } catch (Exception e) {
@@ -1938,6 +1958,7 @@ public class MapEditor implements ActionListener, MouseListener,
             mapView.addComponentListener(this);
             JViewport mapViewport = new JViewport();
             mapViewport.setView(mapView);
+            mapViewport.addChangeListener(this);
             mapScrollPane.setViewport(mapViewport);
             setCurrentPointerState(PS_PAINT);
 
@@ -2037,13 +2058,15 @@ public class MapEditor implements ActionListener, MouseListener,
     }
 
     private void setCurrentPointerState(int state) {
-        /*if(currentPointerState == PS_MARQUEE && state != PS_MARQUEE) {
+        /*
+        if (currentPointerState == PS_MARQUEE && state != PS_MARQUEE) {
             // Special logic for selection
             if (marqueeSelection != null) {
                 currentMap.removeLayerSpecial(marqueeSelection);
                 marqueeSelection = null;
             }
-        }*/
+        }
+        */
 
         currentPointerState = state;
 

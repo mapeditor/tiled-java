@@ -126,7 +126,7 @@ public abstract class MapView extends JPanel implements Scrollable
         }
     }
 
-    public void setZoomSmooth(double zoom) {
+    private void setZoomSmooth(double zoom) {
         if (zoom > 0) {
             if (smoothZoomer != null) {
                 smoothZoomer.stopZooming();
