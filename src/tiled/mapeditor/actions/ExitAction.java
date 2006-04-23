@@ -12,27 +12,27 @@
 
 package tiled.mapeditor.actions;
 
-import tiled.mapeditor.Resources;
+import javax.swing.KeyStroke;
+
 import tiled.mapeditor.MapEditor;
-import tiled.core.Map;
+import tiled.mapeditor.Resources;
 
 /**
- * Adds a layer to the current map and selects it.
+ * Exits the map editor.
  *
  * @version $Id$
  */
-public class AddLayerAction extends AbstractLayerAction
+public class ExitAction extends AbstractFileAction
 {
-    public AddLayerAction(MapEditor editor) {
-        super(editor,
-              Resources.getString("action.layer.add.name"),
-              Resources.getString("action.layer.add.tooltip"),
-              Resources.getIcon("gnome-new.png"));
+    public ExitAction(MapEditor editor, SaveAction saveAction) {
+        super(editor, saveAction,
+              Resources.getString("action.main.exit.name"),
+              Resources.getString("action.main.exit.tooltip"));
+
+        putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("control Q"));
     }
 
     protected void doPerformAction() {
-        Map currentMap = editor.getCurrentMap();
-        currentMap.addLayer();
-        editor.setCurrentLayer(currentMap.getTotalLayers() - 1);
+        System.exit(0);
     }
 }

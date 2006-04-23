@@ -34,7 +34,7 @@ public class MoveLayerUpAction extends AbstractLayerAction
         putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("shift PAGE_UP"));
     }
 
-    public void doPerformAction() {
+    protected void doPerformAction() {
         Map map = editor.getCurrentMap();
         int layerIndex = editor.getCurrentLayerIndex();
         int totalLayers = map.getTotalLayers();

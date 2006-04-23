@@ -33,7 +33,7 @@ public class MergeLayerDownAction extends AbstractLayerAction
         putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("shift control M"));
     }
 
-    public void doPerformAction() {
+    protected void doPerformAction() {
         Map map = editor.getCurrentMap();
         int layerIndex = editor.getCurrentLayerIndex();
 

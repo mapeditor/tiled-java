@@ -36,11 +36,9 @@ import tiled.mapeditor.util.*;
 import tiled.mapeditor.widget.*;
 import tiled.mapeditor.undo.*;
 import tiled.mapeditor.actions.*;
-import tiled.util.TileMergeHelper;
 import tiled.util.TiledConfiguration;
 import tiled.io.MapHelper;
 import tiled.io.MapReader;
-import tiled.io.MapWriter;
 
 /**
  * The main class for the Tiled Map Editor.
@@ -129,6 +127,9 @@ public class MapEditor implements ActionListener, MouseListener,
     private Brush eraserBrush;
 
     // Actions
+    private final SaveAction saveAction;
+    private final SaveAsAction saveAsAction;
+    private final Action exitAction;
     private final Action zoomInAction, zoomOutAction, zoomNormalAction;
     private final Action undoAction, redoAction;
     private final Action rot90Action, rot180Action, rot270Action;
@@ -176,6 +177,9 @@ public class MapEditor implements ActionListener, MouseListener,
         setBrush(sb);
 
         // Create the actions
+        saveAction = new SaveAction(this);
+        saveAsAction = new SaveAsAction(this);
+        exitAction = new ExitAction(this, saveAction);
         zoomInAction = new ZoomInAction();
         zoomOutAction = new ZoomOutAction();
         zoomNormalAction = new ZoomNormalAction();
@@ -202,7 +206,7 @@ public class MapEditor implements ActionListener, MouseListener,
         appFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         appFrame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent event) {
-                exit();
+                exitAction.actionPerformed(null);
             }
         });
         appFrame.setContentPane(createContentPane());
@@ -249,25 +253,16 @@ public class MapEditor implements ActionListener, MouseListener,
         return mainPanel;
     }
 
-    private void exit() {
-        if (checkSave()) {
-            System.exit(0);
-        }
-    }
-
     /**
      * Creates all the menus and submenus of the top menu bar. Handles
      * assigning listeners and tooltips as well.
      */
     private void createMenuBar() {
-        JMenuItem save = createMenuItem("Save", null, "Save current map",
-                "control S");
-        JMenuItem saveAs = createMenuItem("Save as...", null,
-                "Save current map as new file", "control shift S");
+        JMenuItem save = new TMenuItem(saveAction);
+        JMenuItem saveAs = new TMenuItem(saveAsAction);
         JMenuItem saveAsImage = createMenuItem("Save as Image...", null,
                 "Save current map as an image", "control shift I");
-        JMenuItem close = createMenuItem("Close", null, "Close this map",
-                "control W");
+        JMenuItem close = new TMenuItem(new CloseMapAction(this, saveAction));
 
         recentMenu = new JMenu("Open Recent");
 
@@ -277,18 +272,15 @@ public class MapEditor implements ActionListener, MouseListener,
         mapEventAdapter.addListener(close);
 
         JMenu fileMenu = new JMenu("File");
-        fileMenu.add(createMenuItem("New...", null, "Start a new map",
-                    "control N"));
-        fileMenu.add(createMenuItem("Open...", null, "Open a map",
-                    "control O"));
+        fileMenu.add(new TMenuItem(new NewMapAction(this, saveAction)));
+        fileMenu.add(new TMenuItem(new OpenMapAction(this, saveAction)));
         fileMenu.add(recentMenu);
         fileMenu.add(save);
         fileMenu.add(saveAs);
         fileMenu.add(saveAsImage);
         fileMenu.addSeparator();
         fileMenu.add(close);
-        fileMenu.add(createMenuItem("Exit", null, "Exit the map editor",
-                    "control Q"));
+        fileMenu.add(new TMenuItem(exitAction));
 
         undoMenuItem = new TMenuItem(undoAction);
         redoMenuItem = new TMenuItem(redoAction);
@@ -665,21 +657,8 @@ public class MapEditor implements ActionListener, MouseListener,
 
     private AbstractButton createToggleButton(Icon icon, String command,
             String tt) {
-        return createButton(icon, command, true, tt);
-    }
-
-    private AbstractButton createButton(Icon icon, String command, String tt) {
-        return createButton(icon, command, false, tt);
-    }
-
-    private AbstractButton createButton(Icon icon, String command,
-            boolean toggleButton, String tt) {
         AbstractButton button;
-        if (toggleButton) {
-            button = new JToggleButton("", icon);
-        } else {
-            button = new JButton("", icon);
-        }
+        button = new JToggleButton("", icon);
         button.setMargin(new Insets(0, 0, 0, 0));
         button.setActionCommand(command);
         button.addActionListener(this);
@@ -731,6 +710,22 @@ public class MapEditor implements ActionListener, MouseListener,
      */
     public UndoableEditSupport getUndoSupport() {
         return undoSupport;
+    }
+
+    /**
+     * Returns the {@link UndoStack} instance.
+     * @return the undo stack
+     */
+    public UndoStack getUndoStack() {
+        return undoStack;
+    }
+
+    /**
+     * Returns the {@link PluginClassLoader} instance.
+     * @return the plugin class loader
+     */
+    public PluginClassLoader getPluginLoader() {
+        return pluginLoader;
     }
 
     /**
@@ -1034,21 +1029,7 @@ public class MapEditor implements ActionListener, MouseListener,
     private void handleEvent(ActionEvent event) {
         String command = event.getActionCommand();
 
-        if (command.equals("Open...")) {
-            if (checkSave()) {
-                openMap();
-            }
-        } else if (command.equals("Exit")) {
-            exit();
-        } else if (command.equals("Close")) {
-            if (checkSave()) {
-                setCurrentMap(null);
-            }
-        } else if (command.equals("New...")) {
-            if (checkSave()) {
-                newMap();
-            }
-        } else if (command.equals("Brush...")) {
+        if (command.equals("Brush...")) {
             BrushDialog bd = new BrushDialog(this, appFrame, currentBrush);
             bd.setVisible(true);
         } else if (command.equals("New Tileset...")) {
@@ -1092,14 +1073,6 @@ public class MapEditor implements ActionListener, MouseListener,
             if (currentMap != null) {
                 TilesetManager manager = new TilesetManager(appFrame, currentMap);
                 manager.setVisible(true);
-            }
-        } else if (command.equals("Save")) {
-            if (currentMap != null) {
-                saveMap(currentMap.getFilename(), false);
-            }
-        } else if (command.equals("Save as...")) {
-            if (currentMap != null) {
-                saveMap(currentMap.getFilename(), true);
             }
         } else if (command.equals("Save as Image...")) {
             if (currentMap != null) {
@@ -1222,7 +1195,7 @@ public class MapEditor implements ActionListener, MouseListener,
                 */
             }
         }
-        else if (e.getSource() == mapViewport) {
+        else if (e.getSource() == mapViewport && mapView != null) {
             // Store the point in the middle for zooming purposes
             Rectangle viewRect = mapViewport.getViewRect();
             relativeMidX = Math.min(1, (viewRect.x + viewRect.width / 2) / (float)mapView.getWidth());
@@ -1594,8 +1567,8 @@ public class MapEditor implements ActionListener, MouseListener,
         } else {
             if (marqueeSelection.getSelectedArea().contains(x, y)) {
                 area = marqueeSelection.getSelectedAreaBounds();
-                for (int i = area.y; i < area.height+area.y; i++) {
-                    for (int j = area.x;j<area.width+area.x;j++){
+                for (int i = area.y; i < area.height + area.y; i++) {
+                    for (int j = area.x; j < area.width + area.x; j++) {
                         if (marqueeSelection.getSelectedArea().contains(j, i)){
                             layer.setTileAt(j, i, newTile);
                         }
@@ -1620,7 +1593,7 @@ public class MapEditor implements ActionListener, MouseListener,
         currentBrush = b;
     }
 
-    private void updateTitle() {
+    public void updateTitle() {
         String title = Resources.getString("dialog.main.title");
 
         if (currentMap != null) {
@@ -1639,23 +1612,7 @@ public class MapEditor implements ActionListener, MouseListener,
         appFrame.setTitle(title);
     }
 
-    private boolean checkSave() {
-        if (unsavedChanges()) {
-            int ret = JOptionPane.showConfirmDialog(appFrame,
-                    "There are unsaved changes for the current map. " +
-                    "Save changes?",
-                    "Save Changes?", JOptionPane.YES_NO_CANCEL_OPTION);
-
-            if (ret == JOptionPane.YES_OPTION) {
-                saveMap(currentMap.getFilename(), true);
-            } else if (ret == JOptionPane.CANCEL_OPTION){
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private boolean unsavedChanges() {
+    public boolean unsavedChanges() {
         return currentMap != null && undoStack.canUndo() &&
                 !undoStack.isAllSaved();
     }
@@ -1706,125 +1663,6 @@ public class MapEditor implements ActionListener, MouseListener,
     }
 
     /**
-     * Saves the current map, optionally with a "Save As" dialog. If
-     * <code>filename</code> is <code>null</code> or <code>bSaveAs</code> is
-     * passed <code>true</code>, a "Save As" dialog is opened.
-     *
-     * @see MapHelper#saveMap(Map, String)
-     * @param filename Filename to save the current map to.
-     * @param bSaveAs  Pass <code>true</code> to ask for a new filename using
-     *                 a "Save As" dialog.
-     */
-    public void saveMap(String filename, boolean bSaveAs) {
-        TiledFileFilter saver = new TiledFileFilter(TiledFileFilter.FILTER_EXT);
-        JFileChooser ch = null;
-
-        try {
-	    	while(true) {
-		        if (bSaveAs || filename == null) {
-
-		        	if(ch == null) {
-			            if (filename == null) {
-			                ch = new JFileChooser();
-			            } else {
-			                ch = new JFileChooser(filename);
-			            }
-
-			            MapWriter[] writers = pluginLoader.getWriters();
-			            for(int i = 0; i < writers.length; i++) {
-			                try {
-			                    ch.addChoosableFileFilter(new TiledFileFilter(writers[i]));
-			                } catch (Exception e) {
-			                    e.printStackTrace();
-			                }
-			            }
-
-			            ch.addChoosableFileFilter(
-			                    new TiledFileFilter(TiledFileFilter.FILTER_TMX));
-
-			            ch.addChoosableFileFilter(saver);
-		        	}
-
-		            if (ch.showSaveDialog(appFrame) == JFileChooser.APPROVE_OPTION) {
-		                filename = ch.getSelectedFile().getAbsolutePath();
-		                saver = (TiledFileFilter) ch.getFileFilter();
-		            } else {
-		                // User cancelled operation, do nothing
-		                return;
-		            }
-
-		            // Don't let users be tricky (no foo. files)
-		            if(filename.substring(filename.lastIndexOf('.')+1).length() == 0) {
-		            	filename = filename.substring(0,filename.lastIndexOf('.'));
-		            }
-
-		            // Make sure that the file has an extension. If not, append extension
-		            // chosen from dropdown.
-		            // NOTE: we can't know anything more than the filename has at least
-		            //		 one '.' in it, or at least we won't go to the trouble...
-		            if (filename.lastIndexOf('.') == -1) {
-		            	if(saver.getType() == TiledFileFilter.FILTER_EXT) {
-		            		//impossible to tell
-		            		JOptionPane.showMessageDialog(appFrame, Resources.getString("dialog.saveas.unknown-type.message"));
-		            		continue;
-		            	}
-
-		            	//we will also be lazy about picking a valid extention...
-		            	filename = filename.concat("."+saver.getFirstExtention());
-		            }
-		        }
-
-
-	            // Check if file exists
-	            File exist = new File(filename);
-	            if (exist.exists() && bSaveAs) {
-	                int result = JOptionPane.showConfirmDialog(appFrame,
-	                        Resources.getString("general.file.exists.message"),
-	                        Resources.getString("general.file.exists.title"),
-	                        JOptionPane.YES_NO_OPTION);
-	                if (result != JOptionPane.OK_OPTION) {
-	                    continue;
-	                }
-	            }
-
-	            // Do we want to just go by extention?
-	            if(saver.getType() == TiledFileFilter.FILTER_EXT) {
-	            	MapHelper.saveMap(currentMap, filename);
-	            } else {
-	                // Check that chosen plugin and extension match.
-	            	// If they don't, ask the user if they want to shoot themselves in the foot
-	                if(!saver.accept(exist)) {
-	                	int result = JOptionPane.showConfirmDialog(appFrame,
-	                			Resources.getString("dialog.saveas.confirm.mismatch"),
-	                            "Force save?",
-	                            JOptionPane.YES_NO_OPTION);
-	                	if (result != JOptionPane.OK_OPTION) {
-		                    continue;
-		                }
-	                }
-
-	                MapHelper.saveMap(currentMap, saver.getPlugin(), filename);
-	            }
-
-	            // If we make it to the bottom, the user and Tiled have agreed on something,
-	            // and the file was saved successfully. Update UI.
-	            currentMap.setFilename(filename);
-	            updateRecent(filename);
-	            undoStack.commitSave();
-	            updateTitle();
-	            break;
-	    	}
-    	} catch (Exception e) {
-            //e.printStackTrace();
-            JOptionPane.showMessageDialog(appFrame,
-            		Resources.getString("dialog.saveas.error.message") +
-					" " + filename + ": " + e.getLocalizedMessage(),
-					Resources.getString("dialog.saveas.error.title"),
-                    JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    /**
      * Attempts to draw the entire map to an image file
      * of the format of the extension. (filename.ext)
      *
@@ -1848,7 +1686,7 @@ public class MapEditor implements ActionListener, MouseListener,
             myView.setZoom(mapView.getZoom());
             Dimension d = myView.getPreferredSize();
             BufferedImage i = new BufferedImage(d.width, d.height,
-                    BufferedImage.TYPE_INT_ARGB);
+                                                BufferedImage.TYPE_INT_ARGB);
             Graphics2D g = i.createGraphics();
             g.setClip(0, 0, d.width, d.height);
             myView.paint(g);
@@ -1860,14 +1698,14 @@ public class MapEditor implements ActionListener, MouseListener,
             } catch (IOException e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(appFrame,
-                        "Error while saving " + filename + ": " + e.toString(),
-                        "Error while saving map image",
-                        JOptionPane.ERROR_MESSAGE);
+                                              "Error while saving " + filename + ": " + e.toString(),
+                                              "Error while saving map image",
+                                              JOptionPane.ERROR_MESSAGE);
             }
         }
     }
 
-    private void openMap() {
+    public void openMap() {
         // Start at the location of the most recently loaded map file
         String startLocation = prefs.node("recent").get("file0", "");
 
@@ -1896,7 +1734,10 @@ public class MapEditor implements ActionListener, MouseListener,
         }
     }
 
-    private void newMap() {
+    /**
+     * Opens the new map dialog, allowing the user to start editing a new map.
+     */
+    public void newMap() {
         NewMapDialog nmd = new NewMapDialog(appFrame);
         Map newMap = nmd.create();
         if (newMap != null) {
@@ -1913,7 +1754,7 @@ public class MapEditor implements ActionListener, MouseListener,
         return null;
     }
 
-    private void updateRecent(String filename) {
+    public void updateRecent(String filename) {
         // If a filename is given, add it to the recent files
         if (filename != null) {
             TiledConfiguration.addToRecentFiles(filename);
@@ -1934,7 +1775,7 @@ public class MapEditor implements ActionListener, MouseListener,
         }
     }
 
-    private void setCurrentMap(Map newMap) {
+    public void setCurrentMap(Map newMap) {
         currentMap = newMap;
         boolean mapLoaded = currentMap != null;
 

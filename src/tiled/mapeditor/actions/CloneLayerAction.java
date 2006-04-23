@@ -34,7 +34,7 @@ public class CloneLayerAction extends AbstractLayerAction
               Resources.getIcon("gimp-duplicate-16.png"));
     }
 
-    public void doPerformAction() {
+    protected void doPerformAction() {
         MapLayer currentLayer = editor.getCurrentLayer();
         Map currentMap = editor.getCurrentMap();
 

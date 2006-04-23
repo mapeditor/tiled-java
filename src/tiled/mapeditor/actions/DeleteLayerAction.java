@@ -30,7 +30,7 @@ public class DeleteLayerAction extends AbstractLayerAction
               Resources.getIcon("gnome-delete.png"));
     }
 
-    public void doPerformAction() {
+    protected void doPerformAction() {
         Map map = editor.getCurrentMap();
         int layerIndex = editor.getCurrentLayerIndex();
         int totalLayers = map.getTotalLayers();

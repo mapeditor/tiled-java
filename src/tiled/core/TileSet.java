@@ -368,12 +368,14 @@ public class TileSet
      *         tileset doesn't reference a tile bitmap
      */
     public String getTilebmpFile() {
-        try {
-			return tilebmpFile.getCanonicalPath();
-		} catch (IOException e) {
-		}
+        if (tilebmpFile != null) {
+            try {
+                return tilebmpFile.getCanonicalPath();
+            } catch (IOException e) {
+            }
+        }
 
-		return "";
+        return null;
     }
 
     /**
@@ -538,7 +540,8 @@ public class TileSet
 
             while (itr.hasNext()) {
                 Tile t = (Tile)itr.next();
-                if (t.getImageId() == id) {
+                // todo: move the null check back into the iterator?
+                if (t != null && t.getImageId() == id) {
                     relations++;
                 }
             }

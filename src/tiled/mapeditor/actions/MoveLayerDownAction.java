@@ -34,7 +34,7 @@ public class MoveLayerDownAction extends AbstractLayerAction
         putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("shift PAGE_DOWN"));
     }
 
-    public void doPerformAction() {
+    protected void doPerformAction() {
         Map map = editor.getCurrentMap();
         int layerIndex = editor.getCurrentLayerIndex();
 

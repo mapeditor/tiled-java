@@ -34,7 +34,7 @@ public class MergeAllLayersAction extends AbstractLayerAction
               Resources.getString("action.layer.mergeall.tooltip"));
     }
 
-    public void doPerformAction() {
+    protected void doPerformAction() {
         Map map = editor.getCurrentMap();
 
         if (JOptionPane.showConfirmDialog(editor.getAppFrame(),

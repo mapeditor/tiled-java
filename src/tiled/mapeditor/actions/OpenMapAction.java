@@ -12,27 +12,27 @@
 
 package tiled.mapeditor.actions;
 
-import tiled.mapeditor.Resources;
+import javax.swing.KeyStroke;
+
 import tiled.mapeditor.MapEditor;
-import tiled.core.Map;
+import tiled.mapeditor.Resources;
 
 /**
- * Adds a layer to the current map and selects it.
+ * Opens the map open dialog.
  *
  * @version $Id$
  */
-public class AddLayerAction extends AbstractLayerAction
+public class OpenMapAction extends AbstractFileAction
 {
-    public AddLayerAction(MapEditor editor) {
-        super(editor,
-              Resources.getString("action.layer.add.name"),
-              Resources.getString("action.layer.add.tooltip"),
-              Resources.getIcon("gnome-new.png"));
+    public OpenMapAction(MapEditor editor, SaveAction saveAction) {
+        super(editor, saveAction,
+              Resources.getString("action.map.open.name"),
+              Resources.getString("action.map.open.tooltip"));
+
+        putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("control O"));
     }
 
     protected void doPerformAction() {
-        Map currentMap = editor.getCurrentMap();
-        currentMap.addLayer();
-        editor.setCurrentLayer(currentMap.getTotalLayers() - 1);
+        editor.openMap();
     }
 }

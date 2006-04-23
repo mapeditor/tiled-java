@@ -19,7 +19,6 @@ import java.io.*;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Properties;
-import java.util.Stack;
 import java.util.Vector;
 import java.util.prefs.Preferences;
 import java.util.zip.GZIPOutputStream;
@@ -289,7 +288,10 @@ public class XMLMapWriter implements MapWriter
                     tileIterator = set.iterator();
                     while (tileIterator.hasNext()) {
                         Tile tile = (Tile)tileIterator.next();
-                        writeTile(tile, w);
+                        // todo: move this check back into the iterator?
+                        if (tile != null) {
+                            writeTile(tile, w);
+                        }
                     }
                 }
             }

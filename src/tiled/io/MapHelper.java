@@ -36,9 +36,8 @@ public class MapHelper {
     private static PluginClassLoader pluginLoader;
 
     /**
-     * Called to tell the MapHelper which
-     * {@link tiled.mapeditor.plugin.PluginClassLoader} to use when finding a
-     * suitable plugin for a filename.
+     * Called to tell the MapHelper which {@link PluginClassLoader} to use when
+     * finding a suitable plugin for a filename.
      *
      * @param p the PluginClassLoader instance to use
      */
@@ -61,7 +60,7 @@ public class MapHelper {
         throws Exception
     {
         MapWriter mw;
-        if (filename.endsWith("tmx") || filename.endsWith("tmx.gz")) {
+        if (filename.endsWith(".tmx") || filename.endsWith(".tmx.gz")) {
             // Override, so people can't overtake our format
             mw = new XMLMapWriter();
         } else {
@@ -115,23 +114,23 @@ public class MapHelper {
      * Saves a map. Ignores the extension of the filename, and instead uses the
      * passed plugin to write the file. Plugins can still refuse to save the file
      * based on the extension, but this is not recommended practice.
-     * 
+     *
      * @param currentMap
      * @param pmio
      * @param filename
-     * @throws Exception 
+     * @throws Exception
      */
-    public static void saveMap(Map currentMap, PluggableMapIO pmio, String filename) 
+    public static void saveMap(Map currentMap, PluggableMapIO pmio, String filename)
     	throws Exception {
     	MapWriter mw = (MapWriter)pmio;
-    	
+
     	PluginLogger logger = new PluginLogger();
         mw.setLogger(logger);
         mw.writeMap(currentMap, filename);
         currentMap.setFilename(filename);
         reportPluginMessages(logger);
     }
-    
+
     /**
      * Loads a map. Use the extension (.xxx) of the filename to determine
      * the plugin to use when reading the file. Throws an exception when the

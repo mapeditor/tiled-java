@@ -76,5 +76,5 @@ public abstract class AbstractLayerAction extends AbstractAction
     /**
      * Actually performs the action that modifies the layer configuration.
      */
-    public abstract void doPerformAction();
+    protected abstract void doPerformAction();
 }
