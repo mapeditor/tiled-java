@@ -23,14 +23,18 @@ public interface Brush
 {
     /**
      * Returns the number of layers affected by this brush.
+     * 
+     * @return int
      */
     public int getAffectedLayers();
 
     /**
      * Returns the bounds of this brush. This is used for determining the area
      * to redraw when the brush moves.
+     * 
+     * @param r 
      */
-    public Rectangle getBounds();
+    public void getBounds(Rectangle r);
 
     /**
      * Called before painting operation starts. This is when the mouse is
@@ -56,6 +60,7 @@ public interface Brush
      *
      * @return the rectangular region affected by the painting, used to
      *         determine which area to redraw.
+     * @throws Exception 
      */
     public Rectangle doPaint(int x, int y) throws Exception;
 
@@ -72,6 +77,7 @@ public interface Brush
      * @param g2d The graphics context to draw to.
      * @param x The x-coord to draw the preview at
      * @param y The y-coord to draw the preview at
+     * @param mv 
      */
     public void drawPreview(Graphics2D g2d, int x, int y, MapView mv);
 
@@ -79,11 +85,15 @@ public interface Brush
      * Draws a preview of the editing operation when applicable.
      *
      * @param g2d The graphics context to draw to.
+     * @param mv 
      */
     public void drawPreview(Graphics2D g2d, MapView mv);
 
     /**
      * Returns wether this brush equals another brush.
+     * 
+     * @param brush 
+     * @return boolean
      */
     public boolean equals(Brush brush);
 }

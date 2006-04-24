@@ -42,6 +42,7 @@ public class TileSet
     private NumberedSet tiles, images;
     private int firstGid;
     private long tilebmpFileLastModified;
+    private TileCutter myCutter;
     private Rectangle tileDimensions;
     private String externalSource;
     private File tilebmpFile;
@@ -99,6 +100,8 @@ public class TileSet
         assert (tilebmp != null);
         assert (cutter != null);
 
+        myCutter = cutter;
+        
         tileDimensions = new Rectangle(cutter.getDimensions());
         tileSetImage = tilebmp;
 
@@ -141,6 +144,13 @@ public class TileSet
         }*/
     }
 
+    public void checkUpdate() {
+    	
+    	if(tilebmpFile != null && tilebmpFile.lastModified() > tilebmpFileLastModified) {
+    		
+    	}
+    }
+    
     /**
      * Sets the URI path of the external source of this tile set. By setting
      * this, the set is implied to be external in all other operations.

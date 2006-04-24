@@ -127,7 +127,7 @@ public class Map extends MultilayerPlane
      * @return The new TileLayer instance.
      */
     public MapLayer addLayer() {
-        MapLayer layer = new TileLayer(this, widthInTiles, heightInTiles);
+        MapLayer layer = new TileLayer(this, bounds.width, bounds.height);
         layer.setName("Layer " + super.getTotalLayers());
         super.addLayer(layer);
         fireMapChanged();
@@ -289,6 +289,8 @@ public class Map extends MultilayerPlane
 
     /**
      * Sets a new tile width.
+     * 
+     * @param width 
      */
     public void setTileWidth(int width) {
         tileWidth = width;
@@ -297,6 +299,8 @@ public class Map extends MultilayerPlane
 
     /**
      * Sets a new tile height.
+     * 
+     * @param height 
      */
     public void setTileHeight(int height) {
         tileHeight = height;
@@ -328,6 +332,8 @@ public class Map extends MultilayerPlane
 
     /**
      * Returns a vector with the currently loaded tilesets.
+     * 
+     * @return Vector
      */
     public Vector getTilesets() {
         return tilesets;
@@ -336,6 +342,9 @@ public class Map extends MultilayerPlane
     /**
      * Get the tile set that matches the given global tile id, only to be used
      * when loading a map.
+     * 
+     * @param gid 
+     * @return TileSet
      */
     public TileSet findTileSetForTileGID(int gid) {
         Iterator itr = tilesets.iterator();
@@ -351,16 +360,20 @@ public class Map extends MultilayerPlane
 
     /**
      * Returns width of map in tiles.
+     * 
+     * @return int
      */
     public int getWidth() {
-        return widthInTiles;
+        return bounds.width;
     }
 
     /**
      * Returns height of map in tiles.
+     * 
+     * @return int
      */
     public int getHeight() {
-        return heightInTiles;
+        return bounds.height;
     }
 
     /**
@@ -387,7 +400,7 @@ public class Map extends MultilayerPlane
      *         <code>false</code> otherwise
      */
     public boolean contains(int x, int y) {
-        return x >= 0 && y >= 0 && x < widthInTiles && y < heightInTiles;
+        return x >= 0 && y >= 0 && x < bounds.width && y < bounds.height;
     }
 
     /**
@@ -457,7 +470,7 @@ public class Map extends MultilayerPlane
      * @return string describing map
      */
     public String toString() {
-        return "Map[" + widthInTiles + "x" + heightInTiles + "x" +
+        return "Map[" + bounds.width + "x" + bounds.height + "x" +
             getTotalLayers() + "][" + tileWidth + "x" +
             tileHeight + "]";
     }

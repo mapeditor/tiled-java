@@ -18,6 +18,7 @@ import java.awt.GraphicsEnvironment;
 import java.awt.GraphicsConfiguration;
 import java.awt.Image;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 
 import tiled.core.Map;
 import tiled.core.TileSet;
@@ -42,12 +43,12 @@ public class TileMergeHelper {
     }
 
     public TileLayer merge(int start, int len, boolean all) {
-        int w = myMap.getBounds().width;
-        int h = myMap.getBounds().height;
-        mergedLayer = new TileLayer(w, h);
+    	Rectangle r = new Rectangle();
+        myMap.getBounds(r);
+        mergedLayer = new TileLayer(r);
 
-        for (int i = 0; i < h; i++) {
-            for (int j = 0; j < w; j++) {
+        for (int i = 0; i < r.height; i++) {
+            for (int j = 0; j < r.width; j++) {
                 mergedLayer.setTileAt(j, i, createCell(j, i, start, len, all));
             }
         }
@@ -77,20 +78,19 @@ public class TileMergeHelper {
         c.setTile(tile);
 
         //GENERATE MERGED TILE IMAGE
+        //FIXME: although faster, the following doesn't seem to handle alpha on some platforms...
         GraphicsConfiguration config =
             GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
         Image tileImg = config.createCompatibleImage(c.getWidth(), c.getHeight());
         c.render(tileImg.getGraphics());
         tile.setImage(tileImg);
-        //int image_id = myTs.addImage(tileImg);
-        //tile.setAppearance(image_id, 0);
 
         myTs.addTile(tile);
 
         return tile;
     }
 
-    private static class Cell {
+    private class Cell {
         private Vector sandwich;
         private Tile myTile;
 
@@ -121,7 +121,7 @@ public class TileMergeHelper {
             Iterator itr = sandwich.iterator();
             while (itr.hasNext()) {
                 Tile t = (Tile)itr.next();
-                if (t != null) t.draw(g, 0, 0, 1.0f);
+                if (t != null) t.draw(g, 0, getHeight(), 1.0f);
             }
         }
 
@@ -135,6 +135,8 @@ public class TileMergeHelper {
                     return false;
                 } else if (m != null && t != null && t != m) {
                     return false;
+                } else if ((m != null && t == null) || (m == null && t != null)) {
+                	return false;
                 }
             }
             return true;

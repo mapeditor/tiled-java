@@ -69,7 +69,6 @@ public class CustomBrush extends AbstractBrush
     public Rectangle doPaint(int x, int y) throws Exception
     {
         int layer = initLayer;
-        Rectangle bounds = getBounds();
         int centerx = x - bounds.width / 2;
         int centery = y - bounds.height / 2;
 

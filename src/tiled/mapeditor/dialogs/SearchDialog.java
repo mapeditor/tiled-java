@@ -158,11 +158,12 @@ public class SearchDialog extends JDialog implements ActionListener
             }
 
             sl = new SelectionLayer(map.getWidth(), map.getHeight());
+            Rectangle bounds = new Rectangle();
             final Iterator itr = map.getLayers();
             while (itr.hasNext()) {
                 MapLayer layer = (MapLayer) itr.next();
                 if (layer instanceof TileLayer) {
-                    Rectangle bounds = layer.getBounds();
+                    layer.getBounds(bounds);
                     for (int y = 0; y < bounds.height; y++) {
                         for (int x = 0; x < bounds.width; x++) {
                             if (((TileLayer)layer).getTileAt(x,y) == searchCBox.getSelectedItem()) {
@@ -225,7 +226,7 @@ public class SearchDialog extends JDialog implements ActionListener
         }
 
         sl = new SelectionLayer(map.getWidth(), map.getHeight());
-
+        Rectangle bounds = new Rectangle();
 
         int startx = currentMatch == null ? 0 : currentMatch.x;
         int starty = currentMatch == null ? 0 : currentMatch.y;
@@ -237,7 +238,7 @@ public class SearchDialog extends JDialog implements ActionListener
                     MapLayer layer = (MapLayer) itr.next();
 
                     if (layer instanceof TileLayer) {
-                        Rectangle bounds = layer.getBounds();
+                        layer.getBounds(bounds);
 
                         if (((TileLayer)layer).getTileAt(x,y) == searchCBox.getSelectedItem()) {
                             if (currentMatch != null) {

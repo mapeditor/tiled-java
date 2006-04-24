@@ -946,11 +946,11 @@ public class MapEditor implements ActionListener, MouseListener,
             Point limp = mouseInitialPressLocation;
             int minx = Math.min(limp.x, tile.x);
             int miny = Math.min(limp.y, tile.y);
-            Rectangle oldArea = null;
+            /*Rectangle oldArea = null;
 
             if (currentBrush instanceof CustomBrush) {
                 oldArea = currentBrush.getBounds();
-            }
+            }*/
 
             Rectangle bounds = new Rectangle(
                     minx, miny,
@@ -977,18 +977,23 @@ public class MapEditor implements ActionListener, MouseListener,
 
         updateCursorHighlight(tile);
     }
-
+    
     private void updateCursorHighlight(Point tile) {
         if (prefs.getBoolean("cursorhighlight", true)) {
-            Rectangle redraw = cursorHighlight.getBounds();
+            Rectangle redraw = new Rectangle();
+            Rectangle brushRedraw = new Rectangle();
+            	
+            cursorHighlight.getBounds(redraw);
+            currentBrush.getBounds(brushRedraw);
+            brushRedraw.x = tile.x-brushRedraw.width/2;
+            brushRedraw.y = tile.y-brushRedraw.height/2;
 
-            if (redraw.x != tile.x || redraw.y != tile.y) {
-                Rectangle r1 = new Rectangle(tile.x, tile.y, 1, 1);
-                Rectangle r2 = new Rectangle(redraw.x, redraw.y, 1, 1);
-                cursorHighlight.setOffset(tile.x, tile.y);
-                mapView.repaintRegion(r1);
-                mapView.repaintRegion(r2);
+            if (!redraw.equals(brushRedraw)) {
+            	mapView.repaintRegion(redraw);
+            	cursorHighlight.setOffset(brushRedraw.x, brushRedraw.y);
+            	mapView.repaintRegion(brushRedraw);
             }
+            
         }
     }
 
@@ -1358,7 +1363,9 @@ public class MapEditor implements ActionListener, MouseListener,
                 }
                 marqueeSelection = new SelectionLayer(
                         currentMap.getWidth(), currentMap.getHeight());
-                marqueeSelection.selectRegion(marqueeSelection.getBounds());
+                Rectangle r = new Rectangle();
+                marqueeSelection.getBounds(r);
+                marqueeSelection.selectRegion(r);
                 currentMap.addLayerSpecial(marqueeSelection);
             }
         }

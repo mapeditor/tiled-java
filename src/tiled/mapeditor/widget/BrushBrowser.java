@@ -99,11 +99,12 @@ public class BrushBrowser extends JPanel
         g.setColor(Color.black);
 
         // Draw the brushes
+        Rectangle bb = new Rectangle();
         Iterator itr = brushes.iterator();
         int x = 0, y = 0;
         while (itr.hasNext()) {
             Brush b = (Brush)itr.next();
-            Rectangle bb = b.getBounds();
+            b.getBounds(bb);
             b.drawPreview((Graphics2D) g, null);
             //        x + (maxWidth / 2 - bb.width / 2),
             //        y + (maxWidth / 2 - bb.width / 2));

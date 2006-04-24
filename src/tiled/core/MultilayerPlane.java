@@ -24,13 +24,14 @@ import java.util.*;
 public class MultilayerPlane
 {
     private Vector layers;
-    protected int widthInTiles, heightInTiles;
+    protected Rectangle bounds;          //in tiles
 
     /**
      * Default constructor.
      */
     public MultilayerPlane() {
         layers = new Vector();
+        bounds = new Rectangle();
     }
 
     /**
@@ -41,8 +42,8 @@ public class MultilayerPlane
      */
     public MultilayerPlane(int width, int height) {
         this();
-        widthInTiles = width;
-        heightInTiles = height;
+        bounds.width = width;
+        bounds.height = height;
     }
 
     /**
@@ -61,24 +62,25 @@ public class MultilayerPlane
         int width = 0;
         int height = 0;
 
+        Rectangle layerBounds = new Rectangle();
+        
         for (int i = 0; i < layers.size(); i++) {
-            Rectangle layerBounds = getLayer(i).getBounds();
+            getLayer(i).getBounds(layerBounds);
             if (width < layerBounds.width) width = layerBounds.width;
             if (height < layerBounds.height) height = layerBounds.height;
         }
 
-        widthInTiles = width;
-        heightInTiles = height;
+        bounds.width = width;
+        bounds.height = height;
     }
 
     /**
      * Returns a <code>Rectangle</code> representing the maximum bounds in
      * tiles.
      *
-     * @return a Rectangle
      */
-    public Rectangle getBounds() {
-        return new Rectangle(0, 0, widthInTiles, heightInTiles);
+    public void getBounds(Rectangle r) {
+    	r.setBounds(bounds);
     }
 
     /**
@@ -103,7 +105,8 @@ public class MultilayerPlane
     }
 
     /**
-     * Add a layer at the specified index, which should be a valid.
+     * Add a layer at the specified index, which should be within 
+     * the valid range.
      *
      * @param index the position at which to add the layer
      * @param layer the layer to add
@@ -112,6 +115,10 @@ public class MultilayerPlane
         layers.add(index, layer);
     }
 
+    private void setLayer(int index, MapLayer layer) {
+    	layers.set(index, layer);
+    }
+    
     /**
      * Adds all the layers in a given java.util.Collection.
      *
@@ -199,8 +206,15 @@ public class MultilayerPlane
         if (index - 1 < 0) {
             throw new RuntimeException("Can't merge down bottom layer.");
         }
-
-        getLayer(index).mergeOnto(getLayer(index - 1));
+        
+        //TODO we're not accounting for different types of layers!!!
+        
+        TileLayer ntl = new TileLayer((TileLayer)getLayer(index - 1));
+        ntl.copyFrom(getLayer(index - 1));
+        getLayer(index).mergeOnto(ntl);
+        setLayer(index - 1, ntl);
+        
+        //getLayer(index).mergeOnto(getLayer(index - 1));
         removeLayer(index);
     }
 
@@ -244,13 +258,13 @@ public class MultilayerPlane
         ListIterator itr = getLayers();
         while (itr.hasNext()) {
             MapLayer l = (MapLayer)itr.next();
-            if (l.getBounds().equals(getBounds())) {
+            if (l.bounds.equals(bounds)) {
                 l.resize(width, height, dx, dy);
             }
         }
 
-        widthInTiles = width;
-        heightInTiles = height;
+        bounds.width = width;
+        bounds.height = height;
     }
 
     /**
@@ -262,6 +276,6 @@ public class MultilayerPlane
      *         <code>false</code> otherwise
      */
     public boolean inBounds(int x, int y) {
-        return x >= 0 && y >= 0 && x < widthInTiles && y < heightInTiles;
+        return x >= 0 && y >= 0 && x < bounds.width && y < bounds.height;
     }
 }

@@ -65,10 +65,10 @@ public abstract class MapLayer implements Cloneable
     }
 
     public MapLayer(MapLayer ml) {
-        this(ml.getBounds());
+        this(ml.bounds);
         name = ml.getName();
 
-        // TODO: Copy properties
+        properties = new Properties(ml.getProperties());
     }
 
     /**
@@ -110,7 +110,7 @@ public abstract class MapLayer implements Cloneable
      * @param bounds
      */
     public void setBounds(Rectangle bounds) {
-        this.bounds = bounds;
+        this.bounds = new Rectangle(bounds);
     }
 
     /**
@@ -200,12 +200,11 @@ public abstract class MapLayer implements Cloneable
 
     /**
      * Returns layer bounds in tiles.
-     *
-     * @return a java.awt.Rectangle object with the bounds in tiles of the
-     *         layer
+     * 
+     * @param r 
      */
-    public Rectangle getBounds() {
-        return bounds;
+    public void getBounds(Rectangle r) {
+        r.setBounds(bounds);
     }
 
     /**

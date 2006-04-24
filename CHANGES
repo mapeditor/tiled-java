@@ -1,7 +1,6 @@
 UNDONE
 + Fixed memory problems when loading several maps with many tilesets in a row
 + Added ability to select multiple layers from layer table
-+ Added the ability to merge tile images when layers are merged
 + Added preview of new tileset when creating a tileset
 + Added tile cutter GUI
 + Added more useful visual feedback for some brushes
@@ -23,8 +22,9 @@ UNDONE
 * Added more error-checking to XMLMapTransformer, the default map reader
 * Added support for "tile cutters"
 * Added global properties for tilesets (properties set for all tiles)
+* Added the ability to merge tile images when layers are merged
 * Fixed tileset dialog so that it is now possible to change the tile height to
-  something else than the tile height used by the map.
+  something other than the tile height used by the map.
 * Fixed a bug when exporting a tileset with an external image
 * Fixed two cases of hanging when using the fill tool
 * Fixed tile palette bug of not accounting for gaps in tile ids (old bug)
@@ -32,6 +32,7 @@ UNDONE
 * Fixed NPE when saving a map with no extension - default to .tmx
 * Fixed the zooming so that it keeps the center in place
 * Fixed exiting even when a request to save the changes failed
+* Fixed layer merging so that undo/redo of operation is functional
 * Rewrote configuration based on the Preferences class, no more tiled.conf
 * Cleaned up TileSet (removed checksumming and rotation/orienation code)
 

@@ -49,7 +49,9 @@ public class BasicTileCutter implements TileCutter
         this.image = new BufferedImage(iw, ih, BufferedImage.TYPE_INT_ARGB);
         //FIXME: although faster, the following doesn't seem to handle alpha on some platforms...
         //GraphicsConfiguration config =
-        //    GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
+            //GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
+
+        
         //Image tilesetImage = config.createCompatibleImage(tileWidth, tileHeight);
         //Graphics tg = tilesetImage.getGraphics();
         Graphics2D tg = this.image.createGraphics();

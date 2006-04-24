@@ -96,7 +96,9 @@ public class BrushDialog extends JDialog implements ActionListener,
         // Brush size
         brushSize = new IntegerSpinner(1, 1);
         if (myBrush != null) {
-            brushSize.setValue(myBrush.getBounds().width);
+        	Rectangle r = new Rectangle();
+        	myBrush.getBounds(r);
+            brushSize.setValue(r.width);
         }
         brushSize.addChangeListener(this);
         brushSize.setToolTipText("Sets the size of the brush in tiles");
@@ -311,7 +313,9 @@ public class BrushDialog extends JDialog implements ActionListener,
         if (evt.getPropertyName().equals("selectedbrush")) {
             Brush b = brushes.getSelectedBrush();
             if (b != null) {
-                brushSize.setValue(b.getBounds().width);
+            	Rectangle r = new Rectangle();
+            	b.getBounds(r);
+                brushSize.setValue(r.width);
             }
         }
 

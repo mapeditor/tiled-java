@@ -46,10 +46,9 @@ public class MergeAllLayersAction extends AbstractLayerAction
             TileLayer newLayer = tmh.merge(0, len, true);
             map.removeAllLayers();
             map.addLayer(newLayer);
+            newLayer.setName("Merged Layer");
             map.addTileset(tmh.getSet());
         } else {
-            // todo: The merging should be done to a new layer. Currently the
-            // todo: merge is done in-place, causing undo not to work properly.
             while (map.getTotalLayers() > 1) {
                 map.mergeLayerDown(map.getTotalLayers() - 1);
             }

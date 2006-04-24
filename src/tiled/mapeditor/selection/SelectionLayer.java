@@ -173,11 +173,10 @@ public class SelectionLayer extends TileLayer
      * Inverts the selected area.
      */
     public void invert() {
-        Rectangle bounded = getBounds();
-        selection.exclusiveOr(new Area(bounded));
+        selection.exclusiveOr(new Area(bounds));
 
-        for (int i = bounded.y; i < bounded.y + bounded.height; i++) {
-            for (int j = bounded.x; j < bounded.x + bounded.width; j++) {
+        for (int i = bounds.y; i < bounds.y + bounds.height; i++) {
+            for (int j = bounds.x; j < bounds.x + bounds.width; j++) {
                 if (selection.contains(j, i)) {
                     setTileAt(j, i, selTile);
                 } else {
