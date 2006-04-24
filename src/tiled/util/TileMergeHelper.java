@@ -29,7 +29,8 @@ import tiled.core.MapLayer;
 /**
  * @version $Id$
  */
-public class TileMergeHelper {
+public class TileMergeHelper
+{
     private Map myMap;
     private TileSet myTs;
     private TileLayer mergedLayer;
@@ -43,8 +44,7 @@ public class TileMergeHelper {
     }
 
     public TileLayer merge(int start, int len, boolean all) {
-    	Rectangle r = new Rectangle();
-        myMap.getBounds(r);
+    	Rectangle r = myMap.getBounds();
         mergedLayer = new TileLayer(r);
 
         for (int i = 0; i < r.height; i++) {

@@ -349,7 +349,7 @@ public class TileLayer extends MapLayer
      * Copy data from another layer onto this layer. Unlike mergeOnto,
      * copyFrom() copies the empty cells as well.
      *
-     * @see tiled.core.MapLayer#mergeOnto
+     * @see MapLayer#mergeOnto
      * @param other
      */
     public void copyFrom(MapLayer other) {
@@ -366,7 +366,7 @@ public class TileLayer extends MapLayer
     /**
      * Like copyFrom, but will only copy the area specified.
      *
-     * @see tiled.core.TileLayer#copyFrom(MapLayer)
+     * @see TileLayer#copyFrom(MapLayer)
      * @param other
      * @param mask
      */
@@ -388,8 +388,8 @@ public class TileLayer extends MapLayer
     /**
      * Unlike mergeOnto, copyTo includes the null tile when merging
      *
-     * @see tiled.core.MapLayer#copyFrom
-     * @see tiled.core.MapLayer#mergeOnto
+     * @see MapLayer#copyFrom
+     * @see MapLayer#mergeOnto
      * @param other the layer to copy this layer to
      */
     public void copyTo(MapLayer other) {
@@ -406,7 +406,7 @@ public class TileLayer extends MapLayer
     /**
      * Creates a copy of this layer.
      *
-     * @see java.lang.Object#clone
+     * @see Object#clone
      * @return a clone of this layer, as complete as possible
      * @exception CloneNotSupportedException
      */

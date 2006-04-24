@@ -324,8 +324,7 @@ public class XMLMapWriter implements MapWriter
                     prefs.getBoolean("layerCompression", true) &&
                             encodeLayerData;
 
-            Rectangle bounds = new Rectangle();
-            l.getBounds(bounds);
+            Rectangle bounds = l.getBounds();
 
             if (l.getClass() == SelectionLayer.class) {
                 w.startElement("selection");
@@ -516,8 +515,7 @@ public class XMLMapWriter implements MapWriter
         throws IOException
     {
         try {
-            Rectangle b = new Rectangle();
-            o.getBounds(b);
+            Rectangle b = o.getBounds();
             w.startElement("object");
             w.writeAttribute("x", m.getX() + b.x);
             w.writeAttribute("y", m.getY() + b.y);

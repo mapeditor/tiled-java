@@ -42,7 +42,7 @@ public class TileSet
     private NumberedSet tiles, images;
     private int firstGid;
     private long tilebmpFileLastModified;
-    private TileCutter myCutter;
+    private TileCutter tileCutter;
     private Rectangle tileDimensions;
     private String externalSource;
     private File tilebmpFile;
@@ -100,8 +100,8 @@ public class TileSet
         assert (tilebmp != null);
         assert (cutter != null);
 
-        myCutter = cutter;
-        
+        tileCutter = cutter;
+
         tileDimensions = new Rectangle(cutter.getDimensions());
         tileSetImage = tilebmp;
 
@@ -109,16 +109,16 @@ public class TileSet
 
         try {
             BufferedImage tile;
-	        while ((tile = (BufferedImage) cutter.getNextTile()) != null) {
+            while ((tile = (BufferedImage) cutter.getNextTile()) != null) {
                 int newId = addImage(tile);
-	        	if (createTiles) {
+                if (createTiles) {
                     Tile newTile = new Tile();
                     newTile.setImage(newId);
                     addNewTile(newTile);
                 }
-	        }
+            }
         } catch (Exception e) {
-        	e.printStackTrace();
+            e.printStackTrace();
         }
 
         //FIXME: although faster, the following doesn't seem to handle alpha on some platforms...
@@ -145,12 +145,12 @@ public class TileSet
     }
 
     public void checkUpdate() {
-    	
-    	if(tilebmpFile != null && tilebmpFile.lastModified() > tilebmpFileLastModified) {
-    		
-    	}
+        if (tilebmpFile != null &&
+                tilebmpFile.lastModified() > tilebmpFileLastModified)
+        {
+        }
     }
-    
+
     /**
      * Sets the URI path of the external source of this tile set. By setting
      * this, the set is implied to be external in all other operations.
@@ -221,11 +221,11 @@ public class TileSet
         }
 
         if (tileDimensions.width < t.getWidth()) {
-        	tileDimensions.width = t.getWidth();
+            tileDimensions.width = t.getWidth();
         }
 
         if (tileDimensions.height < t.getHeight()) {
-        	tileDimensions.height = t.getHeight();
+            tileDimensions.height = t.getHeight();
         }
 
         // Add any default properties
@@ -331,10 +331,10 @@ public class TileSet
      *         tile exists with that id
      */
     public Tile getTile(int i) {
-    	try {
-    		return (Tile)tiles.get(i);
-    	} catch (ArrayIndexOutOfBoundsException a) {}
-    	return null;
+        try {
+            return (Tile)tiles.get(i);
+        } catch (ArrayIndexOutOfBoundsException a) {}
+        return null;
     }
 
     /**
@@ -563,7 +563,7 @@ public class TileSet
         return true;
     }
 
-	public void setDefaultProperties(Properties defaultSetProperties) {
-		defaultTileProperties = defaultSetProperties;
-	}
+    public void setDefaultProperties(Properties defaultSetProperties) {
+        defaultTileProperties = defaultSetProperties;
+    }
 }

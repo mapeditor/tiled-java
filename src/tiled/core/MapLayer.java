@@ -16,12 +16,11 @@ import java.awt.Rectangle;
 import java.awt.geom.Area;
 import java.util.Properties;
 
-
 /**
  * A layer of a map.
  *
- * @see tiled.core.Map
- * @see tiled.core.MultilayerPlane
+ * @see Map
+ * @see MultilayerPlane
  */
 public abstract class MapLayer implements Cloneable
 {
@@ -199,12 +198,19 @@ public abstract class MapLayer implements Cloneable
     }
 
     /**
-     * Returns layer bounds in tiles.
-     * 
-     * @param r 
+     * Returns the layer bounds in tiles.
+     * @return the layer bounds in tiles
      */
-    public void getBounds(Rectangle r) {
-        r.setBounds(bounds);
+    public Rectangle getBounds() {
+        return new Rectangle(bounds);
+    }
+
+    /**
+     * Assigns the layer bounds in tiles to the given rectangle.
+     * @param rect the rectangle to which the layer bounds are assigned
+     */
+    public void getBounds(Rectangle rect) {
+        rect.setBounds(bounds);
     }
 
     /**
@@ -250,8 +256,8 @@ public abstract class MapLayer implements Cloneable
     /**
      * Unlike mergeOnto, copyTo includes the null tile when merging
      *
-     * @see tiled.core.MapLayer#copyFrom
-     * @see tiled.core.MapLayer#mergeOnto
+     * @see MapLayer#copyFrom
+     * @see MapLayer#mergeOnto
      * @param other the layer to copy this layer to
      */
     public abstract void copyTo(MapLayer other);
@@ -261,13 +267,12 @@ public abstract class MapLayer implements Cloneable
     /**
      * Creates a copy of this layer.
      *
-     * @see java.lang.Object#clone
+     * @see Object#clone
      * @return a clone of this layer, as complete as possible
      * @exception CloneNotSupportedException
      */
     public Object clone() throws CloneNotSupportedException {
-        MapLayer clone = null;
-        clone = (MapLayer)super.clone();
+        MapLayer clone = (MapLayer) super.clone();
 
         // Create a new bounds object
         clone.bounds = new Rectangle(bounds);

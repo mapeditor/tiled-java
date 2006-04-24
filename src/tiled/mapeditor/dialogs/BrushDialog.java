@@ -63,7 +63,7 @@ public class BrushDialog extends JDialog implements ActionListener,
     private static final String CANCEL_BUTTON = Resources.getString("general.button.cancel");
     private static final String SHAPE_TAB = Resources.getString("dialog.brush.tab.shape");
     private static final String CUSTOM_TAB = Resources.getString("dialog.brush.tab.custom");
-    
+
     public BrushDialog(MapEditor editor, JFrame parent,
                        AbstractBrush currentBrush)
     {
@@ -96,8 +96,7 @@ public class BrushDialog extends JDialog implements ActionListener,
         // Brush size
         brushSize = new IntegerSpinner(1, 1);
         if (myBrush != null) {
-        	Rectangle r = new Rectangle();
-        	myBrush.getBounds(r);
+        	Rectangle r = myBrush.getBounds();
             brushSize.setValue(r.width);
         }
         brushSize.addChangeListener(this);
@@ -313,9 +312,7 @@ public class BrushDialog extends JDialog implements ActionListener,
         if (evt.getPropertyName().equals("selectedbrush")) {
             Brush b = brushes.getSelectedBrush();
             if (b != null) {
-            	Rectangle r = new Rectangle();
-            	b.getBounds(r);
-                brushSize.setValue(r.width);
+                brushSize.setValue(b.getBounds().width);
             }
         }
 

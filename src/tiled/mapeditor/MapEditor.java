@@ -977,23 +977,20 @@ public class MapEditor implements ActionListener, MouseListener,
 
         updateCursorHighlight(tile);
     }
-    
+
     private void updateCursorHighlight(Point tile) {
         if (prefs.getBoolean("cursorhighlight", true)) {
-            Rectangle redraw = new Rectangle();
-            Rectangle brushRedraw = new Rectangle();
-            	
-            cursorHighlight.getBounds(redraw);
-            currentBrush.getBounds(brushRedraw);
-            brushRedraw.x = tile.x-brushRedraw.width/2;
-            brushRedraw.y = tile.y-brushRedraw.height/2;
+            Rectangle redraw = cursorHighlight.getBounds();
+            Rectangle brushRedraw = currentBrush.getBounds();
+
+            brushRedraw.x = tile.x - brushRedraw.width / 2;
+            brushRedraw.y = tile.y - brushRedraw.height / 2;
 
             if (!redraw.equals(brushRedraw)) {
             	mapView.repaintRegion(redraw);
             	cursorHighlight.setOffset(brushRedraw.x, brushRedraw.y);
             	mapView.repaintRegion(brushRedraw);
             }
-            
         }
     }
 
@@ -1363,9 +1360,7 @@ public class MapEditor implements ActionListener, MouseListener,
                 }
                 marqueeSelection = new SelectionLayer(
                         currentMap.getWidth(), currentMap.getHeight());
-                Rectangle r = new Rectangle();
-                marqueeSelection.getBounds(r);
-                marqueeSelection.selectRegion(r);
+                marqueeSelection.selectRegion(marqueeSelection.getBounds());
                 currentMap.addLayerSpecial(marqueeSelection);
             }
         }

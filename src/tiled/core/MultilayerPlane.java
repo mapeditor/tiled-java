@@ -63,7 +63,7 @@ public class MultilayerPlane
         int height = 0;
 
         Rectangle layerBounds = new Rectangle();
-        
+
         for (int i = 0; i < layers.size(); i++) {
             getLayer(i).getBounds(layerBounds);
             if (width < layerBounds.width) width = layerBounds.width;
@@ -77,10 +77,10 @@ public class MultilayerPlane
     /**
      * Returns a <code>Rectangle</code> representing the maximum bounds in
      * tiles.
-     *
+     * @return a new rectangle containing the maximum bounds of this plane
      */
-    public void getBounds(Rectangle r) {
-    	r.setBounds(bounds);
+    public Rectangle getBounds() {
+    	return new Rectangle(bounds);
     }
 
     /**
@@ -105,7 +105,7 @@ public class MultilayerPlane
     }
 
     /**
-     * Add a layer at the specified index, which should be within 
+     * Add a layer at the specified index, which should be within
      * the valid range.
      *
      * @param index the position at which to add the layer
@@ -118,7 +118,7 @@ public class MultilayerPlane
     private void setLayer(int index, MapLayer layer) {
     	layers.set(index, layer);
     }
-    
+
     /**
      * Adds all the layers in a given java.util.Collection.
      *
@@ -206,14 +206,14 @@ public class MultilayerPlane
         if (index - 1 < 0) {
             throw new RuntimeException("Can't merge down bottom layer.");
         }
-        
-        //TODO we're not accounting for different types of layers!!!
-        
+
+        // TODO: We're not accounting for different types of layers!!!
+
         TileLayer ntl = new TileLayer((TileLayer)getLayer(index - 1));
         ntl.copyFrom(getLayer(index - 1));
         getLayer(index).mergeOnto(ntl);
         setLayer(index - 1, ntl);
-        
+
         //getLayer(index).mergeOnto(getLayer(index - 1));
         removeLayer(index);
     }

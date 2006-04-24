@@ -65,8 +65,16 @@ public class SaveAsAction extends AbstractAction
     {
         // Start at the location of the most recently loaded map file
         String startLocation = TiledConfiguration.node("recent").get("file0", "");
+
+        TiledFileFilter byExtensionFilter =
+                new TiledFileFilter(TiledFileFilter.FILTER_EXT);
+        TiledFileFilter tmxFilter =
+                new TiledFileFilter(TiledFileFilter.FILTER_TMX);
+
         JFileChooser chooser = new ConfirmingFileChooser(startLocation);
-        chooser.setDialogTitle(Resources.getString("dialog.saveas.title"));
+        chooser.addChoosableFileFilter(byExtensionFilter);
+        chooser.addChoosableFileFilter(tmxFilter);
+        chooser.setFileFilter(byExtensionFilter);
 
         MapWriter[] writers = editor.getPluginLoader().getWriters();
         for (int i = 0; i < writers.length; i++) {
@@ -76,11 +84,6 @@ public class SaveAsAction extends AbstractAction
                 e.printStackTrace();
             }
         }
-
-        chooser.addChoosableFileFilter(
-                new TiledFileFilter(TiledFileFilter.FILTER_TMX));
-        chooser.addChoosableFileFilter(
-                new TiledFileFilter(TiledFileFilter.FILTER_EXT));
 
         int result = chooser.showSaveDialog(editor.getAppFrame());
         if (result == JFileChooser.APPROVE_OPTION)
@@ -154,6 +157,8 @@ public class SaveAsAction extends AbstractAction
     {
         public ConfirmingFileChooser(String currentDirectoryPath) {
             super(currentDirectoryPath);
+            setAcceptAllFileFilterUsed(false);
+            setDialogTitle(Resources.getString("dialog.saveas.title"));
         }
 
         public void approveSelection ()
@@ -203,7 +208,6 @@ public class SaveAsAction extends AbstractAction
             // Confirm overwrite if the file happens to exist already
             if (file.exists())
             {
-
                 int answer = JOptionPane.showConfirmDialog(
                         editor.getAppFrame(),
                         FILE_EXISTS_MESSAGE, FILE_EXISTS_TITLE,
