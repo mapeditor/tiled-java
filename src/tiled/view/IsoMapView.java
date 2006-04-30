@@ -63,7 +63,8 @@ public class IsoMapView extends MapView
         Rectangle clipRect = g2d.getClipBounds();
         Dimension tileSize = getTileSize(zoom);
         int tileStepY = tileSize.height / 2 == 0 ? 1 : tileSize.height / 2;
-
+        Polygon gridPoly = createGridPolygon(0, -tileSize.height, 0);
+        
         Point rowItr = screenToTileCoords(clipRect.x, clipRect.y);
         rowItr.x--;
         Point drawLoc = tileToScreenCoords(rowItr.x, rowItr.y);
@@ -84,9 +85,11 @@ public class IsoMapView extends MapView
 
                 if (tile != null) {
                     if (layer instanceof SelectionLayer) {
-                        Polygon gridPoly = createGridPolygon(
-                                drawLoc.x, drawLoc.y - tileSize.height, 0);
+                        //Polygon gridPoly = createGridPolygon(
+                                //drawLoc.x, drawLoc.y - tileSize.height, 0);
+                        gridPoly.translate(drawLoc.x, drawLoc.y);
                         g2d.fillPolygon(gridPoly);
+                        gridPoly.translate(-drawLoc.x, -drawLoc.y);
                         //paintEdge(g2d, layer, drawLoc.x, drawLoc.y);
                     } else {
                         tile.draw(g2d, drawLoc.x, drawLoc.y, zoom);

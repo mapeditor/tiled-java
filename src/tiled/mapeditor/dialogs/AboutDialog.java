@@ -32,7 +32,7 @@ public class AboutDialog extends JDialog
     private final JFrame parent;
 
     public AboutDialog(JFrame parent) {
-        super(parent, "Tiled v" + MapEditor.version);
+        super(parent, Resources.getString("dialog.main.title") + " v" + MapEditor.version);
 
         this.parent = parent;
 

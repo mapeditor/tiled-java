@@ -18,6 +18,7 @@ import java.util.Properties;
 import java.util.Vector;
 import javax.swing.event.EventListenerList;
 
+import tiled.mapeditor.Resources;
 import tiled.mapeditor.util.MapChangeListener;
 import tiled.mapeditor.util.MapChangedEvent;
 
@@ -128,7 +129,7 @@ public class Map extends MultilayerPlane
      */
     public MapLayer addLayer() {
         MapLayer layer = new TileLayer(this, bounds.width, bounds.height);
-        layer.setName("Layer " + super.getTotalLayers());
+        layer.setName(Resources.getString("general.layer.layer") + " " + super.getTotalLayers());
         super.addLayer(layer);
         fireMapChanged();
         return layer;

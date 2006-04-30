@@ -14,6 +14,7 @@ package tiled.mapeditor.brush;
 
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.Shape;
 
 import tiled.core.MultilayerPlane;
 import tiled.view.MapView;
@@ -69,4 +70,6 @@ public abstract class AbstractBrush extends MultilayerPlane implements Brush
     	sy = y;
     	drawPreview(g2d, mv);
     }
+
+	public abstract Shape getShape();
 }

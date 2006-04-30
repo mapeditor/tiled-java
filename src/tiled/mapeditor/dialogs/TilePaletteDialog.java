@@ -55,9 +55,10 @@ public class TilePaletteDialog extends JDialog implements ActionListener,
         currentMap = map;
         if (currentMap != null) {
             tilesets = currentMap.getTilesets();
+            pc.setTilesets(tilesets);
+            sets.setListData(tilesets);
+            sets.setSelectedIndex(0);
         }
-        pc.setTilesets(tilesets);
-        sets.setListData(tilesets);
     }
 
     private void init() {

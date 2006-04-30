@@ -12,10 +12,15 @@
 
 package tiled.mapeditor.actions;
 
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
+import tiled.io.MapReader;
 import tiled.mapeditor.MapEditor;
 import tiled.mapeditor.Resources;
+import tiled.mapeditor.util.TiledFileFilter;
+import tiled.util.TiledConfiguration;
 
 /**
  * Opens the map open dialog.
@@ -24,6 +29,9 @@ import tiled.mapeditor.Resources;
  */
 public class OpenMapAction extends AbstractFileAction
 {
+	
+	private static final String OPEN_ERROR_TITLE = Resources.getString("dialog.saveas.error.title");
+	
     public OpenMapAction(MapEditor editor, SaveAction saveAction) {
         super(editor, saveAction,
               Resources.getString("action.map.open.name"),
@@ -33,6 +41,31 @@ public class OpenMapAction extends AbstractFileAction
     }
 
     protected void doPerformAction() {
-        editor.openMap();
+        //Start at the location of the most recently loaded map file
+        String startLocation = TiledConfiguration.node("recent").get("file0", "");
+
+        JFileChooser ch = new JFileChooser(startLocation);
+
+        try {
+            MapReader[] readers = editor.getPluginLoader().getReaders();
+            for(int i = 0; i < readers.length; i++) {
+                ch.addChoosableFileFilter(new TiledFileFilter(
+                            readers[i].getFilter(), readers[i].getName()));
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(editor.getAppFrame(),
+                    "Error while loading plugins: " + e.getLocalizedMessage(),
+                    OPEN_ERROR_TITLE,
+                    JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+
+        ch.addChoosableFileFilter(
+                new TiledFileFilter(TiledFileFilter.FILTER_TMX));
+
+        int ret = ch.showOpenDialog(editor.getAppFrame());
+        if (ret == JFileChooser.APPROVE_OPTION) {
+            editor.loadMap(ch.getSelectedFile().getAbsolutePath());
+        }
     }
 }

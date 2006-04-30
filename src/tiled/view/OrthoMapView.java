@@ -78,7 +78,8 @@ public class OrthoMapView extends MapView
         Dimension tsize = getTileSize(zoom);
         if (tsize.width <= 0 || tsize.height <= 0) return;
         int toffset = (modeFlags & PF_GRIDMODE) != 0 ? 1 : 0;
-
+        Polygon gridPoly = createGridPolygon(0, -tsize.height, 0);
+        
         // Determine area to draw from clipping rectangle
         Rectangle clipRect = g2d.getClipBounds();
         int startX = clipRect.x / tsize.width;
@@ -96,9 +97,9 @@ public class OrthoMapView extends MapView
 
                 if (tile != null) {
                     if (layer instanceof SelectionLayer) {
-                        Polygon gridPoly = createGridPolygon(
-                                gx, gy - tsize.height, 0);
+                        gridPoly.translate(gx, gy);
                         g2d.fillPolygon(gridPoly);
+                        gridPoly.translate(-gx, -gy);
                         //paintEdge(g, layer, gx, gy);
                     } else {
                         tile.draw(g2d, gx, gy, zoom);

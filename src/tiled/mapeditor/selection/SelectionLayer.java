@@ -14,6 +14,7 @@ package tiled.mapeditor.selection;
 
 import java.awt.Color;
 import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
 import java.util.prefs.Preferences;
@@ -45,7 +46,7 @@ public class SelectionLayer extends TileLayer
     private void init() {
         Preferences prefs = TiledConfiguration.root();
         try {
-            highlightColor = Color.decode(prefs.get("selectionColor", ""));
+            highlightColor = Color.decode(prefs.get("selectionColor", "#0000FF"));
         } catch (NumberFormatException e) {
             highlightColor = Color.blue;
         }
@@ -96,11 +97,11 @@ public class SelectionLayer extends TileLayer
     }
 
     /**
-     * Sets the selected area to the given Rectangle.
+     * Sets the selected area to the given Shape.
      *
      * @param region
      */
-    public void selectRegion(Rectangle region) {
+    public void selectRegion(Shape region) {
         clearRegion(selection);
         selection = new Area(region);
         fillRegion(selection, selTile);
@@ -159,14 +160,7 @@ public class SelectionLayer extends TileLayer
     }
 
     private void clearRegion(Area region) {
-        Rectangle bounded = region.getBounds();
-        for (int i = bounded.y; i < bounded.y + bounded.height; i++) {
-            for (int j = bounded.x; j < bounded.x + bounded.width; j++) {
-                if (region.contains(j, i)) {
-                    setTileAt(j, i, null);
-                }
-            }
-        }
+    	fillRegion(region, null);
     }
 
     /**

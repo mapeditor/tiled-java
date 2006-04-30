@@ -293,6 +293,11 @@ public abstract class MapView extends JPanel implements Scrollable
     	MapLayer layer;
     	double currentZoom = zoom;
 
+    	if(g2d == null) {
+    		g2d = (Graphics2D)getGraphics().create();
+    		g2d.setClip(this.getVisibleRect());
+    	}
+    	
     	while (li.hasNext()) {
             if ((layer = (MapLayer)li.next()) != null) {
                 float opacity = layer.getOpacity() * mapOpacity;

@@ -100,22 +100,24 @@ public class BrushBrowser extends JPanel
 
         // Draw the brushes
         Iterator itr = brushes.iterator();
-        int x = 0, y = 0;
+        int x = 0;
         while (itr.hasNext()) {
             Brush b = (Brush)itr.next();
-            //Rectangle bb = b.getBounds();
+            Rectangle bb = b.getBounds();
+        	float o = maxWidth/2.0f - bb.width/2.0f;
+        	g.translate((int)o, (int)o);
             b.drawPreview((Graphics2D) g, null);
-            //        x + (maxWidth / 2 - bb.width / 2),
-            //        y + (maxWidth / 2 - bb.width / 2));
+            g.translate((int)-o, (int)-o);
 
             if (b == selectedBrush) {
-                g.drawRect(x, y, maxWidth, maxWidth);
+                g.drawRect(0, 0, maxWidth, maxWidth);
             }
 
+            g.translate(maxWidth,0);
             x += maxWidth;
             if (x + maxWidth > getWidth()) {
+            	g.translate(-x, maxWidth);
                 x = 0;
-                y += maxWidth;
             }
         }
     }

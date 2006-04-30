@@ -12,10 +12,13 @@
 
 package tiled.mapeditor.actions;
 
+import javax.swing.JFrame;
 import javax.swing.KeyStroke;
 
+import tiled.core.Map;
 import tiled.mapeditor.MapEditor;
 import tiled.mapeditor.Resources;
+import tiled.mapeditor.dialogs.NewMapDialog;
 
 /**
  * Creates a new map.
@@ -33,6 +36,10 @@ public class NewMapAction extends AbstractFileAction
     }
 
     protected void doPerformAction() {
-        editor.newMap();
+    	NewMapDialog nmd = new NewMapDialog((JFrame)editor.getAppFrame());
+        Map newMap = nmd.create();
+        if (newMap != null) {
+            editor.setCurrentMap(newMap);
+        }
     }
 }

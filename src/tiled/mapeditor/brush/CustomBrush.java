@@ -14,6 +14,7 @@ package tiled.mapeditor.brush;
 
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.Shape;
 import java.util.ListIterator;
 
 import tiled.core.MultilayerPlane;
@@ -41,6 +42,10 @@ public class CustomBrush extends AbstractBrush
         return getTotalLayers();
     }
 
+    public Shape getShape() {
+    	return getBounds();
+    }
+    
     /**
      * Determines whether this brush is equal to another brush.
      */

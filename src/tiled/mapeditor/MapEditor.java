@@ -70,7 +70,7 @@ public class MapEditor implements ActionListener, MouseListener,
     private Cursor curMarquee;
 
     /** Current release version. */
-    public static final String version = "0.6.0";
+    public static final String version = "0.6.0b";
 
     private Map currentMap;
     private MapView mapView;
@@ -83,7 +83,7 @@ public class MapEditor implements ActionListener, MouseListener,
     private int currentPointerState;
     private Tile currentTile;
     private int currentLayer = -1;
-    private boolean bMouseIsDown;
+    private boolean bMouseIsDown, bMouseIsDragging;
     private SelectionLayer cursorHighlight;
     private Point mousePressLocation, mouseInitialPressLocation;
     private Point moveDist;
@@ -171,11 +171,6 @@ public class MapEditor implements ActionListener, MouseListener,
 
         mapEventAdapter = new MapEventAdapter();
 
-        // Create a default brush
-        ShapeBrush sb = new ShapeBrush();
-        sb.makeQuadBrush(new Rectangle(0, 0, 1, 1));
-        setBrush(sb);
-
         // Create the actions
         saveAction = new SaveAction(this);
         saveAsAction = new SaveAsAction(this);
@@ -260,18 +255,18 @@ public class MapEditor implements ActionListener, MouseListener,
     private void createMenuBar() {
         JMenuItem save = new TMenuItem(saveAction);
         JMenuItem saveAs = new TMenuItem(saveAsAction);
-        JMenuItem saveAsImage = createMenuItem("Save as Image...", null,
-                "Save current map as an image", "control shift I");
+        JMenuItem saveAsImage = createMenuItem(Resources.getString("menu.file.image"), null,
+        		Resources.getString("menu.file.image.tooltip"), "control shift I");
         JMenuItem close = new TMenuItem(new CloseMapAction(this, saveAction));
 
-        recentMenu = new JMenu("Open Recent");
+        recentMenu = new JMenu(Resources.getString("menu.file.recent"));
 
         mapEventAdapter.addListener(save);
         mapEventAdapter.addListener(saveAs);
         mapEventAdapter.addListener(saveAsImage);
         mapEventAdapter.addListener(close);
 
-        JMenu fileMenu = new JMenu("File");
+        JMenu fileMenu = new JMenu(Resources.getString("menu.file"));
         fileMenu.add(new TMenuItem(new NewMapAction(this, saveAction)));
         fileMenu.add(new TMenuItem(new OpenMapAction(this, saveAction)));
         fileMenu.add(recentMenu);
@@ -294,7 +289,7 @@ public class MapEditor implements ActionListener, MouseListener,
         cutMenuItem.setEnabled(false);
         pasteMenuItem.setEnabled(false);
 
-        JMenu transformSub = new JMenu("Transform");
+        JMenu transformSub = new JMenu(Resources.getString("menu.edit.transform"));
         transformSub.add(new TMenuItem(rot90Action, true));
         transformSub.add(new TMenuItem(rot180Action, true));
         transformSub.add(new TMenuItem(rot270Action, true));
@@ -303,7 +298,7 @@ public class MapEditor implements ActionListener, MouseListener,
         transformSub.add(new TMenuItem(flipVerAction, true));
         mapEventAdapter.addListener(transformSub);
 
-        JMenu editMenu = new JMenu("Edit");
+        JMenu editMenu = new JMenu(Resources.getString("menu.edit"));
         editMenu.add(undoMenuItem);
         editMenu.add(redoMenuItem);
         editMenu.addSeparator();
@@ -313,9 +308,10 @@ public class MapEditor implements ActionListener, MouseListener,
         editMenu.addSeparator();
         editMenu.add(transformSub);
         editMenu.addSeparator();
-        editMenu.add(createMenuItem("Preferences...",
-                    null, "Configure options of the editor", null));
-        editMenu.add(createMenuItem("Brush...", null, "Configure the brush",
+        editMenu.add(createMenuItem(Resources.getString("menu.edit.preferences"),
+                    null, Resources.getString("menu.edit.preferences.tooltip"), null));
+        editMenu.add(createMenuItem(Resources.getString("menu.edit.brush"), null, 
+        			Resources.getString("menu.edit.brush.tooltip"),
                     "control B"));
 
         mapEventAdapter.addListener(undoMenuItem);
@@ -325,19 +321,21 @@ public class MapEditor implements ActionListener, MouseListener,
         mapEventAdapter.addListener(pasteMenuItem);
 
 
-        JMenu mapMenu = new JMenu("Map");
-        mapMenu.add(createMenuItem("Resize", null, "Modify map dimensions"));
-        mapMenu.add(createMenuItem("Search", null,
-                    "Search for/Replace tiles"));
+        JMenu mapMenu = new JMenu(Resources.getString("menu.map"));
+        mapMenu.add(createMenuItem(Resources.getString("menu.map.resize"), null, 
+        		Resources.getString("menu.map.resize.tooltip")));
+        mapMenu.add(createMenuItem(Resources.getString("menu.map.search"), null,
+        		Resources.getString("menu.map.search.tooltip")));
         mapMenu.addSeparator();
-        mapMenu.add(createMenuItem("Properties", null, "Map properties"));
+        mapMenu.add(createMenuItem(Resources.getString("menu.map.properties"), null, 
+        		Resources.getString("menu.map.properties.tooltip")));
         mapEventAdapter.addListener(mapMenu);
 
 
         JMenuItem layerAdd = new TMenuItem(addLayerAction);
         mapEventAdapter.addListener(layerAdd);
 
-        JMenu layerMenu = new JMenu("Layer");
+        JMenu layerMenu = new JMenu(Resources.getString("menu.layer"));
         layerMenu.add(layerAdd);
         layerMenu.add(new TMenuItem(cloneLayerAction));
         layerMenu.add(new TMenuItem(deleteLayerAction));
@@ -348,17 +346,17 @@ public class MapEditor implements ActionListener, MouseListener,
         layerMenu.add(new TMenuItem(mergeLayerDownAction));
         layerMenu.add(new TMenuItem(mergeAllLayersAction));
         layerMenu.addSeparator();
-        layerMenu.add(createMenuItem("Layer Properties", null,
-                                     "Current layer properties"));
+        layerMenu.add(createMenuItem(Resources.getString("menu.layer.properties"), null,
+        			Resources.getString("menu.layer.properties.tooltip")));
 
-        JMenu tilesetMenu = new JMenu("Tilesets");
-        tilesetMenu.add(createMenuItem("New Tileset...", null,
-                    "Add a new internal tileset"));
-        tilesetMenu.add(createMenuItem("Import Tileset...", null,
-                    "Import an external tileset"));
+        JMenu tilesetMenu = new JMenu(Resources.getString("menu.tilesets"));
+        tilesetMenu.add(createMenuItem(Resources.getString("menu.tilesets.new"), null,
+        		Resources.getString("menu.tilesets.new.tooltip")));
+        tilesetMenu.add(createMenuItem(Resources.getString("menu.tilesets.import"), null,
+        		Resources.getString("menu.tilesets.import.tooltip")));
         tilesetMenu.addSeparator();
-        tilesetMenu.add(createMenuItem("Tileset Manager", null,
-                    "Open the tileset manager"));
+        tilesetMenu.add(createMenuItem(Resources.getString("menu.tilesets.manager"), null,
+        		Resources.getString("menu.tilesets.manager.tooltip")));
 
 
         /*
@@ -371,7 +369,7 @@ public class MapEditor implements ActionListener, MouseListener,
         modifySub.add(createMenuItem("Contract Selection", null, ""));
         */
 
-        JMenu selectMenu = new JMenu("Select");
+        JMenu selectMenu = new JMenu(Resources.getString("menu.select"));
         selectMenu.add(new TMenuItem(selectAllAction, true));
         selectMenu.add(new TMenuItem(cancelSelectionAction, true));
         selectMenu.add(new TMenuItem(inverseAction, true));
@@ -379,34 +377,34 @@ public class MapEditor implements ActionListener, MouseListener,
         //selectMenu.add(modifySub);
 
 
-        gridMenuItem = new JCheckBoxMenuItem("Show Grid");
+        gridMenuItem = new JCheckBoxMenuItem(Resources.getString("menu.view.grid"));
         gridMenuItem.addActionListener(this);
-        gridMenuItem.setToolTipText("Toggle grid");
+        gridMenuItem.setToolTipText(Resources.getString("menu.view.grid.tooltip"));
         gridMenuItem.setAccelerator(KeyStroke.getKeyStroke("control G"));
 
-        cursorMenuItem = new JCheckBoxMenuItem("Highlight Cursor");
+        cursorMenuItem = new JCheckBoxMenuItem(Resources.getString("menu.view.cursor"));
         cursorMenuItem.setSelected(prefs.getBoolean("cursorhighlight", true));
         cursorMenuItem.addActionListener(this);
         cursorMenuItem.setToolTipText(
-                "Toggle highlighting on-map cursor position");
+        		Resources.getString("menu.view.cursor.tooltip"));
 
-        boundaryMenuItem = new JCheckBoxMenuItem("Show Boundaries");
+        boundaryMenuItem = new JCheckBoxMenuItem(Resources.getString("menu.view.boundaries"));
         boundaryMenuItem.addActionListener(this);
-        boundaryMenuItem.setToolTipText("Toggle layer boundaries");
+        boundaryMenuItem.setToolTipText(Resources.getString("menu.view.boundaries.tooltip"));
         boundaryMenuItem.setAccelerator(KeyStroke.getKeyStroke("control E"));
 
-        coordinatesMenuItem = new JCheckBoxMenuItem("Show Coordinates");
+        coordinatesMenuItem = new JCheckBoxMenuItem(Resources.getString("menu.view.coordinates"));
         coordinatesMenuItem.addActionListener(this);
-        coordinatesMenuItem.setToolTipText("Toggle tile coordinates");
+        coordinatesMenuItem.setToolTipText(Resources.getString("menu.view.coordinates.tooltip"));
 
-        JMenu viewMenu = new JMenu("View");
+        JMenu viewMenu = new JMenu(Resources.getString("menu.view"));
         viewMenu.add(new TMenuItem(zoomInAction));
         viewMenu.add(new TMenuItem(zoomOutAction));
         viewMenu.add(new TMenuItem(zoomNormalAction));
         viewMenu.addSeparator();
         viewMenu.add(gridMenuItem);
         viewMenu.add(cursorMenuItem);
-        // TODO: Enable when boudary drawing code finished.
+        //TODO: Enable when boudary drawing code finished.
         //viewMenu.add(boundaryMenuItem);
         viewMenu.add(coordinatesMenuItem);
 
@@ -415,10 +413,10 @@ public class MapEditor implements ActionListener, MouseListener,
         mapEventAdapter.addListener(selectMenu);
         mapEventAdapter.addListener(viewMenu);
 
-        JMenu helpMenu = new JMenu("Help");
-        helpMenu.add(createMenuItem("About Plug-ins", null,
-                    "Show plugin window"));
-        helpMenu.add(createMenuItem("About Tiled", null, "Show about window"));
+        JMenu helpMenu = new JMenu(Resources.getString("menu.help"));
+        helpMenu.add(createMenuItem(Resources.getString("menu.help.plugins"), null,
+        		Resources.getString("menu.help.plugins.tooltip")));
+        helpMenu.add(createMenuItem(Resources.getString("menu.help.about"), null, Resources.getString("menu.help.about.tooltip")));
 
         menuBar = new JMenuBar();
         menuBar.add(fileMenu);
@@ -757,7 +755,7 @@ public class MapEditor implements ActionListener, MouseListener,
         if (layer == null) {
             return;
         } else if (mouseButton == MouseEvent.BUTTON3) {
-            if (layer instanceof TileLayer) {
+            if (layer instanceof TileLayer && !bMouseIsDragging) {
                 Tile newTile = ((TileLayer)layer).getTileAt(tile.x, tile.y);
                 setCurrentTile(newTile);
             } else if (layer instanceof ObjectGroup) {
@@ -853,6 +851,7 @@ public class MapEditor implements ActionListener, MouseListener,
         Point tile = mapView.screenToTileCoords(e.getX(), e.getY());
         mouseButton = e.getButton();
         bMouseIsDown = true;
+        bMouseIsDragging = false;
         mousePressLocation = mapView.screenToTileCoords(e.getX(), e.getY());
         mouseInitialPressLocation = mousePressLocation;
 
@@ -885,8 +884,6 @@ public class MapEditor implements ActionListener, MouseListener,
     }
 
     public void mouseReleased(MouseEvent event) {
-        mouseButton = MouseEvent.NOBUTTON;
-        bMouseIsDown = false;
         MapLayer layer = getCurrentLayer();
         Point limp = mouseInitialPressLocation;
 
@@ -905,7 +902,31 @@ public class MapEditor implements ActionListener, MouseListener,
         } else if (currentPointerState == PS_PAINT) {
             currentBrush.endPaint();
         }
+       
+       
+       //STAMP
+       if (bMouseIsDragging && mouseButton == MouseEvent.BUTTON3 &&
+               getCurrentLayer() instanceof TileLayer &&
+               currentPointerState == PS_PAINT)
+       {
+           Point tile = mapView.screenToTileCoords(event.getX(), event.getY());
+           int minx = Math.min(limp.x, tile.x);
+           int miny = Math.min(limp.y, tile.y);
 
+           Rectangle bounds = new Rectangle(
+                   minx, miny,
+                   (Math.max(limp.x, tile.x) - minx)+1,
+                   (Math.max(limp.y, tile.y) - miny)+1);
+
+           // Right mouse button dragged: create and set custom brush
+           MultilayerPlane mlp =
+               new MultilayerPlane(bounds.width, bounds.height);
+           TileLayer brushLayer = new TileLayer(bounds);
+           brushLayer.copyFrom(getCurrentLayer());
+           mlp.addLayer(brushLayer);
+           setBrush(new CustomBrush(mlp));
+       }
+       
         if (paintEdit != null) {
             if (layer != null) {
                 try {
@@ -918,6 +939,10 @@ public class MapEditor implements ActionListener, MouseListener,
             }
             paintEdit = null;
         }
+        
+        mouseButton = MouseEvent.NOBUTTON;
+        bMouseIsDown = false;
+        bMouseIsDragging = false;
     }
 
     public void mouseMoved(MouseEvent e) {
@@ -939,35 +964,9 @@ public class MapEditor implements ActionListener, MouseListener,
         mousePressLocation = mapView.screenToTileCoords(e.getX(), e.getY());
         Point tile = mapView.screenToTileCoords(e.getX(), e.getY());
 
-        if (mouseButton == MouseEvent.BUTTON3 &&
-                getCurrentLayer() instanceof TileLayer &&
-                currentPointerState == PS_PAINT)
-        {
-            Point limp = mouseInitialPressLocation;
-            int minx = Math.min(limp.x, tile.x);
-            int miny = Math.min(limp.y, tile.y);
-            /*Rectangle oldArea = null;
-
-            if (currentBrush instanceof CustomBrush) {
-                oldArea = currentBrush.getBounds();
-            }*/
-
-            Rectangle bounds = new Rectangle(
-                    minx, miny,
-                    (Math.max(limp.x, tile.x) - minx)+1,
-                    (Math.max(limp.y, tile.y) - miny)+1);
-
-            // Right mouse button dragged: create and set custom brush
-            MultilayerPlane mlp =
-                new MultilayerPlane(bounds.width, bounds.height);
-            TileLayer brushLayer = new TileLayer(bounds);
-            brushLayer.copyFrom(getCurrentLayer());
-            mlp.addLayer(brushLayer);
-            setBrush(new CustomBrush(mlp));
-        }
-        else {
-            doMouse(e);
-        }
+        bMouseIsDragging = true;
+        
+        doMouse(e);
 
         if (currentMap.inBounds(tile.x, tile.y)) {
             tileCoordsLabel.setText(String.valueOf(tile.x) + ", " + tile.y);
@@ -982,14 +981,18 @@ public class MapEditor implements ActionListener, MouseListener,
         if (prefs.getBoolean("cursorhighlight", true)) {
             Rectangle redraw = cursorHighlight.getBounds();
             Rectangle brushRedraw = currentBrush.getBounds();
-
+            
             brushRedraw.x = tile.x - brushRedraw.width / 2;
             brushRedraw.y = tile.y - brushRedraw.height / 2;
 
             if (!redraw.equals(brushRedraw)) {
             	mapView.repaintRegion(redraw);
             	cursorHighlight.setOffset(brushRedraw.x, brushRedraw.y);
+                //cursorHighlight.selectRegion(currentBrush.getShape());
             	mapView.repaintRegion(brushRedraw);
+            	/*if(currentBrush instanceof CustomBrush) {
+            		mapView.paintSubMap(currentBrush, null, 0.5f);
+            	}*/
             }
         }
     }
@@ -1026,15 +1029,15 @@ public class MapEditor implements ActionListener, MouseListener,
         }
     }
 
-    // Todo: Most if not all of the below should be moved into action objects,
-    // Todo: and properly internationalized.
+    // TODO: Most if not all of the below should be moved into action objects,
+    // TODO: and properly internationalized.
     private void handleEvent(ActionEvent event) {
         String command = event.getActionCommand();
 
-        if (command.equals("Brush...")) {
+        if (command.equals(Resources.getString("menu.edit.brush"))) {
             BrushDialog bd = new BrushDialog(this, appFrame, currentBrush);
             bd.setVisible(true);
-        } else if (command.equals("New Tileset...")) {
+        } else if (command.equals(Resources.getString("menu.tilesets.new"))) {
             if (currentMap != null) {
                 NewTilesetDialog dialog =
                     new NewTilesetDialog(appFrame, currentMap);
@@ -1043,7 +1046,7 @@ public class MapEditor implements ActionListener, MouseListener,
                     currentMap.addTileset(newSet);
                 }
             }
-        } else if (command.equals("Import Tileset...")) {
+        } else if (command.equals(Resources.getString("menu.tilesets.import"))) {
             if (currentMap != null) {
                 JFileChooser ch = new JFileChooser(currentMap.getFilename());
                 MapReader[] readers = pluginLoader.getReaders();
@@ -1071,51 +1074,51 @@ public class MapEditor implements ActionListener, MouseListener,
                     }
                 }
             }
-        } else if (command.equals("Tileset Manager")) {
+        } else if (command.equals(Resources.getString("menu.tilesets.manager"))) {
             if (currentMap != null) {
                 TilesetManager manager = new TilesetManager(appFrame, currentMap);
                 manager.setVisible(true);
             }
-        } else if (command.equals("Save as Image...")) {
+        } else if (command.equals(Resources.getString("menu.file.image"))) {
             if (currentMap != null) {
                 saveMapImage(null);
             }
-        } else if (command.equals("Properties")) {
+        } else if (command.equals(Resources.getString("menu.map.properties"))) {
             PropertiesDialog pd = new PropertiesDialog(appFrame,
                     currentMap.getProperties());
             pd.setTitle(Resources.getString("dialog.properties.map.title"));
             pd.getProps();
-        } else if (command.equals("Layer Properties")) {
+        } else if (command.equals(Resources.getString("menu.layer.properties"))) {
             MapLayer layer = getCurrentLayer();
             PropertiesDialog lpd =
                 new PropertiesDialog(appFrame, layer.getProperties());
-            lpd.setTitle(layer.getName() + " Properties");
+            lpd.setTitle(layer.getName() + " " + Resources.getString("dialog.properties.title"));
             lpd.getProps();
-        } else if (command.equals("Show Boundaries") ||
+        } else if (command.equals(Resources.getString("menu.view.boundaries")) ||
                 command.equals("Hide Boundaries")) {
             mapView.toggleMode(MapView.PF_BOUNDARYMODE);
-        } else if (command.equals("Show Grid")) {
+        } else if (command.equals(Resources.getString("menu.view.grid"))) {
             // Toggle grid
             mapView.toggleMode(MapView.PF_GRIDMODE);
-        } else if (command.equals("Show Coordinates")) {
+        } else if (command.equals(Resources.getString("menu.view.coordinates"))) {
             // Toggle coordinates
             mapView.toggleMode(MapView.PF_COORDINATES);
             mapView.repaint();
-        } else if (command.equals("Highlight Cursor")) {
+        } else if (command.equals(Resources.getString("menu.view.cursor"))) {
             prefs.putBoolean("cursorhighlight", cursorMenuItem.isSelected());
             cursorHighlight.setVisible(cursorMenuItem.isSelected());
-        } else if (command.equals("Resize")) {
+        } else if (command.equals(Resources.getString("menu.map.resize"))) {
             ResizeDialog rd = new ResizeDialog(appFrame, this);
             rd.setVisible(true);
-        }  else if (command.equals("Search")) {
+        }  else if (command.equals(Resources.getString("menu.map.search"))) {
             SearchDialog sd = new SearchDialog(appFrame, currentMap);
             sd.setVisible(true);
-        } else if (command.equals("About Tiled")) {
+        } else if (command.equals(Resources.getString("menu.help.about"))) {
             if (aboutDialog == null) {
                 aboutDialog = new AboutDialog(appFrame);
             }
             aboutDialog.setVisible(true);
-        } else if (command.equals("About Plug-ins")) {
+        } else if (command.equals(Resources.getString("menu.help.plugins"))) {
             PluginDialog pluginDialog =
                 new PluginDialog(appFrame, pluginLoader);
             pluginDialog.setVisible(true);
@@ -1125,7 +1128,7 @@ public class MapEditor implements ActionListener, MouseListener,
             if (file.length() > 0) {
                 loadMap(file);
             }
-        } else if (command.equals("Preferences...")) {
+        } else if (command.equals(Resources.getString("menu.edit.preferences"))) {
             ConfigurationDialog d = new ConfigurationDialog(appFrame);
             d.configure();
         } else {
@@ -1207,8 +1210,8 @@ public class MapEditor implements ActionListener, MouseListener,
 
     private class UndoAction extends AbstractAction {
         public UndoAction() {
-            super("Undo");
-            putValue(SHORT_DESCRIPTION, "Undo one action");
+            super(Resources.getString("action.history.undo.name"));
+            putValue(SHORT_DESCRIPTION, Resources.getString("action.history.undo.tooltip"));
             putValue(ACCELERATOR_KEY,
                     KeyStroke.getKeyStroke("control Z"));
         }
@@ -1221,8 +1224,8 @@ public class MapEditor implements ActionListener, MouseListener,
 
     private class RedoAction extends AbstractAction {
         public RedoAction() {
-            super("Redo");
-            putValue(SHORT_DESCRIPTION, "Redo one action");
+            super(Resources.getString("action.history.redo.name"));
+            putValue(SHORT_DESCRIPTION, Resources.getString("action.history.redo.tooltip"));
             putValue(ACCELERATOR_KEY,
                     KeyStroke.getKeyStroke("control Y"));
         }
@@ -1239,35 +1242,35 @@ public class MapEditor implements ActionListener, MouseListener,
             this.transform = transform;
             switch (transform) {
                 case MapLayer.ROTATE_90:
-                    putValue(NAME, "Rotate 90 degrees CW");
+                    putValue(NAME, Resources.getString("action.layer.transform.rotate90.name"));
                     putValue(SHORT_DESCRIPTION,
-                            "Rotate layer 90 degrees clockwise");
+                    		Resources.getString("action.layer.transform.rotate90.tooltip"));
                     putValue(SMALL_ICON,
                             Resources.getIcon("gimp-rotate-90-16.png"));
                     break;
                 case MapLayer.ROTATE_180:
-                    putValue(NAME, "Rotate 180 degrees CW");
+                    putValue(NAME, Resources.getString("action.layer.transform.rotate180.name"));
                     putValue(SHORT_DESCRIPTION,
-                            "Rotate layer 180 degrees clockwise");
+                    		Resources.getString("action.layer.transform.rotate180.tooltip"));
                     putValue(SMALL_ICON,
                             Resources.getIcon("gimp-rotate-180-16.png"));
                     break;
                 case MapLayer.ROTATE_270:
-                    putValue(NAME, "Rotate 90 degrees CCW");
+                    putValue(NAME, Resources.getString("action.layer.transform.rotate270.name"));
                     putValue(SHORT_DESCRIPTION,
-                            "Rotate layer 90 degrees counterclockwise");
+                    		Resources.getString("action.layer.transform.rotate270.tooltip"));
                     putValue(SMALL_ICON,
                             Resources.getIcon("gimp-rotate-270-16.png"));
                     break;
                 case MapLayer.MIRROR_VERTICAL:
-                    putValue(NAME, "Flip vertically");
-                    putValue(SHORT_DESCRIPTION, "Flip layer vertically");
+                    putValue(NAME, Resources.getString("action.layer.transform.vertical.name"));
+                    putValue(SHORT_DESCRIPTION, Resources.getString("action.layer.transform.vertical.tooltip"));
                     putValue(SMALL_ICON,
                             Resources.getIcon("gimp-flip-vertical-16.png"));
                     break;
                 case MapLayer.MIRROR_HORIZONTAL:
-                    putValue(NAME, "Flip horizontally");
-                    putValue(SHORT_DESCRIPTION, "Flip layer horizontally");
+                    putValue(NAME, Resources.getString("action.layer.transform.horizontal.name"));
+                    putValue(SHORT_DESCRIPTION, Resources.getString("action.layer.transform.horizontal.tooltip"));
                     putValue(SMALL_ICON,
                             Resources.getIcon("gimp-flip-horizontal-16.png"));
                     break;
@@ -1518,7 +1521,7 @@ public class MapEditor implements ActionListener, MouseListener,
             if (currentMap != null && clipboardLayer != null) {
                 Vector layersBefore = currentMap.getLayerVector();
                 MapLayer ml = createLayerCopy(clipboardLayer);
-                ml.setName("Layer " + currentMap.getTotalLayers());
+                ml.setName(Resources.getString("general.layer.layer")+" " + currentMap.getTotalLayers());
                 currentMap.addLayer(ml);
                 undoSupport.postEdit(
                         new MapLayerStateEdit(currentMap, layersBefore,
@@ -1593,6 +1596,20 @@ public class MapEditor implements ActionListener, MouseListener,
 
     public void setBrush(AbstractBrush b) {
         currentBrush = b;
+        
+        Rectangle brushRedraw = currentBrush.getBounds();
+        
+        //make sure it's clean
+        cursorHighlight.setOffset(0,0);
+        
+        //resize and select the region
+        cursorHighlight.resize(brushRedraw.width, brushRedraw.height,0,0);
+        cursorHighlight.selectRegion(currentBrush.getShape());
+        /*if(currentBrush instanceof CustomBrush) {
+        	cursorHighlight.setVisible(false);
+        } else {
+        	cursorHighlight.setVisible(true);
+        }*/
     }
 
     public void updateTitle() {
@@ -1647,7 +1664,7 @@ public class MapEditor implements ActionListener, MouseListener,
                 return true;
             } else {
                 JOptionPane.showMessageDialog(appFrame,
-                        "Unsupported map format",
+                		Resources.getString("general.file.failed"),
                         Resources.getString("dialog.openmap.error.title"),
                         JOptionPane.ERROR_MESSAGE);
             }
@@ -1707,46 +1724,6 @@ public class MapEditor implements ActionListener, MouseListener,
         }
     }
 
-    public void openMap() {
-        // Start at the location of the most recently loaded map file
-        String startLocation = prefs.node("recent").get("file0", "");
-
-        JFileChooser ch = new JFileChooser(startLocation);
-
-        try {
-            MapReader[] readers = pluginLoader.getReaders();
-            for(int i = 0; i < readers.length; i++) {
-                ch.addChoosableFileFilter(new TiledFileFilter(
-                            readers[i].getFilter(), readers[i].getName()));
-            }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(appFrame,
-                    "Error while loading plugins: " + e.getMessage(),
-                    "Error while loading map",
-                    JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-        }
-
-        ch.addChoosableFileFilter(
-                new TiledFileFilter(TiledFileFilter.FILTER_TMX));
-
-        int ret = ch.showOpenDialog(appFrame);
-        if (ret == JFileChooser.APPROVE_OPTION) {
-            loadMap(ch.getSelectedFile().getAbsolutePath());
-        }
-    }
-
-    /**
-     * Opens the new map dialog, allowing the user to start editing a new map.
-     */
-    public void newMap() {
-        NewMapDialog nmd = new NewMapDialog(appFrame);
-        Map newMap = nmd.create();
-        if (newMap != null) {
-            setCurrentMap(newMap);
-        }
-    }
-
     private static MapLayer createLayerCopy(MapLayer layer) {
         if (layer instanceof TileLayer) {
             return new TileLayer((TileLayer)layer);
@@ -1781,6 +1758,11 @@ public class MapEditor implements ActionListener, MouseListener,
         currentMap = newMap;
         boolean mapLoaded = currentMap != null;
 
+        //Create a default brush (protect against a bug with custom brushes)
+        ShapeBrush sb = new ShapeBrush();
+        sb.makeQuadBrush(new Rectangle(0, 0, 1, 1));
+        setBrush(sb);
+        
         if (!mapLoaded) {
             mapEventAdapter.fireEvent(MapEventAdapter.ME_MAPINACTIVE);
             mapView = null;
@@ -1810,7 +1792,7 @@ public class MapEditor implements ActionListener, MouseListener,
             gridMenuItem.setState(mapView.getMode(MapView.PF_GRIDMODE));
             coordinatesMenuItem.setState(
                     mapView.getMode(MapView.PF_COORDINATES));
-
+            
             Vector tilesets = currentMap.getTilesets();
             if (!tilesets.isEmpty()) {
                 tilePalettePanel.setTilesets(tilesets);
@@ -1846,7 +1828,7 @@ public class MapEditor implements ActionListener, MouseListener,
             miniMap.setView(MapView.createViewforMap(currentMap));
         }
         */
-
+        
         if (currentMap != null) {
             currentMap.addLayerSpecial(cursorHighlight);
         }

@@ -54,21 +54,20 @@ public class RandomBrush extends ShapeBrush
      * is a random number, to determine if a specific tile should be
      * painted or not
      *
-     * @see ShapeBrush#commitPaint
+     * @see ShapeBrush#doPaint
      * @return a Rectangle of the bounds of the area that was modified
      * @param mp The multilayer plane that will be modified
      * @param x  The x-coordinate where the click occurred.
      * @param y  The y-coordinate where the click occurred.
      */
-    public Rectangle commitPaint(MultilayerPlane mp, int x, int y,
-            int initLayer)
+    public Rectangle doPaint(int x, int y)
     {
         Rectangle bounds = shape.getBounds();
         int centerx = x - bounds.width / 2;
         int centery = y - bounds.height / 2;
 
         for (int i = 0; i < numLayers; i++) {
-            TileLayer tl = (TileLayer)mp.getLayer(initLayer - i);
+            TileLayer tl = (TileLayer)affectedMp.getLayer(initLayer - i);
             if (tl != null) {
                 for (int cy = 0; cy <= bounds.height; cy++) {
                     for (int cx = 0; cx < bounds.width; cx++) {
