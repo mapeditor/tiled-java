@@ -99,6 +99,9 @@ Suggestor:  Rainer Deyke <root@rainerdeyke.com>
 Date:       24/09/04
 Summary:    A random brush that randomly picks one of several tiles to draw.
 State:      Implemented
+            (Actually a brush was implemented that draws a single tile in
+            random locations, not a brush that picks a random tile to draw. The
+            latter is probably what Rainer Deyke meant here)
 
 - 19 --------------------------------------------------------------------------
 Suggestor:  Rainer Deyke <root@rainerdeyke.com>
@@ -107,13 +110,15 @@ Summary:    A block tool that lets me draw blocks of tiles with a single mouse
             drag. I can fake this with select-and-pour, but a block tool would
             be much more convenient.
 State:      Implemented
+            (Why is this marked as implemented? As far as I know we do not have
+            the block tool described here)
 
 - 20 --------------------------------------------------------------------------
 Suggestor:  Rainer Deyke <root@rainerdeyke.com>
 Date:       24/09/04
 Summary:    The ability to place objects, or failing that, the ability to
             attach properties to individual map cells.
-State:      Object support is planned for 0.6.0
+State:      Object support is planned for 0.7.0
 
 - 21 --------------------------------------------------------------------------
 Suggestor:  Rainer Deyke <root@rainerdeyke.com>
@@ -139,6 +144,11 @@ Suggestor:  Radomir Dopieralski <sheep@atos.wmid.amu.edu.pl>
 Date:       29/10/04
 Summary:    Tilesets should allow a designated default tile image.
 State:      Interesting.
+Problem:    What would such a default tile image be used for? As there can be
+            multiple tilesets used by a map I do not think it's very useful to
+            define a default tile for a tileset. Maybe there could be an option
+            for a default layer tile? This would be the tile which for the
+            chosen layer is drawn in any place that does not define a tile.
 
 - 26 --------------------------------------------------------------------------
 Suggestor:  danter
@@ -166,7 +176,7 @@ Problems:   * Get rid of #getNullTile in favour of actually using null. - DONE
             * Do not support embedding of tilesets or tile images and neither
               multiple external individual tile images in a single tileset.
             * Remove option for XML-based layer data storage.
-            * Do not support tile image rotation or flipping. - IN PROGRESS
+            * Do not support tile image rotation or flipping. - DONE
             * Rename HexMapView to HexagonalMapView, IsoMapView to
               IsometricMapView and OrthoMapView to OrthographicMapView.
             * Remove the zoom argument from all the MapView drawing methods

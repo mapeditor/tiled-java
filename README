@@ -1,5 +1,5 @@
 ------------------------
- TILED MAP EDITOR 0.5.x
+ TILED MAP EDITOR 0.6.x
 ------------------------
 
 This is Tiled, a general purpose tiled map editor. Although this release is
@@ -17,7 +17,7 @@ Bugtracker:  http://bugs.mapeditor.org/
 -----------------
 
 - Multilayer, layers can be changed around dynamically
-- Multiple orientations (orthographic, isometric, and hexagonal at the moment)
+- Multiple orientations (orthographic and isometric at the moment)
 - Tiles can be taller than the default tile height
 - Easy to use drawing operations
 - Universal XML-based map and tileset file formats
@@ -50,3 +50,4 @@ Bugtracker:  http://bugs.mapeditor.org/
 - Rainer Deyke for useful suggestions and many code contributions
 - Matthias Hartmann for the German translation
 - ElvenProgrammer for the Italian translation
+- Akhres Nader for the French translation
