@@ -733,11 +733,6 @@ public class MapEditor implements ActionListener, MouseListener,
         return appFrame;
     }
 
-    public void updateHistory() {
-        //editHistoryList.setListData(undoHandler.getEdits());
-        updateTitle();
-    }
-
     private void doMouse(MouseEvent event) {
         if (currentMap == null || currentLayer < 0) {
             return;
@@ -1729,7 +1724,7 @@ public class MapEditor implements ActionListener, MouseListener,
         currentMap = newMap;
         boolean mapLoaded = currentMap != null;
 
-        //Create a default brush (protect against a bug with custom brushes)
+        // Create a default brush (protect against a bug with custom brushes)
         ShapeBrush sb = new ShapeBrush();
         sb.makeQuadBrush(new Rectangle(0, 0, 1, 1));
         setBrush(sb);
@@ -1807,7 +1802,6 @@ public class MapEditor implements ActionListener, MouseListener,
         undoHandler.discardAllEdits();
         updateLayerTable();
         updateTitle();
-        updateHistory();
     }
 
     public void setCurrentLayer(int index) {

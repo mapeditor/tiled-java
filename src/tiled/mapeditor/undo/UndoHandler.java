@@ -42,14 +42,24 @@ public class UndoHandler extends UndoManager
     }
 
     /**
-     * Overriden to update the undo/redo actions.
+     * Overridden to update the undo/redo actions.
+     * @see UndoManager#discardAllEdits()
+     */
+    public synchronized void discardAllEdits()
+    {
+        super.discardAllEdits();
+        updateActions();
+    }
+
+    /**
+     * Overridden to update the undo/redo actions.
      * @see UndoManager#undo()
      * @throws CannotUndoException
      */
     public synchronized void undo() throws CannotUndoException {
         super.undo();
         updateActions();
-        editor.updateHistory();
+        editor.updateTitle();
 
         // todo: Updating of the mapview should ultimately happen
         // todo: automatically based on the changes made to the map.
@@ -64,14 +74,14 @@ public class UndoHandler extends UndoManager
     public synchronized void redo() throws CannotRedoException {
         super.redo();
         updateActions();
-        editor.updateHistory();
+        editor.updateTitle();
         editor.getMapView().repaint();
     }
 
     public void undoableEditHappened(UndoableEditEvent e) {
         super.undoableEditHappened(e);
         updateActions();
-        editor.updateHistory();
+        editor.updateTitle();
     }
 
     public boolean isAllSaved() {
