@@ -116,7 +116,7 @@ public class SaveAsAction extends AbstractAction
             // todo: this could probably be done a bit neater
             editor.getCurrentMap().setFilename(filename);
             editor.updateRecent(filename);
-            editor.getUndoStack().commitSave();
+            editor.getUndoHandler().commitSave();
             editor.updateTitle();
         }
         catch (Exception e) {

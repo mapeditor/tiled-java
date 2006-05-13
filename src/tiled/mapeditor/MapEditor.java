@@ -74,7 +74,7 @@ public class MapEditor implements ActionListener, MouseListener,
 
     private Map currentMap;
     private MapView mapView;
-    private final UndoStack undoStack;
+    private final UndoHandler undoHandler;
     private final UndoableEditSupport undoSupport;
     private final MapEventAdapter mapEventAdapter;
     private final PluginClassLoader pluginLoader;
@@ -99,7 +99,6 @@ public class MapEditor implements ActionListener, MouseListener,
     private JPanel      dataPanel;
     private JPanel      statusBar;
     private JMenuBar    menuBar;
-    private JMenuItem   undoMenuItem, redoMenuItem;
     private JCheckBoxMenuItem gridMenuItem, boundaryMenuItem, cursorMenuItem;
     private JCheckBoxMenuItem coordinatesMenuItem;
     private JMenu       recentMenu;
@@ -131,7 +130,6 @@ public class MapEditor implements ActionListener, MouseListener,
     private final SaveAsAction saveAsAction;
     private final Action exitAction;
     private final Action zoomInAction, zoomOutAction, zoomNormalAction;
-    private final Action undoAction, redoAction;
     private final Action rot90Action, rot180Action, rot270Action;
     private final Action flipHorAction, flipVerAction;
     private final Action selectAllAction, inverseAction, cancelSelectionAction;
@@ -161,9 +159,9 @@ public class MapEditor implements ActionListener, MouseListener,
         curEyed = new Cursor(Cursor.CROSSHAIR_CURSOR);
         curDefault = new Cursor(Cursor.DEFAULT_CURSOR);
 
-        undoStack = new UndoStack();
+        undoHandler = new UndoHandler(this);
         undoSupport = new UndoableEditSupport();
-        undoSupport.addUndoableEditListener(new UndoAdapter());
+        undoSupport.addUndoableEditListener(undoHandler);
 
         cursorHighlight = new SelectionLayer(1, 1);
         cursorHighlight.select(0, 0);
@@ -178,8 +176,6 @@ public class MapEditor implements ActionListener, MouseListener,
         zoomInAction = new ZoomInAction();
         zoomOutAction = new ZoomOutAction();
         zoomNormalAction = new ZoomNormalAction();
-        undoAction = new UndoAction();
-        redoAction = new RedoAction();
         rot90Action = new LayerTransformAction(MapLayer.ROTATE_90);
         rot180Action = new LayerTransformAction(MapLayer.ROTATE_180);
         rot270Action = new LayerTransformAction(MapLayer.ROTATE_270);
@@ -277,11 +273,6 @@ public class MapEditor implements ActionListener, MouseListener,
         fileMenu.add(close);
         fileMenu.add(new TMenuItem(exitAction));
 
-        undoMenuItem = new TMenuItem(undoAction);
-        redoMenuItem = new TMenuItem(redoAction);
-        undoMenuItem.setEnabled(false);
-        redoMenuItem.setEnabled(false);
-
         JMenuItem copyMenuItem = new TMenuItem(new CopyAction());
         JMenuItem cutMenuItem = new TMenuItem(new CutAction());
         JMenuItem pasteMenuItem = new TMenuItem(new PasteAction());
@@ -299,8 +290,8 @@ public class MapEditor implements ActionListener, MouseListener,
         mapEventAdapter.addListener(transformSub);
 
         JMenu editMenu = new JMenu(Resources.getString("menu.edit"));
-        editMenu.add(undoMenuItem);
-        editMenu.add(redoMenuItem);
+        editMenu.add(new TMenuItem(undoHandler.getUndoAction()));
+        editMenu.add(new TMenuItem(undoHandler.getRedoAction()));
         editMenu.addSeparator();
         editMenu.add(copyMenuItem);
         editMenu.add(cutMenuItem);
@@ -310,24 +301,23 @@ public class MapEditor implements ActionListener, MouseListener,
         editMenu.addSeparator();
         editMenu.add(createMenuItem(Resources.getString("menu.edit.preferences"),
                     null, Resources.getString("menu.edit.preferences.tooltip"), null));
-        editMenu.add(createMenuItem(Resources.getString("menu.edit.brush"), null, 
+        editMenu.add(createMenuItem(Resources.getString("menu.edit.brush"), null,
         			Resources.getString("menu.edit.brush.tooltip"),
                     "control B"));
 
-        mapEventAdapter.addListener(undoMenuItem);
-        mapEventAdapter.addListener(redoMenuItem);
+        // todo : enable/disable undo/redo depending on whether a map is loaded
         mapEventAdapter.addListener(copyMenuItem);
         mapEventAdapter.addListener(cutMenuItem);
         mapEventAdapter.addListener(pasteMenuItem);
 
 
         JMenu mapMenu = new JMenu(Resources.getString("menu.map"));
-        mapMenu.add(createMenuItem(Resources.getString("menu.map.resize"), null, 
+        mapMenu.add(createMenuItem(Resources.getString("menu.map.resize"), null,
         		Resources.getString("menu.map.resize.tooltip")));
         mapMenu.add(createMenuItem(Resources.getString("menu.map.search"), null,
         		Resources.getString("menu.map.search.tooltip")));
         mapMenu.addSeparator();
-        mapMenu.add(createMenuItem(Resources.getString("menu.map.properties"), null, 
+        mapMenu.add(createMenuItem(Resources.getString("menu.map.properties"), null,
         		Resources.getString("menu.map.properties.tooltip")));
         mapEventAdapter.addListener(mapMenu);
 
@@ -711,11 +701,11 @@ public class MapEditor implements ActionListener, MouseListener,
     }
 
     /**
-     * Returns the {@link UndoStack} instance.
+     * Returns the {@link UndoHandler} instance.
      * @return the undo stack
      */
-    public UndoStack getUndoStack() {
-        return undoStack;
+    public UndoHandler getUndoHandler() {
+        return undoHandler;
     }
 
     /**
@@ -735,12 +725,8 @@ public class MapEditor implements ActionListener, MouseListener,
         return appFrame;
     }
 
-    private void updateHistory() {
-        //editHistoryList.setListData(undoStack.getEdits());
-        undoMenuItem.setText(undoStack.getUndoPresentationName());
-        redoMenuItem.setText(undoStack.getRedoPresentationName());
-        undoMenuItem.setEnabled(undoStack.canUndo());
-        redoMenuItem.setEnabled(undoStack.canRedo());
+    public void updateHistory() {
+        //editHistoryList.setListData(undoHandler.getEdits());
         updateTitle();
     }
 
@@ -902,8 +888,8 @@ public class MapEditor implements ActionListener, MouseListener,
         } else if (currentPointerState == PS_PAINT) {
             currentBrush.endPaint();
         }
-       
-       
+
+
        //STAMP
        if (bMouseIsDragging && mouseButton == MouseEvent.BUTTON3 &&
                getCurrentLayer() instanceof TileLayer &&
@@ -926,7 +912,7 @@ public class MapEditor implements ActionListener, MouseListener,
            mlp.addLayer(brushLayer);
            setBrush(new CustomBrush(mlp));
        }
-       
+
         if (paintEdit != null) {
             if (layer != null) {
                 try {
@@ -939,7 +925,7 @@ public class MapEditor implements ActionListener, MouseListener,
             }
             paintEdit = null;
         }
-        
+
         mouseButton = MouseEvent.NOBUTTON;
         bMouseIsDown = false;
         bMouseIsDragging = false;
@@ -965,7 +951,7 @@ public class MapEditor implements ActionListener, MouseListener,
         Point tile = mapView.screenToTileCoords(e.getX(), e.getY());
 
         bMouseIsDragging = true;
-        
+
         doMouse(e);
 
         if (currentMap.inBounds(tile.x, tile.y)) {
@@ -981,7 +967,7 @@ public class MapEditor implements ActionListener, MouseListener,
         if (prefs.getBoolean("cursorhighlight", true)) {
             Rectangle redraw = cursorHighlight.getBounds();
             Rectangle brushRedraw = currentBrush.getBounds();
-            
+
             brushRedraw.x = tile.x - brushRedraw.width / 2;
             brushRedraw.y = tile.y - brushRedraw.height / 2;
 
@@ -1208,32 +1194,16 @@ public class MapEditor implements ActionListener, MouseListener,
         }
     }
 
-    private class UndoAction extends AbstractAction {
-        public UndoAction() {
-            super(Resources.getString("action.history.undo.name"));
-            putValue(SHORT_DESCRIPTION, Resources.getString("action.history.undo.tooltip"));
-            putValue(ACCELERATOR_KEY,
-                    KeyStroke.getKeyStroke("control Z"));
-        }
-        public void actionPerformed(ActionEvent evt) {
-            undoStack.undo();
-            updateHistory();
-            mapView.repaint();
-        }
-    }
-
-    private class RedoAction extends AbstractAction {
-        public RedoAction() {
-            super(Resources.getString("action.history.redo.name"));
-            putValue(SHORT_DESCRIPTION, Resources.getString("action.history.redo.tooltip"));
-            putValue(ACCELERATOR_KEY,
-                    KeyStroke.getKeyStroke("control Y"));
-        }
-        public void actionPerformed(ActionEvent evt) {
-            undoStack.redo();
-            updateHistory();
-            mapView.repaint();
-        }
+    /**
+     * Returns the map view. Currently only used by the {@link UndoHandler}
+     * to be able to order a repaint when doing an undo or redo. This should
+     * become obsolete when we add automatic repainting based on layer
+     * changes.
+     *
+     * @return the map view.
+     */
+    public MapView getMapView() {
+        return mapView;
     }
 
     private class LayerTransformAction extends AbstractAction {
@@ -1244,21 +1214,21 @@ public class MapEditor implements ActionListener, MouseListener,
                 case MapLayer.ROTATE_90:
                     putValue(NAME, Resources.getString("action.layer.transform.rotate90.name"));
                     putValue(SHORT_DESCRIPTION,
-                    		Resources.getString("action.layer.transform.rotate90.tooltip"));
+                            Resources.getString("action.layer.transform.rotate90.tooltip"));
                     putValue(SMALL_ICON,
                             Resources.getIcon("gimp-rotate-90-16.png"));
                     break;
                 case MapLayer.ROTATE_180:
                     putValue(NAME, Resources.getString("action.layer.transform.rotate180.name"));
                     putValue(SHORT_DESCRIPTION,
-                    		Resources.getString("action.layer.transform.rotate180.tooltip"));
+                            Resources.getString("action.layer.transform.rotate180.tooltip"));
                     putValue(SMALL_ICON,
                             Resources.getIcon("gimp-rotate-180-16.png"));
                     break;
                 case MapLayer.ROTATE_270:
                     putValue(NAME, Resources.getString("action.layer.transform.rotate270.name"));
                     putValue(SHORT_DESCRIPTION,
-                    		Resources.getString("action.layer.transform.rotate270.tooltip"));
+                            Resources.getString("action.layer.transform.rotate270.tooltip"));
                     putValue(SMALL_ICON,
                             Resources.getIcon("gimp-rotate-270-16.png"));
                     break;
@@ -1531,13 +1501,6 @@ public class MapEditor implements ActionListener, MouseListener,
         }
     }
 
-    private class UndoAdapter implements UndoableEditListener {
-        public void undoableEditHappened(UndoableEditEvent evt) {
-            undoStack.addEdit(evt.getEdit());
-            updateHistory();
-        }
-    }
-
     private void pour(TileLayer layer, int x, int y,
             Tile newTile, Tile oldTile) {
         if (newTile == oldTile || layer.getLocked()) return;
@@ -1596,12 +1559,12 @@ public class MapEditor implements ActionListener, MouseListener,
 
     public void setBrush(AbstractBrush b) {
         currentBrush = b;
-        
+
         Rectangle brushRedraw = currentBrush.getBounds();
-        
+
         //make sure it's clean
         cursorHighlight.setOffset(0,0);
-        
+
         //resize and select the region
         cursorHighlight.resize(brushRedraw.width, brushRedraw.height,0,0);
         cursorHighlight.selectRegion(currentBrush.getShape());
@@ -1632,8 +1595,8 @@ public class MapEditor implements ActionListener, MouseListener,
     }
 
     public boolean unsavedChanges() {
-        return currentMap != null && undoStack.canUndo() &&
-                !undoStack.isAllSaved();
+        return currentMap != null && undoHandler.canUndo() &&
+                !undoHandler.isAllSaved();
     }
 
     /**
@@ -1762,7 +1725,7 @@ public class MapEditor implements ActionListener, MouseListener,
         ShapeBrush sb = new ShapeBrush();
         sb.makeQuadBrush(new Rectangle(0, 0, 1, 1));
         setBrush(sb);
-        
+
         if (!mapLoaded) {
             mapEventAdapter.fireEvent(MapEventAdapter.ME_MAPINACTIVE);
             mapView = null;
@@ -1792,7 +1755,7 @@ public class MapEditor implements ActionListener, MouseListener,
             gridMenuItem.setState(mapView.getMode(MapView.PF_GRIDMODE));
             coordinatesMenuItem.setState(
                     mapView.getMode(MapView.PF_COORDINATES));
-            
+
             Vector tilesets = currentMap.getTilesets();
             if (!tilesets.isEmpty()) {
                 tilePalettePanel.setTilesets(tilesets);
@@ -1828,12 +1791,12 @@ public class MapEditor implements ActionListener, MouseListener,
             miniMap.setView(MapView.createViewforMap(currentMap));
         }
         */
-        
+
         if (currentMap != null) {
             currentMap.addLayerSpecial(cursorHighlight);
         }
 
-        undoStack.discardAllEdits();
+        undoHandler.discardAllEdits();
         updateLayerTable();
         updateTitle();
         updateHistory();

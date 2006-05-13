@@ -79,7 +79,7 @@ public class OrthoMapView extends MapView
         if (tsize.width <= 0 || tsize.height <= 0) return;
         int toffset = (modeFlags & PF_GRIDMODE) != 0 ? 1 : 0;
         Polygon gridPoly = createGridPolygon(0, -tsize.height, 0);
-        
+
         // Determine area to draw from clipping rectangle
         Rectangle clipRect = g2d.getClipBounds();
         int startX = clipRect.x / tsize.width;
@@ -89,7 +89,7 @@ public class OrthoMapView extends MapView
         // (endY +2 for high tiles, could be done more properly)
 
         // Draw this map layer
-        for (int y = startY, gy = (startY + 1) * tsize.height + toffset;
+        for (int y = startY, gy = (startY + 1) * tsize.height;
                 y < endY; y++, gy += tsize.height) {
             for (int x = startX, gx = startX * tsize.width + toffset;
                     x < endX; x++, gx += tsize.width) {

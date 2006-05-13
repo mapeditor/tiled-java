@@ -130,7 +130,7 @@ public class TiledFileFilter extends FileFilter
         String filter = "";
 
         if (!exts.isEmpty()) {
-            filter = filter + " (";
+            filter += " (";
             Iterator itr = exts.iterator();
             while (itr.hasNext()) {
                 String ext = (String) itr.next();
@@ -140,7 +140,7 @@ public class TiledFileFilter extends FileFilter
                 }
             }
 
-            filter = filter + ")";
+            filter += ")";
         }
 
         return desc + filter;
