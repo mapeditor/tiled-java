@@ -23,6 +23,7 @@ UNDONE
 * Added support for "tile cutters"
 * Added global properties for tilesets (properties set for all tiles)
 * Added the ability to merge tile images when layers are merged
+* Added remembering of main window state as suggested by Dennis Spreen
 * Fixed tileset dialog so that it is now possible to change the tile height to
   something other than the tile height used by the map.
 * Fixed a bug when exporting a tileset with an external image

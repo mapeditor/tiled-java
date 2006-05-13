@@ -62,7 +62,7 @@ public final class Resources {
 
     /**
      * Loads the image using {@link #getImage(String)} and uses it to create
-     * a new {@link javax.swing.ImageIcon} instance.
+     * a new {@link ImageIcon} instance.
      *
      * @param filename the filename of the image relative from the
      *                 <code>resources</code> directory

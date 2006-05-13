@@ -209,6 +209,14 @@ public class MapEditor implements ActionListener, MouseListener,
 
         appFrame.setVisible(true);
 
+        // Restore the state of the main frame. This needs to happen after
+        // making the frame visible, otherwise it has no effect (in Linux).
+        Preferences mainDialogPrefs = prefs.node("dialog/main");
+        int state = mainDialogPrefs.getInt("state", Frame.NORMAL);
+        if (state != Frame.ICONIFIED) {
+            appFrame.setExtendedState(state);
+        }
+
         // Load plugins
         pluginLoader  = PluginClassLoader.getInstance();
         try {
