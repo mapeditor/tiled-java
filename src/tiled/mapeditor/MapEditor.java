@@ -483,9 +483,6 @@ public class MapEditor implements ActionListener, MouseListener,
     }
 
     private void createData() {
-        JToolBar tabsPanel = new JToolBar();
-        JTabbedPane paintPanel = new JTabbedPane();
-
         dataPanel = new JPanel(new BorderLayout());
 
         //navigation and tool options
@@ -567,9 +564,13 @@ public class MapEditor implements ActionListener, MouseListener,
         tilePalettePanel = new TilePalettePanel();
 
         JPanel brushesPanel = new JPanel();
+
+        JTabbedPane paintPanel = new JTabbedPane();
         paintPanel.add("Palette", tilePalettePanel);
         paintPanel.add("Brushes", brushesPanel);
         paintPanel.setSelectedIndex(1);
+
+        JToolBar tabsPanel = new JToolBar();
         tabsPanel.add(paintPanel);
 
         dataPanel.add(layerPanel);
@@ -1209,6 +1210,23 @@ public class MapEditor implements ActionListener, MouseListener,
         return mapView;
     }
 
+    /**
+     * Called when the editor is exiting.
+     */
+    public void shutdown() {
+        // Save the extended window state if the window isn't minimized
+        int extendedState = appFrame.getExtendedState();
+        prefs.node("dialog/main").putInt("state", extendedState);
+
+        // Allow the the tile palette dialog to save its prefs (because it's
+        // common to tweak this to a certain width for convenient tileset
+        // display)
+        // todo: would be nicer to introduce a ShutdownListener interface
+        if (tilePaletteDialog != null) {
+            tilePaletteDialog.shutdown();
+        }
+    }
+
     private class LayerTransformAction extends AbstractAction {
         private final int transform;
         public LayerTransformAction(int transform) {
@@ -1738,7 +1756,7 @@ public class MapEditor implements ActionListener, MouseListener,
             tileCoordsLabel.setPreferredSize(null);
             tileCoordsLabel.setText(" ");
             zoomLabel.setText(" ");
-            tilePalettePanel.setTilesets(null);
+            tilePalettePanel.setTileset(null);
             setCurrentTile(null);
             System.gc();
         } else {
@@ -1761,11 +1779,11 @@ public class MapEditor implements ActionListener, MouseListener,
 
             Vector tilesets = currentMap.getTilesets();
             if (!tilesets.isEmpty()) {
-                tilePalettePanel.setTilesets(tilesets);
                 TileSet first = (TileSet)tilesets.get(0);
+                tilePalettePanel.setTileset(first);
                 setCurrentTile(first.getFirstTile());
             } else {
-                tilePalettePanel.setTilesets(null);
+                tilePalettePanel.setTileset(null);
                 setCurrentTile(null);
             }
 

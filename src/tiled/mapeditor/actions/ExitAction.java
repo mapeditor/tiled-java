@@ -12,12 +12,10 @@
 
 package tiled.mapeditor.actions;
 
-import java.util.prefs.Preferences;
 import javax.swing.KeyStroke;
 
 import tiled.mapeditor.MapEditor;
 import tiled.mapeditor.Resources;
-import tiled.util.TiledConfiguration;
 
 /**
  * Exits the map editor.
@@ -35,11 +33,7 @@ public class ExitAction extends AbstractFileAction
     }
 
     protected void doPerformAction() {
-        // Save the extended window state if the window isn't minimized
-        Preferences prefs = TiledConfiguration.node("dialog/main");
-        int extendedState = editor.getAppFrame().getExtendedState();
-        prefs.putInt("state", extendedState);
-
+        editor.shutdown();
         System.exit(0);
     }
 }

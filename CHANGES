@@ -24,16 +24,19 @@ UNDONE
 * Added global properties for tilesets (properties set for all tiles)
 * Added the ability to merge tile images when layers are merged
 * Added remembering of main window state as suggested by Dennis Spreen
-* Fixed tileset dialog so that it is now possible to change the tile height to
-  something other than the tile height used by the map.
+* Added remembering of size and divider position to tile palette dialog
+* Fixed new tileset dialog so that it is now possible to change the tile height
+  to something other than the tile height used by the map
 * Fixed a bug when exporting a tileset with an external image
 * Fixed two cases of hanging when using the fill tool
 * Fixed tile palette bug of not accounting for gaps in tile ids (old bug)
+* Fixed tile palette attempting to display multiple selected tilesets
 * Fixed bug of adding a new tile even if cancelling out of new tile dialog
-* Fixed NPE when saving a map with no extension - default to .tmx
+* Fixed NullPointerException when saving a map with no extension
 * Fixed the zooming so that it keeps the center in place
 * Fixed exiting even when a request to save the changes failed
 * Fixed layer merging so that undo/redo of operation is functional
+* Fixed resetting of selected tileset in tile palette on layer changes
 * Rewrote configuration based on the Preferences class, no more tiled.conf
 * Cleaned up TileSet (removed checksumming and rotation/orienation code)
 

@@ -14,11 +14,10 @@ package tiled.mapeditor.widget;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.util.Vector;
 import javax.swing.JPanel;
 import javax.swing.Scrollable;
 import javax.swing.event.EventListenerList;
-import javax.swing.event.MouseInputListener;
+import javax.swing.event.MouseInputAdapter;
 
 import tiled.core.*;
 import tiled.mapeditor.util.*;
@@ -26,17 +25,29 @@ import tiled.mapeditor.util.*;
 /**
  * @version $Id$
  */
-public class TilePalettePanel extends JPanel implements Scrollable,
-       MouseInputListener
+public class TilePalettePanel extends JPanel implements Scrollable
 {
     private static final int TILES_PER_ROW = 4;
-    private Vector tilesets;
+    private TileSet tileset;
     private EventListenerList tileSelectionListeners;
 
     public TilePalettePanel() {
         tileSelectionListeners = new EventListenerList();
-        addMouseListener(this);
-        addMouseMotionListener(this);
+
+        MouseInputAdapter mouseInputAdapter = new MouseInputAdapter() {
+            public void mousePressed(MouseEvent e) {
+                Tile clickedTile = getTileAtPoint(e.getX(), e.getY());
+                if (clickedTile != null) {
+                    fireTileSelectionEvent(clickedTile);
+                }
+            }
+
+            public void mouseDragged(MouseEvent e) {
+                mousePressed(e);
+            }
+        };
+        addMouseListener(mouseInputAdapter);
+        addMouseMotionListener(mouseInputAdapter);
     }
 
     /**
@@ -68,32 +79,32 @@ public class TilePalettePanel extends JPanel implements Scrollable,
     }
 
     /**
-     * Change the tilesets displayed by this palette panel.
+     * Change the tileset displayed by this palette panel.
      */
-    public void setTilesets(Vector sets) {
-        tilesets = sets;
+    public void setTileset(TileSet tileset) {
+        this.tileset = tileset;
+        revalidate();
         repaint();
     }
 
     public Tile getTileAtPoint(int x, int y) {
-        Tile ret;
+        Tile ret = null;
 
-        // TODO: This code only works if one and only one tileset is selected
-        // from the list.
-        TileSet tileset = (TileSet)tilesets.get(0);
-        int twidth = tileset.getTileWidth() + 1;
-        int theight = tileset.getTileHeight() + 1;
-        int tx = x / twidth;
-        int ty = y / theight;
-        int tilesPerRow = (getWidth() - 1) / twidth;
-        int tileId = ty * tilesPerRow + tx;
+        if (tileset != null) {
+            int twidth = tileset.getTileWidth() + 1;
+            int theight = tileset.getTileHeight() + 1;
+            int tx = x / twidth;
+            int ty = y / theight;
+            int tilesPerRow = (getWidth() - 1) / twidth;
+            int tileId = ty * tilesPerRow + tx;
 
-        // Now that we're in the right "spot", find the next valid tile
-        // todo: Assumes to gab is so big that a tile can be found between the
-        // todo: right spot and the tile that was actually clicked, actually
-        // todo: I'm not sure whether this works at all. - Bjorn
-        while ((ret = tileset.getTile(tileId++)) == null) {
-            if (tileId > tileset.getMaxTileId()) break;
+            // Now that we're in the right "spot", find the next valid tile
+            // todo: Assumes to gab is so big that a tile can be found between the
+            // todo: right spot and the tile that was actually clicked, actually
+            // todo: I'm not sure whether this works at all. - Bjorn
+            while ((ret = tileset.getTile(tileId++)) == null) {
+                if (tileId > tileset.getMaxTileId()) break;
+            }
         }
 
         return ret;
@@ -104,36 +115,33 @@ public class TilePalettePanel extends JPanel implements Scrollable,
 
         paintBackground(g);
 
-        if (tilesets.size() <= 0) {
-            return;
-        }
+        if (tileset != null) {
+            // Draw the tiles
+            int twidth = tileset.getTileWidth() + 1;
+            int theight = tileset.getTileHeight() + 1;
+            int tilesPerRow = Math.max(1, (getWidth() - 1) / twidth);
 
-        for (int i = 0; i < tilesets.size(); i++) {
-            TileSet tileset = (TileSet) tilesets.get(i);
+            int startY = clip.y / theight;
+            int endY = (clip.y + clip.height) / theight + 1;
+            int tileAt = tilesPerRow * startY;
+            int gy = startY * theight;
 
-            if (tileset != null) {
-                // Draw the tiles
-                int twidth = tileset.getTileWidth() + 1;
-                int theight = tileset.getTileHeight() + 1;
-                int tilesPerRow = Math.max(1, (getWidth() - 1) / twidth);
-
-                int startY = clip.y / theight;
-                int endY = (clip.y + clip.height) / theight + 1;
-                int tileAt = tilesPerRow * startY;
-
-                for (int y = startY, gy = startY * theight; y < endY && tileAt < tileset.getMaxTileId(); y++) {
-                    for (int x = 0, gx = 1; x < tilesPerRow; x++) {
-                        Tile tile = null;
-                        while ((tile = tileset.getTile(tileAt++)) == null)
-                        	if(tileAt > tileset.getMaxTileId() || tileAt-1 == 0) break;
-
-                        if (tile != null) {
-                            tile.drawRaw(g, gx, gy + theight, 1.0);
+            for (int y = startY; y < endY && tileAt < tileset.getMaxTileId(); y++) {
+                int gx = 1;
+                for (int x = 0; x < tilesPerRow; x++) {
+                    Tile tile;
+                    while ((tile = tileset.getTile(tileAt++)) == null) {
+                        if (tileAt > tileset.getMaxTileId() || tileAt-1 == 0) {
+                            break;
                         }
-                        gx += twidth;
                     }
-                    gy += theight;
+
+                    if (tile != null) {
+                        tile.drawRaw(g, gx, gy + theight, 1.0);
+                    }
+                    gx += twidth;
                 }
+                gy += theight;
             }
         }
     }
@@ -166,11 +174,10 @@ public class TilePalettePanel extends JPanel implements Scrollable,
     }
 
     public Dimension getPreferredSize() {
-        if (tilesets == null || tilesets.isEmpty()) {
+        if (tileset == null) {
             return new Dimension(0, 0);
         }
         else {
-            TileSet tileset = (TileSet)tilesets.get(0);
             int twidth = tileset.getTileWidth() + 1;
             int theight = tileset.getTileHeight() + 1;
             int tileCount = tileset.size();
@@ -186,13 +193,8 @@ public class TilePalettePanel extends JPanel implements Scrollable,
     // Scrollable interface
 
     public Dimension getPreferredScrollableViewportSize() {
-        if (tilesets != null && !tilesets.isEmpty()) {
-            int twidth = 35 + 1;
-            TileSet tileset = (TileSet)tilesets.get(0);
-            if (tileset != null) {
-                twidth = tileset.getTileWidth() + 1;
-            }
-
+        if (tileset != null) {
+            int twidth = tileset.getTileWidth() + 1;
             return new Dimension(TILES_PER_ROW * twidth + 1, 200);
         } else {
             return new Dimension(0, 0);
@@ -201,7 +203,6 @@ public class TilePalettePanel extends JPanel implements Scrollable,
 
     public int getScrollableUnitIncrement(Rectangle visibleRect,
             int orientation, int direction) {
-        TileSet tileset = (TileSet)tilesets.get(0);
         if (tileset != null) {
             return tileset.getTileWidth();
         } else {
@@ -211,7 +212,6 @@ public class TilePalettePanel extends JPanel implements Scrollable,
 
     public int getScrollableBlockIncrement(Rectangle visibleRect,
             int orientation, int direction) {
-        TileSet tileset = (TileSet)tilesets.get(0);
         if (tileset != null) {
             return tileset.getTileWidth();
         } else {
@@ -225,34 +225,5 @@ public class TilePalettePanel extends JPanel implements Scrollable,
 
     public boolean getScrollableTracksViewportHeight() {
         return false;
-    }
-
-
-    // MouseInputListener interface
-
-    public void mouseExited(MouseEvent e) {
-    }
-
-    public void mouseClicked(MouseEvent e) {
-    }
-
-    public void mouseEntered(MouseEvent e) {
-    }
-
-    public void mousePressed(MouseEvent e) {
-        Tile clickedTile = getTileAtPoint(e.getX(), e.getY());
-        if (clickedTile != null) {
-            fireTileSelectionEvent(clickedTile);
-        }
-    }
-
-    public void mouseReleased(MouseEvent e) {
-    }
-
-    public void mouseDragged(MouseEvent e) {
-        mousePressed(e);
-    }
-
-    public void mouseMoved(MouseEvent e) {
     }
 }
