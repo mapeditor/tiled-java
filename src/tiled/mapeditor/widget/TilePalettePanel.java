@@ -99,7 +99,7 @@ public class TilePalettePanel extends JPanel implements Scrollable
             int tileId = ty * tilesPerRow + tx;
 
             // Now that we're in the right "spot", find the next valid tile
-            // todo: Assumes to gab is so big that a tile can be found between the
+            // todo: Assumes to gap is so big that a tile can be found between the
             // todo: right spot and the tile that was actually clicked, actually
             // todo: I'm not sure whether this works at all. - Bjorn
             while ((ret = tileset.getTile(tileId++)) == null) {
