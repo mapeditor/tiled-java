@@ -17,6 +17,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 
 import tiled.mapeditor.MapEditor;
+import tiled.mapeditor.Resources;
 
 /**
  * This abstract file action asks to save the map if it has been modified. It
@@ -30,6 +31,9 @@ public abstract class AbstractFileAction extends AbstractAction
     protected final MapEditor editor;
     private final SaveAsAction saveAction;
 
+    private static final String SAVE_CHANGES_TEXT = Resources.getString("action.map.save.changes.text");
+    private static final String SAVE_CHANGES_TITLE = Resources.getString("action.map.save.changes.title");
+
     protected AbstractFileAction(MapEditor editor,
                                  SaveAction saveAction,
                                  String name, String description)
@@ -42,11 +46,10 @@ public abstract class AbstractFileAction extends AbstractAction
 
     public final void actionPerformed(ActionEvent e) {
         if (editor.unsavedChanges()) {
-            // todo: internationalize
             int ret = JOptionPane.showConfirmDialog(editor.getAppFrame(),
-                    "There are unsaved changes for the current map. " +
-                    "Save changes?",
-                    "Save Changes?", JOptionPane.YES_NO_CANCEL_OPTION);
+                                                    SAVE_CHANGES_TEXT,
+                                                    SAVE_CHANGES_TITLE,
+                                                    JOptionPane.YES_NO_CANCEL_OPTION);
 
             if (ret == JOptionPane.YES_OPTION) {
                 saveAction.actionPerformed(e);

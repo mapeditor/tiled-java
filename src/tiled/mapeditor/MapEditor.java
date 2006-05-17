@@ -16,7 +16,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.Stack;
 import java.util.Vector;
 import java.util.prefs.Preferences;
@@ -27,18 +28,18 @@ import javax.swing.event.*;
 import javax.swing.undo.UndoableEditSupport;
 
 import tiled.core.*;
-import tiled.view.*;
+import tiled.io.MapHelper;
+import tiled.io.MapReader;
+import tiled.mapeditor.actions.*;
 import tiled.mapeditor.brush.*;
 import tiled.mapeditor.dialogs.*;
 import tiled.mapeditor.plugin.PluginClassLoader;
 import tiled.mapeditor.selection.SelectionLayer;
+import tiled.mapeditor.undo.*;
 import tiled.mapeditor.util.*;
 import tiled.mapeditor.widget.*;
-import tiled.mapeditor.undo.*;
-import tiled.mapeditor.actions.*;
 import tiled.util.TiledConfiguration;
-import tiled.io.MapHelper;
-import tiled.io.MapReader;
+import tiled.view.MapView;
 
 /**
  * The main class for the Tiled Map Editor.
@@ -136,6 +137,14 @@ public class MapEditor implements ActionListener, MouseListener,
     private final Action addLayerAction, cloneLayerAction, deleteLayerAction;
     private final Action moveLayerDownAction, moveLayerUpAction;
     private final Action mergeLayerDownAction, mergeAllLayersAction;
+
+    private static final String TOOL_PAINT = Resources.getString("tool.paint.name");
+    private static final String TOOL_ERASE = Resources.getString("tool.erase.name");
+    private static final String TOOL_FILL = Resources.getString("tool.fill.name");
+    private static final String TOOL_EYE_DROPPER = Resources.getString("tool.eyedropper.name");
+    private static final String TOOL_SELECT = Resources.getString("tool.select.name");
+    private static final String TOOL_MOVE_LAYER = Resources.getString("tool.movelayer.name");
+    private static final String TOOL_MOVE_OBJECT = Resources.getString("tool.moveobject.name");
 
     public MapEditor() {
         /*
@@ -440,13 +449,13 @@ public class MapEditor implements ActionListener, MouseListener,
         Icon iconMarquee = Resources.getIcon("gimp-tool-rect-select-22.png");
         Icon iconMoveObject = Resources.getIcon("gimp-tool-object-move-22.png");
 
-        paintButton = createToggleButton(iconPaint, "paint", "Paint");
-        eraseButton = createToggleButton(iconErase, "erase", "Erase");
-        pourButton = createToggleButton(iconPour, "pour", "Fill");
-        eyedButton = createToggleButton(iconEyed, "eyed", "Eye dropper");
-        marqueeButton = createToggleButton(iconMarquee, "marquee", "Select");
-        moveButton = createToggleButton(iconMove, "move", "Move layer");
-        objectMoveButton = createToggleButton(iconMoveObject, "moveobject", "Move Object");
+        paintButton = createToggleButton(iconPaint, "paint", TOOL_PAINT);
+        eraseButton = createToggleButton(iconErase, "erase", TOOL_ERASE);
+        pourButton = createToggleButton(iconPour, "pour", TOOL_FILL);
+        eyedButton = createToggleButton(iconEyed, "eyed", TOOL_EYE_DROPPER);
+        marqueeButton = createToggleButton(iconMarquee, "marquee", TOOL_SELECT);
+        moveButton = createToggleButton(iconMove, "move", TOOL_MOVE_LAYER);
+        objectMoveButton = createToggleButton(iconMoveObject, "moveobject", TOOL_MOVE_OBJECT);
 
         mapEventAdapter.addListener(moveButton);
         mapEventAdapter.addListener(paintButton);
@@ -754,7 +763,7 @@ public class MapEditor implements ActionListener, MouseListener,
         } else if (mouseButton == MouseEvent.BUTTON1) {
             switch (currentPointerState) {
                 case PS_PAINT:
-                    paintEdit.setPresentationName("Paint");
+                    paintEdit.setPresentationName(TOOL_PAINT);
                     if (layer instanceof TileLayer) {
                         try {
                             mapView.repaintRegion(currentBrush.doPaint(tile.x, tile.y));
@@ -764,7 +773,7 @@ public class MapEditor implements ActionListener, MouseListener,
                     }
                     break;
                 case PS_ERASE:
-                    paintEdit.setPresentationName("Erase");
+                    paintEdit.setPresentationName(TOOL_ERASE);
                     if (layer instanceof TileLayer) {
                         ((TileLayer) layer).setTileAt(tile.x, tile.y, null);
                     }
@@ -1574,7 +1583,7 @@ public class MapEditor implements ActionListener, MouseListener,
         after.copyFrom(layer);
 
         MapLayerEdit mle = new MapLayerEdit(layer, before, after);
-        mle.setPresentationName("Fill");
+        mle.setPresentationName(TOOL_FILL);
         undoSupport.postEdit(mle);
     }
 

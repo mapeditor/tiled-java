@@ -38,8 +38,16 @@ public class TilesetManager extends JDialog implements ActionListener,
     private JButton removeButton, editButton, closeButton;
     private JTable tilesetTable;
 
+    private static final String DIALOG_TITLE = Resources.getString("dialog.tilesetmanager.title");
+    private static final String CLOSE_BUTTON = Resources.getString("general.button.close");
+    private static final String REMOVE_BUTTON = Resources.getString("general.button.remove");
+    private static final String EMBED_BUTTON = Resources.getString("dialog.tilesetmanager.embed.button");
+    private static final String SAVE_AS_BUTTON = Resources.getString("action.map.saveas.name");
+    private static final String EDIT_BUTTON = Resources.getString("dialog.tilesetmanager.edit.button");
+    private static final String SAVE_BUTTON = Resources.getString("action.map.save.name");
+
     public TilesetManager(JFrame parent, Map map) {
-        super(parent, "Tileset Manager", true);
+        super(parent, DIALOG_TITLE, true);
         this.map = map;
         init();
         pack();
@@ -54,12 +62,12 @@ public class TilesetManager extends JDialog implements ActionListener,
         tilesetScrollPane.setPreferredSize(new Dimension(360, 150));
 
         // Create the buttons
-        saveButton = new JButton("Save");
-        editButton = new JButton("Edit...");
-        saveAsButton = new JButton("Save as...");
-        embedButton = new JButton("Embed");
-        removeButton = new JButton("Remove");
-        closeButton = new JButton("Close");
+        saveButton = new JButton(SAVE_BUTTON);
+        editButton = new JButton(EDIT_BUTTON);
+        saveAsButton = new JButton(SAVE_AS_BUTTON);
+        embedButton = new JButton(EMBED_BUTTON);
+        removeButton = new JButton(REMOVE_BUTTON);
+        closeButton = new JButton(CLOSE_BUTTON);
 
         saveAsButton.addActionListener(this);
         saveButton.addActionListener(this);
@@ -112,24 +120,24 @@ public class TilesetManager extends JDialog implements ActionListener,
         }
 
 
-        if (command.equals("Close")) {
+        if (command.equals(CLOSE_BUTTON)) {
             dispose();
-        } else if (command.equals("Edit...")) {
+        } else if (command.equals(EDIT_BUTTON)) {
             if (map != null && selectedRow >= 0) {
                 TileDialog tileDialog = new TileDialog(this, set, map);
                 tileDialog.setVisible(true);
             }
-        } else if (command.equals("Remove")) {
-            try {
-                if (checkSetUsage(set) > 0) {
-                    int ret = JOptionPane.showConfirmDialog(this,
-                            "This tileset is currently in use. " +
-                            "Are you sure you wish to remove it?",
-                            "Sure?", JOptionPane.YES_NO_OPTION);
-                    if (ret != JOptionPane.YES_OPTION) {
-                        return;
-                    }
+        } else if (command.equals(REMOVE_BUTTON)) {
+            if (checkSetUsage(set) > 0) {
+                int ret = JOptionPane.showConfirmDialog(this,
+                        Resources.getString("action.tileset.remove.in-use.message"),
+                        Resources.getString("action.tileset.remove.in-use.title"),
+                        JOptionPane.YES_NO_OPTION);
+                if (ret != JOptionPane.YES_OPTION) {
+                    return;
                 }
+            }
+            try {
                 map.removeTileset(set);
                 updateTilesetTable();
             } catch (LayerLockedException e) {
@@ -138,7 +146,7 @@ public class TilesetManager extends JDialog implements ActionListener,
                         Resources.getString("action.tileset.remove.error.title"),
                         JOptionPane.ERROR_MESSAGE);
             }
-        } else if (command.equals("Save as...")) {
+        } else if (command.equals(SAVE_AS_BUTTON)) {
             JFileChooser ch = new JFileChooser(map.getFilename());
 
             MapWriter[] writers = PluginClassLoader.getInstance().getWriters();
@@ -170,18 +178,16 @@ public class TilesetManager extends JDialog implements ActionListener,
                     }
                 }
             }
-        } else if (command.equals("Save")) {
+        } else if (command.equals(SAVE_BUTTON)) {
             try {
                 MapHelper.saveTileset(set, set.getSource());
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        } else if (command.equals("Embed")) {
+        } else if (command.equals(EMBED_BUTTON)) {
             set.setSource(null);
             embedButton.setEnabled(false);
             saveButton.setEnabled(false);
-        } else {
-            System.out.println("Unimplemented command: " + command);
         }
     }
 

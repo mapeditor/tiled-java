@@ -23,6 +23,7 @@ import tiled.core.*;
 import tiled.mapeditor.selection.SelectionLayer;
 import tiled.mapeditor.util.MultisetListRenderer;
 import tiled.mapeditor.widget.VerticalStaticJPanel;
+import tiled.mapeditor.Resources;
 
 /**
  * @version $Id$
@@ -35,12 +36,21 @@ public class SearchDialog extends JDialog implements ActionListener
     private SelectionLayer sl;
     private static final double LIST_TILE_SCALE = 0.5;
 
+    private static final String DIALOG_TITLE = Resources.getString("dialog.search.title");
+    private static final String FIND_LABEL = Resources.getString("dialog.search.find.label");
+    private static final String REPLACE_LABEL = Resources.getString("dialog.search.replace.label");
+    private static final String FIND_BUTTON = Resources.getString("dialog.search.find.button");
+    private static final String FIND_ALL_BUTTON = Resources.getString("dialog.search.findall.button");
+    private static final String REPLACE_BUTTON = Resources.getString("dialog.search.replace.button");
+    private static final String REPLACE_ALL_BUTTON = Resources.getString("dialog.search.replaceall.button");
+    private static final String CLOSE_BUTTON = Resources.getString("general.button.close");
+
     public SearchDialog(JFrame parent) {
         this(parent, null);
     }
 
     public SearchDialog(JFrame parent, Map map) {
-        super(parent, "Search/Replace", false);
+        super(parent, DIALOG_TITLE, false);
         this.map = map;
         init();
         setLocationRelativeTo(parent);
@@ -57,7 +67,7 @@ public class SearchDialog extends JDialog implements ActionListener
         GridBagConstraints c = new GridBagConstraints();
         c.fill = GridBagConstraints.BOTH;
         c.weightx = 2; c.weighty = 1;
-        searchPanel.add(new JLabel("Find:"), c);
+        searchPanel.add(new JLabel(FIND_LABEL), c);
         c.gridx = 1;
         searchCBox = new JComboBox();
         searchCBox.setRenderer(tileListRenderer);
@@ -66,7 +76,7 @@ public class SearchDialog extends JDialog implements ActionListener
         searchPanel.add(searchCBox, c);
         c.gridy = 1;
         c.gridx = 0;
-        searchPanel.add(new JLabel("Replace:"), c);
+        searchPanel.add(new JLabel(REPLACE_LABEL), c);
         c.gridx = 1;
         replaceCBox = new JComboBox();
         replaceCBox.setRenderer(tileListRenderer);
@@ -85,11 +95,11 @@ public class SearchDialog extends JDialog implements ActionListener
                     BorderFactory.createEmptyBorder(0, 5, 5, 5)));
         */
 
-        final JButton bFind = new JButton("Find");
-        final JButton bFindAll = new JButton("Find All");
-        final JButton bReplace = new JButton("Replace");
-        final JButton bReplaceAll = new JButton("Replace All");
-        final JButton bClose = new JButton("Close");
+        final JButton bFind = new JButton(FIND_BUTTON);
+        final JButton bFindAll = new JButton(FIND_ALL_BUTTON);
+        final JButton bReplace = new JButton(REPLACE_BUTTON);
+        final JButton bReplaceAll = new JButton(REPLACE_ALL_BUTTON);
+        final JButton bClose = new JButton(CLOSE_BUTTON);
 
         bFind.addActionListener(this);
         bFindAll.addActionListener(this);
@@ -145,14 +155,14 @@ public class SearchDialog extends JDialog implements ActionListener
     public void actionPerformed(ActionEvent e) {
         String command = e.getActionCommand();
 
-        if (command.equalsIgnoreCase("close")) {
+        if (command.equals(CLOSE_BUTTON)) {
             map.removeLayerSpecial(sl);
             dispose();
-        } else if (command.equalsIgnoreCase("find")) {
+        } else if (command.equals(FIND_BUTTON)) {
             if (searchCBox.getSelectedItem() instanceof Tile) {
                 find((Tile)searchCBox.getSelectedItem());
             }
-        } else if (command.equalsIgnoreCase("find all")) {
+        } else if (command.equals(FIND_ALL_BUTTON)) {
             if (sl != null) {
                 map.removeLayerSpecial(sl);
             }
@@ -176,10 +186,10 @@ public class SearchDialog extends JDialog implements ActionListener
             map.addLayerSpecial(sl);
             map.touch();
 
-        } else if (command.equalsIgnoreCase("replace all")) {
+        } else if (command.equals(REPLACE_ALL_BUTTON)) {
             if (!(searchCBox.getSelectedItem() instanceof TileSet) && !(replaceCBox.getSelectedItem() instanceof TileSet))
                 replaceAll((Tile) searchCBox.getSelectedItem(),(Tile) replaceCBox.getSelectedItem());
-        } else if (command.equalsIgnoreCase("replace")) {
+        } else if (command.equals(REPLACE_BUTTON)) {
             if (searchCBox.getSelectedItem() instanceof Tile && replaceCBox.getSelectedItem() instanceof Tile) {
                 if (currentMatch == null) {
                     find((Tile)searchCBox.getSelectedItem());

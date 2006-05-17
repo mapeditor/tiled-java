@@ -19,6 +19,7 @@ import javax.swing.filechooser.FileFilter;
 
 import tiled.io.PluggableMapIO;
 import tiled.io.xml.XMLMapWriter;
+import tiled.mapeditor.Resources;
 
 /**
  * @version $Id$
@@ -36,8 +37,13 @@ public class TiledFileFilter extends FileFilter
     private PluggableMapIO pmio;
     private int type = FILTER_EXT;
 
+    private static final String FILETYPE_TILED = Resources.getString("general.filetype.tiled");
+    private static final String FILETYPE_TMX = Resources.getString("general.filetype.tiledmap");
+    private static final String FILETYPE_TSX = Resources.getString("general.filetype.tiledtileset");
+    private static final String FILETYPE_EXT = Resources.getString("general.filetype.byextension");
+
     public TiledFileFilter() {
-        desc = "Tiled files";
+        desc = FILETYPE_TILED;
         exts = new LinkedList();
         exts.add("tmx");
         exts.add("tmx.gz");
@@ -51,14 +57,14 @@ public class TiledFileFilter extends FileFilter
         type = filter;
 
         if ((filter & FILTER_TMX) != 0) {
-            desc = "Tiled Maps files ";
+            desc = FILETYPE_TMX;
             exts.add("tmx");
             exts.add("tmx.gz");
             pmio = new XMLMapWriter();
         }
 
         if ((filter & FILTER_TSX) != 0) {
-            desc += "Tiled Tileset files";
+            desc += FILETYPE_TSX;
             exts.add("tsx");
             if (pmio == null) {
                 pmio = new XMLMapWriter();
@@ -66,7 +72,7 @@ public class TiledFileFilter extends FileFilter
         }
 
         if (filter == FILTER_EXT) {
-            desc = "By Extension";
+            desc = FILETYPE_EXT;
         }
     }
 

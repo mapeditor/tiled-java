@@ -39,7 +39,7 @@ public class PluginDialog extends JDialog implements ActionListener,
 
     private static final String DIALOG_TITLE = Resources.getString("dialog.plugins.title");
     private static final String INFO_BUTTON = Resources.getString("dialog.plugins.info.button");
-    private static final String REMOVE_BUTTON = Resources.getString("dialog.plugins.remove.button");
+    private static final String REMOVE_BUTTON = Resources.getString("general.button.remove");
     private static final String CLOSE_BUTTON = Resources.getString("general.button.close");
 
     public PluginDialog(JFrame parent, PluginClassLoader pluginLoader) {
