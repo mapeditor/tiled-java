@@ -5,7 +5,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
@@ -16,6 +16,7 @@ import javax.swing.table.AbstractTableModel;
 
 import tiled.core.MapLayer;
 import tiled.core.MultilayerPlane;
+import tiled.mapeditor.Resources;
 
 /**
  * @version $Id$
@@ -24,7 +25,9 @@ public class LayerTableModel extends AbstractTableModel
 {
     private MultilayerPlane map;
     private static final String[] columnNames = {
-            "Locked", "Show", "Layer name"
+            Resources.getString("dialog.main.locked.column"),
+            Resources.getString("dialog.main.show.column"),
+            Resources.getString("dialog.main.layername.column")
     };
 
     public LayerTableModel(MultilayerPlane map) {
@@ -74,8 +77,8 @@ public class LayerTableModel extends AbstractTableModel
     }
 
     public Object getValueAt(int row, int col) {
-    	MapLayer layer = map.getLayer(getRowCount() - row - 1);
-        
+        MapLayer layer = map.getLayer(getRowCount() - row - 1);
+
         if (layer != null) {
             if (col == 0) {
                 return Boolean.valueOf(layer.getLocked() || !layer.isVisible());
@@ -92,7 +95,7 @@ public class LayerTableModel extends AbstractTableModel
     }
 
     public boolean isCellEditable(int row, int col) {
-    	MapLayer layer = map.getLayer(getRowCount() - row - 1);
+        MapLayer layer = map.getLayer(getRowCount() - row - 1);
 
         return !(col == 0 && layer != null && !layer.isVisible());
     }

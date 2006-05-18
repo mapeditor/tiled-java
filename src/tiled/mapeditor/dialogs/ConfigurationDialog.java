@@ -45,6 +45,20 @@ public class ConfigurationDialog extends JDialog
 
     private static final String DIALOG_TITLE = Resources.getString("dialog.preferences.title");
     private static final String CLOSE_BUTTON = Resources.getString("general.button.close");
+    private static final String OPACITY_LABEL = Resources.getString("dialog.preferences.opacity.label");
+    private static final String BINARY_ENCODE_CHECKBOX = Resources.getString("dialog.preferences.binary.encode.checkbox");
+    private static final String COMPRESS_LAYER_DATA_CHECKBOX = Resources.getString("dialog.preferences.compress.layer.data.checkbox");
+    private static final String EMBED_IMAGES_CHECKBOX = Resources.getString("dialog.preferences.embed.images.checkbox");
+    private static final String REPORT_IO_WARNINGS_CHECKBOX = Resources.getString("dialog.preferences.report.io.warnings.checkbox");
+    private static final String EMBED_IN_TILES_CHECKBOX = Resources.getString("dialog.preferences.embed.in.tiles.checkbox");
+    private static final String EMBED_IN_SET_CHECKBOX = Resources.getString("dialog.preferences.embed.in.set.checkbox");
+    private static final String ANTIALIASING_CHECKBOX = Resources.getString("dialog.preferences.antialiasing.checkbox");
+    private static final String LAYER_OPTIONS_TITLE = Resources.getString("dialog.preferences.layer.options.title");
+    private static final String UNDO_DEPTH_LABEL = Resources.getString("dialog.preferences.undo.depth.label");
+    private static final String TILESET_OPTIONS_TITLE = Resources.getString("dialog.preferences.tileset.options.title");
+    private static final String GENERAL_TAB = Resources.getString("dialog.preferences.general.tab");
+    private static final String SAVING_TAB = Resources.getString("dialog.preferences.saving.tab");
+    private static final String GRID_TAB = Resources.getString("dialog.preferences.grid.tab");
 
     public ConfigurationDialog(JFrame parent) {
         super(parent, DIALOG_TITLE, true);
@@ -55,17 +69,17 @@ public class ConfigurationDialog extends JDialog
     private void init() {
         // Create primitives
 
-        cbBinaryEncode = new JCheckBox("Use binary encoding");
-        cbCompressLayerData = new JCheckBox("Compress layer data (gzip)");
-        cbEmbedImages = new JCheckBox("Embed images (png)");
-        cbReportIOWarnings = new JCheckBox("Report I/O messages");
-        rbEmbedInTiles = new JRadioButton("Embed images in tiles");
-        rbEmbedInSet = new JRadioButton("Use Tileset (shared) images");
+        cbBinaryEncode = new JCheckBox(BINARY_ENCODE_CHECKBOX);
+        cbCompressLayerData = new JCheckBox(COMPRESS_LAYER_DATA_CHECKBOX);
+        cbEmbedImages = new JCheckBox(EMBED_IMAGES_CHECKBOX);
+        cbReportIOWarnings = new JCheckBox(REPORT_IO_WARNINGS_CHECKBOX);
+        rbEmbedInTiles = new JRadioButton(EMBED_IN_TILES_CHECKBOX);
+        rbEmbedInSet = new JRadioButton(EMBED_IN_SET_CHECKBOX);
         ButtonGroup bg = new ButtonGroup();
         bg.add(rbEmbedInTiles);
         bg.add(rbEmbedInSet);
         undoDepth = new IntegerSpinner();
-        cbGridAA = new JCheckBox("Antialiasing");
+        cbGridAA = new JCheckBox(ANTIALIASING_CHECKBOX);
         gridOpacity = new IntegerSpinner(0, 0, 255);
         //gridColor = new JColorChooser();
 
@@ -75,7 +89,7 @@ public class ConfigurationDialog extends JDialog
         JPanel layerOps = new VerticalStaticJPanel();
         layerOps.setLayout(new GridBagLayout());
         layerOps.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createTitledBorder("Layer Options"),
+                    BorderFactory.createTitledBorder(LAYER_OPTIONS_TITLE),
                     BorderFactory.createEmptyBorder(0, 5, 5, 5)));
         GridBagConstraints c = new GridBagConstraints();
         c.anchor = GridBagConstraints.EAST;
@@ -94,7 +108,7 @@ public class ConfigurationDialog extends JDialog
         c = new GridBagConstraints();
         c.anchor = GridBagConstraints.NORTH;
         c.fill = GridBagConstraints.NONE;
-        generalOps.add(new JLabel("Undo Depth:  "), c);
+        generalOps.add(new JLabel(UNDO_DEPTH_LABEL), c);
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 1; c.weightx = 1;
         generalOps.add(undoDepth, c);
@@ -106,7 +120,7 @@ public class ConfigurationDialog extends JDialog
         JPanel tilesetOps = new VerticalStaticJPanel();
         tilesetOps.setLayout(new GridBagLayout());
         tilesetOps.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createTitledBorder("Tileset Options"),
+                    BorderFactory.createTitledBorder(TILESET_OPTIONS_TITLE),
                     BorderFactory.createEmptyBorder(0, 5, 5, 5)));
         c = new GridBagConstraints();
         c.fill = GridBagConstraints.HORIZONTAL;
@@ -122,7 +136,7 @@ public class ConfigurationDialog extends JDialog
         gridOps.setLayout(new GridBagLayout());
         gridOps.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         c = new GridBagConstraints();
-        gridOps.add(new JLabel("Opacity:  "), c);
+        gridOps.add(new JLabel(OPACITY_LABEL), c);
         c.weightx = 1; c.gridx = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
         gridOps.add(gridOpacity, c);
@@ -166,9 +180,9 @@ public class ConfigurationDialog extends JDialog
         // Put together the tabs
 
         JTabbedPane perfs = new JTabbedPane();
-        perfs.addTab("General", general);
-        perfs.addTab("Saving", saving);
-        perfs.addTab("Grid", grid);
+        perfs.addTab(GENERAL_TAB, general);
+        perfs.addTab(SAVING_TAB, saving);
+        perfs.addTab(GRID_TAB, grid);
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));

@@ -63,6 +63,16 @@ public class BrushDialog extends JDialog implements ActionListener,
     private static final String CANCEL_BUTTON = Resources.getString("general.button.cancel");
     private static final String SHAPE_TAB = Resources.getString("dialog.brush.tab.shape");
     private static final String CUSTOM_TAB = Resources.getString("dialog.brush.tab.custom");
+    private static final String PRESETS_TITLE = Resources.getString("dialog.brush.presets.title");
+    private static final String BRUSH_SIZE_TOOLTIP = Resources.getString("dialog.brush.size.tooltip");
+    private static final String RANDOM_BRUSH_TOOLTIP = Resources.getString("dialog.brush.random.brush.tooltip");
+    private static final String RANDOM_AMOUNT_TOOLTIP = Resources.getString("dialog.brush.random.amount.tooltip");
+    private static final String RANDOM_CHECKBOX = Resources.getString("dialog.brush.random.checkbox");
+    private static final String OPTIONS_TITLE = Resources.getString("dialog.brush.options.title");
+    private static final String BRUSH_SIZE_LABEL = Resources.getString("dialog.brush.brush.size.label");
+    private static final String AFFECTED_LAYERS_LABEL = Resources.getString("dialog.brush.affected.layers.label");
+    private static final String CREATE_BUTTON = Resources.getString("dialog.brush.create.button");
+    private static final String LOAD_BUTTON = Resources.getString("dialog.brush.load.button");
 
     public BrushDialog(MapEditor editor, JFrame parent,
                        AbstractBrush currentBrush)
@@ -88,7 +98,7 @@ public class BrushDialog extends JDialog implements ActionListener,
 
         JPanel presets = new JPanel();
         presets.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createTitledBorder("Presets"),
+                    BorderFactory.createTitledBorder(PRESETS_TITLE),
                     BorderFactory.createEmptyBorder(0, 5, 5, 5)));
         presets.setLayout(new GridLayout(1, 1));
         presets.add(brushScrollPane);
@@ -100,38 +110,36 @@ public class BrushDialog extends JDialog implements ActionListener,
             brushSize.setValue(r.width);
         }
         brushSize.addChangeListener(this);
-        brushSize.setToolTipText("Sets the size of the brush in tiles");
+        brushSize.setToolTipText(BRUSH_SIZE_TOOLTIP);
 
         // Number of affected layers
         affectLayers = new IntegerSpinner(myBrush.getAffectedLayers(), 1);
         affectLayers.addChangeListener(this);
 
         // Randomize tile placement
-        cbRandomBrush = new JCheckBox("Random");
-        cbRandomBrush.setToolTipText(
-                "Make brush paint randomly within the shape area");
+        cbRandomBrush = new JCheckBox(RANDOM_CHECKBOX);
+        cbRandomBrush.setToolTipText(RANDOM_BRUSH_TOOLTIP);
         cbRandomBrush.addItemListener(this);
         sRandomAmount = new JSlider();
         sRandomAmount.setPreferredSize(new Dimension(
                     50, sRandomAmount.getPreferredSize().height));
-        sRandomAmount.setToolTipText(
-                "The amount of area to fill with randomness");
+        sRandomAmount.setToolTipText(RANDOM_AMOUNT_TOOLTIP);
         sRandomAmount.addChangeListener(this);
 
         // Brush options section
         JPanel opts = new VerticalStaticJPanel();
         opts.setLayout(new GridBagLayout());
         opts.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createTitledBorder("Options"),
+                    BorderFactory.createTitledBorder(OPTIONS_TITLE),
                     BorderFactory.createEmptyBorder(0, 5, 5, 5)));
         GridBagConstraints c = new GridBagConstraints();
         c.fill = GridBagConstraints.NONE;
         c.anchor = GridBagConstraints.NORTHWEST;
         c.weightx = 0;
         c.insets = new Insets(0, 0, 5, 0);
-        opts.add(new JLabel("Brush size: "), c);
+        opts.add(new JLabel(BRUSH_SIZE_LABEL), c);
         c.gridy = 1;
-        opts.add(new JLabel("Affected layers: "), c);
+        opts.add(new JLabel(AFFECTED_LAYERS_LABEL), c);
         c.gridy = 2;
         opts.add(cbRandomBrush, c);
         c.gridy = 0; c.gridx = 1; c.weightx = 0.3;
@@ -161,11 +169,11 @@ public class BrushDialog extends JDialog implements ActionListener,
         JScrollPane miniSp = new JScrollPane();
         miniSp.getViewport().setView(mmv);
         miniSp.setPreferredSize(new Dimension(100, 100));
-        JButton bCreate = new JButton("Create...");
+        JButton bCreate = new JButton(CREATE_BUTTON);
         bCreate.addActionListener(this);
         //TODO: create functionality is not available yet
         bCreate.setEnabled(false);
-        JButton bLoad = new JButton("Load...");
+        JButton bLoad = new JButton(LOAD_BUTTON);
         bLoad.addActionListener(this);
         JTable layerTable = new JTable(new LayerTableModel(myBrush));
         layerTable.getColumnModel().getColumn(0).setPreferredWidth(32);
@@ -230,8 +238,8 @@ public class BrushDialog extends JDialog implements ActionListener,
             t = ((ShapeBrush)myBrush).getTile();
         }
 
-        ShapeBrush sel = (ShapeBrush)brushes.getSelectedBrush();
-        sel.setSize(((Integer)brushSize.getValue()).intValue());
+        ShapeBrush sel = (ShapeBrush) brushes.getSelectedBrush();
+        sel.setSize(((Integer) brushSize.getValue()).intValue());
 
         if (cbRandomBrush.isSelected()) {
             RandomBrush randomBrush = new RandomBrush(sel);
@@ -280,7 +288,7 @@ public class BrushDialog extends JDialog implements ActionListener,
         else if (source == bCancel) {
             dispose();
         }
-        else if (e.getActionCommand().equals("Load...")) {
+        else if (e.getActionCommand().equals(LOAD_BUTTON)) {
             try {
                 openMap();
                 //mmv.setView(((CustomBrush)myBrush));
