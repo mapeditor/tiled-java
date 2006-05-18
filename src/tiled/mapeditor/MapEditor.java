@@ -972,12 +972,12 @@ public class MapEditor implements ActionListener, MouseListener,
     }
 
     public void mouseDragged(MouseEvent e) {
-        mousePressLocation = mapView.screenToTileCoords(e.getX(), e.getY());
-        Point tile = mapView.screenToTileCoords(e.getX(), e.getY());
-
         bMouseIsDragging = true;
 
         doMouse(e);
+
+        mousePressLocation = mapView.screenToTileCoords(e.getX(), e.getY());
+        Point tile = mapView.screenToTileCoords(e.getX(), e.getY());
 
         if (currentMap.inBounds(tile.x, tile.y)) {
             tileCoordsLabel.setText(String.valueOf(tile.x) + ", " + tile.y);
