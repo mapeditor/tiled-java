@@ -212,15 +212,15 @@ public class MapEditor implements ActionListener, MouseListener,
         createMenuBar();
         appFrame.setJMenuBar(menuBar);
         appFrame.setSize(APP_WIDTH, APP_HEIGHT);
-        
+
         tilePaletteDialog =
             new TilePaletteDialog(this, currentMap);
-        
+
         setCurrentMap(null);
         updateRecent(null);
 
         appFrame.setVisible(true);
-        
+
         // Restore the state of the main frame. This needs to happen after
         // making the frame visible, otherwise it has no effect (in Linux).
         Preferences mainDialogPrefs = prefs.node("dialog/main");
@@ -914,7 +914,7 @@ public class MapEditor implements ActionListener, MouseListener,
            Point tile = mapView.screenToTileCoords(event.getX(), event.getY());
            int minx = Math.min(limp.x, tile.x);
            int miny = Math.min(limp.y, tile.y);
-           
+
            Rectangle bounds = new Rectangle(
                    minx, miny,
                    (Math.max(limp.x, tile.x) - minx)+1,
@@ -925,7 +925,7 @@ public class MapEditor implements ActionListener, MouseListener,
                new MultilayerPlane(bounds.width, bounds.height);
            TileLayer brushLayer = new TileLayer(bounds);
            brushLayer.copyFrom(getCurrentLayer());
-           
+
            //do a quick check to make sure the selection is not empty
            if(brushLayer.isEmpty()) {
         	   JOptionPane.showMessageDialog(appFrame,
@@ -1748,7 +1748,6 @@ public class MapEditor implements ActionListener, MouseListener,
                 path.substring(path.lastIndexOf(File.separatorChar) + 1);
 
             recentMenu.add(new TMenuItem(new OpenRecentAction(this, saveAction, name, i)));
-            
         }
     }
 

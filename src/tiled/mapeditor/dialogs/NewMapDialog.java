@@ -136,10 +136,10 @@ public class NewMapDialog extends JDialog implements ActionListener
         mapTypeChooser = new JComboBox();
         mapTypeChooser.addItem(ORTHOGONAL_MAPTYPE);
         mapTypeChooser.addItem(ISOMETRIC_MAPTYPE);
-        mapTypeChooser.addItem(SHIFTED_MAPTYPE);
-        // TODO: Enable when view is implemented
-        mapTypeChooser.addItem(OBLIQUE_MAPTYPE);
-        mapTypeChooser.addItem(HEXAGONAL_MAPTYPE);
+        // TODO: Enable views when implemented decently
+        //mapTypeChooser.addItem(HEXAGONAL_MAPTYPE);
+        //mapTypeChooser.addItem(SHIFTED_MAPTYPE);
+        //mapTypeChooser.addItem(OBLIQUE_MAPTYPE);
 
         JPanel miscPropPanel = new VerticalStaticJPanel();
         miscPropPanel.setLayout(new GridBagLayout());

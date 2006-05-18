@@ -8,9 +8,8 @@ most people at the moment. We need your feedback!
 
 
 Website:     http://mapeditor.org/
-Subversion:  svn://svn.mapeditor.org/
 Bugtracker:  http://bugs.mapeditor.org/
-
+Subversion:  svn://svn.mapeditor.org/
 
 -----------------
  CURRENT FEATURES
@@ -33,6 +32,14 @@ Bugtracker:  http://bugs.mapeditor.org/
 - Adam Turk       <aturk@biggeruniverse.com>
 - Bjorn Lindeijer <bjorn@lindeijer.nl>
 
+-----------
+TRANSLATORS
+-----------
+
+- Akhres Nader (French)
+- Bjorn Lindeijer (Dutch)
+- ElvenProgrammer (Italian)
+- Matthias Hartmann (German)
 
 -----------
  THANKS TO
@@ -48,6 +55,3 @@ Bugtracker:  http://bugs.mapeditor.org/
 - GNOME and GIMP for their magnificent icons
 - Nephilim for suggesting layer opacity
 - Rainer Deyke for useful suggestions and many code contributions
-- Matthias Hartmann for the German translation
-- ElvenProgrammer for the Italian translation
-- Akhres Nader for the French translation
