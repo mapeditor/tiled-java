@@ -97,6 +97,10 @@ public class ObjectGroup extends MapLayer
     public boolean isUsed(Tile t) {
         return false;
     }
+    
+    public boolean isEmpty() {
+    	return boundObjects.isEmpty();
+    }
 
     /**
      * @deprecated

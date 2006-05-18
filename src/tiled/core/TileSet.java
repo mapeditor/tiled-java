@@ -336,7 +336,7 @@ public class TileSet
         } catch (ArrayIndexOutOfBoundsException a) {}
         return null;
     }
-
+    
     /**
      * Returns the first non-null tile in the set.
      *

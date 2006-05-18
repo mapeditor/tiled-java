@@ -21,6 +21,7 @@ import javax.swing.event.MouseInputAdapter;
 
 import tiled.core.*;
 import tiled.mapeditor.util.*;
+import tiled.util.TilesetVector;
 
 /**
  * @version $Id$
@@ -30,7 +31,9 @@ public class TilePalettePanel extends JPanel implements Scrollable
     private static final int TILES_PER_ROW = 4;
     private TileSet tileset;
     private EventListenerList tileSelectionListeners;
-
+    private Rectangle clip;
+    private TilesetVector tilesetMap;
+    
     public TilePalettePanel() {
         tileSelectionListeners = new EventListenerList();
 
@@ -80,38 +83,32 @@ public class TilePalettePanel extends JPanel implements Scrollable
 
     /**
      * Change the tileset displayed by this palette panel.
+     * 
+     * @param tileset 
      */
     public void setTileset(TileSet tileset) {
         this.tileset = tileset;
+        tilesetMap = new TilesetVector(tileset);
         revalidate();
         repaint();
     }
-
+    
     public Tile getTileAtPoint(int x, int y) {
-        Tile ret = null;
+        
+        int twidth = tileset.getTileWidth() + 1;
+        int theight = tileset.getTileHeight() + 1;
+        int tilesPerRow = Math.max(1, (getWidth() - 1) / twidth);
 
-        if (tileset != null) {
-            int twidth = tileset.getTileWidth() + 1;
-            int theight = tileset.getTileHeight() + 1;
-            int tx = x / twidth;
-            int ty = y / theight;
-            int tilesPerRow = (getWidth() - 1) / twidth;
-            int tileId = ty * tilesPerRow + tx;
-
-            // Now that we're in the right "spot", find the next valid tile
-            // todo: Assumes to gap is so big that a tile can be found between the
-            // todo: right spot and the tile that was actually clicked, actually
-            // todo: I'm not sure whether this works at all. - Bjorn
-            while ((ret = tileset.getTile(tileId++)) == null) {
-                if (tileId > tileset.getMaxTileId()) break;
-            }
-        }
-
-        return ret;
+        //we like Tiled to behave in a predictibile manner
+        if(x>tilesPerRow*twidth) x = tilesPerRow*twidth-1;
+        
+        int tileAt = (y / theight) * tilesPerRow + x/twidth;
+        
+        return (Tile) tilesetMap.get(tileAt);
     }
 
     public void paint(Graphics g) {
-        Rectangle clip = g.getClipBounds();
+        clip = g.getClipBounds();
 
         paintBackground(g);
 
@@ -124,17 +121,10 @@ public class TilePalettePanel extends JPanel implements Scrollable
             int startY = clip.y / theight;
             int endY = (clip.y + clip.height) / theight + 1;
             int tileAt = tilesPerRow * startY;
-            int gy = startY * theight;
-
-            for (int y = startY; y < endY && tileAt < tileset.getMaxTileId(); y++) {
-                int gx = 1;
-                for (int x = 0; x < tilesPerRow; x++) {
-                    Tile tile;
-                    while ((tile = tileset.getTile(tileAt++)) == null) {
-                        if (tileAt > tileset.getMaxTileId() || tileAt-1 == 0) {
-                            break;
-                        }
-                    }
+            
+            for (int y = startY, gy = startY * theight; y < endY && tileAt < tileset.getMaxTileId(); y++) {
+                for (int x = 0, gx = 1; x < tilesPerRow; x++, tileAt++) {
+                    Tile tile = (Tile) tilesetMap.get(tileAt);
 
                     if (tile != null) {
                         tile.drawRaw(g, gx, gy + theight, 1.0);

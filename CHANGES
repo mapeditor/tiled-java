@@ -3,16 +3,15 @@ UNDONE
 + Added ability to select multiple layers from layer table
 + Added preview of new tileset when creating a tileset
 + Added tile cutter GUI
-+ Added more useful visual feedback for some brushes
 + Added the Shifted view, which emulates several tiling configurations
 + Added "stamp" tool
-+ Moved actions out of MapEditor, and created a package for them
 + Added a navigation minimap
 + Added full support for animated tiles
++ Added palette brush
 + Rewrote main mapeditor code
-+ Fixed tile palette bug of displaying multiple tilesets over eachother
++ Moved actions out of MapEditor, and created a package for them
 
-0.6.0 - WIP
+0.6.0 - WIP (beta)
 
 * Added internationalization/localization support, with translations to Dutch,
   German, Italian and French.
@@ -23,8 +22,12 @@ UNDONE
 * Added support for "tile cutters"
 * Added global properties for tilesets (properties set for all tiles)
 * Added the ability to merge tile images when layers are merged
+* Added more useful visual feedback for some brushes
 * Added remembering of main window state as suggested by Dennis Spreen
 * Added remembering of size and divider position to tile palette dialog
+* Improved memory usage and speed in several areas
+* Fixed tileset dialog so that it is now possible to change the tile height to
+  something other than the tile height used by the map.
 * Fixed new tileset dialog so that it is now possible to change the tile height
   to something other than the tile height used by the map
 * Fixed a bug when exporting a tileset with an external image
@@ -36,6 +39,7 @@ UNDONE
 * Fixed the zooming so that it keeps the center in place
 * Fixed exiting even when a request to save the changes failed
 * Fixed layer merging so that undo/redo of operation is functional
+* Fixed tile palette bug of displaying multiple tilesets over eachother
 * Fixed resetting of selected tileset in tile palette on layer changes
 * Rewrote configuration based on the Preferences class, no more tiled.conf
 * Cleaned up TileSet (removed checksumming and rotation/orienation code)

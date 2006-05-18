@@ -45,7 +45,7 @@
   </target>
 
   <target name="compile" depends="init" description="Compile the source">
-    <javac srcdir="${src}" destdir="${build}"/>
+    <javac source="1.4" target="1.4" srcdir="${src}" destdir="${build}"/>
     <copy todir="${build}/tiled/mapeditor/resources">
       <fileset dir="./src/tiled/mapeditor/resources">
         <include name="*.png" />
@@ -56,7 +56,8 @@
   </target>
 
   <target name="compile_dep" depends="init" description="Compile the source">
-    <javac srcdir="${src}" destdir="${build}" deprecation="on"/>
+    <javac source="1.4" target="1.4" srcdir="${src}" destdir="${build}" 
+	deprecation="on"/>
     <copy todir="${build}/tiled/mapeditor/resources">
       <fileset dir="./tiled/mapeditor/resources">
         <include name="*.png" />

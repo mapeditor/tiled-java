@@ -61,7 +61,7 @@ public final class TiledConfiguration
      *                <code>null</code>
      */
     public static void addToRecentFiles(String mapFile) {
-        assert mapFile != null;
+        assert (mapFile != null);
 
         // Get the existing recent file list
         List recent = getRecentFiles();

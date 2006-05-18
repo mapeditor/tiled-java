@@ -117,7 +117,6 @@ public class MapEditor implements ActionListener, MouseListener,
     private AbstractButton eyedButton, marqueeButton, moveButton;
     private AbstractButton objectMoveButton, objectAddButton;
 
-    private TilePalettePanel tilePalettePanel;
     private TilePaletteDialog tilePaletteDialog;
     private AboutDialog aboutDialog;
     private MapLayerEdit paintEdit;
@@ -213,11 +212,15 @@ public class MapEditor implements ActionListener, MouseListener,
         createMenuBar();
         appFrame.setJMenuBar(menuBar);
         appFrame.setSize(APP_WIDTH, APP_HEIGHT);
+        
+        tilePaletteDialog =
+            new TilePaletteDialog(this, currentMap);
+        
         setCurrentMap(null);
         updateRecent(null);
 
         appFrame.setVisible(true);
-
+        
         // Restore the state of the main frame. This needs to happen after
         // making the frame visible, otherwise it has no effect (in Linux).
         Preferences mainDialogPrefs = prefs.node("dialog/main");
@@ -570,7 +573,7 @@ public class MapEditor implements ActionListener, MouseListener,
         */
 
         // Create paint panel
-        tilePalettePanel = new TilePalettePanel();
+        TilePalettePanel tilePalettePanel = new TilePalettePanel();
 
         JPanel brushesPanel = new JPanel();
 
@@ -911,7 +914,7 @@ public class MapEditor implements ActionListener, MouseListener,
            Point tile = mapView.screenToTileCoords(event.getX(), event.getY());
            int minx = Math.min(limp.x, tile.x);
            int miny = Math.min(limp.y, tile.y);
-
+           
            Rectangle bounds = new Rectangle(
                    minx, miny,
                    (Math.max(limp.x, tile.x) - minx)+1,
@@ -922,8 +925,17 @@ public class MapEditor implements ActionListener, MouseListener,
                new MultilayerPlane(bounds.width, bounds.height);
            TileLayer brushLayer = new TileLayer(bounds);
            brushLayer.copyFrom(getCurrentLayer());
-           mlp.addLayer(brushLayer);
-           setBrush(new CustomBrush(mlp));
+           
+           //do a quick check to make sure the selection is not empty
+           if(brushLayer.isEmpty()) {
+        	   JOptionPane.showMessageDialog(appFrame,
+        			   Resources.getString("dialog.selection.empty"),
+        			   Resources.getString("dialog.selection.empty"),
+                       JOptionPane.WARNING_MESSAGE);
+           } else {
+        	   mlp.addLayer(brushLayer);
+        	   setBrush(new CustomBrush(mlp));
+           }
        }
 
         if (paintEdit != null) {
@@ -1121,12 +1133,6 @@ public class MapEditor implements ActionListener, MouseListener,
             PluginDialog pluginDialog =
                 new PluginDialog(appFrame, pluginLoader);
             pluginDialog.setVisible(true);
-        } else if (command.startsWith("_open")) {
-            Preferences recentFiles = prefs.node("recent");
-            String file = recentFiles.get("file" + command.substring(5), "");
-            if (file.length() > 0) {
-                loadMap(file);
-            }
         } else if (command.equals(Resources.getString("menu.edit.preferences"))) {
             ConfigurationDialog d = new ConfigurationDialog(appFrame);
             d.configure();
@@ -1741,9 +1747,8 @@ public class MapEditor implements ActionListener, MouseListener,
             String name =
                 path.substring(path.lastIndexOf(File.separatorChar) + 1);
 
-            JMenuItem recentOption = createMenuItem(name, null, null);
-            recentOption.setActionCommand("_open" + i);
-            recentMenu.add(recentOption);
+            recentMenu.add(new TMenuItem(new OpenRecentAction(this, saveAction, name, i)));
+            
         }
     }
 
@@ -1765,7 +1770,7 @@ public class MapEditor implements ActionListener, MouseListener,
             tileCoordsLabel.setPreferredSize(null);
             tileCoordsLabel.setText(" ");
             zoomLabel.setText(" ");
-            tilePalettePanel.setTileset(null);
+            tilePaletteDialog.setMap(currentMap);
             setCurrentTile(null);
             System.gc();
         } else {
@@ -1786,15 +1791,7 @@ public class MapEditor implements ActionListener, MouseListener,
             coordinatesMenuItem.setState(
                     mapView.getMode(MapView.PF_COORDINATES));
 
-            Vector tilesets = currentMap.getTilesets();
-            if (!tilesets.isEmpty()) {
-                TileSet first = (TileSet)tilesets.get(0);
-                tilePalettePanel.setTileset(first);
-                setCurrentTile(first.getFirstTile());
-            } else {
-                tilePalettePanel.setTileset(null);
-                setCurrentTile(null);
-            }
+            tilePaletteDialog.setMap(currentMap);
 
             tileCoordsLabel.setText(String.valueOf(currentMap.getWidth() - 1)
                     + ", " + (currentMap.getHeight() - 1));

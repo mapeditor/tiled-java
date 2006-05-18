@@ -264,6 +264,8 @@ public abstract class MapLayer implements Cloneable
 
     public abstract boolean isUsed(Tile t);
 
+    public abstract boolean isEmpty();
+    
     /**
      * Creates a copy of this layer.
      *

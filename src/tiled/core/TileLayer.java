@@ -176,6 +176,17 @@ public class TileLayer extends MapLayer
         return false;
     }
 
+    public boolean isEmpty() {
+    	for(int p=0;p<2;p++) {
+    		for (int y = 0; y < bounds.height; y++) {
+    			for (int x = p; x < bounds.width; x+=2) {
+    				if(map[y][x] != null) return false;
+    			}
+    		}
+    	}
+    	return true;
+    }
+    
     /**
      * Sets the bounds (in tiles) to the specified Rectangle. <b>Caution:</b>
      * this causes a reallocation of the data array, and all previous data is
