@@ -1770,7 +1770,6 @@ public class MapEditor implements ActionListener, MouseListener,
             tileCoordsLabel.setText(" ");
             zoomLabel.setText(" ");
             tilePaletteDialog.setMap(currentMap);
-            setCurrentTile(null);
             System.gc();
         } else {
             mapEventAdapter.fireEvent(MapEventAdapter.ME_MAPACTIVE);
@@ -1803,6 +1802,8 @@ public class MapEditor implements ActionListener, MouseListener,
                     String.valueOf((int) (mapView.getZoom() * 100)) + "%");
         }
 
+        setCurrentTile(null);
+        
         zoomInAction.setEnabled(mapLoaded);
         zoomOutAction.setEnabled(mapLoaded);
         zoomNormalAction.setEnabled(mapLoaded && mapView.getZoomLevel() !=

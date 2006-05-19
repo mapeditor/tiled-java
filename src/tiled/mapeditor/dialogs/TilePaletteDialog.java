@@ -23,7 +23,6 @@ import javax.swing.event.ListSelectionListener;
 
 import tiled.core.Map;
 import tiled.core.TileSet;
-import tiled.core.TileSet;
 import tiled.mapeditor.MapEditor;
 import tiled.mapeditor.Resources;
 import tiled.mapeditor.util.TileSelectionEvent;

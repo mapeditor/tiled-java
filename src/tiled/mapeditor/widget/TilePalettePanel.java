@@ -122,8 +122,8 @@ public class TilePalettePanel extends JPanel implements Scrollable
             int endY = (clip.y + clip.height) / theight + 1;
             int tileAt = tilesPerRow * startY;
             
-            for (int y = startY, gy = startY * theight; y < endY && tileAt < tileset.getMaxTileId(); y++) {
-                for (int x = 0, gx = 1; x < tilesPerRow; x++, tileAt++) {
+            for (int y = startY, gy = startY * theight; y < endY; y++) {
+                for (int x = 0, gx = 1; x < tilesPerRow && tileAt < tileset.getMaxTileId(); x++, tileAt++) {
                     Tile tile = (Tile) tilesetMap.get(tileAt);
 
                     if (tile != null) {
@@ -170,7 +170,7 @@ public class TilePalettePanel extends JPanel implements Scrollable
         else {
             int twidth = tileset.getTileWidth() + 1;
             int theight = tileset.getTileHeight() + 1;
-            int tileCount = tileset.size();
+            int tileCount = tilesetMap.size()+1;
             int tilesPerRow = Math.max(1, (getWidth() - 1) / twidth);
             int rows = tileCount / tilesPerRow +
                     (tileCount % tilesPerRow > 0 ? 1 : 0);

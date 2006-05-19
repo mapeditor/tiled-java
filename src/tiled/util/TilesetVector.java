@@ -5,9 +5,8 @@ import java.util.Vector;
 import tiled.core.TileSet;
 
 /**
- * 
+ * This 
  * @version $Id$
- *
  */
 public class TilesetVector extends Vector {
 
@@ -18,11 +17,29 @@ public class TilesetVector extends Vector {
     }
 
     public Object get(int index) {
-        int t=0, i;
-        for(i=0;i<=tileset.getMaxTileId() && t<index;i++)
+        int t, i=0;
+        
+        if(tileset.getTile(0) == null) {
+            i=1;
+        }
+        
+        for(t=0;i<tileset.getMaxTileId()-1 && t<index;i++)
             if(tileset.getTile(i) != null) t++;
         
         return tileset.getTile(i);
     }
 
+    public int size() {
+        int t, i=0;
+        
+        if(tileset.getTile(0) == null) {
+            i=1;
+        }
+        
+        for(t=0;i<tileset.getMaxTileId()-1;i++)
+            if(tileset.getTile(i) != null) t++;
+        
+        return t;
+    }
+    
 }
