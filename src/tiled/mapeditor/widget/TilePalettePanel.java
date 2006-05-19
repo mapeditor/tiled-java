@@ -14,6 +14,8 @@ package tiled.mapeditor.widget;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.util.Vector;
+
 import javax.swing.JPanel;
 import javax.swing.Scrollable;
 import javax.swing.event.EventListenerList;
@@ -21,7 +23,6 @@ import javax.swing.event.MouseInputAdapter;
 
 import tiled.core.*;
 import tiled.mapeditor.util.*;
-import tiled.util.TilesetVector;
 
 /**
  * @version $Id$
@@ -31,8 +32,7 @@ public class TilePalettePanel extends JPanel implements Scrollable
     private static final int TILES_PER_ROW = 4;
     private TileSet tileset;
     private EventListenerList tileSelectionListeners;
-    private Rectangle clip;
-    private TilesetVector tilesetMap;
+    private Vector tilesetMap;
     
     public TilePalettePanel() {
         tileSelectionListeners = new EventListenerList();
@@ -88,7 +88,7 @@ public class TilePalettePanel extends JPanel implements Scrollable
      */
     public void setTileset(TileSet tileset) {
         this.tileset = tileset;
-        tilesetMap = new TilesetVector(tileset);
+        if(tileset!=null) tilesetMap = tileset.generateGaplessVector();
         revalidate();
         repaint();
     }
@@ -99,16 +99,20 @@ public class TilePalettePanel extends JPanel implements Scrollable
         int theight = tileset.getTileHeight() + 1;
         int tilesPerRow = Math.max(1, (getWidth() - 1) / twidth);
 
-        //we like Tiled to behave in a predictibile manner
+        //We like Tiled to behave in a predictibile manner; i.e.,
+        //it should not pick the first tile of the next row if 
+        //there is empty space on the right of the row. Happy now? :P 
         if(x>tilesPerRow*twidth) x = tilesPerRow*twidth-1;
         
         int tileAt = (y / theight) * tilesPerRow + x/twidth;
+        
+        if(tileAt >= tileset.getMaxTileId()) return null;
         
         return (Tile) tilesetMap.get(tileAt);
     }
 
     public void paint(Graphics g) {
-        clip = g.getClipBounds();
+        Rectangle clip = g.getClipBounds();
 
         paintBackground(g);
 

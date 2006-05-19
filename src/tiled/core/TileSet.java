@@ -290,6 +290,23 @@ public class TileSet
     }
 
     /**
+     * Generates a vector that removes the gaps that can
+     * occur if a tile is removed from the middle of a set
+     * of tiles. (Maps tiles contiguously)
+     * 
+     * @return A java.util.Vector mapping ordered set location to the next non-null tile
+     */
+    public Vector generateGaplessVector() {
+        Vector gapless = new Vector();
+        
+        for(int i=0;i<getMaxTileId();i++) {
+            if(getTile(i) != null) gapless.add(getTile(i));
+        }
+        
+        return gapless;
+    }
+    
+    /**
      * Returns the width of tiles in this tileset. All tiles in a tileset
      * should be the same width, and the same as the tile width of the map the
      * tileset is used with.
