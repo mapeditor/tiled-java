@@ -757,10 +757,38 @@ public class MapEditor implements ActionListener, MouseListener,
         if (layer == null) {
             return;
         } else if (mouseButton == MouseEvent.BUTTON3) {
-            if (layer instanceof TileLayer && !bMouseIsDragging) {
-                Tile newTile = ((TileLayer)layer).getTileAt(tile.x, tile.y);
-                setCurrentTile(newTile);
-            } else if (layer instanceof ObjectGroup) {
+            if (layer instanceof TileLayer) {
+                if(!bMouseIsDragging) {
+                    Tile newTile = ((TileLayer)layer).getTileAt(tile.x, tile.y);
+                    setCurrentTile(newTile);
+                } else if(currentPointerState == PS_PAINT) {
+                    //in case we are dragging to create a custom brush, let the user
+                    //know where we are creating it from
+                    if (marqueeSelection == null) {
+                        marqueeSelection = new SelectionLayer(
+                                currentMap.getWidth(), currentMap.getHeight());
+                        currentMap.addLayerSpecial(marqueeSelection);
+                    }
+                    
+                    Point limp = mouseInitialPressLocation;
+                    Rectangle oldArea =
+                        marqueeSelection.getSelectedAreaBounds();
+                    int minx = Math.min(limp.x, tile.x);
+                    int miny = Math.min(limp.y, tile.y);
+
+                    Rectangle selRect = new Rectangle(
+                            minx, miny,
+                            (Math.max(limp.x, tile.x) - minx)+1,
+                            (Math.max(limp.y, tile.y) - miny)+1);
+
+                    marqueeSelection.selectRegion(selRect);
+                    if (oldArea != null) {
+                        oldArea.add(
+                                marqueeSelection.getSelectedAreaBounds());
+                        mapView.repaintRegion(oldArea);
+                    }
+                }
+            } else if (layer instanceof ObjectGroup && !bMouseIsDragging) {
                 // TODO: Add support for ObjectGroups here
             }
         } else if (mouseButton == MouseEvent.BUTTON1) {
@@ -936,6 +964,12 @@ public class MapEditor implements ActionListener, MouseListener,
         	   mlp.addLayer(brushLayer);
         	   setBrush(new CustomBrush(mlp));
            }
+           
+           //get rid of any visible marquee
+           if (marqueeSelection != null) {
+               currentMap.removeLayerSpecial(marqueeSelection);
+               marqueeSelection = null;
+           }
        }
 
         if (paintEdit != null) {
@@ -1013,20 +1047,28 @@ public class MapEditor implements ActionListener, MouseListener,
 
         if (command.equals("paint")) {
             setCurrentPointerState(PS_PAINT);
+            resetBrush();
         } else if (command.equals("erase")) {
             setCurrentPointerState(PS_ERASE);
+            resetBrush();
         } else if (command.equals("point")) {
             setCurrentPointerState(PS_POINT);
+            resetBrush();
         } else if (command.equals("pour")) {
             setCurrentPointerState(PS_POUR);
+            resetBrush();
         } else if (command.equals("eyed")) {
             setCurrentPointerState(PS_EYED);
+            resetBrush();
         } else if (command.equals("marquee")) {
             setCurrentPointerState(PS_MARQUEE);
+            resetBrush();
         } else if (command.equals("move")) {
             setCurrentPointerState(PS_MOVE);
+            resetBrush();
         } else if (command.equals("moveobject")) {
             setCurrentPointerState(PS_MOVEOBJ);
+            resetBrush();
         } else if (command.equals("palette")) {
             if (currentMap != null) {
                 if (tilePaletteDialog == null) {
@@ -1593,6 +1635,22 @@ public class MapEditor implements ActionListener, MouseListener,
         undoSupport.postEdit(mle);
     }
 
+    public void resetBrush() {
+        //FIXME: this is an in-elegant hack, but it gets the user out 
+        //       of custom brush mode
+        //(reset the brush if necessary)
+        if(currentBrush instanceof CustomBrush) {
+            if (prefs.getBoolean("cursorhighlight", true)) {
+                Rectangle redraw = cursorHighlight.getBounds();
+                mapView.repaintRegion(redraw);
+            }
+            ShapeBrush sb = new ShapeBrush();
+            sb.makeQuadBrush(new Rectangle(0, 0, 1, 1));
+            sb.setTile(currentTile);
+            setBrush(sb);
+        }
+    }
+    
     public void setBrush(AbstractBrush b) {
         currentBrush = b;
 
