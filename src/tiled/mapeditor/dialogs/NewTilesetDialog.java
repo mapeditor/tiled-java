@@ -56,7 +56,7 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
     private JButton propsButton;
     private ColorButton colorButton;
     private String path;
-    
+
     private Properties defaultSetProperties;
 
     /* LANGUAGE PACK */
@@ -81,7 +81,7 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
     private static final String PROPERTIES_TITLE = Resources.getString("dialog.properties.default.title");
     private static final String PROPERTIES_BUTTON = Resources.getString("dialog.newtileset.button.properties");
     /* -- */
-    
+
     public NewTilesetDialog(JFrame parent, Map map) {
         super(parent, DIALOG_TITLE, true);
         this.map = map;
@@ -190,8 +190,10 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
         tilebmpPanel.add(tilebmpFileLabel, c);
         c.gridy = 3;
         tilebmpPanel.add(spacingLabel, c);
+        /*
         c.gridy = 4;
         tilebmpPanel.add(cutterLabel, c);
+        */
         c.gridx = 1;
         c.gridy = 2;
         c.weightx = 1;
@@ -200,8 +202,10 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
         tilebmpPanel.add(tilebmpPathPanel, c);
         c.gridy = 3;
         tilebmpPanel.add(tileSpacing, c);
+        /*
         c.gridy = 4;
         tilebmpPanel.add(cutterBox, c);
+        */
         c.gridx = 0;
         c.gridy = 5;
         c.gridwidth = 2;
@@ -277,7 +281,7 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
                 System.out.println("TilesetPreviewDialog");
             }
         });
-        
+
         cancelButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
                 dispose();
@@ -301,7 +305,7 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
                 chooseColorFromImage();
             }
         });
-        
+
         propsButton.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent actionEvent) {
         		PropertiesDialog lpd =
@@ -332,11 +336,11 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
     	newTileset = new TileSet();
         newTileset.setName(tilesetName.getText());
         newTileset.setDefaultProperties(defaultSetProperties);
-        
+
         // In the off chance that something goes wrong,
         // keep working.
     	while(true) {
-	
+
 	        if (tilebmpCheck.isSelected()) {
 	            String file = tilebmpFile.getText();
 	            int spacing = tileSpacing.intValue();
@@ -359,16 +363,16 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
 	                                trans.getWidth(null),
 	                                trans.getHeight(null),
 	                                BufferedImage.TYPE_INT_ARGB);
-	
+
 	                        img.getGraphics().drawImage(trans, 0, 0, null);
-	
+
 	                        newTileset.importTileBitmap(img,
 	                                getCutter(width, height, spacing),
 	                                tileAutoCheck.isSelected());
-	
+
 	                        newTileset.setTransparentColor(
 	                                colorButton.getColor());
-	
+
 	                        newTileset.setTilesetImageFilename(file);
 	                    } catch (IOException e) {
 	                    	JOptionPane.showMessageDialog(this, e.getLocalizedMessage(),
@@ -376,7 +380,7 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
 	                    	continue;
 	                    }
 	                }
-	                
+
 	            } catch (Exception e) {
 	                JOptionPane.showMessageDialog(this, e.getLocalizedMessage(),
 	                        IMPORT_ERROR_MSG, JOptionPane.ERROR_MESSAGE);
@@ -384,10 +388,10 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
 	                return;
 	            }
 	        }
-	
+
 	        break;
     	}
-    	
+
         dispose();
     }
 

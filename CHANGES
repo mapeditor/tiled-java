@@ -11,7 +11,7 @@ UNDONE
 + Rewrote main mapeditor code
 + Moved actions out of MapEditor, and created a package for them
 
-0.6.0 - WIP (beta)
+0.6.0 RC2 - May 21st, 2006
 
 * Added internationalization/localization support, with translations to Dutch,
   German, Italian and French.

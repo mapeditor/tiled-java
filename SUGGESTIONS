@@ -9,12 +9,6 @@ Summary:    Isometric mode by shifting every other row in y direction.
 State:      To be implemented (task #78)
 Problems:   Shift even rows or odd rows? Or how to make that an option?
 
-- 02 --------------------------------------------------------------------------
-Suggestor:  Ahmed Mohombe <amohombe@yahoo.com>
-Date:       08/04/04
-Summary:    Show tile coordinates on each tile (analoguous to Show Grid).
-State:      Implementation in progress (task #82).
-
 - 03 --------------------------------------------------------------------------
 Suggestor:  Ahmed Mohombe <amohombe@yahoo.com>
 Date:       08/04/04

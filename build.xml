@@ -34,7 +34,7 @@
   <target name="release_src" description="Build source release">
     <mkdir dir="releases"/>
     <zip destfile="releases/tiled-${version}-src.zip">
-      <zipfileset prefix="tiled-${version}/tiled" dir="tiled"/>
+      <zipfileset prefix="tiled-${version}/src" dir="src"/>
       <zipfileset prefix="tiled-${version}/plugins" dir="plugins"/>
       <zipfileset prefix="tiled-${version}" dir="."
         includes="README COPYING CHANGES build.xml MANIFEST.MF"/>
