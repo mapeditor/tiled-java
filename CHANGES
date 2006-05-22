@@ -13,8 +13,8 @@ UNDONE
 
 0.6.0 RC2 - May 21st, 2006
 
-* Added internationalization/localization support, with translations to Dutch,
-  German, Italian, French and Spanish.
+* Added internationalization, with translations to Dutch, German, Italian,
+  French and Spanish.
 * Added stamp function for pencil: right-click, drag now creates a stamp
   for easy copying
 * Added core support for animated tiles
