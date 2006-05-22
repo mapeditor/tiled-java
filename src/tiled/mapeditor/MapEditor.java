@@ -758,7 +758,7 @@ public class MapEditor implements ActionListener, MouseListener,
             return;
         } else if (mouseButton == MouseEvent.BUTTON3) {
             if (layer instanceof TileLayer) {
-                if(!bMouseIsDragging) {
+                if (!bMouseIsDragging) {
                     Tile newTile = ((TileLayer)layer).getTileAt(tile.x, tile.y);
                     setCurrentTile(newTile);
                 } else if(currentPointerState == PS_PAINT) {
@@ -1825,7 +1825,7 @@ public class MapEditor implements ActionListener, MouseListener,
             tileCoordsLabel.setText(" ");
             zoomLabel.setText(" ");
             tilePaletteDialog.setMap(currentMap);
-            System.gc();
+            setCurrentTile(null);
         } else {
             mapEventAdapter.fireEvent(MapEventAdapter.ME_MAPACTIVE);
             mapView = MapView.createViewforMap(currentMap);
@@ -1855,9 +1855,14 @@ public class MapEditor implements ActionListener, MouseListener,
             tileCoordsLabel.setPreferredSize(size);
             zoomLabel.setText(
                     String.valueOf((int) (mapView.getZoom() * 100)) + "%");
-        }
 
-        setCurrentTile(null);
+            Vector tilesets = currentMap.getTilesets();
+            Tile firstTile = null;
+            if (tilesets.size() > 0) {
+                firstTile = ((TileSet) tilesets.get(0)).getFirstTile();
+            }
+            setCurrentTile(firstTile);
+        }
 
         zoomInAction.setEnabled(mapLoaded);
         zoomOutAction.setEnabled(mapLoaded);
