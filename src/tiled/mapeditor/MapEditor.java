@@ -469,7 +469,7 @@ public class MapEditor implements ActionListener, MouseListener,
         mapEventAdapter.addListener(objectMoveButton);
 
         JToolBar toolBar = new JToolBar(JToolBar.VERTICAL);
-        toolBar.setFloatable(true);
+        toolBar.setFloatable(false);
         toolBar.add(moveButton);
         toolBar.add(paintButton);
         toolBar.add(eraseButton);
@@ -769,7 +769,7 @@ public class MapEditor implements ActionListener, MouseListener,
                                 currentMap.getWidth(), currentMap.getHeight());
                         currentMap.addLayerSpecial(marqueeSelection);
                     }
-                    
+
                     Point limp = mouseInitialPressLocation;
                     Rectangle oldArea =
                         marqueeSelection.getSelectedAreaBounds();
@@ -964,7 +964,7 @@ public class MapEditor implements ActionListener, MouseListener,
         	   mlp.addLayer(brushLayer);
         	   setBrush(new CustomBrush(mlp));
            }
-           
+
            //get rid of any visible marquee
            if (marqueeSelection != null) {
                currentMap.removeLayerSpecial(marqueeSelection);
@@ -1636,7 +1636,7 @@ public class MapEditor implements ActionListener, MouseListener,
     }
 
     public void resetBrush() {
-        //FIXME: this is an in-elegant hack, but it gets the user out 
+        //FIXME: this is an in-elegant hack, but it gets the user out
         //       of custom brush mode
         //(reset the brush if necessary)
         if(currentBrush instanceof CustomBrush) {
@@ -1650,7 +1650,7 @@ public class MapEditor implements ActionListener, MouseListener,
             setBrush(sb);
         }
     }
-    
+
     public void setBrush(AbstractBrush b) {
         currentBrush = b;
 
@@ -1861,7 +1861,7 @@ public class MapEditor implements ActionListener, MouseListener,
         }
 
         setCurrentTile(null);
-        
+
         zoomInAction.setEnabled(mapLoaded);
         zoomOutAction.setEnabled(mapLoaded);
         zoomNormalAction.setEnabled(mapLoaded && mapView.getZoomLevel() !=

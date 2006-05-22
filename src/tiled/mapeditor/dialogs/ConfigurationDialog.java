@@ -136,7 +136,9 @@ public class ConfigurationDialog extends JDialog
         gridOps.setLayout(new GridBagLayout());
         gridOps.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         c = new GridBagConstraints();
+        c.insets = new Insets(0, 0, 0, 5);
         gridOps.add(new JLabel(OPACITY_LABEL), c);
+        c.insets = new Insets(0, 0, 0, 0);
         c.weightx = 1; c.gridx = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
         gridOps.add(gridOpacity, c);
