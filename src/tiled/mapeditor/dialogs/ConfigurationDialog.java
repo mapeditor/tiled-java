@@ -32,7 +32,8 @@ import tiled.util.TiledConfiguration;
  */
 public class ConfigurationDialog extends JDialog
 {
-    private IntegerSpinner undoDepth, gridOpacity;
+    private IntegerSpinner undoDepth;
+    private JSlider gridOpacitySlider;
     private JCheckBox cbBinaryEncode, cbCompressLayerData, cbEmbedImages;
     private JCheckBox cbReportIOWarnings;
     private JRadioButton rbEmbedInTiles, rbEmbedInSet;
@@ -80,7 +81,7 @@ public class ConfigurationDialog extends JDialog
         bg.add(rbEmbedInSet);
         undoDepth = new IntegerSpinner();
         cbGridAA = new JCheckBox(ANTIALIASING_CHECKBOX);
-        gridOpacity = new IntegerSpinner(0, 0, 255);
+        gridOpacitySlider = new JSlider(0, 255, 255);
         //gridColor = new JColorChooser();
 
         // Set up the layout
@@ -141,7 +142,7 @@ public class ConfigurationDialog extends JDialog
         c.insets = new Insets(0, 0, 0, 0);
         c.weightx = 1; c.gridx = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
-        gridOps.add(gridOpacity, c);
+        gridOps.add(gridOpacitySlider, c);
         c.gridwidth = 2; c.gridy = 1; c.gridx = 0;
         gridOps.add(cbGridAA, c);
         //c.gridy = 2; c.weightx = 0;
@@ -244,9 +245,9 @@ public class ConfigurationDialog extends JDialog
             }
         });
 
-        gridOpacity.addChangeListener(new ChangeListener() {
+        gridOpacitySlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent changeEvent) {
-                prefs.putInt("gridOpacity", gridOpacity.intValue());
+                prefs.putInt("gridOpacity", gridOpacitySlider.getValue());
             }
         });
 
@@ -279,7 +280,7 @@ public class ConfigurationDialog extends JDialog
 
     private void updateFromConfiguration() {
         undoDepth.setValue(prefs.getInt("undoDepth", 30));
-        gridOpacity.setValue(prefs.getInt("gridOpacity", 255));
+        gridOpacitySlider.setValue(prefs.getInt("gridOpacity", 255));
 
         if (savingPrefs.getBoolean("embedImages", true)) {
             cbEmbedImages.setSelected(true);

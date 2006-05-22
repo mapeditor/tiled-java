@@ -1858,10 +1858,12 @@ public class MapEditor implements ActionListener, MouseListener,
 
             Vector tilesets = currentMap.getTilesets();
             Tile firstTile = null;
-            if (tilesets.size() > 0) {
+            if (!tilesets.isEmpty()) {
                 firstTile = ((TileSet) tilesets.get(0)).getFirstTile();
             }
             setCurrentTile(firstTile);
+
+            currentMap.addLayerSpecial(cursorHighlight);
         }
 
         zoomInAction.setEnabled(mapLoaded);
@@ -1878,10 +1880,6 @@ public class MapEditor implements ActionListener, MouseListener,
             miniMap.setView(MapView.createViewforMap(currentMap));
         }
         */
-
-        if (currentMap != null) {
-            currentMap.addLayerSpecial(cursorHighlight);
-        }
 
         undoHandler.discardAllEdits();
         updateLayerTable();

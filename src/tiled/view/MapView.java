@@ -16,6 +16,8 @@ import java.awt.*;
 //import java.awt.geom.PathIterator;
 import java.util.Iterator;
 import java.util.prefs.Preferences;
+import java.util.prefs.PreferenceChangeListener;
+import java.util.prefs.PreferenceChangeEvent;
 import javax.swing.Scrollable;
 import javax.swing.JPanel;
 
@@ -61,6 +63,22 @@ public abstract class MapView extends JPanel implements Scrollable
     protected MapView(Map map) {
         this.map = map;
         setSize(getPreferredSize());
+
+        // Make sure the map view is redrawn when grid is visible and grid
+        // preferences change.
+        Preferences prefs = TiledConfiguration.root();
+        prefs.addPreferenceChangeListener(new PreferenceChangeListener() {
+            public void preferenceChange(PreferenceChangeEvent preferenceChangeEvent) {
+                String key = preferenceChangeEvent.getKey();
+                if (("gridOpacity".equals(key) ||
+                        "gridAntialias".equals(key) ||
+                        "gridColor".equals(key)) &&
+                        getMode(PF_GRIDMODE))
+                {
+                    repaint();
+                }
+            }
+        });
     }
 
 
@@ -293,11 +311,11 @@ public abstract class MapView extends JPanel implements Scrollable
     	MapLayer layer;
     	double currentZoom = zoom;
 
-    	if(g2d == null) {
+    	if (g2d == null) {
     		g2d = (Graphics2D)getGraphics().create();
-    		g2d.setClip(this.getVisibleRect());
+    		g2d.setClip(getVisibleRect());
     	}
-    	
+
     	while (li.hasNext()) {
             if ((layer = (MapLayer)li.next()) != null) {
                 float opacity = layer.getOpacity() * mapOpacity;
