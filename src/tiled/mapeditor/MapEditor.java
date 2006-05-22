@@ -1802,10 +1802,7 @@ public class MapEditor implements ActionListener, MouseListener,
 
         for (int i = 0; i < files.size(); i++) {
             String path = (String) files.get(i);
-            String name =
-                path.substring(path.lastIndexOf(File.separatorChar) + 1);
-
-            recentMenu.add(new TMenuItem(new OpenRecentAction(this, saveAction, name, i)));
+            recentMenu.add(new TMenuItem(new OpenRecentAction(this, saveAction, path)));
         }
     }
 
