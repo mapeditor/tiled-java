@@ -173,7 +173,7 @@ public class TilePalettePanel extends JPanel implements Scrollable
         else {
             int twidth = tileset.getTileWidth() + 1;
             int theight = tileset.getTileHeight() + 1;
-            int tileCount = tilesetMap.size()+1;
+            int tileCount = tilesetMap.size();
             int tilesPerRow = Math.max(1, (getWidth() - 1) / twidth);
             int rows = tileCount / tilesPerRow +
                     (tileCount % tilesPerRow > 0 ? 1 : 0);
