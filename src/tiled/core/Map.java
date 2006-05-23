@@ -135,6 +135,12 @@ public class Map extends MultilayerPlane
         return layer;
     }
 
+    public void setLayer(int index, MapLayer l) {
+        l.setMap(this);
+        super.setLayer(index, l);
+        fireMapChanged();
+    }
+    
     /**
      * Adds a Tileset to this Map. If the set is already attached to this map,
      * <code>addTileset</code> simply returns.

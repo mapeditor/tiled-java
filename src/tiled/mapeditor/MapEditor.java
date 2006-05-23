@@ -18,6 +18,7 @@ import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.Stack;
 import java.util.Vector;
 import java.util.prefs.Preferences;
@@ -1856,10 +1857,18 @@ public class MapEditor implements ActionListener, MouseListener,
             zoomLabel.setText(
                     String.valueOf((int) (mapView.getZoom() * 100)) + "%");
 
+            //get the first non-null tile from the first tileset containing non-null tiles
             Vector tilesets = currentMap.getTilesets();
             Tile firstTile = null;
             if (!tilesets.isEmpty()) {
-                firstTile = ((TileSet) tilesets.get(0)).getFirstTile();
+                Iterator it = tilesets.iterator();
+                while(it.hasNext() && firstTile == null) {
+                    TileSet set = (TileSet)it.next();
+                    int i=0;
+                    while(firstTile == null) {
+                        firstTile = set.getTile(i++);
+                    }
+                }
             }
             setCurrentTile(firstTile);
 

@@ -38,8 +38,6 @@ public class MergeLayerDownAction extends AbstractLayerAction
         int layerIndex = editor.getCurrentLayerIndex();
 
         if (layerIndex > 0) {
-            // todo: The merged layer should be a copy. Currently the merge is
-            // todo: done in-place, which makes undo not work properly.
             map.mergeLayerDown(layerIndex);
             editor.setCurrentLayer(layerIndex - 1);
         }

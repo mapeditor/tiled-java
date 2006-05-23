@@ -115,7 +115,7 @@ public class MultilayerPlane
         layers.add(index, layer);
     }
 
-    private void setLayer(int index, MapLayer layer) {
+    public void setLayer(int index, MapLayer layer) {
     	layers.set(index, layer);
     }
 
@@ -213,7 +213,7 @@ public class MultilayerPlane
         ntl.copyFrom(getLayer(index - 1));
         getLayer(index).mergeOnto(ntl);
         setLayer(index - 1, ntl);
-
+        
         //getLayer(index).mergeOnto(getLayer(index - 1));
         removeLayer(index);
     }
