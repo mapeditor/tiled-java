@@ -1,13 +1,14 @@
-<project name="Tiled" default="dist" basedir="plugins">
+<project name="Tiled" default="dist" basedir=".">
   <description>
     A Java-based Tile Map Editor
   </description>
   <!-- set global properties for this build -->
-  <property name="src" location="../tiled"/>
-  <property name="build" location="../build"/>
-  <property name="dist" location="../dist"/>
-  <property name="nightly" location="../nightly"/>
-  <property name="javadoc" location="../docs/api"/>
+  <property name="src" location="../../tiled"/>
+  <property name="build" location="../../build"/>
+  <property name="dist" location="../../dist"/>
+  <property name="plugins" location="plugins"/>
+  <property name="nightly" location="../../nightly"/>
+  <property name="javadoc" location="../../docs/api"/>
 
   <target name="init">
     <!-- Create the time stamp -->
@@ -15,18 +16,18 @@
   </target>
 
   <target name="dist" description="Generate the distribution">
-      <mkdir dir="${dist}/plugins"/>
-      <ant dir="mappy" target="dist"/>
-      <ant dir="tmw" target="dist"/>
-      <ant dir="json" target="dist"/>
+    <jar
+      jarfile="${dist}/plugins/json.jar"
+      manifest="MANIFEST.MF"
+      basedir="${build}"
+      includes="tiled/plugins/json/*.class,org/json/*.class"
+      />
   </target>
 
   <target name="nightly" description="Generate a nightly build" >
   </target>
 
   <target name="clean" description="Clean up the build directory" >
-    <ant dir="mappy" target="clean"/>
-    <ant dir="tmw" target="clean"/>
   </target>
 
   <target name="javadoc" description="Generate Javadoc">

@@ -15,8 +15,7 @@
     <tstamp/>
   </target>
 
-  <target name="dist"
-    description="Generate the distribution">
+  <target name="dist" description="Generate the distribution">
     <jar
       jarfile="${dist}/plugins/mappy.jar"
       manifest="MANIFEST.MF"
@@ -25,8 +24,7 @@
       />
   </target>
 
-  <target name="nightly"
-    description="Generate a nightly build" >
+  <target name="nightly" description="Generate a nightly build" >
   </target>
 
   <target name="clean" description="Clean up the build directory" >
