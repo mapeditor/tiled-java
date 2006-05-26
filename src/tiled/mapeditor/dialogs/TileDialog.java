@@ -21,6 +21,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.Vector;
+import java.text.MessageFormat;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -69,6 +70,8 @@ public class TileDialog extends JDialog
     private static final String TILES_TAB = Resources.getString("general.tile.tiles");
     private static final String TILESET_TAB = Resources.getString("general.tile.tileset");
     private static final String NAME_LABEL = Resources.getString("dialog.newtileset.name.label");
+    private static final String EXTERNAL_BITMAP_CHECKBOX = Resources.getString("dialog.tile.external.bitmap.checkbox");
+    private static final String ERROR_LOADING_IMAGE = Resources.getString("dialog.tile.image.load.error");
 
     /* -- */
 
@@ -166,7 +169,8 @@ public class TileDialog extends JDialog
         JLabel name_label = new JLabel(NAME_LABEL+" ");
         tilesetNameEntry = new JTextField(32);
         //sharedImagesCheck = new JCheckBox("Use shared images");
-        externalBitmapCheck = new JCheckBox("Use external bitmap");
+        externalBitmapCheck = new JCheckBox(
+                EXTERNAL_BITMAP_CHECKBOX);
         //sharedImagesCheck.addActionListener(this);
         externalBitmapCheck.addActionListener(this);
 
@@ -279,14 +283,14 @@ public class TileDialog extends JDialog
                     location = file.getAbsolutePath();
                     return image;
                 } else {
-                    JOptionPane.showMessageDialog(this, "Error loading image",
-                            "Error loading image", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, ERROR_LOADING_IMAGE,
+                            ERROR_LOADING_IMAGE, JOptionPane.ERROR_MESSAGE);
                     return null;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(this, e.getLocalizedMessage(),
-                        "Error loading image", JOptionPane.ERROR_MESSAGE);
+                        ERROR_LOADING_IMAGE, JOptionPane.ERROR_MESSAGE);
             }
         }
 
@@ -429,8 +433,11 @@ public class TileDialog extends JDialog
             dispose();
         } else if (source == deleteTileButton) {
             int answer = JOptionPane.showConfirmDialog(
-                    this, "Delete tile?", "Are you sure?",
-                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                    this,
+                    Resources.getString("action.tile.delete.confirm.message"),
+                    Resources.getString("action.tile.delete.confirm.title"),
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE);
             if (answer == JOptionPane.YES_OPTION) {
                 Tile tile = (Tile)tileList.getSelectedValue();
                 if (tile != null) {
@@ -453,9 +460,8 @@ public class TileDialog extends JDialog
             if (!externalBitmapCheck.isSelected()) {
                 int answer = JOptionPane.showConfirmDialog(
                         this,
-                        "Warning: this operation cannot currently be reversed.\n" +
-                        "Disable the use of an external bitmap?",
-                       "Are you sure?",
+                        Resources.getString("action.tileset.external.confirm.message"),
+                        Resources.getString("action.tileset.external.confirm.title"),
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.WARNING_MESSAGE);
                 if (answer == JOptionPane.YES_OPTION) {
@@ -504,10 +510,12 @@ public class TileDialog extends JDialog
             // Select the last (cloned) tile
             tileList.setSelectedIndex(tileset.size() - 1);
             tileList.ensureIndexIsVisible(tileset.size() - 1);
-            JOptionPane.showMessageDialog(this,
-            		"Tile created with id "+n.getId(),
-            		"Created Tile",
-            		JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(
+                    this,
+                    MessageFormat.format(Resources.getString("action.tile.create.done.message"),
+                                         new Object[]{new Integer(n.getId())}),
+                    Resources.getString("action.tile.create.done.title"),
+                    JOptionPane.INFORMATION_MESSAGE);
         }
 
         repaint();
