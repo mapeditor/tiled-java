@@ -1,4 +1,4 @@
-<project name="Tiled" default="dist" basedir="plugins/json">
+<project name="Tiled" default="dist" basedir=".">
   <description>
     A Java-based Tile Map Editor
   </description>
@@ -9,17 +9,21 @@
   <property name="nightly" location="../../nightly"/>
   <property name="javadoc" location="../../docs/api"/>
 
-  <target name="dist" description="Generate the JSON writer plugin">
-    <!-- Make sure the json library is build first -->
-    <ant dir="../../lib/json" target="dist" inheritAll="false"/>
+  <target name="init">
+    <!-- Create the time stamp -->
+    <tstamp/>
     <!-- Create the build directory structure used by compile -->
     <mkdir dir="${build}"/>
-    <javac source="1.4" target="1.4" srcdir="${src}" destdir="${build}" classpath="${dist}/json.jar;${dist}/tiled.jar"/>
+  </target>
+
+  <target name="dist" description="Compile JSON library">
+    <mkdir dir="${build}"/>
+    <javac source="1.4" target="1.4" srcdir="${src}" destdir="${build}"/>
     <jar
-      jarfile="${dist}/plugins/json.jar"
+      jarfile="${dist}/json.jar"
       manifest="MANIFEST.MF"
       basedir="${build}"
-      includes="tiled/plugins/json/*.class"
+      includes="org/json/*.class"
       />
   </target>
 </project>

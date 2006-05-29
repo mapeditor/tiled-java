@@ -1,24 +1,13 @@
-<project name="Tiled" default="dist" basedir="plugins">
+<project name="Tiled plugins" default="dist" basedir="plugins">
   <description>
-    A Java-based Tile Map Editor
+    Plugins for Tiled
   </description>
-  <!-- set global properties for this build -->
-  <property name="src" location="../tiled"/>
-  <property name="build" location="../build"/>
-  <property name="dist" location="../dist"/>
-  <property name="nightly" location="../nightly"/>
-  <property name="javadoc" location="../docs/api"/>
-
-  <target name="init">
-    <!-- Create the time stamp -->
-    <tstamp/>
-  </target>
 
   <target name="dist" description="Generate the distribution">
-      <mkdir dir="${dist}/plugins"/>
+      <mkdir dir="../dist/plugins"/>
       <ant dir="mappy" target="dist"/>
       <ant dir="tmw" target="dist"/>
-      <ant dir="json" target="dist"/>
+      <ant dir="json" target="dist" inheritAll="false"/>
   </target>
 
   <target name="nightly" description="Generate a nightly build" >
@@ -27,19 +16,6 @@
   <target name="clean" description="Clean up the build directory" >
     <ant dir="mappy" target="clean"/>
     <ant dir="tmw" target="clean"/>
+    <ant dir="jason" target="clean"/>
   </target>
-
-  <target name="javadoc" description="Generate Javadoc">
-    <!-- Clean up previous Javadoc files -->
-    <delete dir="${javadoc}"/>
-
-    <!-- Generate Javadoc -->
-    <javadoc
-      packagenames="tiled.*"
-      sourcepath="."
-      destdir="${javadoc}"
-      windowtitle="Tiled"
-      />
-  </target>
-
 </project>

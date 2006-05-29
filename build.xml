@@ -1,4 +1,4 @@
-<project name="Tiled" default="dist" basedir=".">
+<project name="Tiled" default="dist">
   <description>
     A Java-based Tile Map Editor
   </description>
@@ -66,8 +66,7 @@
     </copy>
   </target>
 
-  <target name="dist" depends="clean, compile"
-    description="Generate the distribution">
+  <target name="dist" depends="compile" description="Generate the distribution">
     <mkdir dir="${dist}"/>
     <jar
       jarfile="${dist}/tiled.jar"
@@ -78,13 +77,13 @@
     <ant dir="plugins" target="dist"/>
   </target>
 
-  <target name="core" depends="clean,compile"
+  <target name="core" depends="compile"
     description="Generate a core I/O distribution for use in games, etc.">
     <jar jarfile="${dist}/tiled-core.jar"
       basedir="${build}" includes="tiled/core/**/*.class,tiled/io/**"/>
   </target>
 
-  <target name="dist_dep" depends="clean,compile_dep"
+  <target name="dist_dep" depends="compile_dep"
     description="Generate the distribution and warn about deprecation">
     <mkdir dir="${dist}"/>
     <jar
@@ -94,8 +93,7 @@
       />
   </target>
 
-  <target name="nightly" depends="clean,compile"
-    description="Generate a nightly build" >
+  <target name="nightly" depends="compile" description="Generate a nightly build">
     <mkdir dir="${nightly}"/>
     <jar
       jarfile="${nightly}/tiled-${DSTAMP}.jar"
@@ -123,6 +121,6 @@
   </target>
 
   <target name="plugins" description="Plugins for various map formats">
-    <ant dir="${plugins}" target="dist"/>
+    <ant dir="${plugins}" target="dist" inheritAll="false"/>
   </target>
 </project>
