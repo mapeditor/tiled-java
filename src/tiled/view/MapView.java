@@ -15,16 +15,12 @@ package tiled.view;
 import java.awt.*;
 //import java.awt.geom.PathIterator;
 import java.util.Iterator;
-import java.util.prefs.Preferences;
-import java.util.prefs.PreferenceChangeListener;
-import java.util.prefs.PreferenceChangeEvent;
 import javax.swing.Scrollable;
 import javax.swing.JPanel;
 
 import tiled.core.*;
 import tiled.mapeditor.brush.Brush;
 import tiled.mapeditor.selection.SelectionLayer;
-import tiled.util.TiledConfiguration;
 
 /**
  * The base class for map views. This is meant to be extended for different
@@ -34,10 +30,9 @@ import tiled.util.TiledConfiguration;
  */
 public abstract class MapView extends JPanel implements Scrollable
 {
-    public static final int PF_GRIDMODE     = 0x00000001;
-    public static final int PF_BOUNDARYMODE = 0x00000002;
-    public static final int PF_COORDINATES  = 0x00000004;
-    public static final int PF_NOSPECIAL    = 0x00000008;
+    public static final int PF_BOUNDARYMODE = 0x02;
+    public static final int PF_COORDINATES  = 0x04;
+    public static final int PF_NOSPECIAL    = 0x08;
 
     public static int ZOOM_NORMALSIZE = 5;
 
@@ -46,14 +41,19 @@ public abstract class MapView extends JPanel implements Scrollable
     protected int modeFlags;
     protected double zoom = 1.0;
     protected int zoomLevel = ZOOM_NORMALSIZE;
+
+    // Grid properties
+    protected boolean showGrid;
+    protected boolean antialiasGrid;
+    protected Color gridColor;
+    protected int gridOpacity;
+
     protected static double[] zoomLevels = {
         0.0625, 0.125, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 4.0
     };
 
-    private SmoothZoomer smoothZoomer;
-
     private static final Color DEFAULT_BACKGROUND_COLOR = new Color(64, 64, 64);
-    private static final Color DEFAULT_GRID_COLOR = Color.black;
+    public static final Color DEFAULT_GRID_COLOR = Color.black;
 
     /**
      * Creates a new <code>MapView</code> that displays the specified map.
@@ -62,45 +62,53 @@ public abstract class MapView extends JPanel implements Scrollable
      */
     protected MapView(Map map) {
         this.map = map;
-        setSize(getPreferredSize());
-
-        // Make sure the map view is redrawn when grid is visible and grid
-        // preferences change.
-        Preferences prefs = TiledConfiguration.root();
-        prefs.addPreferenceChangeListener(new PreferenceChangeListener() {
-            public void preferenceChange(PreferenceChangeEvent preferenceChangeEvent) {
-                String key = preferenceChangeEvent.getKey();
-                if (("gridOpacity".equals(key) ||
-                        "gridAntialias".equals(key) ||
-                        "gridColor".equals(key)) &&
-                        getMode(PF_GRIDMODE))
-                {
-                    repaint();
-                }
-            }
-        });
-    }
-
-
-    public void enableMode(int modeModifier) {
-        modeFlags |= modeModifier;
-        setSize(getPreferredSize());
-    }
-
-    public void disableMode(int modeModifier) {
-        modeFlags &= ~modeModifier;
-        setSize(getPreferredSize());
     }
 
     public void toggleMode(int modeModifier) {
         modeFlags ^= modeModifier;
-        setSize(getPreferredSize());
+        revalidate();
+        repaint();
+    }
+
+    public void setMode(int modeModifier, boolean value) {
+        if (value) {
+            modeFlags |= modeModifier;
+        }
+        else {
+            modeFlags &= ~modeModifier;
+        }
+        revalidate();
+        repaint();
     }
 
     public boolean getMode(int modeModifier) {
         return (modeFlags & modeModifier) != 0;
     }
 
+    public void setGridColor(Color gridColor) {
+        this.gridColor = gridColor;
+        repaint();
+    }
+
+    public void setGridOpacity(int gridOpacity) {
+        this.gridOpacity = gridOpacity;
+        repaint();
+    }
+
+    public void setAntialiasGrid(boolean antialiasGrid) {
+        this.antialiasGrid = antialiasGrid;
+        repaint();
+    }
+
+    public boolean getShowGrid() {
+        return showGrid;
+    }
+
+    public void setShowGrid(boolean showGrid) {
+        this.showGrid = showGrid;
+        revalidate();
+        repaint();
+    }
 
     /**
      * Sets a new brush. The brush can draw a preview of the change while
@@ -139,18 +147,7 @@ public abstract class MapView extends JPanel implements Scrollable
     public void setZoomLevel(int zoomLevel) {
         if (zoomLevel >= 0 && zoomLevel < zoomLevels.length) {
             this.zoomLevel = zoomLevel;
-            //setZoomSmooth(zoomLevels[zoomLevel]);
             setZoom(zoomLevels[zoomLevel]);
-        }
-    }
-
-    private void setZoomSmooth(double zoom) {
-        if (zoom > 0) {
-            if (smoothZoomer != null) {
-                smoothZoomer.stopZooming();
-            }
-            smoothZoomer = new SmoothZoomer(this, this.zoom, zoom);
-            smoothZoomer.start();
         }
     }
 
@@ -227,7 +224,6 @@ public abstract class MapView extends JPanel implements Scrollable
      */
     public void paintComponent(Graphics g) {
         Graphics2D g2d = (Graphics2D)g.create();
-        Preferences prefs = TiledConfiguration.root();
 
         double currentZoom = zoom;
         MapLayer layer;
@@ -236,13 +232,13 @@ public abstract class MapView extends JPanel implements Scrollable
         g2d.setStroke(new BasicStroke(2.0f));
 
         // Do an initial fill with the background color
-        try {
-            String colorString = prefs.get("backgroundColor", "");
-            g2d.setColor(Color.decode(colorString));
-        } catch (NumberFormatException e) {
-            g2d.setColor(DEFAULT_BACKGROUND_COLOR);
-        }
-
+        // todo: make background color configurable
+        //try {
+        //    String colorString = displayPrefs.get("backgroundColor", "");
+        //    g2d.setColor(Color.decode(colorString));
+        //} catch (NumberFormatException e) {
+        //}
+        g2d.setColor(DEFAULT_BACKGROUND_COLOR);
         g2d.fillRect(clip.x, clip.y, clip.width, clip.height);
 
         paintSubMap(map, g2d, 1.0f);
@@ -270,25 +266,20 @@ public abstract class MapView extends JPanel implements Scrollable
         }
 
         // Grid color (also used for coordinates)
-        try {
-            String colorString = prefs.get("gridColor", "");
-            g2d.setColor(Color.decode(colorString));
-        } catch (NumberFormatException e) {
-            g2d.setColor(DEFAULT_GRID_COLOR);
-        }
+        g2d.setColor(gridColor);
 
-        if (getMode(PF_GRIDMODE)) {
+        if (showGrid) {
             // Grid opacity
-            int opacity = prefs.getInt("gridOpacity", 255);
-            if (opacity < 255) {
+            if (gridOpacity < 255) {
                 g2d.setComposite(AlphaComposite.getInstance(
-                            AlphaComposite.SRC_ATOP, (float)opacity / 255.0f));
+                        AlphaComposite.SRC_ATOP,
+                        (float)gridOpacity / 255.0f));
             } else {
                 g2d.setComposite(AlphaComposite.SrcOver);
             }
 
             // Configure grid antialiasing
-            if (prefs.getBoolean("gridAntialias", true)) {
+            if (antialiasGrid) {
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                         RenderingHints.VALUE_ANTIALIAS_ON);
             } else {
@@ -446,39 +437,4 @@ public abstract class MapView extends JPanel implements Scrollable
 
     public abstract Point screenToTileCoords(int x, int y);
     public abstract Point tileToScreenCoords(double x, double y);
-}
-
-
-class SmoothZoomer extends Thread
-{
-    private final MapView mapView;
-    private final double zoomFrom, zoomTo;
-    private boolean keepZooming;
-
-    public SmoothZoomer(MapView view, double from, double to) {
-        mapView = view;
-        zoomFrom = from;
-        zoomTo = to;
-        keepZooming = true;
-    }
-
-    public void stopZooming() {
-        keepZooming = false;
-    }
-
-    public void run() {
-        long currentTime = System.currentTimeMillis();
-        long endTime = currentTime + 500;
-
-        while (keepZooming && currentTime < endTime) {
-            double p = Math.sin(
-                    (1 - (endTime - currentTime) / 500.0) * Math.PI * 0.5);
-            mapView.setZoom(zoomFrom * (1.0 - p) + zoomTo * p);
-            currentTime = System.currentTimeMillis();
-        }
-
-        if (keepZooming) {
-            mapView.setZoom(zoomTo);
-        }
-    }
 }

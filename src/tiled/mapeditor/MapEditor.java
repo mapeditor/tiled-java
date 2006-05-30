@@ -22,6 +22,8 @@ import java.util.Iterator;
 import java.util.Stack;
 import java.util.Vector;
 import java.util.prefs.Preferences;
+import java.util.prefs.PreferenceChangeEvent;
+import java.util.prefs.PreferenceChangeListener;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -241,6 +243,31 @@ public class MapEditor implements ActionListener, MouseListener,
                     JOptionPane.WARNING_MESSAGE);
         }
         MapHelper.init(pluginLoader);
+
+
+        // Make sure the map view is redrawn when grid preferences change.
+        // todo: move this functionality out of here somehow, but not back into MapView
+        final Preferences display = prefs.node("display");
+        display.addPreferenceChangeListener(new PreferenceChangeListener() {
+            public void preferenceChange(PreferenceChangeEvent event) {
+                if (mapView == null) return;
+
+                String key = event.getKey();
+                if ("gridOpacity".equals(key)) {
+                    mapView.setGridOpacity(display.getInt("gridOpacity", 255));
+                }
+                else if ("gridAntialias".equals(key)) {
+                    mapView.setAntialiasGrid(display.getBoolean("gridAntialias", true));
+                }
+                else if ("gridColor".equals(key)) {
+                    mapView.setGridColor(new Color(display.getInt("gridColor",
+                            MapView.DEFAULT_GRID_COLOR.getRGB())));
+                }
+                else if ("showGrid".equals(key)) {
+                    mapView.setShowGrid(display.getBoolean("showGrid", false));
+                }
+            }
+        });
     }
 
     private JPanel createContentPane() {
@@ -1153,11 +1180,12 @@ public class MapEditor implements ActionListener, MouseListener,
             mapView.toggleMode(MapView.PF_BOUNDARYMODE);
         } else if (command.equals(Resources.getString("menu.view.grid"))) {
             // Toggle grid
-            mapView.toggleMode(MapView.PF_GRIDMODE);
+            Preferences displayPrefs = prefs.node("display");
+            boolean showGrid = displayPrefs.getBoolean("showGrid", false);
+            displayPrefs.putBoolean("showGrid", !showGrid);
         } else if (command.equals(Resources.getString("menu.view.coordinates"))) {
             // Toggle coordinates
             mapView.toggleMode(MapView.PF_COORDINATES);
-            mapView.repaint();
         } else if (command.equals(Resources.getString("menu.view.cursor"))) {
             prefs.putBoolean("cursorhighlight", cursorMenuItem.isSelected());
             cursorHighlight.setVisible(cursorMenuItem.isSelected());
@@ -1717,8 +1745,6 @@ public class MapEditor implements ActionListener, MouseListener,
             if (m != null) {
                 setCurrentMap(m);
                 updateRecent(file);
-                //This is to try and clean up any previously loaded stuffs
-                System.gc();
                 return true;
             } else {
                 JOptionPane.showMessageDialog(appFrame,
@@ -1757,9 +1783,8 @@ public class MapEditor implements ActionListener, MouseListener,
 
         if (filename != null) {
             MapView myView = MapView.createViewforMap(currentMap);
-            if (mapView.getMode(MapView.PF_GRIDMODE))
-                myView.enableMode(MapView.PF_GRIDMODE);
-            myView.enableMode(MapView.PF_NOSPECIAL);
+            myView.setShowGrid(mapView.getShowGrid());
+            myView.setMode(MapView.PF_NOSPECIAL, true);
             myView.setZoom(mapView.getZoom());
             Dimension d = myView.getPreferredSize();
             BufferedImage i = new BufferedImage(d.width, d.height,
@@ -1828,11 +1853,17 @@ public class MapEditor implements ActionListener, MouseListener,
             tilePaletteDialog.setMap(currentMap);
             setCurrentTile(null);
         } else {
+            final Preferences display = prefs.node("display");
             mapEventAdapter.fireEvent(MapEventAdapter.ME_MAPACTIVE);
             mapView = MapView.createViewforMap(currentMap);
             mapView.addMouseListener(this);
             mapView.addMouseMotionListener(this);
             mapView.addComponentListener(this);
+            mapView.setGridOpacity(display.getInt("gridOpacity", 255));
+            mapView.setAntialiasGrid(display.getBoolean("gridAntialias", true));
+            mapView.setGridColor(new Color(display.getInt("gridColor",
+                    MapView.DEFAULT_GRID_COLOR.getRGB())));
+            mapView.setShowGrid(display.getBoolean("showGrid", false));
             JViewport mapViewport = new JViewport();
             mapViewport.setView(mapView);
             mapViewport.addChangeListener(this);
@@ -1841,7 +1872,7 @@ public class MapEditor implements ActionListener, MouseListener,
 
             currentMap.addMapChangeListener(this);
 
-            gridMenuItem.setState(mapView.getMode(MapView.PF_GRIDMODE));
+            gridMenuItem.setState(mapView.getShowGrid());
             coordinatesMenuItem.setState(
                     mapView.getMode(MapView.PF_COORDINATES));
 

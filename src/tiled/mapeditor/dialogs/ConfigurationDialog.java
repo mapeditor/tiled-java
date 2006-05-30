@@ -18,6 +18,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.prefs.Preferences;
+import java.io.File;
+import java.io.FileOutputStream;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -43,6 +45,7 @@ public class ConfigurationDialog extends JDialog
     private final Preferences prefs = TiledConfiguration.root();
     private final Preferences savingPrefs = prefs.node("saving");
     private final Preferences ioPrefs = prefs.node("io");
+    private final Preferences displayPrefs = prefs.node("display");
 
     private static final String DIALOG_TITLE = Resources.getString("dialog.preferences.title");
     private static final String CLOSE_BUTTON = Resources.getString("general.button.close");
@@ -60,10 +63,13 @@ public class ConfigurationDialog extends JDialog
     private static final String GENERAL_TAB = Resources.getString("dialog.preferences.general.tab");
     private static final String SAVING_TAB = Resources.getString("dialog.preferences.saving.tab");
     private static final String GRID_TAB = Resources.getString("dialog.preferences.grid.tab");
+    private static final String EXPORT_BUTTON = "Export...";
+    private static final String IMPORT_BUTTON = "Import...";
 
     public ConfigurationDialog(JFrame parent) {
         super(parent, DIALOG_TITLE, true);
         init();
+        pack();
         setLocationRelativeTo(parent);
     }
 
@@ -150,6 +156,20 @@ public class ConfigurationDialog extends JDialog
         //c.gridx = 1;
         //gridOps.add(gridColor, c);
 
+        JButton exportButton = new JButton(EXPORT_BUTTON);
+        exportButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                doExport();
+            }
+        });
+
+        JButton importButton = new JButton(IMPORT_BUTTON);
+        exportButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                doImport();
+            }
+        });
+
         JButton closeButton = new JButton(CLOSE_BUTTON);
         closeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
@@ -160,6 +180,13 @@ public class ConfigurationDialog extends JDialog
         /* BUTTONS PANEL */
         JPanel buttons = new VerticalStaticJPanel();
         buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
+        /*
+        // todo: add once import/export feature file choosers
+        buttons.add(exportButton);
+        buttons.add(Box.createRigidArea(new Dimension(5, 5)));
+        buttons.add(importButton);
+        buttons.add(Box.createRigidArea(new Dimension(5, 5)));
+        */
         buttons.add(Box.createGlue());
         buttons.add(closeButton);
 
@@ -196,7 +223,6 @@ public class ConfigurationDialog extends JDialog
 
         getContentPane().add(mainPanel);
         getRootPane().setDefaultButton(closeButton);
-        pack();
 
         // Associate listeners with the configuration widgets
 
@@ -235,7 +261,7 @@ public class ConfigurationDialog extends JDialog
 
         cbGridAA.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent itemEvent) {
-                prefs.putBoolean("gridAntialias", cbGridAA.isSelected());
+                displayPrefs.putBoolean("gridAntialias", cbGridAA.isSelected());
             }
         });
 
@@ -247,7 +273,7 @@ public class ConfigurationDialog extends JDialog
 
         gridOpacitySlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent changeEvent) {
-                prefs.putInt("gridOpacity", gridOpacitySlider.getValue());
+                displayPrefs.putInt("gridOpacity", gridOpacitySlider.getValue());
             }
         });
 
@@ -280,7 +306,7 @@ public class ConfigurationDialog extends JDialog
 
     private void updateFromConfiguration() {
         undoDepth.setValue(prefs.getInt("undoDepth", 30));
-        gridOpacitySlider.setValue(prefs.getInt("gridOpacity", 255));
+        gridOpacitySlider.setValue(displayPrefs.getInt("gridOpacity", 255));
 
         if (savingPrefs.getBoolean("embedImages", true)) {
             cbEmbedImages.setSelected(true);
@@ -289,9 +315,33 @@ public class ConfigurationDialog extends JDialog
 
         cbBinaryEncode.setSelected(savingPrefs.getBoolean("encodeLayerData", true));
         cbCompressLayerData.setSelected(savingPrefs.getBoolean("layerCompression", true));
-        cbGridAA.setSelected(savingPrefs.getBoolean("gridAntialias", true));
+        cbGridAA.setSelected(displayPrefs.getBoolean("gridAntialias", true));
         cbReportIOWarnings.setSelected(ioPrefs.getBoolean("reportWarnings", false));
 
         cbCompressLayerData.setEnabled(cbBinaryEncode.isSelected());
+    }
+
+    private static void doExport() {
+        File configFile = new File("tiled-configuration.xml");
+        FileOutputStream outputStream = null;
+        try {
+            try {
+                outputStream = new FileOutputStream(configFile);
+                TiledConfiguration.root().exportSubtree(outputStream);
+            }
+            finally {
+                if (outputStream != null) {
+                    outputStream.close();
+                }
+            }
+        }
+        catch (Exception e) {
+            System.out.println("Error while exporting configuration:\n" +
+                    e.toString());
+        }
+    }
+
+    private static void doImport() {
+        // todo: implement
     }
 }

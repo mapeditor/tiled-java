@@ -64,7 +64,7 @@ public class IsoMapView extends MapView
         Dimension tileSize = getTileSize(zoom);
         int tileStepY = tileSize.height / 2 == 0 ? 1 : tileSize.height / 2;
         Polygon gridPoly = createGridPolygon(0, -tileSize.height, 0);
-        
+
         Point rowItr = screenToTileCoords(clipRect.x, clipRect.y);
         rowItr.x--;
         Point drawLoc = tileToScreenCoords(rowItr.x, rowItr.y);
@@ -224,7 +224,7 @@ public class IsoMapView extends MapView
 
     public Dimension getPreferredSize() {
         Dimension tileSize = getTileSize(zoom);
-        int border = (modeFlags & PF_GRIDMODE) != 0 ? 1 : 0;
+        int border = showGrid ? 1 : 0;
         int mapSides = map.getHeight() + map.getWidth();
 
         return new Dimension(

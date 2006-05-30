@@ -66,7 +66,7 @@ public class OrthoMapView extends MapView
 
     public Dimension getPreferredSize() {
         Dimension tsize = getTileSize(zoom);
-        int border = (modeFlags & PF_GRIDMODE) != 0 ? 1 : 0;
+        int border = showGrid ? 1 : 0;
 
         return new Dimension(
                 map.getWidth() * tsize.width + border,
@@ -77,7 +77,6 @@ public class OrthoMapView extends MapView
         // Determine tile size and offset
         Dimension tsize = getTileSize(zoom);
         if (tsize.width <= 0 || tsize.height <= 0) return;
-        int toffset = (modeFlags & PF_GRIDMODE) != 0 ? 1 : 0;
         Polygon gridPoly = createGridPolygon(0, -tsize.height, 0);
 
         // Determine area to draw from clipping rectangle
@@ -91,7 +90,7 @@ public class OrthoMapView extends MapView
         // Draw this map layer
         for (int y = startY, gy = (startY + 1) * tsize.height;
                 y < endY; y++, gy += tsize.height) {
-            for (int x = startX, gx = startX * tsize.width + toffset;
+            for (int x = startX, gx = startX * tsize.width;
                     x < endX; x++, gx += tsize.width) {
                 Tile tile = layer.getTileAt(x, y);
 
@@ -157,7 +156,6 @@ public class OrthoMapView extends MapView
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
         // Determine tile size and offset
-        int toffset = (modeFlags & PF_GRIDMODE) != 0 ? 1 : 0;
         Font font = new Font("SansSerif", Font.PLAIN, tsize.height / 4);
         g2d.setFont(font);
         FontRenderContext fontRenderContext = g2d.getFontRenderContext();
@@ -170,9 +168,9 @@ public class OrthoMapView extends MapView
         int endY = (clipRect.y + clipRect.height) / tsize.height + 1;
 
         // Draw the coordinates
-        int gy = startY * tsize.height + toffset;
+        int gy = startY * tsize.height;
         for (int y = startY; y < endY; y++) {
-            int gx = startX * tsize.width + toffset;
+            int gx = startX * tsize.width;
             for (int x = startX; x < endX; x++) {
                 String coords = "(" + x + "," + y + ")";
                 Rectangle2D textSize =
@@ -191,13 +189,12 @@ public class OrthoMapView extends MapView
     public void repaintRegion(Rectangle region) {
         Dimension tsize = getTileSize(zoom);
         if (tsize.width <= 0 || tsize.height <= 0) return;
-        int toffset = (modeFlags & PF_GRIDMODE) != 0 ? 1 : 0;
         int maxExtraHeight =
-            (int)((map.getTileHeightMax() * zoom + toffset) - tsize.height);
+                (int)(map.getTileHeightMax() * zoom - tsize.height);
 
         // Calculate the visible corners of the region
-        int startX = region.x * tsize.width + toffset;
-        int startY = region.y * tsize.height + toffset - maxExtraHeight;
+        int startX = region.x * tsize.width;
+        int startY = region.y * tsize.height - maxExtraHeight;
         int endX = (region.x + region.width) * tsize.width;
         int endY = (region.y + region.height) * tsize.height;
 
@@ -213,11 +210,9 @@ public class OrthoMapView extends MapView
     }
 
     protected Dimension getTileSize(double zoom) {
-        int grid = (modeFlags & PF_GRIDMODE) != 0 ? 1 : 0;
-
         return new Dimension(
-                (int)(map.getTileWidth() * zoom) + grid,
-                (int)(map.getTileHeight() * zoom) + grid);
+                (int)(map.getTileWidth() * zoom),
+                (int)(map.getTileHeight() * zoom));
     }
 
     protected Polygon createGridPolygon(int tx, int ty, int border) {

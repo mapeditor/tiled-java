@@ -5,7 +5,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
@@ -27,6 +27,8 @@ import tiled.core.*;
  *  short (height)
  *  char[] (data)
  * </pre>
+ *
+ * @version $Id$
  */
 public class TMWServerMapWriter implements MapWriter
 {
@@ -69,7 +71,7 @@ public class TMWServerMapWriter implements MapWriter
 
             for (int y = 0; y < height; y++) {
                 for (int x= 0; x < width; x++) {
-                    Tile tile = ((TileLayer)layer).getTileAt(x, y);
+                    Tile tile = ((TileLayer) layer).getTileAt(x, y);
                     if (tile != null && tile.getId() > 0) {
                         out.write(1);
                     } else {
@@ -83,18 +85,18 @@ public class TMWServerMapWriter implements MapWriter
             throw new Exception("No collision layer 4 found!");
         }
     }
-    
+
     public void writeTileset(TileSet set, OutputStream out) throws Exception {
         System.out.println("Tilesets are not supported!");
     }
-    
+
     /**
      * @see tiled.io.MapReader#getFilter()
      */
     public String getFilter() throws Exception {
         return "*.wlk";
     }
-                                                                                
+
     public String getDescription() {
         return
             "+---------------------------------------------+\n" +
@@ -104,7 +106,7 @@ public class TMWServerMapWriter implements MapWriter
             "|              bjorn@lindeijer.nl             |\n" +
             "+---------------------------------------------+";
     }
-                                                                                
+
     public String getPluginPackage() {
         return "The Mana World export plugin";
     }
@@ -112,7 +114,7 @@ public class TMWServerMapWriter implements MapWriter
     public String getName() {
         return "The Mana World exporter";
     }
-                                                                                
+
     public boolean accept(File pathname) {
         try {
             String path = pathname.getCanonicalPath().toLowerCase();

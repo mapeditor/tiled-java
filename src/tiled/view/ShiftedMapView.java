@@ -63,7 +63,7 @@ public class ShiftedMapView extends MapView
 
     public Dimension getPreferredSize() {
         Dimension tsize = getTileSize(zoom);
-        int border = (modeFlags & PF_GRIDMODE) != 0 ? 1 : 0;
+        int border = showGrid ? 1 : 0;
         int onceX = (tsize.width - (int)(horSide * zoom)) / 2;
         int repeatX = tsize.width - onceX;
         int onceY = (tsize.height - (int)(verSide * zoom)) / 2;
