@@ -22,6 +22,9 @@ import tiled.io.MapReader;
 import tiled.io.PluginLogger;
 import tiled.core.*;
 
+/**
+ * @version $Id$
+ */
 public class MappyMapReader implements MapReader
 {
     private LinkedList chunks;

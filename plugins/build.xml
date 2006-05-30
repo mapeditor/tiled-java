@@ -1,12 +1,12 @@
-<project name="Tiled plugins" default="dist" basedir="plugins">
+<project name="Tiled plugins" default="dist">
   <description>
     Plugins for Tiled
   </description>
 
   <target name="dist" description="Generate the distribution">
       <mkdir dir="../dist/plugins"/>
-      <ant dir="mappy" target="dist"/>
-      <ant dir="tmw" target="dist"/>
+      <ant dir="mappy" target="dist" inheritAll="false"/>
+      <ant dir="tmw" target="dist" inheritAll="false"/>
       <ant dir="json" target="dist" inheritAll="false"/>
   </target>
 

@@ -5,7 +5,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
@@ -22,7 +22,10 @@ import java.io.OutputStream;
 /**
  * @version $Id$
  */
-public class Util {
+public class Util
+{
+    private static final int LAST_BYTE = 0x000000FF;
+
     public static long readLongReverse(InputStream in) throws IOException {
         int a = in.read();
         int b = in.read();
@@ -33,10 +36,10 @@ public class Util {
     }
 
     public static void writeLongReverse(long val, OutputStream out) throws IOException {
-        out.write((int) (val >> 24 & 0x000000FF));
-        out.write((int) (val >> 16 & 0x000000FF));
-        out.write((int) (val >> 8 & 0x000000FF));
-        out.write((int) (val & 0x000000FF));
+        out.write((int) (val >> 24 & LAST_BYTE));
+        out.write((int) (val >> 16 & LAST_BYTE));
+        out.write((int) (val >> 8 & LAST_BYTE));
+        out.write((int) (val & LAST_BYTE));
     }
 
     public static int readShortReverse(InputStream in) throws IOException {

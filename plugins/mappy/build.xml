@@ -1,21 +1,16 @@
-<project name="Tiled" default="dist" basedir="./plugins">
+<project name="Tiled" default="dist">
   <description>
-    A Java-based Tile Map Editor
+    Mappy plugin for Tiled
   </description>
   <!-- set global properties for this build -->
-  <property name="src" location="../../tiled"/>
-  <property name="build" location="../../build"/>
+  <property name="src" location="src"/>
+  <property name="build" location="build"/>
   <property name="dist" location="../../dist"/>
-  <property name="plugins" location="plugins"/>
-  <property name="nightly" location="../../nightly"/>
-  <property name="javadoc" location="../../docs/api"/>
-
-  <target name="init">
-    <!-- Create the time stamp -->
-    <tstamp/>
-  </target>
 
   <target name="dist" description="Generate the distribution">
+    <!-- Create the build directory structure used by compile -->
+    <mkdir dir="${build}"/>
+    <javac source="1.4" target="1.4" srcdir="${src}" destdir="${build}" classpath="${dist}/tiled.jar"/>
     <jar
       jarfile="${dist}/plugins/mappy.jar"
       manifest="MANIFEST.MF"
@@ -23,24 +18,4 @@
       includes="tiled/plugins/mappy/*.class"
       />
   </target>
-
-  <target name="nightly" description="Generate a nightly build" >
-  </target>
-
-  <target name="clean" description="Clean up the build directory" >
-  </target>
-
-  <target name="javadoc" description="Generate Javadoc">
-    <!-- Clean up previous Javadoc files -->
-    <delete dir="${javadoc}"/>
-
-    <!-- Generate Javadoc -->
-    <javadoc
-      packagenames="tiled.*"
-      sourcepath="."
-      destdir="${javadoc}"
-      windowtitle="Tiled"
-      />
-  </target>
-
 </project>

@@ -23,6 +23,9 @@ import tiled.plugins.mappy.MappyMapReader.BlkStr;
 import tiled.core.Map;
 import tiled.core.TileSet;
 
+/**
+ * @version $Id$
+ */
 public class MappyMapWriter implements MapWriter
 {
     private LinkedList chunks;

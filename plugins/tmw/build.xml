@@ -4,14 +4,14 @@
   </description>
 
   <!-- set global properties for this build -->
-  <property name="src" location="../../tiled"/>
-  <property name="build" location="../../build"/>
+  <property name="src" location="src"/>
+  <property name="build" location="build"/>
   <property name="dist" location="../../dist"/>
-  <property name="plugins" location="plugins"/>
-  <property name="nightly" location="../../nightly"/>
-  <property name="javadoc" location="../../docs/api"/>
 
   <target name="dist" description="Generate the distribution">
+    <!-- Create the build directory structure used by compile -->
+    <mkdir dir="${build}"/>
+    <javac source="1.4" target="1.4" srcdir="${src}" destdir="${build}" classpath="${dist}/tiled.jar"/>
     <jar
       jarfile="${dist}/plugins/tmw.jar"
       manifest="MANIFEST.MF"

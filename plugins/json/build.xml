@@ -6,8 +6,6 @@
   <property name="src" location="src"/>
   <property name="build" location="build"/>
   <property name="dist" location="../../dist"/>
-  <property name="nightly" location="../../nightly"/>
-  <property name="javadoc" location="../../docs/api"/>
 
   <target name="dist" description="Generate the JSON writer plugin">
     <!-- Make sure the json library is build first -->
