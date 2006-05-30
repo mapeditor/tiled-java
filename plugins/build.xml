@@ -14,8 +14,8 @@
   </target>
 
   <target name="clean" description="Clean up the build directory" >
-    <ant dir="mappy" target="clean"/>
-    <ant dir="tmw" target="clean"/>
-    <ant dir="jason" target="clean"/>
+    <ant dir="mappy" target="clean" inheritAll="false"/>
+    <ant dir="tmw" target="clean" inheritAll="false"/>
+    <ant dir="json" target="clean" inheritAll="false"/>
   </target>
 </project>

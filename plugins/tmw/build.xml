@@ -19,4 +19,8 @@
       includes="tiled/plugins/tmw/*.class"
       />
   </target>
+
+  <target name="clean" description="Clean up the build directory" >
+    <delete dir="${build}"/>
+  </target>
 </project>

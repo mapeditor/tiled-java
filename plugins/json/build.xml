@@ -8,16 +8,18 @@
   <property name="dist" location="../../dist"/>
 
   <target name="dist" description="Generate the JSON writer plugin">
-    <!-- Make sure the json library is build first -->
-    <ant dir="../../lib/json" target="dist" inheritAll="false"/>
     <!-- Create the build directory structure used by compile -->
     <mkdir dir="${build}"/>
-    <javac source="1.4" target="1.4" srcdir="${src}" destdir="${build}" classpath="${dist}/json.jar;${dist}/tiled.jar"/>
+    <javac source="1.4" target="1.4" srcdir="${src}" destdir="${build}" classpath="${dist}/tiled.jar"/>
     <jar
       jarfile="${dist}/plugins/json.jar"
       manifest="MANIFEST.MF"
       basedir="${build}"
-      includes="tiled/plugins/json/*.class"
+      includes="tiled/plugins/json/*.class,org/json/*.class"
       />
+  </target>
+
+  <target name="clean" description="Clean up the build directory" >
+    <delete dir="${build}"/>
   </target>
 </project>

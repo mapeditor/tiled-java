@@ -103,8 +103,8 @@
   </target>
 
   <target name="clean" description="Clean up the build directory" >
-    <!-- Delete the ${build} directory tree -->
     <delete dir="${build}"/>
+    <ant dir="${plugins}" target="clean" inheritAll="false"/>
   </target>
 
   <target name="javadoc" description="Generate Javadoc">

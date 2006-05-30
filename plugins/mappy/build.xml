@@ -18,4 +18,8 @@
       includes="tiled/plugins/mappy/*.class"
       />
   </target>
+
+  <target name="clean" description="Clean up the build directory" >
+    <delete dir="${build}"/>
+  </target>
 </project>
