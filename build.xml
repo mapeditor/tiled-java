@@ -17,13 +17,11 @@
     <mkdir dir="${build}"/>
   </target>
 
-  <target name="release_bin" depends="dist" description="Build binary release">
+  <target name="release_bin" depends="clean,dist" description="Build binary release">
     <mkdir dir="releases"/>
     <zip destfile="releases/tiled-${version}-bin.zip">
       <zipfileset prefix="tiled-${version}" dir="."
         includes="README COPYING INSTALL CHANGES"/>
-      <zipfileset fullpath="tiled-${version}/tiled.conf" dir="prototypes"
-        includes="tiled.conf"/>
       <zipfileset fullpath="tiled-${version}/tiled.jar" dir="dist"
         includes="tiled.jar"/>
       <zipfileset prefix="tiled-${version}/plugins" dir="dist/plugins"/>
@@ -31,15 +29,13 @@
     </zip>
   </target>
 
-  <target name="release_src" description="Build source release">
+  <target name="release_src" depends="clean" description="Build source release">
     <mkdir dir="releases"/>
     <zip destfile="releases/tiled-${version}-src.zip">
       <zipfileset prefix="tiled-${version}/src" dir="src"/>
       <zipfileset prefix="tiled-${version}/plugins" dir="plugins"/>
       <zipfileset prefix="tiled-${version}" dir="."
         includes="README COPYING CHANGES build.xml MANIFEST.MF"/>
-      <zipfileset fullpath="tiled-${version}/tiled.conf" dir="prototypes"
-        includes="tiled.conf"/>
       <zipfileset prefix="tiled-${version}/examples" dir="examples"/>
     </zip>
   </target>
