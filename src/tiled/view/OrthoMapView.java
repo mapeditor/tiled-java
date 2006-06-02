@@ -66,11 +66,10 @@ public class OrthoMapView extends MapView
 
     public Dimension getPreferredSize() {
         Dimension tsize = getTileSize(zoom);
-        int border = showGrid ? 1 : 0;
 
         return new Dimension(
-                map.getWidth() * tsize.width + border,
-                map.getHeight() * tsize.height + border);
+                map.getWidth() * tsize.width,
+                map.getHeight() * tsize.height);
     }
 
     protected void paintLayer(Graphics2D g2d, TileLayer layer, double zoom) {
@@ -132,20 +131,16 @@ public class OrthoMapView extends MapView
 
         // Determine lines to draw from clipping rectangle
         Rectangle clipRect = g2d.getClipBounds();
-        int startX = clipRect.x / tsize.width;
-        int startY = clipRect.y / tsize.height;
-        int endX = (clipRect.x + clipRect.width) / tsize.width + 1;
-        int endY = (clipRect.y + clipRect.height) / tsize.height + 1;
-        int p = startY * tsize.height;
+        int startX = clipRect.x / tsize.width * tsize.width;
+        int startY = clipRect.y / tsize.height * tsize.height;
+        int endX = clipRect.x + clipRect.width;
+        int endY = clipRect.y + clipRect.height;
 
-        for (int y = startY; y < endY; y++) {
-            g2d.drawLine(clipRect.x, p, clipRect.x + clipRect.width - 1, p);
-            p += tsize.height;
+        for (int x = startX; x < endX; x += tsize.width) {
+            g2d.drawLine(x, clipRect.y, x, clipRect.y + clipRect.height - 1);
         }
-        p = startX * tsize.width;
-        for (int x = startX; x < endX; x++) {
-            g2d.drawLine(p, clipRect.y, p, clipRect.y + clipRect.height - 1);
-            p += tsize.width;
+        for (int y = startY; y < endY; y += tsize.height) {
+            g2d.drawLine(clipRect.x, y, clipRect.x + clipRect.width - 1, y);
         }
     }
 

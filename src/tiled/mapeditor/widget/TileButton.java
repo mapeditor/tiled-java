@@ -5,7 +5,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
@@ -72,7 +72,7 @@ public class TileButton extends JButton
     }
 
     /*
-     *  Methods for Size Information 
+     * Methods for Size Information.
      */
     /*
     private Dimension calculatePreferredSize( ) {
@@ -90,7 +90,7 @@ public class TileButton extends JButton
     private Dimension calculateInnerSize( ) {
         Insets i = getInsets( );
         int w = getWidth( ) - i.left - i.right;
-        int h = getHeight( ) - i.top - i.bottom; 
+        int h = getHeight( ) - i.top - i.bottom;
         return new Dimension( w, h );
     }
 

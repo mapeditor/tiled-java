@@ -106,7 +106,7 @@ public class MappyMapReader implements MapReader
     }
 
     /**
-     * @see tiled.io.MapReader#getFilter()
+     * @see tiled.io.PluggableMapIO#getFilter()
      */
     public String getFilter() throws Exception {
         return "*.fmp";
@@ -269,7 +269,7 @@ public class MappyMapReader implements MapReader
     }
 
     /**
-     * BGFX blocks are synonymous with {@link tiled.core.Tile}s
+     * BGFX blocks are synonymous with {@link Tile}s
      *
      * @param m The Map to add Tiles to
      * @param in

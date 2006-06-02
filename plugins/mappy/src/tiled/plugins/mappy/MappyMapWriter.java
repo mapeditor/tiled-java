@@ -15,7 +15,6 @@ package tiled.plugins.mappy;
 import java.io.*;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Stack;
 
 import tiled.io.MapWriter;
 import tiled.io.PluginLogger;
@@ -67,7 +66,7 @@ public class MappyMapWriter implements MapWriter
     }
 
     /**
-     * @see tiled.io.MapReader#getFilter()
+     * @see tiled.io.PluggableMapIO#getFilter()
      */
     public String getFilter() throws Exception {
         return "*.map";

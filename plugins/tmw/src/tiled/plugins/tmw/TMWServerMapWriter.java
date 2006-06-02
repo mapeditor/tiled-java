@@ -35,7 +35,7 @@ public class TMWServerMapWriter implements MapWriter
     private static final int FIRST_BYTE = 0x000000FF;
 
     private PluginLogger logger;
-    
+
     /**
      * Loads a map from a file.
      *
@@ -91,7 +91,7 @@ public class TMWServerMapWriter implements MapWriter
     }
 
     /**
-     * @see tiled.io.MapReader#getFilter()
+     * @see tiled.io.PluggableMapIO#getFilter()
      */
     public String getFilter() throws Exception {
         return "*.wlk";
