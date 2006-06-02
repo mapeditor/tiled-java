@@ -125,14 +125,7 @@ public class XMLMapWriter implements MapWriter
             w.writeAttribute("tilewidth", map.getTileWidth());
             w.writeAttribute("tileheight", map.getTileHeight());
 
-            Properties props = map.getProperties();
-            for (Enumeration keys = props.keys(); keys.hasMoreElements();) {
-                String key = (String)keys.nextElement();
-                w.startElement("property");
-                w.writeAttribute("name", key);
-                w.writeAttribute("value", props.getProperty(key));
-                w.endElement();
-            }
+            writeProperties(map.getProperties(), w);
 
             int firstgid = 1;
             Iterator itr = map.getTilesets().iterator();
@@ -152,6 +145,18 @@ public class XMLMapWriter implements MapWriter
             w.endElement();
         } catch (XMLWriterException e) {
             e.printStackTrace();
+        }
+    }
+
+    private static void writeProperties(Properties props, XMLWriter w) throws
+            IOException, XMLWriterException
+    {
+        for (Enumeration keys = props.keys(); keys.hasMoreElements();) {
+            String key = (String)keys.nextElement();
+            w.startElement("property");
+            w.writeAttribute("name", key);
+            w.writeAttribute("value", props.getProperty(key));
+            w.endElement();
         }
     }
 
@@ -225,6 +230,20 @@ public class XMLMapWriter implements MapWriter
                                 trans.getRGB()).substring(2));
                 }
                 w.endElement();
+
+                // Write tile properties when necessary.
+                Iterator tileIterator = set.iterator();
+
+                while (tileIterator.hasNext()) {
+                    Tile tile = (Tile) tileIterator.next();
+                    // todo: move the null check back into the iterator?
+                    if (tile != null && !tile.getProperties().isEmpty()) {
+                        w.startElement("tile");
+                        w.writeAttribute("id", tile.getId());
+                        writeProperties(tile.getProperties(), w);
+                        w.endElement();
+                    }
+                }
             } else {
                 // Embedded tileset
                 Preferences prefs = TiledConfiguration.node("saving");
@@ -351,14 +370,7 @@ public class XMLMapWriter implements MapWriter
                 w.writeAttribute("opacity", l.getOpacity());
             }
 
-            Properties props = l.getProperties();
-            for (Enumeration keys = props.keys(); keys.hasMoreElements();) {
-                String key = (String)keys.nextElement();
-                w.startElement("property");
-                w.writeAttribute("name", key);
-                w.writeAttribute("value", props.getProperty(key));
-                w.endElement();
-            }
+            writeProperties(l.getProperties(), w);
 
             if (l instanceof ObjectGroup){
                 writeObjectGroup((ObjectGroup)l, w);
@@ -434,14 +446,7 @@ public class XMLMapWriter implements MapWriter
             //    w.writeAttribute("groundheight", "" + groundHeight);
             //}
 
-            Properties props = tile.getProperties();
-            for (Enumeration keys = props.keys(); keys.hasMoreElements();) {
-                String key = (String)keys.nextElement();
-                w.startElement("property");
-                w.writeAttribute("name", key);
-                w.writeAttribute("value", props.getProperty(key));
-                w.endElement();
-            }
+            writeProperties(tile.getProperties(), w);
 
             Image tileImage = tile.getImage();
 
@@ -524,14 +529,7 @@ public class XMLMapWriter implements MapWriter
                 w.writeAttribute("source", m.getSource());
             }
 
-            Properties props = m.getProperties();
-            for (Enumeration keys = props.keys(); keys.hasMoreElements();) {
-                String key = (String) keys.nextElement();
-                w.startElement("property");
-                w.writeAttribute("name", key);
-                w.writeAttribute("value", props.getProperty(key));
-                w.endElement();
-            }
+            writeProperties(m.getProperties(), w);
 
             w.endElement();
         } catch (XMLWriterException e) {
@@ -611,7 +609,7 @@ public class XMLMapWriter implements MapWriter
     }
 
     /**
-     * @see tiled.io.MapReader#getFilter()
+     * @see tiled.io.PluggableMapIO#getFilter()
      */
     public String getFilter() throws Exception {
         return "*.tmx,*.tsx,*.tmx.gz";

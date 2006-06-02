@@ -19,13 +19,11 @@ import java.awt.image.BufferedImage;
 import java.awt.image.FilteredImageSource;
 import java.io.*;
 import java.lang.reflect.*;
-import java.util.Stack;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
 import java.util.zip.GZIPInputStream;
 
-import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
 import javax.xml.parsers.*;
 
@@ -84,13 +82,13 @@ public class XMLMapTransformer implements MapReader
         }
 
         for (int i = 0; i < parameterTypes.length; i++) {
-            if (parameterTypes[i].getName().equalsIgnoreCase("int")) {
+            if ("int".equalsIgnoreCase(parameterTypes[i].getName())) {
                 conformingArguments[i] = new Integer(args[i]);
-            } else if (parameterTypes[i].getName().equalsIgnoreCase("float")) {
+            } else if ("float".equalsIgnoreCase(parameterTypes[i].getName())) {
                 conformingArguments[i] = new Float(args[i]);
             } else if (parameterTypes[i].getName().endsWith("String")) {
                 conformingArguments[i] = args[i];
-            } else if (parameterTypes[i].getName().equalsIgnoreCase("boolean")) {
+            } else if ("boolean".equalsIgnoreCase(parameterTypes[i].getName())) {
                 conformingArguments[i] = Boolean.valueOf(args[i]);
             } else {
             	logger.debug("Unsupported argument type " +
@@ -104,15 +102,15 @@ public class XMLMapTransformer implements MapReader
     }
 
     private void setOrientation(String o) {
-        if (o.equalsIgnoreCase("isometric")) {
+        if ("isometric".equalsIgnoreCase(o)) {
             map.setOrientation(Map.MDO_ISO);
-        } else if (o.equalsIgnoreCase("orthogonal")) {
+        } else if ("orthogonal".equalsIgnoreCase(o)) {
             map.setOrientation(Map.MDO_ORTHO);
-        } else if (o.equalsIgnoreCase("hexagonal")) {
+        } else if ("hexagonal".equalsIgnoreCase(o)) {
             map.setOrientation(Map.MDO_HEX);
-        } else if (o.equalsIgnoreCase("oblique")) {
+        } else if ("oblique".equalsIgnoreCase(o)) {
             map.setOrientation(Map.MDO_OBLIQUE);
-        } else if (o.equalsIgnoreCase("shifted")) {
+        } else if ("shifted".equalsIgnoreCase(o)) {
             map.setOrientation(Map.MDO_SHIFTED);
         } else {
         	logger.warn("Unknown orientation '" + o + "'");
@@ -200,7 +198,7 @@ public class XMLMapTransformer implements MapReader
 
             for (int i = 0; i < nl.getLength(); i++) {
                 Node n = nl.item(i);
-                if (n.getNodeName().equals("data")) {
+                if ("data".equals(n.getNodeName())) {
                     Node cdata = n.getFirstChild();
                     if (cdata == null) {
                     	logger.warn("image <data> tag enclosed no " +
@@ -291,7 +289,7 @@ public class XMLMapTransformer implements MapReader
             try {
                 //just a little check for tricky people...
                 String extention = source.substring(source.lastIndexOf('.') + 1);
-                if (!extention.toLowerCase().equals("tsx")) {
+                if (!"tsx".equals(extention.toLowerCase())) {
                 	logger.warn("tileset files should end in .tsx! ("+source+")");
                 }
 
@@ -321,24 +319,34 @@ public class XMLMapTransformer implements MapReader
             set.setBaseDir(basedir);
             set.setFirstGid(firstGid);
 
-            boolean hasTileElements = false;
             NodeList children = t.getChildNodes();
 
-            // Do an initial pass to see if any tile elements are specified
-            for (int i = 0; i < children.getLength(); i++) {
-                Node child = children.item(i);
-                if (child.getNodeName().equalsIgnoreCase("tile")) {
-                    hasTileElements = true;
-                }
-            }
-
             for (int i = 0; i < children.getLength(); i++) {
                 Node child = children.item(i);
 
-                if (child.getNodeName().equalsIgnoreCase("tile")) {
-                    set.addTile(unmarshalTile(set, child, tilesetBaseDir));
+                if ("tile".equalsIgnoreCase(child.getNodeName())) {
+                    String id = getAttributeValue(child, "id");
+                    Tile tile = set.getTile(Integer.parseInt(id));
+
+                    if (tile == null) {
+                        // Tile not defined yet
+                        set.addTile(unmarshalTile(set, child, tilesetBaseDir));
+                    } else {
+                        // Reference to existing tile, just load properties
+                        Properties tileProps = tile.getProperties();
+                        NodeList children2 = child.getChildNodes();
+
+                        for (int i2 = 0; i2 < children2.getLength(); i2++) {
+                            Node child2 = children2.item(i2);
+                            if ("property".equalsIgnoreCase(child2.getNodeName())) {
+                                tileProps.setProperty(
+                                        getAttributeValue(child2, "name"),
+                                        getAttributeValue(child2, "value"));
+                            }
+                        }
+                    }
                 }
-                else if (child.getNodeName().equalsIgnoreCase("image")) {
+                else if ("image".equalsIgnoreCase(child.getNodeName())) {
                     String imgSource = getAttributeValue(child, "source");
                     String id = getAttributeValue(child, "id");
                     String transStr = getAttributeValue(child, "trans");
@@ -379,12 +387,15 @@ public class XMLMapTransformer implements MapReader
                             set.setTransparentColor(color);
                         }
 
+                        // todo: Store additional information to be able to
+                        // todo: determine whether tiles should be created
+                        // todo: at this time. Now defaults to creation since
+                        // todo: this used to be the only possible behaviour.
                         set.importTileBitmap(tilesetImage, new BasicTileCutter(
                                 tileWidth, tileHeight, tileSpacing, 0),
-                            !hasTileElements);
+                                             true);
 
                         set.setTilesetImageFilename(sourcePath);
-
                     } else {
                         set.addImage(unmarshalImage(child, tilesetBaseDir),
                                 Integer.parseInt(getAttributeValue(child, "id")));
@@ -410,7 +421,7 @@ public class XMLMapTransformer implements MapReader
 
         for (int i = 0; i < children.getLength(); i++) {
             Node child = children.item(i);
-            if (child.getNodeName().equalsIgnoreCase("property")) {
+            if ("property".equalsIgnoreCase(child.getNodeName())) {
                 objProps.setProperty(
                         getAttributeValue(child, "name"),
                         getAttributeValue(child, "value"));
@@ -428,7 +439,7 @@ public class XMLMapTransformer implements MapReader
 
         for (int i = 0; i < children.getLength(); i++) {
             Node child = children.item(i);
-            if (child.getNodeName().equalsIgnoreCase("animation")) {
+            if ("animation".equalsIgnoreCase(child.getNodeName())) {
                 isAnimated = true;
                 break;
             }
@@ -452,18 +463,18 @@ public class XMLMapTransformer implements MapReader
 
         for (int i = 0; i < children.getLength(); i++) {
             Node child = children.item(i);
-            if (child.getNodeName().equalsIgnoreCase("image")) {
+            if ("image".equalsIgnoreCase(child.getNodeName())) {
                 int id = getAttribute(child, "id", -1);
                 Image img = unmarshalImage(child, baseDir);
                 if (id < 0) {
                     id = set.addImage(img);
                 }
                 tile.setImage(id);
-            } else if (child.getNodeName().equalsIgnoreCase("property")) {
+            } else if ("property".equalsIgnoreCase(child.getNodeName())) {
                 tileProps.setProperty(
                         getAttributeValue(child, "name"),
                         getAttributeValue(child, "value"));
-            } else if (child.getNodeName().equalsIgnoreCase("animation")) {
+            } else if ("animation".equalsIgnoreCase(child.getNodeName())) {
                 // TODO: fill this in once XMLMapWriter is complete
             }
         }
@@ -485,7 +496,7 @@ public class XMLMapTransformer implements MapReader
 
         for (int i = 0; i < children.getLength(); i++) {
             Node child = children.item(i);
-            if (child.getNodeName().equalsIgnoreCase("object")) {
+            if ("object".equalsIgnoreCase(child.getNodeName())) {
                 og.bindObject(unmarshalObject(child));
             }
         }
@@ -520,10 +531,10 @@ public class XMLMapTransformer implements MapReader
         for (Node child = t.getFirstChild(); child != null;
                 child = child.getNextSibling())
         {
-            if (child.getNodeName().equalsIgnoreCase("data")) {
+            if ("data".equalsIgnoreCase(child.getNodeName())) {
                 String encoding = getAttributeValue(child, "encoding");
 
-                if (encoding != null && encoding.equalsIgnoreCase("base64")) {
+                if (encoding != null && "base64".equalsIgnoreCase(encoding)) {
                     Node cdata = child.getFirstChild();
                     if (cdata == null) {
                     	logger.warn("layer <data> tag enclosed no data. (empty data tag)");
@@ -535,7 +546,7 @@ public class XMLMapTransformer implements MapReader
 
                         String comp = getAttributeValue(child, "compression");
 
-                        if (comp != null && comp.equalsIgnoreCase("gzip")) {
+                        if (comp != null && "gzip".equalsIgnoreCase(comp)) {
                             is = new GZIPInputStream(bais);
                         } else {
                             is = bais;
@@ -565,7 +576,7 @@ public class XMLMapTransformer implements MapReader
                             dataChild != null;
                             dataChild = dataChild.getNextSibling())
                     {
-                        if (dataChild.getNodeName().equalsIgnoreCase("tile")) {
+                        if ("tile".equalsIgnoreCase(dataChild.getNodeName())) {
                             int tileId = getAttribute(dataChild, "gid", -1);
                             TileSet ts = map.findTileSetForTileGID(tileId);
                             if (ts != null) {
@@ -583,7 +594,7 @@ public class XMLMapTransformer implements MapReader
                         }
                     }
                 }
-            } else if (child.getNodeName().equalsIgnoreCase("property")) {
+            } else if ("property".equalsIgnoreCase(child.getNodeName())) {
                 mlProps.setProperty(getAttributeValue(child, "name"),
                         getAttributeValue(child, "value"));
             }
@@ -597,7 +608,7 @@ public class XMLMapTransformer implements MapReader
 
         mapNode = doc.getDocumentElement();
 
-        if (!mapNode.getNodeName().equals("map")) {
+        if (!"map".equals(mapNode.getNodeName())) {
             throw new Exception("Not a valid tmx map file.");
         }
 
@@ -650,20 +661,20 @@ public class XMLMapTransformer implements MapReader
         for (Node sibs = mapNode.getFirstChild(); sibs != null;
                 sibs = sibs.getNextSibling())
         {
-            if (sibs.getNodeName().equals("tileset")) {
+            if ("tileset".equals(sibs.getNodeName())) {
                 map.addTileset(unmarshalTileset(sibs));
             }
-            else if (sibs.getNodeName().equals("property")) {
+            else if ("property".equals(sibs.getNodeName())) {
                 mapProps.setProperty(getAttributeValue(sibs, "name"),
                         getAttributeValue(sibs, "value"));
             }
-            else if (sibs.getNodeName().equals("layer")) {
+            else if ("layer".equals(sibs.getNodeName())) {
                 MapLayer layer = readLayer(sibs);
                 if (layer != null) {
                     map.addLayer(layer);
                 }
             }
-            else if (sibs.getNodeName().equals("objectgroup")) {
+            else if ("objectgroup".equals(sibs.getNodeName())) {
                 MapLayer layer = unmarshalObjectGroup(sibs);
                 if (layer != null) {
                     map.addLayer(layer);
@@ -744,7 +755,7 @@ public class XMLMapTransformer implements MapReader
     }
 
     /**
-     * @see tiled.io.MapReader#getFilter()
+     * @see tiled.io.PluggableMapIO#getFilter()
      */
     public String getFilter() throws Exception {
         return "*.tmx,*.tmx.gz,*.tsx";

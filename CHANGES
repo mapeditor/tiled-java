@@ -39,6 +39,7 @@ UNDONE
 * Fixed exiting even when a request to save the changes failed
 * Fixed layer merging so that undo/redo of operation is functional
 * Fixed resetting of selected tileset in tile palette on layer changes
+* Fixed saving of tile properties when using a tileset image
 * Rewrote configuration based on the Preferences class, no more tiled.conf
 * Cleaned up TileSet (removed checksumming and rotation/orienation code)
 * Removed experimental hexagonal mapview from new map dialog
