@@ -1896,7 +1896,7 @@ public class MapEditor implements ActionListener, MouseListener,
                 while(it.hasNext() && firstTile == null) {
                     TileSet set = (TileSet)it.next();
                     int i=0;
-                    while(firstTile == null) {
+                    while(firstTile == null && i < set.getMaxTileId()) {
                         firstTile = set.getTile(i++);
                     }
                 }

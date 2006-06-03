@@ -138,6 +138,20 @@ public class XMLMapTransformer implements MapReader
         }
     }
 
+    private static Node findChild(Node node, String childName) {
+        NodeList children = node.getChildNodes();
+
+        // Do an initial pass to see what's in here
+        for (int i = 0; i < children.getLength(); i++) {
+            Node child = children.item(i);
+            if (child.getNodeName().equalsIgnoreCase(childName)) {
+                return child;
+            }
+        }
+        
+        return null;
+    }
+    
     private Object unmarshalClass(Class reflector, Node node)
         throws InstantiationException, IllegalAccessException,
                InvocationTargetException {
@@ -319,86 +333,78 @@ public class XMLMapTransformer implements MapReader
             set.setBaseDir(basedir);
             set.setFirstGid(firstGid);
 
+            boolean hasTilesetImage = false;
             NodeList children = t.getChildNodes();
+            
+            //if we have a tileset image, load it (tileset can have only one image element)
+            Node child = findChild(t, "image");
+            if(child != null) {
+                String imgSource = getAttributeValue(child, "source");
+                String id = getAttributeValue(child, "id");
+                String transStr = getAttributeValue(child, "trans");
 
-            for (int i = 0; i < children.getLength(); i++) {
-                Node child = children.item(i);
+                hasTilesetImage = true;
+                
+                if (imgSource != null && id == null) {
+                    // Not a shared image, but an entire set in one image
+                    // file
 
-                if ("tile".equalsIgnoreCase(child.getNodeName())) {
-                    String id = getAttributeValue(child, "id");
-                    Tile tile = set.getTile(Integer.parseInt(id));
-
-                    if (tile == null) {
-                        // Tile not defined yet
-                        set.addTile(unmarshalTile(set, child, tilesetBaseDir));
-                    } else {
-                        // Reference to existing tile, just load properties
-                        Properties tileProps = tile.getProperties();
-                        NodeList children2 = child.getChildNodes();
-
-                        for (int i2 = 0; i2 < children2.getLength(); i2++) {
-                            Node child2 = children2.item(i2);
-                            if ("property".equalsIgnoreCase(child2.getNodeName())) {
-                                tileProps.setProperty(
-                                        getAttributeValue(child2, "name"),
-                                        getAttributeValue(child2, "value"));
-                            }
-                        }
+                    // FIXME: importTileBitmap does not fully support URLs
+                    String sourcePath = imgSource;
+                    if (!Util.checkRoot(imgSource)) {
+                        sourcePath = tilesetBaseDir + imgSource;
                     }
+
+                    logger.info("Importing " + sourcePath + "...");
+
+                    BufferedImage tilesetImage = ImageIO.read(new File(sourcePath));
+
+                    if (transStr != null) {
+                        // In this case, the tileset image needs special
+                        // handling for transparency
+                        Color color = new Color(
+                                Integer.parseInt(transStr, 16));
+                        Toolkit tk = Toolkit.getDefaultToolkit();
+                        Image trans = tk.createImage(
+                                new FilteredImageSource(tilesetImage.getSource(),
+                                    new TransparentImageFilter(
+                                        color.getRGB())));
+                        BufferedImage img = new BufferedImage(
+                                trans.getWidth(null),
+                                trans.getHeight(null),
+                                BufferedImage.TYPE_INT_ARGB);
+
+                        img.getGraphics().drawImage(trans, 0, 0, null);
+
+                        tilesetImage = img;
+
+                        set.setTransparentColor(color);
+                    }
+
+                    set.importTileBitmap(tilesetImage, new BasicTileCutter(
+                            tileWidth, tileHeight, tileSpacing, 0),
+                        true);
+
+                    set.setTilesetImageFilename(sourcePath);
+                } else {
+                    set.addImage(unmarshalImage(child, tilesetBaseDir),
+                            Integer.parseInt(getAttributeValue(child, "id")));
                 }
-                else if ("image".equalsIgnoreCase(child.getNodeName())) {
-                    String imgSource = getAttributeValue(child, "source");
-                    String id = getAttributeValue(child, "id");
-                    String transStr = getAttributeValue(child, "trans");
+            }
+            
+            //spin through and find tile elements
+            for (int i = 0; i < children.getLength(); i++) {
+                Node c = children.item(i);
 
-                    if (imgSource != null && id == null) {
-                        // Not a shared image, but an entire set in one image
-                        // file
-
-                        // FIXME: importTileBitmap does not fully support URLs
-                        String sourcePath = imgSource;
-                        if (!Util.checkRoot(imgSource)) {
-                            sourcePath = tilesetBaseDir + imgSource;
-                        }
-
-                        logger.info("Importing " + sourcePath + "...");
-
-                        BufferedImage tilesetImage = ImageIO.read(new File(sourcePath));
-
-                        if (transStr != null) {
-                            // In this case, the tileset image needs special
-                            // handling for transparency
-                            Color color = new Color(
-                                    Integer.parseInt(transStr, 16));
-                            Toolkit tk = Toolkit.getDefaultToolkit();
-                            Image trans = tk.createImage(
-                                    new FilteredImageSource(tilesetImage.getSource(),
-                                        new TransparentImageFilter(
-                                            color.getRGB())));
-                            BufferedImage img = new BufferedImage(
-                                    trans.getWidth(null),
-                                    trans.getHeight(null),
-                                    BufferedImage.TYPE_INT_ARGB);
-
-                            img.getGraphics().drawImage(trans, 0, 0, null);
-
-                            tilesetImage = img;
-
-                            set.setTransparentColor(color);
-                        }
-
-                        // todo: Store additional information to be able to
-                        // todo: determine whether tiles should be created
-                        // todo: at this time. Now defaults to creation since
-                        // todo: this used to be the only possible behaviour.
-                        set.importTileBitmap(tilesetImage, new BasicTileCutter(
-                                tileWidth, tileHeight, tileSpacing, 0),
-                                             true);
-
-                        set.setTilesetImageFilename(sourcePath);
+                if (c.getNodeName().equalsIgnoreCase("tile")) {
+                    Tile tile = unmarshalTile(set, c, tilesetBaseDir);
+                    if((!hasTilesetImage) || tile.getId() >= set.getMaxTileId()) {
+                        set.addTile(tile);
                     } else {
-                        set.addImage(unmarshalImage(child, tilesetBaseDir),
-                                Integer.parseInt(getAttributeValue(child, "id")));
+                        Tile myTile = set.getTile(tile.getId());
+                        myTile.setProperties(tile.getProperties());
+                        //TODO: there is the possibility here of overlaying images,
+                        //      which some people may want
                     }
                 }
             }
