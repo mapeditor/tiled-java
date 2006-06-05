@@ -17,6 +17,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Properties;
@@ -54,7 +55,6 @@ public class TileDialog extends JDialog
     private JButton animationButton;
     private String location;
     private JTextField tilesetNameEntry;
-    private JCheckBox externalBitmapCheck;
     private JTabbedPane tabs;
     private int currentImageIndex = -1;
 
@@ -68,9 +68,7 @@ public class TileDialog extends JDialog
     private static final String ANIMATION_BUTTON = Resources.getString("dialog.tile.button.animation");
     private static final String PREVIEW_TAB = Resources.getString("general.button.preview");
     private static final String TILES_TAB = Resources.getString("general.tile.tiles");
-    private static final String TILESET_TAB = Resources.getString("general.tile.tileset");
     private static final String NAME_LABEL = Resources.getString("dialog.newtileset.name.label");
-    private static final String EXTERNAL_BITMAP_CHECKBOX = Resources.getString("dialog.tile.external.bitmap.checkbox");
     private static final String ERROR_LOADING_IMAGE = Resources.getString("dialog.tile.image.load.error");
 
     /* -- */
@@ -164,31 +162,6 @@ public class TileDialog extends JDialog
         return mainPanel;
     }
 
-    private JPanel createTilesetPanel()
-    {
-        JLabel name_label = new JLabel(NAME_LABEL+" ");
-        tilesetNameEntry = new JTextField(32);
-        //sharedImagesCheck = new JCheckBox("Use shared images");
-        externalBitmapCheck = new JCheckBox(
-                EXTERNAL_BITMAP_CHECKBOX);
-        //sharedImagesCheck.addActionListener(this);
-        externalBitmapCheck.addActionListener(this);
-
-        JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new GridBagLayout());
-        GridBagConstraints c = new GridBagConstraints();
-        c.gridx = 0; c.gridy = 0;
-        mainPanel.add(name_label, c);
-        c.gridx = 1; c.gridy = 0;
-        mainPanel.add(tilesetNameEntry);
-        c.gridx = 0; c.gridy = 1; c.gridwidth = 2;
-        //mainPanel.add(sharedImagesCheck, c);
-        c.gridx = 0; c.gridy = 2; c.gridwidth = 2;
-        mainPanel.add(externalBitmapCheck, c);
-
-        return mainPanel;
-    }
-
     private JPanel createImagePanel()
     {
         imageList = new JList();
@@ -220,8 +193,16 @@ public class TileDialog extends JDialog
     }
 
     private void init() {
+        // Tileset name field at the top
+        JLabel nameLabel = new JLabel(NAME_LABEL);
+        tilesetNameEntry = new JTextField(32);
+        JPanel namePanel = new VerticalStaticJPanel();
+        namePanel.setLayout(new BoxLayout(namePanel, BoxLayout.X_AXIS));
+        namePanel.add(nameLabel);
+        namePanel.add(Box.createRigidArea(new Dimension(5, 5)));
+        namePanel.add(tilesetNameEntry);
+
         tabs = new JTabbedPane(JTabbedPane.TOP);
-        tabs.addTab(TILESET_TAB, createTilesetPanel());
         tabs.addTab(TILES_TAB, createTilePanel());
         tabs.addTab(PREVIEW_TAB, createImagePanel());
 
@@ -235,6 +216,8 @@ public class TileDialog extends JDialog
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        mainPanel.add(namePanel);
+        mainPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         mainPanel.add(tabs);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         mainPanel.add(buttons);
@@ -287,7 +270,7 @@ public class TileDialog extends JDialog
                             ERROR_LOADING_IMAGE, JOptionPane.ERROR_MESSAGE);
                     return null;
                 }
-            } catch (Exception e) {
+            } catch (IOException e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(this, e.getLocalizedMessage(),
                         ERROR_LOADING_IMAGE, JOptionPane.ERROR_MESSAGE);
@@ -313,8 +296,6 @@ public class TileDialog extends JDialog
                 location = map.getFilename();
             }
             tilesetNameEntry.setText(tileset.getName());
-            //sharedImagesCheck.setSelected(tileset.usesSharedImages());
-            externalBitmapCheck.setSelected(tileset.getTilebmpFile() != null);
         }
 
         queryTiles();
@@ -389,18 +370,18 @@ public class TileDialog extends JDialog
         boolean atLeastOneSharedImage = setImages
           && tileset.getTotalImages() >= 1;
 
-        newTileButton.setEnabled(atLeastOneSharedImage || !tilebmp);
-        deleteTileButton.setEnabled((setImages || !tilebmp) && tileSelected);
-        changeImageButton.setEnabled((atLeastOneSharedImage || !tilebmp)
+        newTileButton.setEnabled(atLeastOneSharedImage && !tilebmp);
+        deleteTileButton.setEnabled(setImages && !tilebmp && tileSelected);
+        changeImageButton.setEnabled(atLeastOneSharedImage && !tilebmp
             && tileSelected);
-        duplicateTileButton.setEnabled((setImages || !tilebmp) && tileSelected);
-        animationButton.setEnabled((setImages || !tilebmp) && tileSelected &&
+        duplicateTileButton.setEnabled(setImages && !tilebmp && tileSelected);
+        animationButton.setEnabled(setImages && !tilebmp && tileSelected &&
         		currentTile instanceof AnimatedTile);
-        tileProperties.setEnabled((setImages || !tilebmp) && tileSelected);
-        externalBitmapCheck.setEnabled(tilebmp); // Can't turn this off yet
+        tileProperties.setEnabled(setImages && !tilebmp && tileSelected);
+        createTileButton.setEnabled(!tilebmp);
         //setImagesCheck.setEnabled(!tilebmp || !setImages
         //    || tileset.safeToDisablesetImages());
-        tabs.setEnabledAt(2, setImages);
+        tabs.setEnabledAt(1, setImages);
     }
 
     /**
@@ -456,21 +437,6 @@ public class TileDialog extends JDialog
             // Select the last (cloned) tile
             tileList.setSelectedIndex(tileset.size() - 1);
             tileList.ensureIndexIsVisible(tileset.size() - 1);
-        } else if (source == externalBitmapCheck) {
-            if (!externalBitmapCheck.isSelected()) {
-                int answer = JOptionPane.showConfirmDialog(
-                        this,
-                        Resources.getString("action.tileset.external.confirm.message"),
-                        Resources.getString("action.tileset.external.confirm.title"),
-                        JOptionPane.YES_NO_OPTION,
-                        JOptionPane.WARNING_MESSAGE);
-                if (answer == JOptionPane.YES_OPTION) {
-                    tileset.setTilesetImageFilename(null);
-                    updateEnabledState();
-                } else {
-                    externalBitmapCheck.setSelected(true);
-                }
-            }
         } else if (source == animationButton) {
         	AnimationDialog ad = new AnimationDialog(this, ((AnimatedTile)currentTile).getSprite());
         	ad.setVisible(true);
