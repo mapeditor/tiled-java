@@ -25,7 +25,7 @@ UNDONE
 * Added more useful visual feedback for some brushes
 * Added remembering of main window state as suggested by Dennis Spreen
 * Added remembering of size and divider position to tile palette dialog
-* Added display of memory usage to the about dialog
+* Added memory usage display and a garbage collect button to the about dialog
 * Improved memory usage and speed in several areas
 * Fixed new tileset dialog so that it is now possible to change the tile height
   to something other than the tile height used by the map

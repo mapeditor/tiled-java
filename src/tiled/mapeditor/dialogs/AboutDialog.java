@@ -14,11 +14,12 @@ package tiled.mapeditor.dialogs;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Color;
 import java.awt.event.MouseEvent;
+import java.awt.event.ActionEvent;
 import java.util.Timer;
 import java.util.TimerTask;
 import javax.swing.*;
-import javax.swing.border.CompoundBorder;
 import javax.swing.event.MouseInputAdapter;
 
 import tiled.mapeditor.MapEditor;
@@ -54,27 +55,38 @@ public class AboutDialog extends JDialog
     }
 
     private JPanel createMainPanel() {
-        JLabel label = new JLabel(Resources.getIcon("logo.png"));
-        label.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        label.setAlignmentX(Component.LEFT_ALIGNMENT);
+        JLabel logo = new JLabel(Resources.getIcon("logo.png"));
+        logo.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        logo.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JSeparator separator = new JSeparator();
         separator.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         memoryBar = new JProgressBar();
-        memoryBar.setBorder(new CompoundBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5),
-                                               memoryBar.getBorder()));
-        memoryBar.setMaximumSize(new Dimension(label.getPreferredSize().width,
-                                               Short.MAX_VALUE));
-        memoryBar.setAlignmentX(Component.LEFT_ALIGNMENT);
         memoryBar.setStringPainted(true);
+
+        JButton gcButton = new JButton(new GarbageCollectAction());
+        gcButton.setBorderPainted(false);
+        gcButton.setBorder(null);
+        gcButton.setOpaque(false);
+        gcButton.setBackground(new Color(0, 0, 0, 0));
+
+        JPanel barPanel = new JPanel();
+        barPanel.setLayout(new BoxLayout(barPanel, BoxLayout.X_AXIS));
+        barPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        barPanel.setMaximumSize(new Dimension(logo.getPreferredSize().width,
+                                              Short.MAX_VALUE));
+        barPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        barPanel.add(memoryBar);
+        barPanel.add(Box.createRigidArea(new Dimension(5, 5)));
+        barPanel.add(gcButton);
 
         JPanel mainPanel = new JPanel();
         mainPanel.setOpaque(false);
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-        mainPanel.add(label);
+        mainPanel.add(logo);
         mainPanel.add(separator);
-        mainPanel.add(memoryBar);
+        mainPanel.add(barPanel);
         return mainPanel;
     }
 
@@ -107,6 +119,20 @@ public class AboutDialog extends JDialog
                     }
                 });
             }
+        }
+    }
+
+    /**
+     * Collects garbage.
+     */
+    private class GarbageCollectAction extends AbstractAction
+    {
+        public GarbageCollectAction() {
+            putValue(Action.SMALL_ICON, Resources.getIcon("gnome-delete.png"));
+        }
+
+        public void actionPerformed(ActionEvent actionEvent) {
+            System.gc();
         }
     }
 }
