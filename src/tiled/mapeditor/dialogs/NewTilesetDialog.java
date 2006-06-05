@@ -49,7 +49,8 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
     private JTextField tilebmpFile;
     private JLabel spacingLabel;
     private JLabel tilebmpFileLabel, cutterLabel;
-    private JCheckBox tilebmpCheck, tileAutoCheck, transCheck;
+    private JCheckBox tilebmpCheck;
+    private JCheckBox transCheck;
     private JComboBox cutterBox;
     private JButton previewButton;
     private JButton browseButton;
@@ -68,7 +69,6 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
     private static final String IMAGE_LABEL = Resources.getString("dialog.newtileset.image.label");
     private static final String UNTITLED_FILE = Resources.getString("general.file.untitled");
     private static final String TILESET_IMG_LABEL = Resources.getString("dialog.newtileset.tilesetimgref.label");
-    private static final String AUTO_TILES_LABEL = Resources.getString("dialog.newtileset.autotiles.label");
     private static final String USE_TRANS_COLOR_LABEL = Resources.getString("dialog.newtileset.usetransparentcolor.label");
     private static final String OK_BUTTON = Resources.getString("general.button.ok");
     private static final String PREVIEW_BUTTON = Resources.getString("general.button.preview");
@@ -126,9 +126,6 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
         tilebmpCheck = new JCheckBox(TILESET_IMG_LABEL, false);
         tilebmpCheck.addChangeListener(this);
 
-        tileAutoCheck = new JCheckBox(AUTO_TILES_LABEL, true);
-        tileAutoCheck.setEnabled(false);
-
         transCheck = new JCheckBox(USE_TRANS_COLOR_LABEL);
         transCheck.addChangeListener(this);
 
@@ -182,32 +179,30 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
         c.gridwidth = 2;
         tilebmpPanel.add(tilebmpCheck, c);
         c.gridy = 1;
-        tilebmpPanel.add(tileAutoCheck, c);
-        c.gridy = 2;
         c.gridwidth = 1;
         c.insets = new Insets(5, 0, 0, 5);
         c.fill = GridBagConstraints.NONE;
         tilebmpPanel.add(tilebmpFileLabel, c);
-        c.gridy = 3;
+        c.gridy = 2;
         tilebmpPanel.add(spacingLabel, c);
         /*
         c.gridy = 4;
         tilebmpPanel.add(cutterLabel, c);
         */
         c.gridx = 1;
-        c.gridy = 2;
+        c.gridy = 1;
         c.weightx = 1;
         c.insets = new Insets(5, 0, 0, 0);
         c.fill = GridBagConstraints.HORIZONTAL;
         tilebmpPanel.add(tilebmpPathPanel, c);
-        c.gridy = 3;
+        c.gridy = 2;
         tilebmpPanel.add(tileSpacing, c);
         /*
         c.gridy = 4;
         tilebmpPanel.add(cutterBox, c);
         */
         c.gridx = 0;
-        c.gridy = 5;
+        c.gridy = 4;
         c.gridwidth = 2;
         tilebmpPanel.add(tileColorPanel, c);
         c.gridx = 1;
@@ -350,7 +345,7 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
 	                if (!transCheck.isSelected()) {
 	                    newTileset.importTileBitmap(file,
 	                            getCutter(width, height, spacing),
-	                            tileAutoCheck.isSelected());
+	                            true);
 	                } else {
 	                    try {
 	                        Toolkit tk = Toolkit.getDefaultToolkit();
@@ -368,7 +363,7 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
 
 	                        newTileset.importTileBitmap(img,
 	                                getCutter(width, height, spacing),
-	                                tileAutoCheck.isSelected());
+	                                true);
 
 	                        newTileset.setTransparentColor(
 	                                colorButton.getColor());
@@ -429,11 +424,12 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
         browseButton.setEnabled(value);
         tileSpacing.setEnabled(value);
         spacingLabel.setEnabled(value);
-        tileAutoCheck.setEnabled(value);
         transCheck.setEnabled(value);
         colorButton.setEnabled(value && transCheck.isSelected());
-        cutterBox.setEnabled(value && tileAutoCheck.isSelected());
-        cutterLabel.setEnabled(value && tileAutoCheck.isSelected());
+        /*
+        cutterBox.setEnabled(value);
+        cutterLabel.setEnabled(value);
+        */
         previewButton.setEnabled(value);
     }
 }

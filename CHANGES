@@ -11,7 +11,7 @@ UNDONE
 + Rewrote main mapeditor code
 + Moved actions out of MapEditor, and created a package for them
 
-0.6.0 RC2 - May 21st, 2006
+0.6.0 - June X, 2006
 
 * Added internationalization, with translations to Dutch, German, Italian,
   French and Spanish.
@@ -43,6 +43,7 @@ UNDONE
 * Rewrote configuration based on the Preferences class, no more tiled.conf
 * Cleaned up TileSet (removed checksumming and rotation/orienation code)
 * Removed experimental hexagonal mapview from new map dialog
+* Removed option to not automatically create tiles from a tileset image
 
 0.5.1 - June 15th, 2005
 
