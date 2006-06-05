@@ -535,7 +535,6 @@ public class XMLMapTransformer implements MapReader
 
         ml.setOffset(offsetX, offsetY);
         ml.setName(getAttributeValue(t, "name"));
-        ml.setVisible(visible == 1);
 
         if (opacity != null) {
             ml.setOpacity(Float.parseFloat(opacity));
@@ -611,6 +610,13 @@ public class XMLMapTransformer implements MapReader
                 }
             }
         }
+
+        // Invisible layers are automatically locked, so it is important to
+        // set the layer to potentially invisible _after_ the layer data is
+        // loaded.
+        // todo: Shouldn't this be just a user interface feature, rather than
+        // todo: something to keep in mind at this level?
+        ml.setVisible(visible == 1);
 
         return ml;
     }
