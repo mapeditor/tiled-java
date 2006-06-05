@@ -148,10 +148,10 @@ public class XMLMapTransformer implements MapReader
                 return child;
             }
         }
-        
+
         return null;
     }
-    
+
     private Object unmarshalClass(Class reflector, Node node)
         throws InstantiationException, IllegalAccessException,
                InvocationTargetException {
@@ -335,7 +335,7 @@ public class XMLMapTransformer implements MapReader
 
             boolean hasTilesetImage = false;
             NodeList children = t.getChildNodes();
-            
+
             //if we have a tileset image, load it (tileset can have only one image element)
             Node child = findChild(t, "image");
             if(child != null) {
@@ -344,7 +344,7 @@ public class XMLMapTransformer implements MapReader
                 String transStr = getAttributeValue(child, "trans");
 
                 hasTilesetImage = true;
-                
+
                 if (imgSource != null && id == null) {
                     // Not a shared image, but an entire set in one image
                     // file
@@ -391,7 +391,7 @@ public class XMLMapTransformer implements MapReader
                             Integer.parseInt(getAttributeValue(child, "id")));
                 }
             }
-            
+
             //spin through and find tile elements
             for (int i = 0; i < children.getLength(); i++) {
                 Node c = children.item(i);
@@ -422,18 +422,31 @@ public class XMLMapTransformer implements MapReader
             return obj;
         }
 
-        Properties objProps = obj.getProperties();
-        NodeList children = t.getChildNodes();
+        readProperties(t.getChildNodes(), obj.getProperties());
+        return obj;
+    }
 
+    /**
+     * Reads properties from amongst the given children. When a "properties"
+     * element is encountered, it recursively calls itself with the children
+     * of this node. This function ensures backward compatibility with tmx
+     * version 0.99a.
+     *
+     * @param children the children amongst which to find properties
+     * @param props    the properties object to set the properties of
+     */
+    private static void readProperties(NodeList children, Properties props) {
         for (int i = 0; i < children.getLength(); i++) {
             Node child = children.item(i);
             if ("property".equalsIgnoreCase(child.getNodeName())) {
-                objProps.setProperty(
+                props.setProperty(
                         getAttributeValue(child, "name"),
                         getAttributeValue(child, "value"));
             }
+            else if ("properties".equals(child.getNodeName())) {
+                readProperties(child.getChildNodes(), props);
+            }
         }
-        return obj;
     }
 
     private Tile unmarshalTile(TileSet set, Node t, String baseDir)
@@ -458,14 +471,14 @@ public class XMLMapTransformer implements MapReader
                 tile = (Tile)unmarshalClass(Tile.class, t);
             }
         } catch (Exception e) {
-        	logger.error("failed creating tile: "+e.getLocalizedMessage());
+            logger.error("failed creating tile: "+e.getLocalizedMessage());
             //e.printStackTrace();
             return tile;
         }
 
         tile.setTileSet(set);
 
-        Properties tileProps = tile.getProperties();
+        readProperties(children, tile.getProperties());
 
         for (int i = 0; i < children.getLength(); i++) {
             Node child = children.item(i);
@@ -476,10 +489,6 @@ public class XMLMapTransformer implements MapReader
                     id = set.addImage(img);
                 }
                 tile.setImage(id);
-            } else if ("property".equalsIgnoreCase(child.getNodeName())) {
-                tileProps.setProperty(
-                        getAttributeValue(child, "name"),
-                        getAttributeValue(child, "value"));
             } else if ("animation".equalsIgnoreCase(child.getNodeName())) {
                 // TODO: fill this in once XMLMapWriter is complete
             }
@@ -532,7 +541,7 @@ public class XMLMapTransformer implements MapReader
             ml.setOpacity(Float.parseFloat(opacity));
         }
 
-        Properties mlProps = ml.getProperties();
+        readProperties(t.getChildNodes(), ml.getProperties());
 
         for (Node child = t.getFirstChild(); child != null;
                 child = child.getNextSibling())
@@ -600,9 +609,6 @@ public class XMLMapTransformer implements MapReader
                         }
                     }
                 }
-            } else if ("property".equalsIgnoreCase(child.getNodeName())) {
-                mlProps.setProperty(getAttributeValue(child, "name"),
-                        getAttributeValue(child, "value"));
             }
         }
 
@@ -661,7 +667,7 @@ public class XMLMapTransformer implements MapReader
             setOrientation("orthogonal");
         }
 
-        Properties mapProps = map.getProperties();
+        readProperties(mapNode.getChildNodes(), map.getProperties());
 
         // Load the tilesets, properties, layers and objectgroups
         for (Node sibs = mapNode.getFirstChild(); sibs != null;
@@ -669,10 +675,6 @@ public class XMLMapTransformer implements MapReader
         {
             if ("tileset".equals(sibs.getNodeName())) {
                 map.addTileset(unmarshalTileset(sibs));
-            }
-            else if ("property".equals(sibs.getNodeName())) {
-                mapProps.setProperty(getAttributeValue(sibs, "name"),
-                        getAttributeValue(sibs, "value"));
             }
             else if ("layer".equals(sibs.getNodeName())) {
                 MapLayer layer = readLayer(sibs);

@@ -44,6 +44,7 @@ UNDONE
 * Cleaned up TileSet (removed checksumming and rotation/orienation code)
 * Removed experimental hexagonal mapview from new map dialog
 * Removed option to not automatically create tiles from a tileset image
+* Changed map format to store properties within a single "properties" element
 
 0.5.1 - June 15th, 2005
 
