@@ -46,11 +46,6 @@ public class AboutDialog extends JDialog
         setContentPane(createMainPanel());
         setResizable(false);
         setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-        addMouseListener(new MouseInputAdapter() {
-            public void mouseClicked(MouseEvent mouseEvent) {
-                setVisible(false);
-            }
-        });
         pack();
     }
 
@@ -58,6 +53,11 @@ public class AboutDialog extends JDialog
         JLabel logo = new JLabel(Resources.getIcon("logo.png"));
         logo.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         logo.setAlignmentX(Component.LEFT_ALIGNMENT);
+        logo.addMouseListener(new MouseInputAdapter() {
+            public void mouseClicked(MouseEvent mouseEvent) {
+                setVisible(false);
+            }
+        });
 
         JSeparator separator = new JSeparator();
         separator.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -133,6 +133,7 @@ public class AboutDialog extends JDialog
 
         public void actionPerformed(ActionEvent actionEvent) {
             System.gc();
+            updateMemoryBar();
         }
     }
 }
