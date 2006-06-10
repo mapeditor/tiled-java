@@ -2,12 +2,13 @@ UNDONE
 + Fixed memory problems when loading several maps with many tilesets in a row
 + Added ability to select multiple layers from layer table
 + Added preview of new tileset when creating a tileset
-+ Added tile cutter GUI
 + Added the Shifted view, which emulates several tiling configurations
 + Added "stamp" tool
 + Added a navigation minimap
 + Added full support for animated tiles
 + Added palette brush
++ Added support for animated tiles
++ Added additional "tile cutters"
 + Rewrote main mapeditor code
 + Moved actions out of MapEditor, and created a package for them
 
@@ -17,9 +18,7 @@ UNDONE
   French and Spanish.
 * Added stamp function for pencil: right-click, drag now creates a stamp
   for easy copying
-* Added core support for animated tiles
 * Added more error-checking to XMLMapTransformer, the default map reader
-* Added support for "tile cutters"
 * Added global properties for tilesets (properties set for all tiles)
 * Added the ability to merge tile images when layers are merged
 * Added more useful visual feedback for some brushes
@@ -41,6 +40,7 @@ UNDONE
 * Fixed resetting of selected tileset in tile palette on layer changes
 * Fixed saving of tile properties when using a tileset image
 * Fixed loading of invisible layers
+* Fixed saving of tile spacing property for tileset images
 * Rewrote configuration based on the Preferences class, no more tiled.conf
 * Cleaned up TileSet (removed checksumming and rotation/orientation code)
 * Removed experimental hexagonal mapview from new map dialog

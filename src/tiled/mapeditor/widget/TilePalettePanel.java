@@ -101,7 +101,9 @@ public class TilePalettePanel extends JPanel implements Scrollable
         // We like Tiled to behave in a predictibile manner; i.e.,
         // it should not pick the first tile of the next row if
         // there is empty space on the right of the row.
-        if (x >= tilesPerRow * twidth) x = tilesPerRow * twidth - 1;
+        if (x > tilesPerRow * twidth - 1) {
+            x = tilesPerRow * twidth - 1;
+        }
 
         int tileAt = (y / theight) * tilesPerRow + x / twidth;
 

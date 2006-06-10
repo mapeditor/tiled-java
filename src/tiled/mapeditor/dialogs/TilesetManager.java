@@ -57,6 +57,7 @@ public class TilesetManager extends JDialog implements ActionListener,
     private void init() {
         // Create the tileset table
         tilesetTable = new JTable(new TilesetTableModel(map));
+        tilesetTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tilesetTable.getSelectionModel().addListSelectionListener(this);
         JScrollPane tilesetScrollPane = new JScrollPane(tilesetTable);
         tilesetScrollPane.setPreferredSize(new Dimension(360, 150));

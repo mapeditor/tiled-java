@@ -37,8 +37,8 @@ public class BasicTileCutter implements TileCutter
         this.offset = offset;
 
         // Do initial setup
-        nextX = offset + tileSpacing;
-        nextY = offset + tileSpacing;
+        nextX = offset;
+        nextY = offset;
     }
 
     public String getName() {
@@ -56,7 +56,7 @@ public class BasicTileCutter implements TileCutter
             nextX += tileWidth + tileSpacing;
 
             if (nextX + tileWidth > image.getWidth()) {
-                nextX = offset + tileSpacing;
+                nextX = offset;
                 nextY += tileHeight + tileSpacing;
             }
 
