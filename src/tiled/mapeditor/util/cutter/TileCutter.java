@@ -14,14 +14,33 @@ package tiled.mapeditor.util.cutter;
 
 import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 
 /**
+ * A generic interface to a class that implements tile cutting behavior.
+ *
  * @version $Id$
  */
 public interface TileCutter
 {
-    public void setImage(Image image);
-    public Image getNextTile() throws Exception;
-    public Dimension getDimensions();
+    /**
+     * Sets the image that this cutter should cut in tile images.
+     * @param image
+     */
+    public void setImage(BufferedImage image);
+
+    /**
+     * Retrieves the next tile image.
+     * @return the next tile image, or <code>null</code> when no more tile
+     *         images are available
+     */
+    public Image getNextTile();
+
+    /**
+     * Returns the default tile dimensions of tiles cut by this cutter.
+     * @return the default tile dimensions of tiles cut by this cutter.
+     */
+    public Dimension getTileDimensions();
+
     public String getName();
 }

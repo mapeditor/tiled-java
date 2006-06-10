@@ -14,6 +14,7 @@ package tiled.core;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.FilteredImageSource;
 import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
@@ -23,6 +24,8 @@ import java.util.Vector;
 import javax.imageio.ImageIO;
 
 import tiled.mapeditor.util.cutter.TileCutter;
+import tiled.mapeditor.util.cutter.BasicTileCutter;
+import tiled.mapeditor.util.TransparentImageFilter;
 import tiled.util.NumberedSet;
 
 /**
@@ -44,6 +47,7 @@ public class TileSet
     private long tilebmpFileLastModified;
     private TileCutter tileCutter;
     private Rectangle tileDimensions;
+    private int tileSpacing;
     private String externalSource;
     private File tilebmpFile;
     private String name;
@@ -62,27 +66,39 @@ public class TileSet
     }
 
     /**
-     * Creates a tileset from a tile bitmap file.
+     * Creates a tileset from a tileset image file.
      *
      * @param imgFilename
      * @param cutter
-     * @param createTiles
-     * @throws Exception
-     * @see TileSet#importTileBitmap(BufferedImage, TileCutter, boolean)
+     * @throws IOException
+     * @see TileSet#importTileBitmap(BufferedImage, TileCutter)
      */
-    public void importTileBitmap(String imgFilename, TileCutter cutter,
-                                 boolean createTiles) throws Exception
+    public void importTileBitmap(String imgFilename, TileCutter cutter)
+            throws IOException
     {
-        // IOException will propagate upwards when file cannot be found
-        tilebmpFile = new File(imgFilename);
-        tilebmpFileLastModified = tilebmpFile.lastModified();
+        setTilesetImageFilename(imgFilename);
 
-        BufferedImage tilebmp = ImageIO.read(tilebmpFile);
-        if (tilebmp == null) {
-            throw new Exception("Failed to load " + tilebmpFile);
+        Image image = ImageIO.read(new File(imgFilename));
+        if (image == null) {
+            throw new IOException("Failed to load " + tilebmpFile);
         }
 
-        importTileBitmap(tilebmp, cutter, createTiles);
+        Toolkit tk = Toolkit.getDefaultToolkit();
+
+        if (transparentColor != null) {
+            int rgb = transparentColor.getRGB();
+            image = tk.createImage(
+                    new FilteredImageSource(image.getSource(),
+                            new TransparentImageFilter(rgb)));
+        }
+
+        BufferedImage buffered = new BufferedImage(
+                image.getWidth(null),
+                image.getHeight(null),
+                BufferedImage.TYPE_INT_ARGB);
+        buffered.getGraphics().drawImage(image, 0, 0, null);
+
+        importTileBitmap(buffered, cutter);
     }
 
     /**
@@ -91,57 +107,29 @@ public class TileSet
      *
      * @param tilebmp     the image to be used, must not be null
      * @param cutter      the tile cutter, must not be null
-     * @param createTiles set to <code>true</code> to have the function create
-     *                    Tiles
      */
-    public void importTileBitmap(BufferedImage tilebmp, TileCutter cutter,
-                                 boolean createTiles)
+    private void importTileBitmap(BufferedImage tilebmp, TileCutter cutter)
     {
-        assert (tilebmp != null);
-        assert (cutter != null);
+        assert tilebmp != null;
+        assert cutter != null;
 
         tileCutter = cutter;
-
-        tileDimensions = new Rectangle(cutter.getDimensions());
         tileSetImage = tilebmp;
+
+        tileDimensions = new Rectangle(cutter.getTileDimensions());
+        if (cutter instanceof BasicTileCutter) {
+            tileSpacing = ((BasicTileCutter) cutter).getTileSpacing();
+        }
 
         cutter.setImage(tilebmp);
 
-        try {
-            BufferedImage tile;
-            while ((tile = (BufferedImage) cutter.getNextTile()) != null) {
-                int newId = addImage(tile);
-                if (createTiles) {
-                    Tile newTile = new Tile();
-                    newTile.setImage(newId);
-                    addNewTile(newTile);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        Image tile = cutter.getNextTile();
+        while (tile != null) {
+            Tile newTile = new Tile();
+            newTile.setImage(addImage(tile));
+            addNewTile(newTile);
+            tile = cutter.getNextTile();
         }
-
-        //FIXME: although faster, the following doesn't seem to handle alpha on some platforms...
-        //GraphicsConfiguration config =
-        //    GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
-        //Image tilesetImage = config.createCompatibleImage(tileWidth, tileHeight);
-        //Graphics tg = tilesetImage.getGraphics();
-
-        /*if (iw > 0 && ih > 0) {
-            for (int y = 0; y <= ih - tileHeight; y += tileHeight + spacing) {
-                for (int x = 0; x <= iw - tileWidth; x += tileWidth + spacing) {
-                    BufferedImage tile = ((BufferedImage)setImage).getSubimage(
-                            x, y, tileWidth, tileHeight);
-
-                    int newId = addImage(tile);
-                    if (createTiles) {
-                        Tile newTile = new Tile();
-                        newTile.setImage(newId);
-                        addNewTile(newTile);
-                    }
-                }
-            }
-        }*/
     }
 
     public void checkUpdate() {
@@ -341,8 +329,7 @@ public class TileSet
      * @return the spacing in pixels between the tiles on the tileset image
      */
     public int getTileSpacing() {
-        // todo: make this functional
-        return 0;
+        return tileSpacing;
     }
 
     /**

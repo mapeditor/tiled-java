@@ -14,26 +14,27 @@ package tiled.mapeditor.util.cutter;
 
 import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 
 /**
  * @version $Id$
  */
 public class BorderTileCutter implements TileCutter
 {
-	public String getName() {
-		return "Border";
-	}
+    public String getName() {
+        return "Border";
+    }
 
-    public void setImage(Image image) {
+    public void setImage(BufferedImage image) {
         // TODO Auto-generated method stub
     }
 
-    public Image getNextTile() throws Exception {
+    public Image getNextTile() {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public Dimension getDimensions() {
+    public Dimension getTileDimensions() {
         // TODO Auto-generated method stub
         return null;
     }

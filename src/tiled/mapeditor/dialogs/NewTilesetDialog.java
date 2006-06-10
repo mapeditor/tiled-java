@@ -14,8 +14,6 @@ package tiled.mapeditor.dialogs;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
-import java.awt.image.FilteredImageSource;
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
@@ -25,7 +23,6 @@ import javax.swing.*;
 import javax.swing.event.*;
 
 import tiled.core.*;
-import tiled.mapeditor.util.TransparentImageFilter;
 import tiled.mapeditor.util.cutter.BasicTileCutter;
 import tiled.mapeditor.util.cutter.BorderTileCutter;
 import tiled.mapeditor.util.cutter.TileCutter;
@@ -214,8 +211,8 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
         buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
         buttons.add(Box.createGlue());
         buttons.add(okButton);
-        buttons.add(Box.createRigidArea(new Dimension(5, 0)));
-        buttons.add(previewButton);
+        //buttons.add(Box.createRigidArea(new Dimension(5, 0)));
+        //buttons.add(previewButton);
         buttons.add(Box.createRigidArea(new Dimension(5, 0)));
         buttons.add(cancelButton);
 
@@ -332,60 +329,26 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
         newTileset.setName(tilesetName.getText());
         newTileset.setDefaultProperties(defaultSetProperties);
 
-        // In the off chance that something goes wrong,
-        // keep working.
-    	while(true) {
+        if (tilebmpCheck.isSelected()) {
+            String file = tilebmpFile.getText();
+            int spacing = tileSpacing.intValue();
+            int width = tileWidth.intValue();
+            int height = tileHeight.intValue();
 
-	        if (tilebmpCheck.isSelected()) {
-	            String file = tilebmpFile.getText();
-	            int spacing = tileSpacing.intValue();
-	            int width = tileWidth.intValue();
-	            int height = tileHeight.intValue();
-	            try {
-	                if (!transCheck.isSelected()) {
-	                    newTileset.importTileBitmap(file,
-	                            getCutter(width, height, spacing),
-	                            true);
-	                } else {
-	                    try {
-	                        Toolkit tk = Toolkit.getDefaultToolkit();
-	                        Image orig = ImageIO.read(new File(file));
-	                        Image trans = tk.createImage(
-	                                new FilteredImageSource(orig.getSource(),
-	                                        new TransparentImageFilter(
-	                                                colorButton.getColor().getRGB())));
-	                        BufferedImage img = new BufferedImage(
-	                                trans.getWidth(null),
-	                                trans.getHeight(null),
-	                                BufferedImage.TYPE_INT_ARGB);
+            try {
+                if (transCheck.isSelected()) {
+                    Color color = colorButton.getColor();
+                    newTileset.setTransparentColor(color);
+                }
 
-	                        img.getGraphics().drawImage(trans, 0, 0, null);
-
-	                        newTileset.importTileBitmap(img,
-	                                getCutter(width, height, spacing),
-	                                true);
-
-	                        newTileset.setTransparentColor(
-	                                colorButton.getColor());
-
-	                        newTileset.setTilesetImageFilename(file);
-	                    } catch (IOException e) {
-	                    	JOptionPane.showMessageDialog(this, e.getLocalizedMessage(),
-	                                IMPORT_ERROR_MSG, JOptionPane.WARNING_MESSAGE);
-	                    	continue;
-	                    }
-	                }
-
-	            } catch (Exception e) {
-	                JOptionPane.showMessageDialog(this, e.getLocalizedMessage(),
-	                        IMPORT_ERROR_MSG, JOptionPane.ERROR_MESSAGE);
-	                newTileset = null;
-	                return;
-	            }
-	        }
-
-	        break;
-    	}
+                newTileset.importTileBitmap(file,
+                        getCutter(width, height, spacing));
+            }
+            catch (IOException e) {
+                JOptionPane.showMessageDialog(this, e.getLocalizedMessage(),
+                        IMPORT_ERROR_MSG, JOptionPane.WARNING_MESSAGE);
+            }
+        }
 
         dispose();
     }

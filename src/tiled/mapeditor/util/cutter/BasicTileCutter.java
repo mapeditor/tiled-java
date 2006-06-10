@@ -13,7 +13,6 @@
 package tiled.mapeditor.util.cutter;
 
 import java.awt.Dimension;
-import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 
@@ -24,53 +23,41 @@ public class BasicTileCutter implements TileCutter
 {
     private int nextX, nextY;
     private BufferedImage image;
-    private int tileWidth, tileHeight, frame, offset;
+    private int tileWidth;
+    private int tileHeight;
+    private int tileSpacing;
+    private int offset;
 
-    public BasicTileCutter(int tileWidth, int tileHeight, int frame,
+    public BasicTileCutter(int tileWidth, int tileHeight, int tileSpacing,
                            int offset)
     {
         this.tileWidth = tileWidth;
         this.tileHeight = tileHeight;
-        this.frame = frame;
+        this.tileSpacing = tileSpacing;
         this.offset = offset;
 
         // Do initial setup
-        nextX = offset + frame;
-        nextY = offset + frame;
+        nextX = offset + tileSpacing;
+        nextY = offset + tileSpacing;
     }
 
     public String getName() {
     	return "Basic";
     }
 
-    public void setImage(Image image) {
-        int iw = image.getWidth(null);
-        int ih = image.getHeight(null);
-        this.image = new BufferedImage(iw, ih, BufferedImage.TYPE_INT_ARGB);
-        //FIXME: although faster, the following doesn't seem to handle alpha on some platforms...
-        //GraphicsConfiguration config =
-            //GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
-
-        
-        //Image tilesetImage = config.createCompatibleImage(tileWidth, tileHeight);
-        //Graphics tg = tilesetImage.getGraphics();
-        Graphics2D tg = this.image.createGraphics();
-
-        tg.drawImage(image,
-                0, 0, iw, ih,
-                0, 0, iw, ih,
-                null);
+    public void setImage(BufferedImage image) {
+        this.image = image;
     }
 
-    public Image getNextTile() throws Exception {
+    public Image getNextTile() {
         if (nextY + tileHeight <= image.getHeight()) {
             BufferedImage tile =
                 image.getSubimage(nextX, nextY, tileWidth, tileHeight);
-            nextX += tileWidth + frame;
+            nextX += tileWidth + tileSpacing;
 
             if (nextX + tileWidth > image.getWidth()) {
-                nextX = offset + frame;
-                nextY += tileHeight + frame;
+                nextX = offset + tileSpacing;
+                nextY += tileHeight + tileSpacing;
             }
 
             return tile;
@@ -79,7 +66,15 @@ public class BasicTileCutter implements TileCutter
         return null;
     }
 
-    public Dimension getDimensions() {
+    public Dimension getTileDimensions() {
         return new Dimension(tileWidth, tileHeight);
+    }
+
+    /**
+     * Returns the spacing between tile images.
+     * @return the spacing between tile images.
+     */
+    public int getTileSpacing() {
+        return tileSpacing;
     }
 }

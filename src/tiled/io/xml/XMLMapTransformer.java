@@ -14,9 +14,6 @@ package tiled.io.xml;
 
 import java.awt.Color;
 import java.awt.Image;
-import java.awt.Toolkit;
-import java.awt.image.BufferedImage;
-import java.awt.image.FilteredImageSource;
 import java.io.*;
 import java.lang.reflect.*;
 import java.net.MalformedURLException;
@@ -34,7 +31,6 @@ import tiled.core.*;
 import tiled.io.ImageHelper;
 import tiled.io.MapReader;
 import tiled.io.PluginLogger;
-import tiled.mapeditor.util.TransparentImageFilter;
 import tiled.mapeditor.util.cutter.BasicTileCutter;
 import tiled.util.*;
 
@@ -207,6 +203,8 @@ public class XMLMapTransformer implements MapReader
                 source = makeUrl(baseDir + source);
             }
             img = ImageIO.read(new URL(source));
+            // todo: check whether external images would also be faster drawn
+            // todo: from a scaled instance, see below
         } else {
             NodeList nl = t.getChildNodes();
 
@@ -219,8 +217,17 @@ public class XMLMapTransformer implements MapReader
                                 "data. (empty data tag)");
                     } else {
                         String sdata = cdata.getNodeValue();
-                        img = ImageHelper.bytesToImage(
-                            Base64.decode(sdata.trim().toCharArray()));
+                        char[] charArray = sdata.trim().toCharArray();
+                        byte[] imageData = Base64.decode(charArray);
+                        img = ImageHelper.bytesToImage(imageData);
+
+                        // Deriving a scaled instance, even if it has the same
+                        // size, somehow makes drawing of the tiles a lot
+                        // faster on various systems (seen on Linux, Windows
+                        // and MacOS X).
+                        img = img.getScaledInstance(
+                                img.getWidth(null), img.getHeight(null),
+                                Image.SCALE_FAST);
                     }
                     break;
                 }
@@ -357,35 +364,13 @@ public class XMLMapTransformer implements MapReader
 
                     logger.info("Importing " + sourcePath + "...");
 
-                    BufferedImage tilesetImage = ImageIO.read(new File(sourcePath));
-
                     if (transStr != null) {
-                        // In this case, the tileset image needs special
-                        // handling for transparency
-                        Color color = new Color(
-                                Integer.parseInt(transStr, 16));
-                        Toolkit tk = Toolkit.getDefaultToolkit();
-                        Image trans = tk.createImage(
-                                new FilteredImageSource(tilesetImage.getSource(),
-                                    new TransparentImageFilter(
-                                        color.getRGB())));
-                        BufferedImage img = new BufferedImage(
-                                trans.getWidth(null),
-                                trans.getHeight(null),
-                                BufferedImage.TYPE_INT_ARGB);
-
-                        img.getGraphics().drawImage(trans, 0, 0, null);
-
-                        tilesetImage = img;
-
+                        Color color = new Color(Integer.parseInt(transStr, 16));
                         set.setTransparentColor(color);
                     }
 
-                    set.importTileBitmap(tilesetImage, new BasicTileCutter(
-                            tileWidth, tileHeight, tileSpacing, 0),
-                        true);
-
-                    set.setTilesetImageFilename(sourcePath);
+                    set.importTileBitmap(sourcePath, new BasicTileCutter(
+                            tileWidth, tileHeight, tileSpacing, 0));
                 } else {
                     set.addImage(unmarshalImage(child, tilesetBaseDir),
                             Integer.parseInt(getAttributeValue(child, "id")));
@@ -398,7 +383,7 @@ public class XMLMapTransformer implements MapReader
 
                 if (c.getNodeName().equalsIgnoreCase("tile")) {
                     Tile tile = unmarshalTile(set, c, tilesetBaseDir);
-                    if((!hasTilesetImage) || tile.getId() >= set.getMaxTileId()) {
+                    if (!hasTilesetImage || tile.getId() >= set.getMaxTileId()) {
                         set.addTile(tile);
                     } else {
                         Tile myTile = set.getTile(tile.getId());
