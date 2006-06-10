@@ -45,7 +45,7 @@ public class OrthoMapView extends MapView
 
     public int getScrollableBlockIncrement(Rectangle visibleRect,
             int orientation, int direction) {
-        Dimension tsize = getTileSize(zoom);
+        Dimension tsize = getTileSize();
 
         if (orientation == SwingConstants.VERTICAL) {
             return (visibleRect.height / tsize.height) * tsize.height;
@@ -56,7 +56,7 @@ public class OrthoMapView extends MapView
 
     public int getScrollableUnitIncrement(Rectangle visibleRect,
             int orientation, int direction) {
-        Dimension tsize = getTileSize(zoom);
+        Dimension tsize = getTileSize();
         if (orientation == SwingConstants.VERTICAL) {
             return tsize.height;
         } else {
@@ -65,16 +65,16 @@ public class OrthoMapView extends MapView
     }
 
     public Dimension getPreferredSize() {
-        Dimension tsize = getTileSize(zoom);
+        Dimension tsize = getTileSize();
 
         return new Dimension(
                 map.getWidth() * tsize.width,
                 map.getHeight() * tsize.height);
     }
 
-    protected void paintLayer(Graphics2D g2d, TileLayer layer, double zoom) {
+    protected void paintLayer(Graphics2D g2d, TileLayer layer) {
         // Determine tile size and offset
-        Dimension tsize = getTileSize(zoom);
+        Dimension tsize = getTileSize();
         if (tsize.width <= 0 || tsize.height <= 0) return;
         Polygon gridPoly = createGridPolygon(0, -tsize.height, 0);
 
@@ -107,7 +107,7 @@ public class OrthoMapView extends MapView
         }
     }
 
-    protected void paintLayer(Graphics2D g, ObjectGroup og, double zoom) {
+    protected void paintLayer(Graphics2D g, ObjectGroup og) {
         Iterator itr = og.getObjects();
 
         while (itr.hasNext()) {
@@ -124,9 +124,9 @@ public class OrthoMapView extends MapView
         }
     }
 
-    protected void paintGrid(Graphics2D g2d, double zoom) {
+    protected void paintGrid(Graphics2D g2d) {
         // Determine tile size
-        Dimension tsize = getTileSize(zoom);
+        Dimension tsize = getTileSize();
         if (tsize.width <= 0 || tsize.height <= 0) return;
 
         // Determine lines to draw from clipping rectangle
@@ -144,8 +144,8 @@ public class OrthoMapView extends MapView
         }
     }
 
-    protected void paintCoordinates(Graphics2D g2d, double zoom) {
-        Dimension tsize = getTileSize(zoom);
+    protected void paintCoordinates(Graphics2D g2d) {
+        Dimension tsize = getTileSize();
         if (tsize.width <= 0 || tsize.height <= 0) return;
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
@@ -182,7 +182,7 @@ public class OrthoMapView extends MapView
     }
 
     public void repaintRegion(Rectangle region) {
-        Dimension tsize = getTileSize(zoom);
+        Dimension tsize = getTileSize();
         if (tsize.width <= 0 || tsize.height <= 0) return;
         int maxExtraHeight =
                 (int)(map.getTileHeightMax() * zoom - tsize.height);
@@ -200,18 +200,18 @@ public class OrthoMapView extends MapView
     }
 
     public Point screenToTileCoords(int x, int y) {
-        Dimension tsize = getTileSize(zoom);
+        Dimension tsize = getTileSize();
         return new Point(x / tsize.width, y / tsize.height);
     }
 
-    protected Dimension getTileSize(double zoom) {
+    protected Dimension getTileSize() {
         return new Dimension(
                 (int)(map.getTileWidth() * zoom),
                 (int)(map.getTileHeight() * zoom));
     }
 
     protected Polygon createGridPolygon(int tx, int ty, int border) {
-        Dimension tsize = getTileSize(zoom);
+        Dimension tsize = getTileSize();
 
         Polygon poly = new Polygon();
         poly.addPoint(tx - border, ty - border);
@@ -223,7 +223,7 @@ public class OrthoMapView extends MapView
     }
 
     public Point tileToScreenCoords(double x, double y) {
-        Dimension tsize = getTileSize(zoom);
+        Dimension tsize = getTileSize();
         return new Point((int)x * tsize.width, (int)y * tsize.height);
     }
 }

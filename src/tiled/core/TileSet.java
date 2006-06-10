@@ -287,13 +287,13 @@ public class TileSet
      * occur if a tile is removed from the middle of a set
      * of tiles. (Maps tiles contiguously)
      *
-     * @return A java.util.Vector mapping ordered set location to the next non-null tile
+     * @return a {@link Vector} mapping ordered set location to the next non-null tile
      */
     public Vector generateGaplessVector() {
         Vector gapless = new Vector();
 
-        for(int i=0;i<getMaxTileId();i++) {
-            if(getTile(i) != null) gapless.add(getTile(i));
+        for (int i = 0; i < getMaxTileId(); i++) {
+            if (getTile(i) != null) gapless.add(getTile(i));
         }
 
         return gapless;

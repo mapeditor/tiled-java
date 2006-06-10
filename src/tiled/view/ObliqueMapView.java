@@ -53,19 +53,19 @@ public class ObliqueMapView extends MapView
         return new Dimension(0, 0);
     }
 
-    protected void paintLayer(Graphics2D g2d, TileLayer layer, double zoom) {
+    protected void paintLayer(Graphics2D g2d, TileLayer layer) {
         // TODO Auto-generated method stub
     }
 
-    protected void paintLayer(Graphics2D g2d, ObjectGroup og, double zoom) {
+    protected void paintLayer(Graphics2D g2d, ObjectGroup og) {
         // TODO Auto-generated method stub
     }
 
-    protected void paintGrid(Graphics2D g2d, double zoom) {
+    protected void paintGrid(Graphics2D g2d) {
         // TODO: Implement paintGrid for ObliqueMapView
     }
 
-    protected void paintCoordinates(Graphics2D g2d, double zoom) {
+    protected void paintCoordinates(Graphics2D g2d) {
         // TODO: Implement paintCoordinates for ObliqueMapView
     }
 

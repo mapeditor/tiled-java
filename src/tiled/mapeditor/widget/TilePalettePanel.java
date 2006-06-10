@@ -88,7 +88,7 @@ public class TilePalettePanel extends JPanel implements Scrollable
      */
     public void setTileset(TileSet tileset) {
         this.tileset = tileset;
-        if(tileset!=null) tilesetMap = tileset.generateGaplessVector();
+        if (tileset != null) tilesetMap = tileset.generateGaplessVector();
         revalidate();
         repaint();
     }

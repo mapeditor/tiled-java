@@ -65,7 +65,7 @@ public class HexMapView extends MapView
 
     public int getScrollableBlockIncrement(Rectangle visibleRect,
             int orientation, int direction) {
-        Dimension tsize = getTileSize(zoom);
+        Dimension tsize = getTileSize();
 
         if (orientation == SwingConstants.VERTICAL) {
             return (visibleRect.height / tsize.height) * tsize.height;
@@ -76,7 +76,7 @@ public class HexMapView extends MapView
 
     public int getScrollableUnitIncrement(Rectangle visibleRect,
             int orientation, int direction) {
-        Dimension tsize = getTileSize(zoom);
+        Dimension tsize = getTileSize();
         if (orientation == SwingConstants.VERTICAL) {
             return tsize.height;
         } else {
@@ -85,7 +85,7 @@ public class HexMapView extends MapView
     }
 
     public Dimension getPreferredSize() {
-        Dimension tsize = getTileSize(zoom);
+        Dimension tsize = getTileSize();
         int border = showGrid ? 1 : 0;
         int wbhc = (int) getWidthBetweenHexCentres();
 
@@ -95,9 +95,9 @@ public class HexMapView extends MapView
                 tsize.height / 2);
     }
 
-    protected void paintLayer(Graphics2D g2d, TileLayer layer, double zoom) {
+    protected void paintLayer(Graphics2D g2d, TileLayer layer) {
         // Determine area to draw from clipping rectangle
-        Dimension tsize = getTileSize(zoom);
+        Dimension tsize = getTileSize();
         int toffset = showGrid ? 1 : 0;
 
         Rectangle clipRect = g2d.getClipBounds();
@@ -137,7 +137,7 @@ public class HexMapView extends MapView
         }
     }
 
-    protected void paintLayer(Graphics2D g2d, ObjectGroup og, double zoom) {
+    protected void paintLayer(Graphics2D g2d, ObjectGroup og) {
     }
 
     /**
@@ -148,15 +148,15 @@ public class HexMapView extends MapView
         return map.getTileWidth() * 3 / 4;
     }
 
-    private Dimension getTileSize(double zoom) {
+    private Dimension getTileSize() {
         return new Dimension(
                 (int)(map.getTileWidth() * zoom),
                 (int)(map.getTileHeight() * zoom));
     }
 
-    protected void paintGrid(Graphics2D g2d, double zoom) {
+    protected void paintGrid(Graphics2D g2d) {
         g2d.setColor(Color.black);
-        Dimension tileSize = getTileSize(zoom);
+        Dimension tileSize = getTileSize();
         // Determine area to draw from clipping rectangle
         Rectangle clipRect = g2d.getClipBounds();
         Point topLeft = screenToTileCoords(
@@ -184,7 +184,7 @@ public class HexMapView extends MapView
         }
     }
 
-    protected void paintCoordinates(Graphics2D g2d, double zoom) {
+    protected void paintCoordinates(Graphics2D g2d) {
         // TODO: Implement paintCoordinates for HexMapView
     }
 
@@ -246,8 +246,8 @@ public class HexMapView extends MapView
      * Get the point at the top left corner of the bounding rectangle of this
      * hex.
      */
-    private Point2D getTopLeftCornerOfHex(int x, int y, double zoom) {
-        Dimension tileSize = getTileSize(zoom);
+    private Point2D getTopLeftCornerOfHex(int x, int y) {
+        Dimension tileSize = getTileSize();
         Point2D centre = tileToScreenCoords(x, y);
         double leftX = centre.getX() - tileSize.getWidth() / 2;
         double topY = centre.getY() - tileSize.getHeight() / 2;
@@ -276,7 +276,7 @@ public class HexMapView extends MapView
 
     protected Polygon createGridPolygon(int tx, int ty, int border) {
         double centrex, centrey;
-        Dimension tileSize = getTileSize(zoom);
+        Dimension tileSize = getTileSize();
         Polygon poly = new Polygon();
 
         centrex = tx*tileSize.getWidth() + tileSize.getWidth() / 2;

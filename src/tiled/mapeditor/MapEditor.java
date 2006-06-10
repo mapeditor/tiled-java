@@ -789,7 +789,7 @@ public class MapEditor implements ActionListener, MouseListener,
                 if (!bMouseIsDragging) {
                     Tile newTile = ((TileLayer)layer).getTileAt(tile.x, tile.y);
                     setCurrentTile(newTile);
-                } else if(currentPointerState == PS_PAINT) {
+                } else if (currentPointerState == PS_PAINT) {
                     //in case we are dragging to create a custom brush, let the user
                     //know where we are creating it from
                     if (marqueeSelection == null) {
@@ -1668,7 +1668,7 @@ public class MapEditor implements ActionListener, MouseListener,
         //FIXME: this is an in-elegant hack, but it gets the user out
         //       of custom brush mode
         //(reset the brush if necessary)
-        if(currentBrush instanceof CustomBrush) {
+        if (currentBrush instanceof CustomBrush) {
             if (prefs.getBoolean("cursorhighlight", true)) {
                 Rectangle redraw = cursorHighlight.getBounds();
                 mapView.repaintRegion(redraw);
@@ -1960,10 +1960,12 @@ public class MapEditor implements ActionListener, MouseListener,
      * @param tile the new tile to be selected
      */
     public void setCurrentTile(Tile tile) {
+        resetBrush();
+
         if (currentTile != tile) {
             currentTile = tile;
             if (!(currentBrush instanceof CustomBrush)) {
-                ((ShapeBrush)currentBrush).setTile(tile);
+                ((ShapeBrush) currentBrush).setTile(tile);
             }
             tilePaletteButton.setTile(currentTile);
         }

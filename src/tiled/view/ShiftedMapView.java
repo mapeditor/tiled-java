@@ -53,7 +53,7 @@ public class ShiftedMapView extends MapView
 
     public int getScrollableUnitIncrement(Rectangle visibleRect,
             int orientation, int direction) {
-        Dimension tsize = getTileSize(zoom);
+        Dimension tsize = getTileSize();
         if (orientation == SwingConstants.VERTICAL) {
             return tsize.height - (tsize.height - (int) (verSide * zoom)) / 2;
         } else {
@@ -62,7 +62,7 @@ public class ShiftedMapView extends MapView
     }
 
     public Dimension getPreferredSize() {
-        Dimension tsize = getTileSize(zoom);
+        Dimension tsize = getTileSize();
         int border = showGrid ? 1 : 0;
         int onceX = (tsize.width - (int)(horSide * zoom)) / 2;
         int repeatX = tsize.width - onceX;
@@ -74,15 +74,15 @@ public class ShiftedMapView extends MapView
                 map.getHeight() * repeatY + onceY + border);
     }
 
-    protected void paintLayer(Graphics2D g2d, TileLayer layer, double zoom) {
+    protected void paintLayer(Graphics2D g2d, TileLayer layer) {
     }
 
-    protected void paintLayer(Graphics2D g2d, ObjectGroup layer, double zoom) {
+    protected void paintLayer(Graphics2D g2d, ObjectGroup og) {
     }
 
-    protected void paintGrid(Graphics2D g2d, double zoom) {
+    protected void paintGrid(Graphics2D g2d) {
         // Determine tile size
-        Dimension tsize = getTileSize(zoom);
+        Dimension tsize = getTileSize();
         if (tsize.width <= 0 || tsize.height <= 0) return;
         int onceX = (tsize.width - (int)(horSide * zoom)) / 2;
         int repeatX = tsize.width - onceX;
@@ -99,7 +99,7 @@ public class ShiftedMapView extends MapView
         int p = startY * repeatY;
 
         // These are temp debug lines not the real grid, draw in light gray
-        Color gridColor = g2d.getColor();
+        Color prevColor = g2d.getColor();
         g2d.setColor(Color.gray);
 
         for (int y = startY; y < endY; y++) {
@@ -112,10 +112,10 @@ public class ShiftedMapView extends MapView
             p += repeatX;
         }
 
-        g2d.setColor(gridColor);
+        g2d.setColor(prevColor);
     }
 
-    protected void paintCoordinates(Graphics2D g2d, double zoom) {
+    protected void paintCoordinates(Graphics2D g2d) {
     }
 
     public void repaintRegion(Rectangle region) {
@@ -125,7 +125,7 @@ public class ShiftedMapView extends MapView
         return new Point(0, 0);
     }
 
-    protected Dimension getTileSize(double zoom) {
+    protected Dimension getTileSize() {
         return new Dimension(
                 (int)(map.getTileWidth() * zoom),
                 (int)(map.getTileHeight() * zoom));
