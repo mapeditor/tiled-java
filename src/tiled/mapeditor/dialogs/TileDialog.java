@@ -52,7 +52,7 @@ public class TileDialog extends JDialog
     private JButton changeImageButton;
     private JButton duplicateTileButton;
     private JButton createTileButton;
-    private JButton animationButton;
+    //private JButton animationButton;
     private String location;
     private JTextField tilesetNameEntry;
     private JTabbedPane tabs;
@@ -68,10 +68,10 @@ public class TileDialog extends JDialog
     private static final String ANIMATION_BUTTON = Resources.getString("dialog.tile.button.animation");
     private static final String PREVIEW_TAB = Resources.getString("general.button.preview");
     private static final String TILES_TAB = Resources.getString("general.tile.tiles");
+    private static final String IMAGES_TAB = "Images";
     private static final String NAME_LABEL = Resources.getString("dialog.newtileset.name.label");
     private static final String ERROR_LOADING_IMAGE = Resources.getString("dialog.tile.image.load.error");
 
-    /* -- */
 
     public TileDialog(Dialog parent, TileSet s, Map m) {
         super(parent, DIALOG_TITLE + " '" + s.getName() + "'", true);
@@ -92,13 +92,13 @@ public class TileDialog extends JDialog
         changeImageButton = new JButton(CI_BUTTON);
         duplicateTileButton = new JButton(DUPLICATE_BUTTON);
         newTileButton = new JButton(NEW_BUTTON);
-        animationButton = new JButton(ANIMATION_BUTTON);
+        //animationButton = new JButton(ANIMATION_BUTTON);
 
         deleteTileButton.addActionListener(this);
         changeImageButton.addActionListener(this);
         duplicateTileButton.addActionListener(this);
         newTileButton.addActionListener(this);
-        animationButton.addActionListener(this);
+        //animationButton.addActionListener(this);
 
         tileList = new JList();
         tileList.setCellRenderer(new TileDialogListRenderer());
@@ -141,8 +141,8 @@ public class TileDialog extends JDialog
         buttons.add(changeImageButton);
         buttons.add(Box.createRigidArea(new Dimension(5, 0)));
         buttons.add(duplicateTileButton);
-        buttons.add(Box.createRigidArea(new Dimension(5, 0)));
-        buttons.add(animationButton);
+        //buttons.add(Box.createRigidArea(new Dimension(5, 0)));
+        //buttons.add(animationButton);
         buttons.add(Box.createRigidArea(new Dimension(5, 0)));
         buttons.add(Box.createGlue());
 
@@ -203,7 +203,7 @@ public class TileDialog extends JDialog
 
         tabs = new JTabbedPane(JTabbedPane.TOP);
         tabs.addTab(TILES_TAB, createTilePanel());
-        tabs.addTab(PREVIEW_TAB, createImagePanel());
+        tabs.addTab(IMAGES_TAB, createImagePanel());
 
         okButton = new JButton(OK_BUTTON);
 
@@ -238,50 +238,46 @@ public class TileDialog extends JDialog
             return;
         }
 
-        if (tileset.isSetFromImage()) {
-            TileImageDialog d = new TileImageDialog(this, tileset,
-                currentTile.getImageId());
-            d.setVisible(true);
-            if (d.getImageId() >= 0) {
-                currentTile.setImage(d.getImageId());
-            }
-        } else {
-            Image img = loadImage();
-            if (img != null) {
-                currentTile.setImage(img);
-            }
+        TileImageDialog d = new TileImageDialog(this, tileset,
+            currentTile.getImageId());
+        d.setVisible(true);
+        if (d.getImageId() >= 0) {
+            currentTile.setImage(d.getImageId());
         }
-    }
-
-    private Image loadImage() {
-        JFileChooser ch = new JFileChooser(location);
-        int ret = ch.showOpenDialog(this);
-
-        if (ret == JFileChooser.APPROVE_OPTION) {
-            File file = ch.getSelectedFile();
-            try {
-                BufferedImage image = ImageIO.read(file);
-                if (image != null) {
-                    location = file.getAbsolutePath();
-                    return image;
-                } else {
-                    JOptionPane.showMessageDialog(this, ERROR_LOADING_IMAGE,
-                            ERROR_LOADING_IMAGE, JOptionPane.ERROR_MESSAGE);
-                    return null;
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(this, e.getLocalizedMessage(),
-                        ERROR_LOADING_IMAGE, JOptionPane.ERROR_MESSAGE);
-            }
-        }
-
-        return null;
     }
 
     private void newTile() {
-    	NewTileDialog d = new NewTileDialog(this, tileset);
-    	if (d.createTile() != null) queryTiles();
+        File[] files;
+        JFileChooser ch = new JFileChooser(location);
+        ch.setMultiSelectionEnabled(true);
+        BufferedImage image = null;
+
+        int ret = ch.showOpenDialog(this);
+        if (ret == JFileChooser.APPROVE_OPTION) {
+            files = ch.getSelectedFiles();
+
+            for (int i = 0; i < files.length; i++) {
+                try {
+                    image = ImageIO.read(files[i]);
+                    // TODO: Support for a transparent color
+                } catch (IOException e) {
+                    JOptionPane.showMessageDialog(this, e.getLocalizedMessage(),
+                                                  "Error!", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                Tile newTile = new Tile(tileset);
+                newTile.setImage(tileset.addImage(image));
+                tileset.addNewTile(newTile);
+            }
+
+            if (files.length > 0) {
+                location = files[0].getAbsolutePath();
+            }
+        }
+
+        queryTiles();
+        queryImages();
     }
 
     public void setTileset(TileSet s) {
@@ -362,25 +358,19 @@ public class TileDialog extends JDialog
     }
 
     private void updateEnabledState() {
-        // boolean internal = (tileset.getSource() == null);
         boolean tilebmp = tileset.getTilebmpFile() != null;
         boolean tileSelected = currentTile != null;
-        boolean setImages = tileset.isSetFromImage();
-        boolean atLeastOneSharedImage = setImages
-          && tileset.getTotalImages() >= 1;
+        boolean atLeastOneSharedImage = tileset.getTotalImages() >= 1;
 
         newTileButton.setEnabled(atLeastOneSharedImage && !tilebmp);
-        deleteTileButton.setEnabled(setImages && !tilebmp && tileSelected);
+        deleteTileButton.setEnabled(!tilebmp && tileSelected);
         changeImageButton.setEnabled(atLeastOneSharedImage && !tilebmp
             && tileSelected);
-        duplicateTileButton.setEnabled(setImages && !tilebmp && tileSelected);
-        animationButton.setEnabled(setImages && !tilebmp && tileSelected &&
-        		currentTile instanceof AnimatedTile);
-        tileProperties.setEnabled(setImages && !tilebmp && tileSelected);
+        duplicateTileButton.setEnabled(!tilebmp && tileSelected);
+        //animationButton.setEnabled(!tilebmp && tileSelected &&
+        //		currentTile instanceof AnimatedTile);
+        tileProperties.setEnabled(tileSelected);
         createTileButton.setEnabled(!tilebmp);
-        //setImagesCheck.setEnabled(!tilebmp || !setImages
-        //    || tileset.safeToDisablesetImages());
-        tabs.setEnabledAt(1, setImages);
     }
 
     /**
@@ -436,9 +426,9 @@ public class TileDialog extends JDialog
             // Select the last (cloned) tile
             tileList.setSelectedIndex(tileset.size() - 1);
             tileList.ensureIndexIsVisible(tileset.size() - 1);
-        } else if (source == animationButton) {
-        	AnimationDialog ad = new AnimationDialog(this, ((AnimatedTile)currentTile).getSprite());
-        	ad.setVisible(true);
+        //} else if (source == animationButton) {
+        //    AnimationDialog ad = new AnimationDialog(this, ((AnimatedTile)currentTile).getSprite());
+        //    ad.setVisible(true);
         }
         /*
         else if (source == setImagesCheck) {

@@ -5,7 +5,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
@@ -15,13 +15,15 @@ package tiled.core;
 import java.awt.Rectangle;
 import java.util.Properties;
 
-
+/**
+ * @version $Id$
+ */
 public class MapObject
 {
     private Sprite sprite;
     private Properties properties;
 
-    protected float map_x, map_y;
+    protected float mapX, mapY;
     protected Rectangle bounds;
     protected boolean bVisible = true;
     protected String source, type;
@@ -32,11 +34,11 @@ public class MapObject
     }
 
     public void setX(int x) {
-        map_x = x;
+        mapX = x;
     }
 
     public void setY(int y) {
-        map_y = y;
+        mapY = y;
     }
 
     public void setType(String s) {
@@ -52,16 +54,16 @@ public class MapObject
     }
 
     public void translate(int x, int y) {
-        map_x += x;
-        map_y += y;
+        mapX += x;
+        mapY += y;
     }
-    
+
     public int getX() {
-        return (int)map_x;
+        return (int) mapX;
     }
 
     public int getY() {
-        return (int)map_y;
+        return (int) mapY;
     }
 
     public String getType() {
@@ -77,6 +79,6 @@ public class MapObject
     }
 
     public String toString() {
-        return type + " (" + map_x + "," + map_y + ")";
+        return type + " (" + mapX + "," + mapY + ")";
     }
 }

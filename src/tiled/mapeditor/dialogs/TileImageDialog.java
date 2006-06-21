@@ -18,6 +18,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Enumeration;
 import java.util.Vector;
+import java.util.Arrays;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -28,6 +29,9 @@ import tiled.mapeditor.util.ImageCellRenderer;
 import tiled.mapeditor.widget.VerticalStaticJPanel;
 
 /**
+ * Dialog for picking a tile image. Used by the edit tileset dialog for
+ * changing the image of a tile.
+ *
  * @version $Id$
  */
 public class TileImageDialog extends JDialog implements ListSelectionListener
@@ -39,12 +43,10 @@ public class TileImageDialog extends JDialog implements ListSelectionListener
     private JLabel imageLabel;
     private int[] imageIds;
 
-    /* LANGUAGE PACK */
     private static final String DIALOG_TITLE = Resources.getString("dialog.tileimage.title");
     private static final String OK_BUTTON = Resources.getString("general.button.ok");
     private static final String CANCEL_BUTTON = Resources.getString("general.button.cancel");
-    /* -- */
-    
+
     public TileImageDialog(Dialog parent, TileSet set) {
         this(parent, set, 0);
     }
@@ -100,14 +102,14 @@ public class TileImageDialog extends JDialog implements ListSelectionListener
         mainPanel.add(buttons, c);
         getContentPane().add(mainPanel);
         getRootPane().setDefaultButton(okButton);
-        
+
         //create action listeners
         okButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
             	dispose();
             }
         });
-        
+
         cancelButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
             	imageId = -1;
@@ -126,7 +128,7 @@ public class TileImageDialog extends JDialog implements ListSelectionListener
             imageIds[i] = Integer.parseInt((String)ids.nextElement());
         }
 
-        java.util.Arrays.sort(imageIds);
+        Arrays.sort(imageIds);
 
         for (int i = 0; i < imageIds.length; ++i) {
             if (imageIds[i] == imageId) initialIndex = i;

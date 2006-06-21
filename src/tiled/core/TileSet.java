@@ -381,10 +381,10 @@ public class TileSet
     }
 
     /**
-     * Returns the filename of the tile bitmap.
+     * Returns the filename of the tileset image.
      *
-     * @return the filename of the tile bitmap, or <code>null</code> if this
-     *         tileset doesn't reference a tile bitmap
+     * @return the filename of the tileset image, or <code>null</code> if this
+     *         tileset doesn't reference a tileset image
      */
     public String getTilebmpFile() {
         if (tilebmpFile != null) {

@@ -1,5 +1,5 @@
 /*
- *  Tiled Map Editor, (c) 2005
+ *  Tiled Map Editor, (c) 2004-2006
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,36 +13,35 @@
 package tiled.mapeditor.animation;
 
 import java.awt.*;
-import java.awt.event.*;
-import java.io.IOException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Iterator;
-
 import javax.swing.*;
 
-import tiled.core.*;
-import tiled.mapeditor.MapEditor;
+import tiled.core.Sprite;
+import tiled.core.MapObject;
 import tiled.mapeditor.Resources;
 
 /**
  * This is the multi-purpose animation dialog, which can handle any
- * tiled.core.Sprite based animations. (Good for animated tiles, and
- * MapObjects)
+ * {@link Sprite} based animations. (Good for animated tiles, and
+ * {@link MapObject}s)
  *
- * @see tiled.core.Sprite
+ * @see Sprite
  */
-public class AnimationDialog extends JDialog implements ActionListener {
-
+public class AnimationDialog extends JDialog implements ActionListener
+{
     private static final int PLAYING = 1;
     private static final int STOPPED = 0;
 
     private Sprite currentSprite;
-    private SpriteCanvas canvas = null;
+    private SpriteCanvas canvas;
     private int state = STOPPED;
-    private JButton playstop = null;
+    private JButton playstop;
     private JComboBox keyframe;
-    private JLabel lCurrentFrame = null;
-    private JLabel lFrameRate = null;
-    private JLabel lFrameRange = null;
+    private JLabel lCurrentFrame;
+    private JLabel lFrameRate;
+    private JLabel lFrameRange;
 
     private Icon playIcon, stopIcon;
 
@@ -58,7 +57,7 @@ public class AnimationDialog extends JDialog implements ActionListener {
         setLocationRelativeTo(getOwner());
     }
 
-    public JPanel makeUp(){
+    public JPanel makeUp() {
         JButton b;
         JLabel l;
         JPanel main = new JPanel(new BorderLayout());
@@ -68,80 +67,88 @@ public class AnimationDialog extends JDialog implements ActionListener {
         canvas = new SpriteCanvas(this);
 
 
-        GridBagConstraints c=new GridBagConstraints();
-        c.fill=GridBagConstraints.BOTH;
-        c.weightx = 1; c.weighty = 1;
-        c.gridx = 0; c.gridy = 0;
-        c.gridheight = 1; c.gridwidth = 1;
+        GridBagConstraints c = new GridBagConstraints();
+        c.fill = GridBagConstraints.BOTH;
+        c.weightx = 1;
+        c.weighty = 1;
+        c.gridx = 0;
+        c.gridy = 0;
+        c.gridheight = 1;
+        c.gridwidth = 1;
         b = new JButton("", Resources.getIcon("startframe.png"));
         b.setActionCommand("startframe");
-        b.setMargin(new Insets(0,0,0,0));
+        b.setMargin(new Insets(0, 0, 0, 0));
         b.addActionListener(this);
-        buttons.add(b,c);
+        buttons.add(b, c);
 
         c.gridx = 1;
         b = new JButton("", Resources.getIcon("back.png"));
         b.setActionCommand("back");
-        b.setMargin(new Insets(0,0,0,0));
+        b.setMargin(new Insets(0, 0, 0, 0));
         b.addActionListener(this);
-        buttons.add(b,c);
+        buttons.add(b, c);
 
         c.gridx = 2;
         playstop = new JButton("", Resources.getIcon("play.png"));
         playstop.setActionCommand("playstop");
-        playstop.setMargin(new Insets(0,0,0,0));
+        playstop.setMargin(new Insets(0, 0, 0, 0));
         playstop.addActionListener(this);
-        buttons.add(playstop,c);
+        buttons.add(playstop, c);
 
         c.gridx = 3;
         b = new JButton("", Resources.getIcon("forward.png"));
         b.setActionCommand("forward");
-        b.setMargin(new Insets(0,0,0,0));
+        b.setMargin(new Insets(0, 0, 0, 0));
         b.addActionListener(this);
-        buttons.add(b,c);
+        buttons.add(b, c);
 
         c.gridx = 4;
         b = new JButton("", Resources.getIcon("lastframe.png"));
         b.setActionCommand("lastframe");
-        b.setMargin(new Insets(0,0,0,0));
+        b.setMargin(new Insets(0, 0, 0, 0));
         b.addActionListener(this);
         buttons.add(b, c);
 
-        c.gridx = 0; c.gridy = 0; c.gridwidth = 2;
-        String[] defaultArr = { "None" };
+        c.gridx = 0;
+        c.gridy = 0;
+        c.gridwidth = 2;
+        String[] defaultArr = {"None"};
         keyframe = new JComboBox(defaultArr);
         keyframe.addActionListener(this);
-        opt.add(keyframe,c);
+        opt.add(keyframe, c);
 
-        c.gridwidth = 1; c.gridy = 1;
+        c.gridwidth = 1;
+        c.gridy = 1;
         l = new JLabel("Range:");
-        opt.add(l,c);
+        opt.add(l, c);
 
         c.gridx = 1;
         lFrameRange = new JLabel("-");
-        opt.add(lFrameRange,c);
+        opt.add(lFrameRange, c);
 
-        c.gridy = 2; c.gridx = 0;
+        c.gridy = 2;
+        c.gridx = 0;
         l = new JLabel("Current:");
-        opt.add(l,c);
+        opt.add(l, c);
 
         c.gridx = 1;
         lCurrentFrame = new JLabel("?");
-        opt.add(lCurrentFrame,c);
+        opt.add(lCurrentFrame, c);
 
-        c.gridy = 3; c.gridx = 0;
+        c.gridy = 3;
+        c.gridx = 0;
         l = new JLabel("Rate:");
-        opt.add(l,c);
+        opt.add(l, c);
 
         c.gridx = 1;
         lFrameRate = new JLabel("?");
-        opt.add(lFrameRate,c);
+        opt.add(lFrameRate, c);
 
-        data.add(canvas,BorderLayout.CENTER);
-        data.add(buttons,BorderLayout.SOUTH);
+        data.add(canvas, BorderLayout.CENTER);
+        data.add(buttons, BorderLayout.SOUTH);
 
-        main.add(data,BorderLayout.CENTER);
-        main.add(opt,BorderLayout.EAST);
+        main.add(data, BorderLayout.CENTER);
+        main.add(opt, BorderLayout.EAST);
 
         return main;
     }
@@ -152,8 +159,11 @@ public class AnimationDialog extends JDialog implements ActionListener {
         if (state == PLAYING) {
             if (currentSprite != null) {
                 if (currentSprite.getCurrentKey() == null) {
-                    JOptionPane.showMessageDialog(this,"There are no keys defined!","No Keys", JOptionPane.ERROR_MESSAGE);
-                    state=STOPPED;
+                    JOptionPane.showMessageDialog(this,
+                                                  "There are no keys defined!",
+                                                  "No Keys",
+                                                  JOptionPane.ERROR_MESSAGE);
+                    state = STOPPED;
                     return;
                 }
                 currentSprite.iterateFrame();
@@ -170,20 +180,23 @@ public class AnimationDialog extends JDialog implements ActionListener {
     }
 
     public void updateList() {
-        if (currentSprite != null){
+        if (currentSprite != null) {
             keyframe.removeAllItems();
-            try{
+            try {
                 Iterator itr = currentSprite.getKeys();
-                while(itr.hasNext()){
-                    keyframe.addItem(((Sprite.KeyFrame)itr.next()).getName());
+                while (itr.hasNext()) {
+                    keyframe.addItem(((Sprite.KeyFrame) itr.next()).getName());
                 }
-            }catch(Exception e){}
+            }
+            catch (Exception e) {
+            }
         }
     }
 
-    public void updateStats(){
+    public void updateStats() {
         if (currentSprite != null) {
-            Sprite.KeyFrame k = currentSprite.getKey((String)keyframe.getSelectedItem());
+            Sprite.KeyFrame k =
+                    currentSprite.getKey((String) keyframe.getSelectedItem());
             if (k != null) {
                 lCurrentFrame.setText("" + currentSprite.getCurrentFrame());
                 lFrameRate.setText("" + k.getFrameRate());
@@ -192,71 +205,101 @@ public class AnimationDialog extends JDialog implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-        if (e.getActionCommand().equalsIgnoreCase("New Key...")||e.getActionCommand().equalsIgnoreCase("Modify Key...")) {
-            KeyDialog kd = new KeyDialog(this,currentSprite);
+        if (e.getActionCommand().equalsIgnoreCase("New Key...") ||
+                e.getActionCommand().equalsIgnoreCase("Modify Key...")) {
+            KeyDialog kd = new KeyDialog(this, currentSprite);
             kd.doKeys();
-        } else if (e.getActionCommand().equalsIgnoreCase("Delete Key")) {
+        }
+        else if (e.getActionCommand().equalsIgnoreCase("Delete Key")) {
             if (currentSprite != null) {
-                currentSprite.removeKey((String)keyframe.getSelectedItem());
+                currentSprite.removeKey((String) keyframe.getSelectedItem());
             }
-        } else if (e.getActionCommand().equalsIgnoreCase("comboBoxChanged")) {
+        }
+        else if (e.getActionCommand().equalsIgnoreCase("comboBoxChanged")) {
             if (currentSprite != null) {
-                currentSprite.setKeyFrameTo((String)keyframe.getSelectedItem());
+                currentSprite
+                        .setKeyFrameTo((String) keyframe.getSelectedItem());
                 updateStats();
                 canvas.repaint();
             }
-        } else {
+        }
+        else {
             handleFrames(e);
         }
         updateList();
         updateStats();
     }
 
-    public void handleFrames(ActionEvent e){
+    public void handleFrames(ActionEvent e) {
         if (currentSprite == null) {
             return;
         }
 
         if (e.getActionCommand().equalsIgnoreCase("startframe")) {
-            if (currentSprite.getCurrentKey()==null) {
-                JOptionPane.showMessageDialog(this,"There are no keys defined!","No Keys", JOptionPane.ERROR_MESSAGE);
-            } else {
+            if (currentSprite.getCurrentKey() == null) {
+                JOptionPane.showMessageDialog(this,
+                                              "There are no keys defined!",
+                                              "No Keys",
+                                              JOptionPane.ERROR_MESSAGE);
+            }
+            else {
                 currentSprite.keySetFrame(0);
                 canvas.repaint();
             }
-        } else if (e.getActionCommand().equalsIgnoreCase("back")) {
+        }
+        else if (e.getActionCommand().equalsIgnoreCase("back")) {
             if (currentSprite.getCurrentKey() == null) {
-                JOptionPane.showMessageDialog(this,"There are no keys defined!","No Keys", JOptionPane.ERROR_MESSAGE);
-            } else {
+                JOptionPane.showMessageDialog(this,
+                                              "There are no keys defined!",
+                                              "No Keys",
+                                              JOptionPane.ERROR_MESSAGE);
+            }
+            else {
                 currentSprite.keyStepBack(1);
                 canvas.repaint();
             }
-        }else if(e.getActionCommand().equalsIgnoreCase("playstop")){
-            if(currentSprite.getCurrentKey()==null){
-                JOptionPane.showMessageDialog(this,"There are no keys defined!","No Keys", JOptionPane.ERROR_MESSAGE);
-            }else{
-                if(state==PLAYING){
-                    state=STOPPED;
+        }
+        else if (e.getActionCommand().equalsIgnoreCase("playstop")) {
+            if (currentSprite.getCurrentKey() == null) {
+                JOptionPane.showMessageDialog(this,
+                                              "There are no keys defined!",
+                                              "No Keys",
+                                              JOptionPane.ERROR_MESSAGE);
+            }
+            else {
+                if (state == PLAYING) {
+                    state = STOPPED;
                     currentSprite.stop();
                     playstop.setIcon(playIcon);
-                }else{
-                    state=PLAYING;
+                }
+                else {
+                    state = PLAYING;
                     currentSprite.play();
                     playstop.setIcon(stopIcon);
                 }
                 canvas.repaint();
             }
-        }else if(e.getActionCommand().equalsIgnoreCase("forward")){
-            if(currentSprite.getCurrentKey()==null){
-                JOptionPane.showMessageDialog(this,"There are no keys defined!","No Keys", JOptionPane.ERROR_MESSAGE);
-            }else{
+        }
+        else if (e.getActionCommand().equalsIgnoreCase("forward")) {
+            if (currentSprite.getCurrentKey() == null) {
+                JOptionPane.showMessageDialog(this,
+                                              "There are no keys defined!",
+                                              "No Keys",
+                                              JOptionPane.ERROR_MESSAGE);
+            }
+            else {
                 currentSprite.keyStepForward(1);
                 canvas.repaint();
             }
-        }else if(e.getActionCommand().equalsIgnoreCase("lastframe")){
-            if(currentSprite.getCurrentKey()==null){
-                JOptionPane.showMessageDialog(this,"There are no keys defined!","No Keys", JOptionPane.ERROR_MESSAGE);
-            }else{
+        }
+        else if (e.getActionCommand().equalsIgnoreCase("lastframe")) {
+            if (currentSprite.getCurrentKey() == null) {
+                JOptionPane.showMessageDialog(this,
+                                              "There are no keys defined!",
+                                              "No Keys",
+                                              JOptionPane.ERROR_MESSAGE);
+            }
+            else {
                 currentSprite.keyStepForward(10000);
                 canvas.repaint();
             }
@@ -264,16 +307,15 @@ public class AnimationDialog extends JDialog implements ActionListener {
     }
 }
 
-class SpriteCanvas extends JPanel{
-
+class SpriteCanvas extends JPanel
+{
     private AnimationDialog owner;
-    private Image buffer = null;
-    private Dimension osd;	
+    private Image buffer;
+    private Dimension osd;
 
-    SpriteCanvas(AnimationDialog o){
-
+    SpriteCanvas(AnimationDialog o) {
         owner = o;
-    }		
+    }
 
     /**
      * Draws checkerboard background.
@@ -302,31 +344,28 @@ class SpriteCanvas extends JPanel{
         }
     }
 
-    public void paint(Graphics g){
+    public void paint(Graphics g) {
 
-        if(owner!=null)
-        {
-            Dimension d = this.getSize();
-            if(buffer == null){
-                osd=d;
-                buffer=createImage(d.width,d.height);
+        if (owner != null) {
+            Dimension d = getSize();
+            if (buffer == null) {
+                osd = d;
+                buffer = createImage(d.width, d.height);
             }
 
-            if(d.width!=osd.width||d.height!=osd.height){		
-                osd = d;				
-                buffer=createImage(d.width,d.height);
+            if (d.width != osd.width || d.height != osd.height) {
+                osd = d;
+                buffer = createImage(d.width, d.height);
             }
             paintBackground(g);
-            if(buffer != null){
-
-                Graphics osg = buffer.getGraphics();		
-
+            if (buffer != null) {
+                Graphics osg = buffer.getGraphics();
                 owner.paintSprite(osg);
-
-                g.drawImage(buffer,0,0,null);
-            }else{
+                g.drawImage(buffer, 0, 0, null);
+            }
+            else {
                 owner.paintSprite(g);
             }
-        }		
+        }
     }
 }

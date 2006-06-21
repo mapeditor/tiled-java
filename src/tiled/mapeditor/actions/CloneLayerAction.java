@@ -45,10 +45,10 @@ public class CloneLayerAction extends AbstractLayerAction
                         "action.layer.duplicate.newlayer.name");
                 clone.setName(MessageFormat.format(newName, new Object[]{clone.getName()}));
                 currentMap.addLayer(clone);
+                editor.setCurrentLayer(currentMap.getTotalLayers() - 1);
             } catch (CloneNotSupportedException ex) {
                 ex.printStackTrace();
             }
-            editor.setCurrentLayer(currentMap.getTotalLayers() - 1);
         }
     }
 }
