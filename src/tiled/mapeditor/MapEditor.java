@@ -27,6 +27,8 @@ import java.util.prefs.PreferenceChangeListener;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.event.*;
 import javax.swing.undo.UndoableEditSupport;
 
@@ -74,7 +76,7 @@ public class MapEditor implements ActionListener, MouseListener,
     private Cursor curMarquee;
 
     /** Current release version. */
-    public static final String version = "0.6.0 RC2";
+    public static final String version = "0.6.0";
 
     private Map currentMap;
     private MapView mapView;
@@ -99,7 +101,6 @@ public class MapEditor implements ActionListener, MouseListener,
 
     // GUI components
     private JPanel      mainPanel;
-    private JPanel      toolPanel;
     private JPanel      dataPanel;
     private JPanel      statusBar;
     private JMenuBar    menuBar;
@@ -276,7 +277,6 @@ public class MapEditor implements ActionListener, MouseListener,
                 JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         mapScrollPane.setBorder(null);
 
-        createToolBar();
         createData();
         createStatusBar();
 
@@ -285,7 +285,7 @@ public class MapEditor implements ActionListener, MouseListener,
         mainSplit.setResizeWeight(1.0);
 
         mainPanel = new JPanel(new BorderLayout());
-        mainPanel.add(toolPanel, BorderLayout.WEST);
+        mainPanel.add(createToolBar(), BorderLayout.WEST);
         mainPanel.add(mainSplit);
         mainPanel.add(statusBar, BorderLayout.SOUTH);
 
@@ -471,7 +471,7 @@ public class MapEditor implements ActionListener, MouseListener,
     /**
      * Creates the tool bar.
      */
-    private void createToolBar() {
+    private JToolBar createToolBar() {
         Icon iconMove = Resources.getIcon("gimp-tool-move-22.png");
         Icon iconPaint = Resources.getIcon("gimp-tool-pencil-22.png");
         Icon iconErase = Resources.getIcon("gimp-tool-eraser-22.png");
@@ -497,7 +497,7 @@ public class MapEditor implements ActionListener, MouseListener,
         mapEventAdapter.addListener(objectMoveButton);
 
         JToolBar toolBar = new JToolBar(JToolBar.VERTICAL);
-        toolBar.setFloatable(false);
+        toolBar.setFloatable(true);
         toolBar.add(moveButton);
         toolBar.add(paintButton);
         toolBar.add(eraseButton);
@@ -510,16 +510,16 @@ public class MapEditor implements ActionListener, MouseListener,
         //toolBar.add(Box.createRigidArea(new Dimension(0, 5)));
         toolBar.add(new TButton(zoomInAction));
         toolBar.add(new TButton(zoomOutAction));
+        toolBar.add(Box.createRigidArea(new Dimension(5, 5)));
+        toolBar.add(Box.createGlue());
 
-        tilePaletteButton = new TileButton(new Dimension(24, 24));
+        tilePaletteButton = new TileButton();
         tilePaletteButton.setActionCommand("palette");
-        tilePaletteButton.setMaintainAspect(true);
         mapEventAdapter.addListener(tilePaletteButton);
         tilePaletteButton.addActionListener(this);
+        toolBar.add(tilePaletteButton);
 
-        toolPanel = new JPanel(new BorderLayout());
-        toolPanel.add(toolBar, BorderLayout.NORTH);
-        toolPanel.add(tilePaletteButton, BorderLayout.SOUTH);
+        return toolBar;
     }
 
     private void createData() {
