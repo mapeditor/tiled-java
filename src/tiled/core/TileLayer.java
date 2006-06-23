@@ -15,6 +15,7 @@ package tiled.core;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.Area;
+import java.util.Properties;
 
 /**
  * A TileLayer is a specialized MapLayer, used for tracking two dimensional
@@ -25,6 +26,22 @@ import java.awt.geom.Area;
 public class TileLayer extends MapLayer
 {
     protected Tile[][] map;
+    protected Properties[][] tileInstanceProperties;
+
+    public Properties getTileInstancePropertiesAt(int x, int y) {
+        try {
+            return tileInstanceProperties[y - bounds.y][x - bounds.x];
+        } catch (ArrayIndexOutOfBoundsException e) {
+            return null;
+        }
+    }
+
+    public void setTileInstancePropertiesAt(int x, int y, Properties tip) {
+        try {
+            tileInstanceProperties[y - bounds.y][x - bounds.x] = tip;
+        } catch (ArrayIndexOutOfBoundsException e) {
+        }
+    }
 
     /**
      * Default contructor
@@ -180,9 +197,10 @@ public class TileLayer extends MapLayer
      * @param bounds
      * @see MapLayer#setBounds
      */
-    public void setBounds(Rectangle bounds) {
+    protected void setBounds(Rectangle bounds) {
         super.setBounds(bounds);
         map = new Tile[bounds.height][bounds.width];
+        tileInstanceProperties = new Properties[bounds.height][bounds.width];
     }
 
     /**
@@ -258,6 +276,12 @@ public class TileLayer extends MapLayer
         try {
             if (canEdit()) {
                 map[ty - bounds.y][tx - bounds.x] = ti;
+
+                if (ti != null) {
+                    tileInstanceProperties[ty - bounds.y][tx - bounds.x] = new Properties();
+                } else {
+                    tileInstanceProperties[ty - bounds.y][tx - bounds.x] = null;
+                }
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             // Silently ignore out of bounds exception
@@ -411,9 +435,20 @@ public class TileLayer extends MapLayer
 
         // Clone the layer data
         clone.map = new Tile[map.length][];
+        clone.tileInstanceProperties = new Properties[map.length][];
+
         for (int i = 0; i < map.length; i++) {
             clone.map[i] = new Tile[map[i].length];
             System.arraycopy(map[i], 0, clone.map[i], 0, map[i].length);
+
+            clone.tileInstanceProperties[i] = new Properties[map[i].length];
+            for (int j = 0; j < map[i].length; j++) {
+                if (map[i][j] != null) {
+                    clone.tileInstanceProperties[i][j] = new Properties();
+                } else {
+                    clone.tileInstanceProperties[i][j] = null;
+                }
+            }
         }
 
         return clone;
@@ -432,6 +467,7 @@ public class TileLayer extends MapLayer
             return;
 
         Tile[][] newMap = new Tile[height][width];
+        Properties[][] newTileInstanceProperties = new Properties[height][width];
 
         int maxX = Math.min(width, bounds.width + dx);
         int maxY = Math.min(height, bounds.height + dy);
@@ -439,6 +475,7 @@ public class TileLayer extends MapLayer
         for (int x = Math.max(0, dx); x < maxX; x++) {
             for (int y = Math.max(0, dy); y < maxY; y++) {
                 newMap[y][x] = getTileAt(x - dx, y - dy);
+                newTileInstanceProperties[y][x] = getTileInstancePropertiesAt( x - dx, y - dy );
             }
         }
 

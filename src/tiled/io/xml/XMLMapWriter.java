@@ -420,6 +420,27 @@ public class XMLMapWriter implements MapWriter
                 }
             }
             w.endElement();
+
+            w.startElement("tileproperties");
+
+            for (int y = 0; y < l.getHeight(); y++) {
+                for (int x = 0; x < l.getWidth(); x++) {
+                    Properties tip = ((TileLayer) l).getTileInstancePropertiesAt(x, y);
+
+                    if (tip != null && !tip.isEmpty()) {
+                        w.startElement("tile");
+
+                        w.writeAttribute("x", x);
+                        w.writeAttribute("y", y);
+
+                        writeProperties(tip, w);
+
+                        w.endElement();
+                    }
+                }
+            }
+
+            w.endElement();
         }
         w.endElement();
     }

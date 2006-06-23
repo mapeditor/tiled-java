@@ -87,7 +87,7 @@ public class XMLMapTransformer implements MapReader
             } else if ("boolean".equalsIgnoreCase(parameterTypes[i].getName())) {
                 conformingArguments[i] = Boolean.valueOf(args[i]);
             } else {
-            	logger.debug("Unsupported argument type " +
+                logger.debug("Unsupported argument type " +
                         parameterTypes[i].getName() +
                         ", defaulting to java.lang.String");
                 conformingArguments[i] = args[i];
@@ -109,7 +109,7 @@ public class XMLMapTransformer implements MapReader
         } else if ("shifted".equalsIgnoreCase(o)) {
             map.setOrientation(Map.MDO_SHIFTED);
         } else {
-        	logger.warn("Unknown orientation '" + o + "'");
+            logger.warn("Unknown orientation '" + o + "'");
         }
     }
 
@@ -163,7 +163,7 @@ public class XMLMapTransformer implements MapReader
                         reflectInvokeMethod(o,methods[j],
                                 new String [] {n.getNodeValue()});
                     } else {
-                    	logger.warn("Unsupported attribute '" +
+                        logger.warn("Unsupported attribute '" +
                                 n.getNodeName() +
                                 "' on <" + node.getNodeName() + "> tag");
                     }
@@ -199,7 +199,7 @@ public class XMLMapTransformer implements MapReader
                 if ("data".equals(n.getNodeName())) {
                     Node cdata = n.getFirstChild();
                     if (cdata == null) {
-                    	logger.warn("image <data> tag enclosed no " +
+                        logger.warn("image <data> tag enclosed no " +
                                 "data. (empty data tag)");
                     } else {
                         String sdata = cdata.getNodeValue();
@@ -257,7 +257,7 @@ public class XMLMapTransformer implements MapReader
             for (int itr = 0; (tsNode = tsNodeList.item(itr)) != null; itr++) {
                 set = unmarshalTileset(tsNode);
                 if (set.getSource() != null) {
-                	logger.warn("Recursive external Tilesets are not supported.");
+                    logger.warn("Recursive external Tilesets are not supported.");
                 }
                 set.setSource(filename);
                 // NOTE: This is a deliberate break. multiple tilesets per TSX are
@@ -267,7 +267,7 @@ public class XMLMapTransformer implements MapReader
 
             xmlPath = xmlPathSave;
         } catch (SAXException e) {
-        	logger.error("Failed while loading "+filename+": "+e.getMessage());
+            logger.error("Failed while loading "+filename+": "+e.getMessage());
             //e.printStackTrace();
         }
 
@@ -297,18 +297,18 @@ public class XMLMapTransformer implements MapReader
                 //just a little check for tricky people...
                 String extention = source.substring(source.lastIndexOf('.') + 1);
                 if (!"tsx".equals(extention.toLowerCase())) {
-                	logger.warn("tileset files should end in .tsx! ("+source+")");
+                    logger.warn("tileset files should end in .tsx! ("+source+")");
                 }
 
                 InputStream in = new URL(makeUrl(filename)).openStream();
                 ext = unmarshalTilesetFile(in, filename);
             } catch (FileNotFoundException fnf) {
-            	logger.error("Could not find external tileset file " +
+                logger.error("Could not find external tileset file " +
                         filename);
             }
 
             if (ext == null) {
-            	logger.error("tileset "+source+" was not loaded correctly!");
+                logger.error("tileset "+source+" was not loaded correctly!");
                 ext = new TileSet();
             }
 
@@ -520,13 +520,14 @@ public class XMLMapTransformer implements MapReader
         for (Node child = t.getFirstChild(); child != null;
                 child = child.getNextSibling())
         {
-            if ("data".equalsIgnoreCase(child.getNodeName())) {
+            String nodeName = child.getNodeName();
+            if ("data".equalsIgnoreCase(nodeName)) {
                 String encoding = getAttributeValue(child, "encoding");
 
                 if (encoding != null && "base64".equalsIgnoreCase(encoding)) {
                     Node cdata = child.getFirstChild();
                     if (cdata == null) {
-                    	logger.warn("layer <data> tag enclosed no data. (empty data tag)");
+                        logger.warn("layer <data> tag enclosed no data. (empty data tag)");
                     } else {
                         char[] enc = cdata.getNodeValue().trim().toCharArray();
                         byte[] dec = Base64.decode(enc);
@@ -562,8 +563,8 @@ public class XMLMapTransformer implements MapReader
                 } else {
                     int x = 0, y = 0;
                     for (Node dataChild = child.getFirstChild();
-                            dataChild != null;
-                            dataChild = dataChild.getNextSibling())
+                         dataChild != null;
+                         dataChild = dataChild.getNextSibling())
                     {
                         if ("tile".equalsIgnoreCase(dataChild.getNodeName())) {
                             int tileId = getAttribute(dataChild, "gid", -1);
@@ -581,6 +582,21 @@ public class XMLMapTransformer implements MapReader
                             }
                             if (y == ml.getHeight()) { break; }
                         }
+                    }
+                }
+            } else if ("tileproperties".equalsIgnoreCase(nodeName)) {
+                for (Node tpn = child.getFirstChild();
+                     tpn != null;
+                     tpn = tpn.getNextSibling())
+                {
+                    if ("tile".equalsIgnoreCase(tpn.getNodeName())) {
+                        int x = getAttribute(tpn, "x", -1);
+                        int y = getAttribute(tpn, "y", -1);
+
+                        Properties tip = new Properties();
+
+                        readProperties(tpn.getChildNodes(), tip);
+                        ml.setTileInstancePropertiesAt(x, y, tip);
                     }
                 }
             }

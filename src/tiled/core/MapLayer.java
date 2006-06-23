@@ -101,7 +101,7 @@ public abstract class MapLayer implements Cloneable
      *
      * @param bounds
      */
-    public void setBounds(Rectangle bounds) {
+    protected void setBounds(Rectangle bounds) {
         this.bounds = new Rectangle(bounds);
     }
 
