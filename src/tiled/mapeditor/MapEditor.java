@@ -353,7 +353,6 @@ public class MapEditor implements ActionListener, MouseListener,
         			Resources.getString("menu.edit.brush.tooltip"),
                     "control B"));
 
-        // todo : enable/disable undo/redo depending on whether a map is loaded
         mapEventAdapter.addListener(copyMenuItem);
         mapEventAdapter.addListener(cutMenuItem);
         mapEventAdapter.addListener(pasteMenuItem);
@@ -1613,8 +1612,13 @@ public class MapEditor implements ActionListener, MouseListener,
         if (newTile == oldTile || layer.getLocked()) return;
 
         Rectangle area;
-        TileLayer before = new TileLayer(layer);
+        TileLayer before = (TileLayer) createLayerCopy(layer);
         TileLayer after;
+
+        // Check that the copy was succesfully created
+        if (before == null) {
+            return;
+        }
 
         if (marqueeSelection == null) {
             area = new Rectangle(new Point(x, y));
@@ -1808,12 +1812,13 @@ public class MapEditor implements ActionListener, MouseListener,
     }
 
     private static MapLayer createLayerCopy(MapLayer layer) {
-        if (layer instanceof TileLayer) {
-            return new TileLayer((TileLayer)layer);
-        } else if (layer instanceof ObjectGroup) {
-            return new ObjectGroup((ObjectGroup)layer);
+        try {
+            return (MapLayer) layer.clone();
         }
-        return null;
+        catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public void updateRecent(String filename) {

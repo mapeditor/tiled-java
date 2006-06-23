@@ -63,13 +63,6 @@ public abstract class MapLayer implements Cloneable
         setBounds(r);
     }
 
-    public MapLayer(MapLayer ml) {
-        this(ml.bounds);
-        name = ml.getName();
-
-        properties = new Properties(ml.getProperties());
-    }
-
     /**
      * @param m the map this layer is part of
      */
@@ -265,7 +258,7 @@ public abstract class MapLayer implements Cloneable
     public abstract boolean isUsed(Tile t);
 
     public abstract boolean isEmpty();
-    
+
     /**
      * Creates a copy of this layer.
      *
@@ -278,6 +271,7 @@ public abstract class MapLayer implements Cloneable
 
         // Create a new bounds object
         clone.bounds = new Rectangle(bounds);
+        clone.properties = new Properties(getProperties());
 
         return clone;
     }

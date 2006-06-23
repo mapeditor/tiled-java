@@ -208,13 +208,17 @@ public class MultilayerPlane
         }
 
         // TODO: We're not accounting for different types of layers!!!
+        TileLayer ntl;
+        try {
+            ntl = (TileLayer) getLayer(index - 1).clone();
+        }
+        catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+            return;
+        }
 
-        TileLayer ntl = new TileLayer((TileLayer)getLayer(index - 1));
-        ntl.copyFrom(getLayer(index - 1));
         getLayer(index).mergeOnto(ntl);
         setLayer(index - 1, ntl);
-        
-        //getLayer(index).mergeOnto(getLayer(index - 1));
         removeLayer(index);
     }
 

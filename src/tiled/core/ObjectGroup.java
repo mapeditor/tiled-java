@@ -23,9 +23,13 @@ public class ObjectGroup extends MapLayer
 {
     private LinkedList boundObjects;
 
+    /**
+     * Default constructor.
+     */
     public ObjectGroup() {
         boundObjects = new LinkedList();
     }
+
     /**
      * Creates an object group that is part of the given map and has the given
      * origin.
@@ -48,15 +52,6 @@ public class ObjectGroup extends MapLayer
      */
     public ObjectGroup(Rectangle area) {
         super(area);
-        boundObjects = new LinkedList();
-    }
-
-    /**
-     * Clone constructor.
-     *
-     * @param group the group to clone
-     */
-    public ObjectGroup(ObjectGroup group) {
         boundObjects = new LinkedList();
     }
 
@@ -97,9 +92,15 @@ public class ObjectGroup extends MapLayer
     public boolean isUsed(Tile t) {
         return false;
     }
-    
+
     public boolean isEmpty() {
     	return boundObjects.isEmpty();
+    }
+
+    public Object clone() throws CloneNotSupportedException {
+        ObjectGroup clone = (ObjectGroup) super.clone();
+        clone.boundObjects = new LinkedList(boundObjects);
+        return clone;
     }
 
     /**

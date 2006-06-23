@@ -52,21 +52,6 @@ public class TileLayer extends MapLayer
     }
 
     /**
-     * Copy constructor. Copies all data from given TileLayer
-     *
-     * @param ml
-     */
-    public TileLayer(TileLayer ml) {
-        super(ml);
-
-        map = new Tile[bounds.height][];
-        for (int y = 0; y < bounds.height; y++) {
-            map[y] = new Tile[bounds.width];
-            System.arraycopy(ml.map[y], 0, map[y], 0, bounds.width);
-        }
-    }
-
-    /**
      * @param m the map this layer is part of
      */
     TileLayer(Map m) {
@@ -186,7 +171,7 @@ public class TileLayer extends MapLayer
     	}
     	return true;
     }
-    
+
     /**
      * Sets the bounds (in tiles) to the specified Rectangle. <b>Caution:</b>
      * this causes a reallocation of the data array, and all previous data is
@@ -299,7 +284,7 @@ public class TileLayer extends MapLayer
      * Returns the first occurance (using top down, left to right search) of
      * the given tile.
      *
-     * @param t the {@link tiled.core.Tile} to look for
+     * @param t the {@link Tile} to look for
      * @return A java.awt.Point instance of the first instance of t, or
      *         <code>null</code> if it is not found
      */
@@ -422,8 +407,7 @@ public class TileLayer extends MapLayer
      * @exception CloneNotSupportedException
      */
     public Object clone() throws CloneNotSupportedException {
-        TileLayer clone;
-        clone = (TileLayer)super.clone();
+        TileLayer clone = (TileLayer) super.clone();
 
         // Clone the layer data
         clone.map = new Tile[map.length][];
