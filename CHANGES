@@ -1,18 +1,4 @@
-UNDONE
-+ Fixed memory problems when loading several maps with many tilesets in a row
-+ Added ability to select multiple layers from layer table
-+ Added preview of new tileset when creating a tileset
-+ Added the Shifted view, which emulates several tiling configurations
-+ Added "stamp" tool
-+ Added a navigation minimap
-+ Added full support for animated tiles
-+ Added palette brush
-+ Added support for animated tiles
-+ Added additional "tile cutters"
-+ Rewrote main mapeditor code
-+ Moved actions out of MapEditor, and created a package for them
-
-0.6.0 - June X, 2006
+0.6.0 - June 23rd, 2006
 
 * Added internationalization, with translations to Dutch, German, Italian,
   French and Spanish.
@@ -30,17 +16,18 @@ UNDONE
   to something other than the tile height used by the map
 * Fixed a bug when exporting a tileset with an external image
 * Fixed two cases of hanging when using the fill tool
-* Fixed tile palette bug of not accounting for gaps in tile ids (old bug)
+* Fixed tile palette bug of not accounting for gaps in tile ids
 * Fixed tile palette bug of displaying multiple tilesets over eachother
 * Fixed bug of adding a new tile even if cancelling out of new tile dialog
 * Fixed NullPointerException when saving a map with no extension
 * Fixed the zooming so that it keeps the center in place
 * Fixed exiting even when a request to save the changes failed
 * Fixed layer merging so that undo/redo of operation is functional
-* Fixed resetting of selected tileset in tile palette on layer changes
+* Fixed resetting of selected tileset in tile palette on layer rearrangements
 * Fixed saving of tile properties when using a tileset image
 * Fixed loading of invisible layers
 * Fixed saving of tile spacing property for tileset images
+* Fixed configuring, saving and loading of maps using embedded images
 * Rewrote configuration based on the Preferences class, no more tiled.conf
 * Cleaned up TileSet (removed checksumming and rotation/orientation code)
 * Removed experimental hexagonal mapview from new map dialog

@@ -201,6 +201,7 @@ public class BrushDialog extends JDialog implements ActionListener,
     	JTabbedPane tabs = new JTabbedPane(JTabbedPane.TOP);
         tabs.addTab(SHAPE_TAB, createShapePanel());
         tabs.addTab(CUSTOM_TAB, createCustomPanel());
+        tabs.setEnabledAt(1, false);
 
         okButton = new JButton(OK_BUTTON);
         bApply = new JButton(APPLY_BUTTON);

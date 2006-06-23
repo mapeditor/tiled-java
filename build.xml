@@ -21,7 +21,7 @@
     <mkdir dir="releases"/>
     <zip destfile="releases/tiled-${version}-bin.zip">
       <zipfileset prefix="tiled-${version}" dir="."
-        includes="README COPYING INSTALL CHANGES"/>
+        includes="README COPYING INSTALL CHANGES TODO"/>
       <zipfileset fullpath="tiled-${version}/tiled.jar" dir="dist"
         includes="tiled.jar"/>
       <zipfileset prefix="tiled-${version}/plugins" dir="dist/plugins"/>
@@ -35,7 +35,7 @@
       <zipfileset prefix="tiled-${version}/src" dir="src"/>
       <zipfileset prefix="tiled-${version}/plugins" dir="plugins"/>
       <zipfileset prefix="tiled-${version}" dir="."
-        includes="README COPYING CHANGES build.xml MANIFEST.MF"/>
+        includes="README COPYING CHANGES TODO build.xml MANIFEST.MF"/>
       <zipfileset prefix="tiled-${version}/examples" dir="examples"/>
     </zip>
   </target>

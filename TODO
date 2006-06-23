@@ -1,0 +1,50 @@
+ROADMAP TO FUTURE RELEASES
+
+0.7.0
+* Remove copy constructors in favour of clone method
+* Add import/export of options
+* Allow embedding of tile palette beneath the map view
+* Replace tile button with a brush preview beneath the layer table
+* Allow creation of stamp brush from the tile palette
+* Add support for tile instance properties (see Christian's patch)
+
+0.8.0
+* Set up a layer->map->mapview changes event trail to automatically handle
+  repainting changes in all views on the map.
+* Add minimap above layer table
+* Pretty brush preview
+
+0.9.0
+* Introduce concept of a project
+* Add concept of 'textures' and automatic texture transitions using smart brush
+* Store stamp brushes and texture transition definitions to project
+
+1.0.0
+* Add support for arbitrary objects and zones placement
+
+GENERAL TODO ITEMS
+
+* Fix memory problems when loading several maps with many tilesets in a row
+* Add ability to select multiple layers from layer table
+* Add preview of new tileset when creating a tileset
+* Add the Shifted view, which emulates several tiling configurations
+* Add "stamp" tool
+* Add a navigation minimap
+* Add full support for animated tiles
+* Add palette brush
+* Add support for animated tiles
+* Add additional "tile cutters"
+* Rewrite main mapeditor code
+* Move actions out of MapEditor, and created a package for them
+* Reintroduce usage counts in tileset manager without performance issues
+* Add convenient map resizing preview widget
+* Turning on/off layer visibility shouldn't select them
+* Think more about panel docking station
+* Allow mapviews to have parameters
+* Start open image in new tileset dialog at map location when possible.
+* Add offset settings to New Tileset dialog and tileset xml tag
+* Look into making selections more efficient by not using a tile layer
+* See about using real numbers for tile positioning with isometric
+* Look into color button on New Tileset dialog
+* Try to generalize color button for setting grid and background color
+  settings. Change Grid to Display tab with Grid and Colors groups.
