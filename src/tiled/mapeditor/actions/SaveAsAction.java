@@ -74,7 +74,6 @@ public class SaveAsAction extends AbstractAction
         JFileChooser chooser = new ConfirmingFileChooser(startLocation);
         chooser.addChoosableFileFilter(byExtensionFilter);
         chooser.addChoosableFileFilter(tmxFilter);
-        chooser.setFileFilter(byExtensionFilter);
 
         MapWriter[] writers = editor.getPluginLoader().getWriters();
         for (int i = 0; i < writers.length; i++) {
@@ -84,6 +83,8 @@ public class SaveAsAction extends AbstractAction
                 e.printStackTrace();
             }
         }
+
+        chooser.setFileFilter(byExtensionFilter);
 
         int result = chooser.showSaveDialog(editor.getAppFrame());
         if (result == JFileChooser.APPROVE_OPTION)

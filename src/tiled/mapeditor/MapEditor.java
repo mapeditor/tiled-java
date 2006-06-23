@@ -27,8 +27,6 @@ import java.util.prefs.PreferenceChangeListener;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.LineBorder;
 import javax.swing.event.*;
 import javax.swing.undo.UndoableEditSupport;
 
@@ -717,6 +715,7 @@ public class MapEditor implements ActionListener, MouseListener,
      * Returns the current map.
      *
      * @return the currently selected map
+     * @see #setCurrentMap(Map)
      */
     public Map getCurrentMap() {
         return currentMap;
@@ -1846,6 +1845,12 @@ public class MapEditor implements ActionListener, MouseListener,
         sb.makeQuadBrush(new Rectangle(0, 0, 1, 1));
         setBrush(sb);
 
+        // Cancel any active selection
+        if (marqueeSelection != null) {
+            currentMap.removeLayerSpecial(marqueeSelection);
+        }
+        marqueeSelection = null;
+
         if (!mapLoaded) {
             mapEventAdapter.fireEvent(MapEventAdapter.ME_MAPINACTIVE);
             mapView = null;
@@ -1893,7 +1898,8 @@ public class MapEditor implements ActionListener, MouseListener,
             zoomLabel.setText(
                     String.valueOf((int) (mapView.getZoom() * 100)) + "%");
 
-            //get the first non-null tile from the first tileset containing non-null tiles
+            // Get the first non-null tile from the first tileset containing
+            // non-null tiles.
             Vector tilesets = currentMap.getTilesets();
             Tile firstTile = null;
             if (!tilesets.isEmpty()) {
