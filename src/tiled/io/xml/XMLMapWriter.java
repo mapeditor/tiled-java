@@ -289,14 +289,13 @@ public class XMLMapWriter implements MapWriter
             if (embedImages) {
                 needWrite = true;
             } else {
+                // As long as one has properties, they all need to be written.
+                // TODO: This shouldn't be necessary
                 while (tileIterator.hasNext()) {
                     Tile tile = (Tile)tileIterator.next();
                     if (!tile.getProperties().isEmpty()) {
                         needWrite = true;
                         break;
-                        // As long as one has properties, they all
-                        // need to be written.
-                        // TODO: This shouldn't be necessary
                     }
                 }
             }
@@ -425,12 +424,16 @@ public class XMLMapWriter implements MapWriter
         w.endElement();
     }
 
+    /**
+     * Used to write tile elements for tilesets not based on a tileset image.
+     *
+     * @param tile the tile instance that should be written
+     * @param w the writer to write to
+     * @throws IOException when an io error occurs
+     */
     private static void writeTile(Tile tile, XMLWriter w) throws IOException {
         w.startElement("tile");
-
-        int tileId = tile.getId();
-
-        w.writeAttribute("id", tileId);
+        w.writeAttribute("id", tile.getId());
 
         //if (groundHeight != getHeight()) {
         //    w.writeAttribute("groundheight", "" + groundHeight);
@@ -438,15 +441,13 @@ public class XMLMapWriter implements MapWriter
 
         writeProperties(tile.getProperties(), w);
 
-        Image tileImage = tile.getImage();
-
         Preferences prefs = TiledConfiguration.node("saving");
-
         boolean embedImages = prefs.getBoolean("embedImages", true);
         boolean tileSetImages = prefs.getBoolean("tileSetImages", false);
+        Image tileImage = tile.getImage();
 
         // Write encoded data
-        if (tileImage != null && !tileSetImages) {
+        if (tileImage != null) {
             if (embedImages && !tileSetImages) {
                 w.startElement("image");
                 w.writeAttribute("format", "png");
@@ -456,18 +457,17 @@ public class XMLMapWriter implements MapWriter
                                 ImageHelper.imageToPNG(tileImage))));
                 w.endElement();
                 w.endElement();
-            } else if (tileSetImages) {
+            } else if (embedImages && tileSetImages) {
                 w.startElement("image");
                 w.writeAttribute("id", tile.getImageId());
                 w.endElement();
             } else {
                 String prefix = prefs.get("tileImagePrefix", "tile");
-                String filename = prefs.get("maplocation", "") +
-                    prefix + tileId + ".png";
+                String filename = prefix + tile.getId() + ".png";
+                String path = prefs.get("maplocation", "") + filename;
                 w.startElement("image");
-                w.writeAttribute("source", prefix + tileId + ".png");
-                FileOutputStream fw = new FileOutputStream(
-                        new File(filename));
+                w.writeAttribute("source", filename);
+                FileOutputStream fw = new FileOutputStream(new File(path));
                 byte[] data = ImageHelper.imageToPNG(tileImage);
                 fw.write(data, 0, data.length);
                 fw.close();
@@ -602,7 +602,7 @@ public class XMLMapWriter implements MapWriter
         return
             "The core Tiled TMX format writer\n" +
             "\n" +
-            "Tiled Map Editor, (c) 2005\n" +
+            "Tiled Map Editor, (c) 2004-2006\n" +
             "Adam Turk\n" +
             "Bjorn Lindeijer";
     }

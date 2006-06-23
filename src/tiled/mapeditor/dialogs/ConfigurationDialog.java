@@ -245,9 +245,7 @@ public class ConfigurationDialog extends JDialog
             public void itemStateChanged(ItemEvent itemEvent) {
                 final boolean embed = cbEmbedImages.isSelected();
                 savingPrefs.putBoolean("embedImages", embed);
-                rbEmbedInTiles.setSelected(embed && rbEmbedInTiles.isSelected());
                 rbEmbedInTiles.setEnabled(embed);
-                rbEmbedInSet.setSelected(embed && rbEmbedInSet.isSelected());
                 rbEmbedInSet.setEnabled(embed);
             }
         });
@@ -281,8 +279,8 @@ public class ConfigurationDialog extends JDialog
 
         rbEmbedInTiles.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
-                savingPrefs.putBoolean("embedImages",
-                        rbEmbedInTiles.isSelected());
+                savingPrefs.putBoolean("tileSetImages",
+                        !rbEmbedInTiles.isSelected());
             }
         });
 
@@ -308,9 +306,16 @@ public class ConfigurationDialog extends JDialog
         undoDepth.setValue(prefs.getInt("undoDepth", 30));
         gridOpacitySlider.setValue(displayPrefs.getInt("gridOpacity", 255));
 
-        if (savingPrefs.getBoolean("embedImages", true)) {
+        boolean embedImages = savingPrefs.getBoolean("embedImages", true);
+        if (embedImages) {
             cbEmbedImages.setSelected(true);
-            rbEmbedInTiles.setSelected(true);
+
+            if (savingPrefs.getBoolean("tileSetImages", false)) {
+                rbEmbedInSet.setSelected(true);
+            }
+            else {
+                rbEmbedInTiles.setSelected(true);
+            }
         }
 
         cbBinaryEncode.setSelected(savingPrefs.getBoolean("encodeLayerData", true));
@@ -319,6 +324,8 @@ public class ConfigurationDialog extends JDialog
         cbReportIOWarnings.setSelected(ioPrefs.getBoolean("reportWarnings", false));
 
         cbCompressLayerData.setEnabled(cbBinaryEncode.isSelected());
+        rbEmbedInTiles.setEnabled(embedImages);
+        rbEmbedInSet.setEnabled(embedImages);
     }
 
     private static void doExport() {

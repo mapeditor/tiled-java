@@ -134,20 +134,6 @@ public class XMLMapTransformer implements MapReader
         }
     }
 
-    private static Node findChild(Node node, String childName) {
-        NodeList children = node.getChildNodes();
-
-        // Do an initial pass to see what's in here
-        for (int i = 0; i < children.getLength(); i++) {
-            Node child = children.item(i);
-            if (child.getNodeName().equalsIgnoreCase(childName)) {
-                return child;
-            }
-        }
-
-        return null;
-    }
-
     private Object unmarshalClass(Class reflector, Node node)
         throws InstantiationException, IllegalAccessException,
                InvocationTargetException {
@@ -343,46 +329,50 @@ public class XMLMapTransformer implements MapReader
             boolean hasTilesetImage = false;
             NodeList children = t.getChildNodes();
 
-            //if we have a tileset image, load it (tileset can have only one image element)
-            Node child = findChild(t, "image");
-            if(child != null) {
-                String imgSource = getAttributeValue(child, "source");
-                String id = getAttributeValue(child, "id");
-                String transStr = getAttributeValue(child, "trans");
-
-                hasTilesetImage = true;
-
-                if (imgSource != null && id == null) {
-                    // Not a shared image, but an entire set in one image
-                    // file
-
-                    // FIXME: importTileBitmap does not fully support URLs
-                    String sourcePath = imgSource;
-                    if (!Util.checkRoot(imgSource)) {
-                        sourcePath = tilesetBaseDir + imgSource;
-                    }
-
-                    logger.info("Importing " + sourcePath + "...");
-
-                    if (transStr != null) {
-                        Color color = new Color(Integer.parseInt(transStr, 16));
-                        set.setTransparentColor(color);
-                    }
-
-                    set.importTileBitmap(sourcePath, new BasicTileCutter(
-                            tileWidth, tileHeight, tileSpacing, 0));
-                } else {
-                    set.addImage(unmarshalImage(child, tilesetBaseDir),
-                            Integer.parseInt(getAttributeValue(child, "id")));
-                }
-            }
-
-            //spin through and find tile elements
             for (int i = 0; i < children.getLength(); i++) {
-                Node c = children.item(i);
+                Node child = children.item(i);
 
-                if (c.getNodeName().equalsIgnoreCase("tile")) {
-                    Tile tile = unmarshalTile(set, c, tilesetBaseDir);
+                if (child.getNodeName().equalsIgnoreCase("image")) {
+                    if (hasTilesetImage) {
+                        logger.warn("Ignoring illegal image element after tileset image.");
+                        continue;
+                    }
+
+                    String imgSource = getAttributeValue(child, "source");
+                    String id = getAttributeValue(child, "id");
+                    String transStr = getAttributeValue(child, "trans");
+
+                    if (imgSource != null && id == null) {
+                        // Not a shared image, but an entire set in one image
+                        // file. There should be only one image element in this
+                        // case.
+                        hasTilesetImage = true;
+
+                        // FIXME: importTileBitmap does not fully support URLs
+                        String sourcePath = imgSource;
+                        if (!Util.checkRoot(imgSource)) {
+                            sourcePath = tilesetBaseDir + imgSource;
+                        }
+
+                        logger.info("Importing " + sourcePath + "...");
+
+                        if (transStr != null) {
+                            int colorInt = Integer.parseInt(transStr, 16);
+                            Color color = new Color(colorInt);
+                            set.setTransparentColor(color);
+                        }
+
+                        set.importTileBitmap(sourcePath, new BasicTileCutter(
+                                tileWidth, tileHeight, tileSpacing, 0));
+                    } else {
+                        Image image = unmarshalImage(child, tilesetBaseDir);
+                        String idValue = getAttributeValue(child, "id");
+                        int imageId = Integer.parseInt(idValue);
+                        set.addImage(image, imageId);
+                    }
+                }
+                else if (child.getNodeName().equalsIgnoreCase("tile")) {
+                    Tile tile = unmarshalTile(set, child, tilesetBaseDir);
                     if (!hasTilesetImage || tile.getId() >= set.getMaxTileId()) {
                         set.addTile(tile);
                     } else {

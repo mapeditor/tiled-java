@@ -12,12 +12,13 @@
 
 package tiled.mapeditor.widget;
 
-import java.awt.*;
+import java.awt.Image;
+import java.awt.Insets;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 
-import javax.swing.*;
-import javax.swing.event.EventListenerList;
-
-import tiled.core.*;
+import tiled.core.Tile;
 import tiled.mapeditor.Resources;
 
 /**
