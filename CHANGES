@@ -11,6 +11,7 @@
 * Added remembering of main window state as suggested by Dennis Spreen
 * Added remembering of size and divider position to tile palette dialog
 * Added memory usage display and a garbage collect button to the about dialog
+* Added JSON exporter plugin by Nader Akhres
 * Improved memory usage and speed in several areas
 * Fixed new tileset dialog so that it is now possible to change the tile height
   to something other than the tile height used by the map
