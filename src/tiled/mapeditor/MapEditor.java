@@ -82,7 +82,7 @@ public class MapEditor implements ActionListener, MouseListener,
     private Cursor curMarquee;
 
     /** Current release version. */
-    public static final String version = "0.6.0";
+    public static final String version = "0.7.0 WIP";
 
     private Map currentMap;
     private MapView mapView;
@@ -1013,8 +1013,6 @@ public class MapEditor implements ActionListener, MouseListener,
                     (Math.max(limp.y, tile.y) - miny) + 1);
 
             // Right mouse button dragged: create and set custom brush
-            MultilayerPlane mlp =
-                    new MultilayerPlane(bounds.width, bounds.height);
             TileLayer brushLayer = new TileLayer(bounds);
             brushLayer.copyFrom(getCurrentLayer());
 
@@ -1025,8 +1023,7 @@ public class MapEditor implements ActionListener, MouseListener,
                         Resources.getString("dialog.selection.empty"),
                         JOptionPane.WARNING_MESSAGE);
             } else {
-                mlp.addLayer(brushLayer);
-                setBrush(new CustomBrush(mlp));
+                setBrush(new CustomBrush(brushLayer));
             }
 
             //get rid of any visible marquee
@@ -1893,7 +1890,9 @@ public class MapEditor implements ActionListener, MouseListener,
         sb.makeQuadBrush(new Rectangle(0, 0, 1, 1));
         setBrush(sb);
 
-        tilePaletteDialog.setMap(currentMap);
+        if (tilePaletteDialog != null) {
+            tilePaletteDialog.setMap(currentMap);
+        }
         tabbedTilesetsPane.setMap(currentMap);
 
         if (!mapLoaded) {
@@ -1965,10 +1964,6 @@ public class MapEditor implements ActionListener, MouseListener,
         zoomOutAction.setEnabled(mapLoaded);
         zoomNormalAction.setEnabled(mapLoaded && mapView.getZoomLevel() !=
                 MapView.ZOOM_NORMALSIZE);
-
-        if (tilePaletteDialog != null) {
-            tilePaletteDialog.setMap(currentMap);
-        }
 
         /*
         if (miniMap != null && currentMap != null) {

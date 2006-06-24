@@ -276,12 +276,6 @@ public class TileLayer extends MapLayer
         try {
             if (canEdit()) {
                 map[ty - bounds.y][tx - bounds.x] = ti;
-
-                if (ti != null) {
-                    tileInstanceProperties[ty - bounds.y][tx - bounds.x] = new Properties();
-                } else {
-                    tileInstanceProperties[ty - bounds.y][tx - bounds.x] = null;
-                }
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             // Silently ignore out of bounds exception
@@ -443,10 +437,8 @@ public class TileLayer extends MapLayer
 
             clone.tileInstanceProperties[i] = new Properties[map[i].length];
             for (int j = 0; j < map[i].length; j++) {
-                if (map[i][j] != null) {
-                    clone.tileInstanceProperties[i][j] = new Properties();
-                } else {
-                    clone.tileInstanceProperties[i][j] = null;
+                if (tileInstanceProperties[i][j] != null) {
+                    clone.tileInstanceProperties[i][j] = new Properties(tileInstanceProperties[i][j]);
                 }
             }
         }
@@ -475,11 +467,12 @@ public class TileLayer extends MapLayer
         for (int x = Math.max(0, dx); x < maxX; x++) {
             for (int y = Math.max(0, dy); y < maxY; y++) {
                 newMap[y][x] = getTileAt(x - dx, y - dy);
-                newTileInstanceProperties[y][x] = getTileInstancePropertiesAt( x - dx, y - dy );
+                newTileInstanceProperties[y][x] = getTileInstancePropertiesAt(x - dx, y - dy);
             }
         }
 
         map = newMap;
+        tileInstanceProperties = newTileInstanceProperties;
         bounds.width = width;
         bounds.height = height;
     }

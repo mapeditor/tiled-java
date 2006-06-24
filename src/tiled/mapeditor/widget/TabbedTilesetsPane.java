@@ -24,6 +24,8 @@ import javax.swing.JTabbedPane;
 import tiled.core.Map;
 import tiled.core.TileSet;
 import tiled.mapeditor.MapEditor;
+import tiled.mapeditor.brush.CustomBrush;
+import tiled.mapeditor.util.TileRegionSelectionEvent;
 import tiled.mapeditor.util.TileSelectionEvent;
 import tiled.mapeditor.util.TileSelectionListener;
 
@@ -95,5 +97,13 @@ public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionList
      */
     public void tileSelected(TileSelectionEvent e) {
         mapEditor.setCurrentTile(e.getTile());
+    }
+
+    /**
+     * Creates a stamp brush from the region contents and sets this as the
+     * current brush.
+     */
+    public void tileRegionSelected(TileRegionSelectionEvent e) {
+        mapEditor.setBrush(new CustomBrush(e.getTileRegion()));
     }
 }

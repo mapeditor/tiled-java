@@ -2,11 +2,31 @@ ROADMAP TO FUTURE RELEASES
 
 0.7.0
 * Remove copy constructors in favour of clone method (DONE)
+
 * Add import/export of options (WIP)
+
+    See about reusing overwrite confirmation and default extension
+    functionality from ConfirmingFileChooser.
+
 * Allow embedding of tile palette beneath the map view (WIP)
+
+    Make continuous layout and tiles per row behaviour configurable.
+
+    Fix default tabbed tilesets panel height.
+
 * Replace tile button with a brush preview beneath the layer table
-* Allow creation of stamp brush from the tile palette
+
+* Allow creation of stamp brush from the tile palette (WIP)
+
+    Do not reset brush when switching tools (but do show a small tile highlight
+    while other tools than stamp brush are selected)
+
 * Add support for tile instance properties (see Christian's patch) (WIP)
+
+    Fix big memory usage, maybe reference properties from a HashMap instead of
+    from each tile? Also check the amount of information stored for undo/redo.
+
+    Implement an effective way of displaying the presence of these properties.
 
 0.8.0
 * Set up a layer->map->mapview changes event trail to automatically handle

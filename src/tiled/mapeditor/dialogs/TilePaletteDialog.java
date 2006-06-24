@@ -25,6 +25,8 @@ import tiled.core.Map;
 import tiled.core.TileSet;
 import tiled.mapeditor.MapEditor;
 import tiled.mapeditor.Resources;
+import tiled.mapeditor.brush.CustomBrush;
+import tiled.mapeditor.util.TileRegionSelectionEvent;
 import tiled.mapeditor.util.TileSelectionEvent;
 import tiled.mapeditor.util.TileSelectionListener;
 import tiled.mapeditor.widget.TilePalettePanel;
@@ -112,6 +114,10 @@ public class TilePaletteDialog extends JDialog implements
 
     public void tileSelected(TileSelectionEvent event) {
         editor.setCurrentTile(event.getTile());
+    }
+
+    public void tileRegionSelected(TileRegionSelectionEvent e) {
+        editor.setBrush(new CustomBrush(e.getTileRegion()));
     }
 
     public void valueChanged(ListSelectionEvent e) {

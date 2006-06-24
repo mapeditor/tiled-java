@@ -5,7 +5,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
@@ -26,12 +26,13 @@ import tiled.view.MapView;
  */
 public class CustomBrush extends AbstractBrush
 {
-    public CustomBrush() {
+    public CustomBrush(MultilayerPlane mlp) {
+        addAllLayers(mlp.getLayerVector());
+        fitBoundsToLayers();
     }
 
-    public CustomBrush(MultilayerPlane m) {
-        this();
-        addAllLayers(m.getLayerVector());
+    public CustomBrush(TileLayer tileLayer) {
+        addLayer(tileLayer);
         fitBoundsToLayers();
     }
 
@@ -45,7 +46,7 @@ public class CustomBrush extends AbstractBrush
     public Shape getShape() {
     	return getBounds();
     }
-    
+
     /**
      * Determines whether this brush is equal to another brush.
      */
@@ -64,7 +65,7 @@ public class CustomBrush extends AbstractBrush
     }
 
     /**
-     * The custom brush will merge its internal layers onto the layers of the 
+     * The custom brush will merge its internal layers onto the layers of the
      * specified MultilayerPlane.
      *
      * @see tiled.core.TileLayer#mergeOnto(tiled.core.MapLayer)

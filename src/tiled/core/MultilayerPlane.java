@@ -13,7 +13,9 @@
 package tiled.core;
 
 import java.awt.Rectangle;
-import java.util.*;
+import java.util.Collection;
+import java.util.ListIterator;
+import java.util.Vector;
 
 /**
  * MultilayerPlane makes up the core functionality of both Maps and Brushes.
@@ -86,12 +88,12 @@ public class MultilayerPlane
     /**
      * Adds a layer to the map.
      *
-     * @param l The {@link MapLayer} to add
+     * @param layer The {@link MapLayer} to add
      * @return the layer passed to the function
      */
-    public MapLayer addLayer(MapLayer l) {
-        layers.add(l);
-        return l;
+    public MapLayer addLayer(MapLayer layer) {
+        layers.add(layer);
+        return layer;
     }
 
     /**
@@ -122,10 +124,10 @@ public class MultilayerPlane
     /**
      * Adds all the layers in a given java.util.Collection.
      *
-     * @param c a collection of layers to add
+     * @param layers a collection of layers to add
      */
-    public void addAllLayers(Collection c) {
-        layers.addAll(c);
+    public void addAllLayers(Collection layers) {
+        this.layers.addAll(layers);
     }
 
     /**

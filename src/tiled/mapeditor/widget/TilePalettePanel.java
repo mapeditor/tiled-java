@@ -21,7 +21,9 @@ import javax.swing.event.EventListenerList;
 import javax.swing.event.MouseInputAdapter;
 
 import tiled.core.Tile;
+import tiled.core.TileLayer;
 import tiled.core.TileSet;
+import tiled.mapeditor.util.TileRegionSelectionEvent;
 import tiled.mapeditor.util.TileSelectionEvent;
 import tiled.mapeditor.util.TileSelectionListener;
 
@@ -60,7 +62,7 @@ public class TilePalettePanel extends JPanel implements Scrollable
                 if (!select.equals(selection)) {
                     setSelection(select);
                 }
-                // todo: Fire tile region selection event
+                fireTileRegionSelectionEvent(selection);
             }
         };
         addMouseListener(mouseInputAdapter);
@@ -88,11 +90,47 @@ public class TilePalettePanel extends JPanel implements Scrollable
 
         for (int i = listeners.length - 2; i >= 0; i -= 2) {
             if (listeners[i] == TileSelectionListener.class) {
-                if (event == null) event =
-                    new TileSelectionEvent(this, selectedTile);
-                ((TileSelectionListener)listeners[i + 1]).tileSelected(event);
+                if (event == null) {
+                    event = new TileSelectionEvent(this, selectedTile);
+                }
+
+                ((TileSelectionListener) listeners[i + 1]).tileSelected(event);
             }
         }
+    }
+
+    private void fireTileRegionSelectionEvent(Rectangle selection) {
+        Object[] listeners = tileSelectionListeners.getListenerList();
+        TileRegionSelectionEvent event = null;
+
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == TileSelectionListener.class) {
+                if (event == null) {
+                    TileLayer region = createTileLayerFromRegion(selection);
+                    event = new TileRegionSelectionEvent(this, region);
+                }
+
+                ((TileSelectionListener) listeners[i + 1]).tileRegionSelected(event);
+            }
+        }
+    }
+
+    /**
+     * Creates a tile layer from a certain region of the tile palette.
+     * @param rect the rectangular region from which a tile layer is created
+     * @return the created tile layer
+     */
+    private TileLayer createTileLayerFromRegion(Rectangle rect) {
+        TileLayer layer = new TileLayer(rect.width + 1, rect.height + 1);
+
+        // Copy the tiles in the region to the tile layer
+        for (int y = rect.y; y <= rect.y + rect.height; y++) {
+            for (int x = rect.x; x <= rect.x + rect.width; x++) {
+                layer.setTileAt(x - rect.x, y - rect.y, getTileAt(x, y));
+            }
+        }
+
+        return layer;
     }
 
     /**
@@ -298,7 +336,7 @@ public class TilePalettePanel extends JPanel implements Scrollable
 
     public boolean getScrollableTracksViewportWidth() {
         // todo: Update when this has become an option
-        return tileset.getTilesPerRow() == 0;
+        return tileset == null || tileset.getTilesPerRow() == 0;
     }
 
     public boolean getScrollableTracksViewportHeight() {
