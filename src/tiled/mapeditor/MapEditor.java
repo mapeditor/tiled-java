@@ -21,24 +21,32 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Stack;
 import java.util.Vector;
-import java.util.prefs.Preferences;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
-
+import java.util.prefs.Preferences;
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.undo.UndoableEditSupport;
 
 import tiled.core.*;
 import tiled.io.MapHelper;
 import tiled.io.MapReader;
 import tiled.mapeditor.actions.*;
-import tiled.mapeditor.brush.*;
+import tiled.mapeditor.brush.AbstractBrush;
+import tiled.mapeditor.brush.Brush;
+import tiled.mapeditor.brush.CustomBrush;
+import tiled.mapeditor.brush.ShapeBrush;
 import tiled.mapeditor.dialogs.*;
 import tiled.mapeditor.plugin.PluginClassLoader;
 import tiled.mapeditor.selection.SelectionLayer;
-import tiled.mapeditor.undo.*;
+import tiled.mapeditor.undo.MapLayerEdit;
+import tiled.mapeditor.undo.MapLayerStateEdit;
+import tiled.mapeditor.undo.MoveLayerEdit;
+import tiled.mapeditor.undo.UndoHandler;
 import tiled.mapeditor.util.*;
 import tiled.mapeditor.widget.*;
 import tiled.util.TiledConfiguration;
@@ -119,6 +127,7 @@ public class MapEditor implements ActionListener, MouseListener,
     private AbstractButton eyedButton, marqueeButton, moveButton;
     private AbstractButton objectMoveButton, objectAddButton;
 
+    private TabbedTilesetsPane tabbedTilesetsPane;
     private TilePaletteDialog tilePaletteDialog;
     private AboutDialog aboutDialog;
     private MapLayerEdit paintEdit;
@@ -283,13 +292,23 @@ public class MapEditor implements ActionListener, MouseListener,
         createData();
         createStatusBar();
 
+        // todo: Make continuouslayout an option. Because it's slow, some
+        // todo: people may prefer not to have that.
         JSplitPane mainSplit = new JSplitPane(
-                JSplitPane.HORIZONTAL_SPLIT, false, mapScrollPane, dataPanel);
+                JSplitPane.HORIZONTAL_SPLIT, true, mapScrollPane, dataPanel);
+        mainSplit.setOneTouchExpandable(true);
         mainSplit.setResizeWeight(1.0);
+
+        tabbedTilesetsPane = new TabbedTilesetsPane(this);
+        JSplitPane paletteSplit = new JSplitPane(
+                JSplitPane.VERTICAL_SPLIT, true, mainSplit,
+                tabbedTilesetsPane);
+        paletteSplit.setOneTouchExpandable(true);
+        paletteSplit.setResizeWeight(1.0);
 
         mainPanel = new JPanel(new BorderLayout());
         mainPanel.add(createToolBar(), BorderLayout.WEST);
-        mainPanel.add(mainSplit);
+        mainPanel.add(paletteSplit, BorderLayout.CENTER);
         mainPanel.add(statusBar, BorderLayout.SOUTH);
 
         return mainPanel;
@@ -1873,6 +1892,9 @@ public class MapEditor implements ActionListener, MouseListener,
         sb.makeQuadBrush(new Rectangle(0, 0, 1, 1));
         setBrush(sb);
 
+        tilePaletteDialog.setMap(currentMap);
+        tabbedTilesetsPane.setMap(currentMap);
+
         if (!mapLoaded) {
             mapEventAdapter.fireEvent(MapEventAdapter.ME_MAPINACTIVE);
             mapView = null;
@@ -1882,7 +1904,6 @@ public class MapEditor implements ActionListener, MouseListener,
             tileCoordsLabel.setPreferredSize(null);
             tileCoordsLabel.setText(" ");
             zoomLabel.setText(" ");
-            tilePaletteDialog.setMap(currentMap);
             setCurrentTile(null);
         } else {
             final Preferences display = prefs.node("display");
@@ -1908,7 +1929,6 @@ public class MapEditor implements ActionListener, MouseListener,
             coordinatesMenuItem.setState(
                     mapView.getMode(MapView.PF_COORDINATES));
 
-            tilePaletteDialog.setMap(currentMap);
 
             tileCoordsLabel.setText(String.valueOf(currentMap.getWidth() - 1)
                     + ", " + (currentMap.getHeight() - 1));

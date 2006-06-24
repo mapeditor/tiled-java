@@ -12,19 +12,25 @@
 
 package tiled.mapeditor.widget;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.util.Vector;
-
 import javax.swing.JPanel;
 import javax.swing.Scrollable;
 import javax.swing.event.EventListenerList;
 import javax.swing.event.MouseInputAdapter;
 
-import tiled.core.*;
-import tiled.mapeditor.util.*;
+import tiled.core.Tile;
+import tiled.core.TileSet;
+import tiled.mapeditor.util.TileSelectionEvent;
+import tiled.mapeditor.util.TileSelectionListener;
 
 /**
+ * Displays a tileset and allows selecting a specific tile.
+ *
  * @version $Id$
  */
 public class TilePalettePanel extends JPanel implements Scrollable
@@ -57,15 +63,15 @@ public class TilePalettePanel extends JPanel implements Scrollable
      * Adds tile selection listener. The listener will be notified when the
      * user selects a tile.
      */
-    public void addTileSelectionListener(TileSelectionListener l) {
-        tileSelectionListeners.add(TileSelectionListener.class, l);
+    public void addTileSelectionListener(TileSelectionListener listener) {
+        tileSelectionListeners.add(TileSelectionListener.class, listener);
     }
 
     /**
      * Removes tile selection listener.
      */
-    public void removeTileSelectionlistener(TileSelectionListener l) {
-        tileSelectionListeners.remove(TileSelectionListener.class, l);
+    public void removeTileSelectionListener(TileSelectionListener listener) {
+        tileSelectionListeners.remove(TileSelectionListener.class, listener);
     }
 
     protected void fireTileSelectionEvent(Tile selectedTile) {
@@ -93,7 +99,7 @@ public class TilePalettePanel extends JPanel implements Scrollable
         repaint();
     }
 
-    public Tile getTileAtPoint(int x, int y) {
+    private Tile getTileAtPoint(int x, int y) {
         int twidth = tileset.getTileWidth() + 1;
         int theight = tileset.getTileHeight() + 1;
         int tilesPerRow = Math.max(1, (getWidth() - 1) / twidth);
@@ -126,9 +132,16 @@ public class TilePalettePanel extends JPanel implements Scrollable
             int startY = clip.y / theight;
             int endY = (clip.y + clip.height) / theight + 1;
             int tileAt = tilesPerRow * startY;
+            int gx;
+            int gy = startY * theight;
 
-            for (int y = startY, gy = startY * theight; y < endY; y++) {
-                for (int x = 0, gx = 1; x < tilesPerRow && tileAt < tilesetMap.size(); x++, tileAt++) {
+            for (int y = startY; y < endY; y++) {
+                gx = 1;
+
+                for (int x = 0;
+                     x < tilesPerRow && tileAt < tilesetMap.size();
+                     x++, tileAt++)
+                {
                     Tile tile = (Tile) tilesetMap.get(tileAt);
 
                     if (tile != null) {
