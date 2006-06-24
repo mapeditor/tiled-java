@@ -1,12 +1,12 @@
 ROADMAP TO FUTURE RELEASES
 
 0.7.0
-* Remove copy constructors in favour of clone method
-* Add import/export of options
-* Allow embedding of tile palette beneath the map view
+* Remove copy constructors in favour of clone method (DONE)
+* Add import/export of options (WIP)
+* Allow embedding of tile palette beneath the map view (WIP)
 * Replace tile button with a brush preview beneath the layer table
 * Allow creation of stamp brush from the tile palette
-* Add support for tile instance properties (see Christian's patch)
+* Add support for tile instance properties (see Christian's patch) (WIP)
 
 0.8.0
 * Set up a layer->map->mapview changes event trail to automatically handle
@@ -28,10 +28,7 @@ GENERAL TODO ITEMS
 * Add ability to select multiple layers from layer table
 * Add preview of new tileset when creating a tileset
 * Add the Shifted view, which emulates several tiling configurations
-* Add "stamp" tool
-* Add a navigation minimap
 * Add full support for animated tiles
-* Add palette brush
 * Add support for animated tiles
 * Add additional "tile cutters"
 * Rewrite main mapeditor code

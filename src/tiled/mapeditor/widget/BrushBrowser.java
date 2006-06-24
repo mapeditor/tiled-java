@@ -16,7 +16,6 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.Iterator;
 import java.util.LinkedList;
-
 import javax.swing.JPanel;
 import javax.swing.event.MouseInputAdapter;
 
@@ -77,15 +76,15 @@ public class BrushBrowser extends JPanel
         int[] dimensions = { 1, 2, 4, 8, 12, 20 };
 
         for (int n = 1; n < dimensions.length; n++) {
-            ShapeBrush b = new ShapeBrush();
-            b.makeCircleBrush(dimensions[n] / 2);
-            brushes.add(b);
+            ShapeBrush brush = new ShapeBrush();
+            brush.makeCircleBrush(dimensions[n] / 2);
+            brushes.add(brush);
         }
 
         for (int n = 0; n < dimensions.length; n++) {
-            ShapeBrush b = new ShapeBrush();
-            b.makeQuadBrush(new Rectangle(0, 0, dimensions[n], dimensions[n]));
-            brushes.add(b);
+            ShapeBrush brush = new ShapeBrush();
+            brush.makeQuadBrush(new Rectangle(0, 0, dimensions[n], dimensions[n]));
+            brushes.add(brush);
         }
     }
 
@@ -102,14 +101,14 @@ public class BrushBrowser extends JPanel
         Iterator itr = brushes.iterator();
         int x = 0;
         while (itr.hasNext()) {
-            Brush b = (Brush)itr.next();
-            Rectangle bb = b.getBounds();
+            Brush brush = (Brush) itr.next();
+            Rectangle bb = brush.getBounds();
         	float o = maxWidth/2.0f - bb.width/2.0f;
         	g.translate((int)o, (int)o);
-            b.drawPreview((Graphics2D) g, null);
+            brush.drawPreview((Graphics2D) g, null);
             g.translate((int)-o, (int)-o);
 
-            if (b == selectedBrush) {
+            if (brush == selectedBrush) {
                 g.drawRect(0, 0, maxWidth, maxWidth);
             }
 
@@ -122,11 +121,11 @@ public class BrushBrowser extends JPanel
         }
     }
 
-    public void setSelectedBrush(Brush b) {
+    public void setSelectedBrush(Brush brush) {
         Iterator itr = brushes.iterator();
         while (itr.hasNext()) {
             Brush br = (Brush) itr.next();
-            if (br.equals(b)) {
+            if (br.equals(brush)) {
                 selectedBrush = br;
                 break;
             }

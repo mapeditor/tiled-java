@@ -17,16 +17,19 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 
 /**
+ * Cuts tiles from a tileset image according to a regular rectangular pattern.
+ * Supports a variable spacing between tiles and an offset from the origin.
+ *
  * @version $Id$
  */
 public class BasicTileCutter implements TileCutter
 {
     private int nextX, nextY;
     private BufferedImage image;
-    private int tileWidth;
-    private int tileHeight;
-    private int tileSpacing;
-    private int offset;
+    private final int tileWidth;
+    private final int tileHeight;
+    private final int tileSpacing;
+    private final int offset;
 
     public BasicTileCutter(int tileWidth, int tileHeight, int tileSpacing,
                            int offset)
@@ -76,5 +79,13 @@ public class BasicTileCutter implements TileCutter
      */
     public int getTileSpacing() {
         return tileSpacing;
+    }
+
+    /**
+     * Returns the number of tiles per row in the tileset image.
+     * @return the number of tiles per row in the tileset image.
+     */
+    public int getTilesPerRow() {
+        return (image.getWidth() + tileSpacing) / (tileWidth + tileSpacing);
     }
 }

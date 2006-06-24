@@ -23,9 +23,9 @@ import java.util.Properties;
 import java.util.Vector;
 import javax.imageio.ImageIO;
 
-import tiled.mapeditor.util.cutter.TileCutter;
-import tiled.mapeditor.util.cutter.BasicTileCutter;
 import tiled.mapeditor.util.TransparentImageFilter;
+import tiled.mapeditor.util.cutter.BasicTileCutter;
+import tiled.mapeditor.util.cutter.TileCutter;
 import tiled.util.NumberedSet;
 
 /**
@@ -48,6 +48,7 @@ public class TileSet
     private TileCutter tileCutter;
     private Rectangle tileDimensions;
     private int tileSpacing;
+    private int tilesPerRow;
     private String externalSource;
     private File tilebmpFile;
     private String name;
@@ -116,12 +117,14 @@ public class TileSet
         tileCutter = cutter;
         tileSetImage = tilebmp;
 
+        cutter.setImage(tilebmp);
+
         tileDimensions = new Rectangle(cutter.getTileDimensions());
         if (cutter instanceof BasicTileCutter) {
-            tileSpacing = ((BasicTileCutter) cutter).getTileSpacing();
+            BasicTileCutter basicTileCutter = (BasicTileCutter) cutter;
+            tileSpacing = basicTileCutter.getTileSpacing();
+            tilesPerRow = basicTileCutter.getTilesPerRow();
         }
-
-        cutter.setImage(tilebmp);
 
         Image tile = cutter.getNextTile();
         while (tile != null) {
@@ -330,6 +333,14 @@ public class TileSet
      */
     public int getTileSpacing() {
         return tileSpacing;
+    }
+
+    /**
+     * Returns the number of tiles per row in the original tileset image.
+     * @return the number of tiles per row in the original tileset image.
+     */
+    public int getTilesPerRow() {
+        return tilesPerRow;
     }
 
     /**

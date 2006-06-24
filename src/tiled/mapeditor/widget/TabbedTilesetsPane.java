@@ -30,11 +30,6 @@ import tiled.mapeditor.util.TileSelectionListener;
 /**
  * Shows one tab for each Tileset.
  *
- * todo: Since the width of this widget is no longer arbitrary but related
- * todo: to the width of the map editor, there should be an option to set
- * todo: the number of tiles in a row equal to what it was on the tileset
- * todo: image.
- *
  * @version $Id$
  */
 public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionListener
@@ -88,7 +83,7 @@ public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionList
                     tilePanel.addTileSelectionListener(this);
                     JScrollPane paletteScrollPane = new JScrollPane(tilePanel,
                             JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-                            JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+                            JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
                     addTab(tileset.getName(), paletteScrollPane);
                 }
             }

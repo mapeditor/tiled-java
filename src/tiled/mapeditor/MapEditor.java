@@ -71,8 +71,8 @@ public class MapEditor implements ActionListener, MouseListener,
     private static final int PS_MOVE    = 6;
     private static final int PS_MOVEOBJ = 7;
 
-    private static final int APP_WIDTH = 600;
-    private static final int APP_HEIGHT = 400;
+    private static final int APP_WIDTH = 640;
+    private static final int APP_HEIGHT = 480;
 
     private Cursor curDefault;
     private Cursor curPaint;
@@ -298,6 +298,7 @@ public class MapEditor implements ActionListener, MouseListener,
                 JSplitPane.HORIZONTAL_SPLIT, true, mapScrollPane, dataPanel);
         mainSplit.setOneTouchExpandable(true);
         mainSplit.setResizeWeight(1.0);
+        mainSplit.setBorder(null);
 
         tabbedTilesetsPane = new TabbedTilesetsPane(this);
         JSplitPane paletteSplit = new JSplitPane(

@@ -1,7 +1,6 @@
-<?xml version="1.0" ?>
-<map name="Untitled" orientation="isometric" tilewidth="32" tileheight="16">
- <dimensions width="32" height="16"/>
- <tileset firstgid="1" name="Sunny Beach">
+<?xml version="1.0"?>
+<map version="0.99b" orientation="isometric" width="32" height="16" tilewidth="32" tileheight="16">
+ <tileset name="Sunny Beach" firstgid="1">
   <tile id="0">
    <image format="png">
     <data encoding="base64">
@@ -213,9 +212,10 @@
    </image>
   </tile>
  </tileset>
- <layer id="0" name="Layer 0">
+ <layer name="Layer 0" width="32" height="16">
   <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAAAGNkYGBgHOGYYxC4YbBgASAWGiC7uYGYBYhFBtBuGTT76ZE2eICYDYilgVhqAPwPsp8diFmBWHIA7OcHYk4kLDwA8T8Y8Gg5NIrpjQEhjUB2AAgAAA==
+   H4sIAAAAAAAAANWVywqAIBREFXpSUFSbHv//nc1GcKOOMhItztJ79TCD1hhjSSbQgAccGecUzKADN7jE+wdyfw9acH7w/gWMHrvwbT4r2MRuHWy+1G6Z/aFs5/oruUfNbDPUzDbjrzTbf4LpFeOqpJ+qXpXMUf0ZqTm+F+dR1avUnJAXVa9ic2JemF69sBzz5AAIAAA=
   </data>
+  <tileproperties/>
  </layer>
 </map>

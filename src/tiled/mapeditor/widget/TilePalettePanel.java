@@ -12,10 +12,7 @@
 
 package tiled.mapeditor.widget;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.Vector;
 import javax.swing.JPanel;
@@ -39,20 +36,31 @@ public class TilePalettePanel extends JPanel implements Scrollable
     private TileSet tileset;
     private EventListenerList tileSelectionListeners;
     private Vector tilesetMap;
+    private Rectangle selection;
 
     public TilePalettePanel() {
         tileSelectionListeners = new EventListenerList();
 
         MouseInputAdapter mouseInputAdapter = new MouseInputAdapter() {
+            private Point origin;
+
             public void mousePressed(MouseEvent e) {
-                Tile clickedTile = getTileAtPoint(e.getX(), e.getY());
+                origin = getTileCoordinates(e.getX(), e.getY());
+                setSelection(new Rectangle(origin.x, origin.y, 0, 0));
+                Tile clickedTile = getTileAt(origin.x, origin.y);
                 if (clickedTile != null) {
                     fireTileSelectionEvent(clickedTile);
                 }
             }
 
             public void mouseDragged(MouseEvent e) {
-                mousePressed(e);
+                Point point = getTileCoordinates(e.getX(), e.getY());
+                Rectangle select = new Rectangle(origin.x, origin.y, 0, 0);
+                select.add(point);
+                if (!select.equals(selection)) {
+                    setSelection(select);
+                }
+                // todo: Fire tile region selection event
             }
         };
         addMouseListener(mouseInputAdapter);
@@ -99,23 +107,68 @@ public class TilePalettePanel extends JPanel implements Scrollable
         repaint();
     }
 
-    private Tile getTileAtPoint(int x, int y) {
+    /**
+     * Converts pixel coordinates to tile coordinates. The returned coordinates
+     * are adjusted with respect to the number of tiles per row.
+     */
+    private Point getTileCoordinates(int x, int y) {
         int twidth = tileset.getTileWidth() + 1;
         int theight = tileset.getTileHeight() + 1;
-        int tilesPerRow = Math.max(1, (getWidth() - 1) / twidth);
 
-        // We like Tiled to behave in a predictibile manner; i.e.,
-        // it should not pick the first tile of the next row if
-        // there is empty space on the right of the row.
-        if (x > tilesPerRow * twidth - 1) {
-            x = tilesPerRow * twidth - 1;
+        int tileX = Math.min(x / twidth, getTilesPerRow() - 1);
+        int tileY = y / theight;
+
+        return new Point(tileX, tileY);
+    }
+
+    /**
+     * Retrieves the tile at the given tile coordinates. It assumes the tile
+     * coordinates are adjusted to the number of tiles per row.
+     *
+     * @return the tile at the given tile coordinates, or <code>null</code>
+     *         if the index is out of range
+     */
+    private Tile getTileAt(int x, int y) {
+        int tilesPerRow = getTilesPerRow();
+        int tileAt = y * tilesPerRow + x;
+
+        if (tileAt >= tilesetMap.size()) {
+            return null;
+        } else {
+            return (Tile) tilesetMap.get(tileAt);
         }
+    }
 
-        int tileAt = (y / theight) * tilesPerRow + x / twidth;
+    /**
+     * Returns the number of tiles to display per row. This gets calculated
+     * dynamically unless the tileset specifies this value.
+     */
+    private int getTilesPerRow() {
+        // todo: It should be an option to follow the tiles per row given
+        // todo: by the tileset.
+        if (tileset.getTilesPerRow() == 0) {
+            int twidth = tileset.getTileWidth() + 1;
+            return Math.max(1, (getWidth() - 1) / twidth);
+        } else {
+            return tileset.getTilesPerRow();
+        }
+    }
 
-        if (tileAt >= tilesetMap.size()) return null;
+    private void setSelection(Rectangle rect) {
+        repaintSelection();
+        selection = rect;
+        repaintSelection();
+    }
 
-        return (Tile) tilesetMap.get(tileAt);
+    private void repaintSelection() {
+        if (selection != null) {
+            int twidth = tileset.getTileWidth() + 1;
+            int theight = tileset.getTileHeight() + 1;
+
+            repaint(selection.x * twidth, selection.y * theight,
+                    (selection.width + 1) * twidth + 1,
+                    (selection.height + 1) * theight + 1);
+        }
     }
 
     public void paint(Graphics g) {
@@ -127,7 +180,7 @@ public class TilePalettePanel extends JPanel implements Scrollable
             // Draw the tiles
             int twidth = tileset.getTileWidth() + 1;
             int theight = tileset.getTileHeight() + 1;
-            int tilesPerRow = Math.max(1, (getWidth() - 1) / twidth);
+            int tilesPerRow = getTilesPerRow();
 
             int startY = clip.y / theight;
             int endY = (clip.y + clip.height) / theight + 1;
@@ -150,6 +203,22 @@ public class TilePalettePanel extends JPanel implements Scrollable
                     gx += twidth;
                 }
                 gy += theight;
+            }
+
+            // Draw the selection
+            if (selection != null) {
+                g.setColor(new Color(100, 100, 255));
+                g.draw3DRect(
+                        selection.x * twidth, selection.y * theight,
+                        (selection.width + 1) * twidth,
+                        (selection.height + 1) * theight,
+                        false);
+                ((Graphics2D) g).setComposite(AlphaComposite.getInstance(
+                        AlphaComposite.SRC_ATOP, 0.2f));
+                g.fillRect(
+                        selection.x * twidth + 1, selection.y * theight + 1,
+                        (selection.width + 1) * twidth - 1,
+                        (selection.height + 1) * theight - 1);
             }
         }
     }
@@ -189,7 +258,7 @@ public class TilePalettePanel extends JPanel implements Scrollable
             int twidth = tileset.getTileWidth() + 1;
             int theight = tileset.getTileHeight() + 1;
             int tileCount = tilesetMap.size();
-            int tilesPerRow = Math.max(1, (getWidth() - 1) / twidth);
+            int tilesPerRow = getTilesPerRow();
             int rows = tileCount / tilesPerRow +
                     (tileCount % tilesPerRow > 0 ? 1 : 0);
 
@@ -228,7 +297,8 @@ public class TilePalettePanel extends JPanel implements Scrollable
     }
 
     public boolean getScrollableTracksViewportWidth() {
-        return true;
+        // todo: Update when this has become an option
+        return tileset.getTilesPerRow() == 0;
     }
 
     public boolean getScrollableTracksViewportHeight() {
