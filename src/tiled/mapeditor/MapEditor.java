@@ -27,8 +27,6 @@ import java.util.prefs.PreferenceChangeListener;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.LineBorder;
 import javax.swing.event.*;
 import javax.swing.undo.UndoableEditSupport;
 
@@ -718,6 +716,7 @@ public class MapEditor implements ActionListener, MouseListener,
      * Returns the current map.
      *
      * @return the currently selected map
+     * @see #setCurrentMap(Map)
      */
     public Map getCurrentMap() {
         return currentMap;
@@ -1748,7 +1747,7 @@ public class MapEditor implements ActionListener, MouseListener,
                 return true;
             } else {
                 JOptionPane.showMessageDialog(appFrame,
-                		Resources.getString("general.file.failed"),
+                        Resources.getString("general.file.failed"),
                         Resources.getString("dialog.openmap.error.title"),
                         JOptionPane.ERROR_MESSAGE);
             }
@@ -1833,6 +1832,12 @@ public class MapEditor implements ActionListener, MouseListener,
     }
 
     public void setCurrentMap(Map newMap) {
+        // Cancel any active selection
+        if (marqueeSelection != null && currentMap != null) {
+            currentMap.removeLayerSpecial(marqueeSelection);
+        }
+        marqueeSelection = null;
+
         currentMap = newMap;
         boolean mapLoaded = currentMap != null;
 
@@ -1850,7 +1855,6 @@ public class MapEditor implements ActionListener, MouseListener,
             tileCoordsLabel.setPreferredSize(null);
             tileCoordsLabel.setText(" ");
             zoomLabel.setText(" ");
-            tilePaletteDialog.setMap(currentMap);
             setCurrentTile(null);
         } else {
             final Preferences display = prefs.node("display");
@@ -1876,8 +1880,6 @@ public class MapEditor implements ActionListener, MouseListener,
             coordinatesMenuItem.setState(
                     mapView.getMode(MapView.PF_COORDINATES));
 
-            tilePaletteDialog.setMap(currentMap);
-
             tileCoordsLabel.setText(String.valueOf(currentMap.getWidth() - 1)
                     + ", " + (currentMap.getHeight() - 1));
             tileCoordsLabel.setPreferredSize(null);
@@ -1888,7 +1890,8 @@ public class MapEditor implements ActionListener, MouseListener,
             zoomLabel.setText(
                     String.valueOf((int) (mapView.getZoom() * 100)) + "%");
 
-            //get the first non-null tile from the first tileset containing non-null tiles
+            // Get the first non-null tile from the first tileset containing
+            // non-null tiles.
             Vector tilesets = currentMap.getTilesets();
             Tile firstTile = null;
             if (!tilesets.isEmpty()) {

@@ -265,7 +265,7 @@ public abstract class MapLayer implements Cloneable
     public abstract boolean isUsed(Tile t);
 
     public abstract boolean isEmpty();
-    
+
     /**
      * Creates a copy of this layer.
      *
@@ -278,6 +278,7 @@ public abstract class MapLayer implements Cloneable
 
         // Create a new bounds object
         clone.bounds = new Rectangle(bounds);
+        clone.properties = (Properties) properties.clone();
 
         return clone;
     }

@@ -1,3 +1,9 @@
+0.6.1 - Unreleased
+
+* Fixed selection of TMX as default map format also when plugins are loaded
+* Fixed active marquee not being reset on loading a map
+* Fixed layer duplicates to not share layer properties with the original
+
 0.6.0 - June 23rd, 2006
 
 * Added internationalization, with translations to Dutch, German, Italian,
