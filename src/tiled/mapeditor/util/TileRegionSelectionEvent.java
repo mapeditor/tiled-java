@@ -19,7 +19,7 @@ import tiled.core.TileLayer;
 /**
  * An event that describes the selection of a tile region.
  *
- * @version $Id: TileSelectionEvent.java 680 2006-06-24 00:50:03Z bjorn $
+ * @version $Id$
  */
 public class TileRegionSelectionEvent extends EventObject
 {

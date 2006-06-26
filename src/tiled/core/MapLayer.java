@@ -271,7 +271,7 @@ public abstract class MapLayer implements Cloneable
 
         // Create a new bounds object
         clone.bounds = new Rectangle(bounds);
-        clone.properties = new Properties(getProperties());
+        clone.properties = (Properties) properties.clone();
 
         return clone;
     }

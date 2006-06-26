@@ -26,7 +26,7 @@ import tiled.mapeditor.Resources;
  */
 public class TileButton extends JButton
 {
-    private static final int ICON_SIZE = 24;
+    private static final int ICON_SIZE = 22;
     private static final Icon DEFAULT_ICON = Resources.getIcon("empty.png");
 
     public TileButton() {
