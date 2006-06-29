@@ -15,15 +15,15 @@ package tiled.mapeditor.actions;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import javax.swing.AbstractAction;
-import javax.swing.KeyStroke;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.KeyStroke;
 
+import tiled.io.MapHelper;
+import tiled.io.MapWriter;
 import tiled.mapeditor.MapEditor;
 import tiled.mapeditor.Resources;
 import tiled.mapeditor.util.TiledFileFilter;
-import tiled.io.MapWriter;
-import tiled.io.MapHelper;
 import tiled.util.TiledConfiguration;
 
 /**
@@ -184,7 +184,7 @@ public class SaveAsAction extends AbstractAction
 
                 // Add a dot if it wasn't at the end already
                 if (lastDot != filename.length() - 1) {
-                    newFilePath = newFilePath + ".";
+                    newFilePath += ".";
                 }
 
                 file = new File(newFilePath + saver.getFirstExtention());

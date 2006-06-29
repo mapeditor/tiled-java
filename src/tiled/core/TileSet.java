@@ -213,7 +213,7 @@ public class TileSet
      */
     public int addTile(Tile t) {
         if (t.getId() < 0) {
-            t.setId(tiles.getMaxId());
+            t.setId(tiles.getMaxId() + 1);
         }
 
         if (tileDimensions.width < t.getWidth()) {
@@ -295,7 +295,7 @@ public class TileSet
     public Vector generateGaplessVector() {
         Vector gapless = new Vector();
 
-        for (int i = 0; i < getMaxTileId(); i++) {
+        for (int i = 0; i <= getMaxTileId(); i++) {
             if (getTile(i) != null) gapless.add(getTile(i));
         }
 

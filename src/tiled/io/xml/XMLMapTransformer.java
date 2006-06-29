@@ -15,24 +15,29 @@ package tiled.io.xml;
 import java.awt.Color;
 import java.awt.Image;
 import java.io.*;
-import java.lang.reflect.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
 import java.util.zip.GZIPInputStream;
-
 import javax.imageio.ImageIO;
-import javax.xml.parsers.*;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
 import tiled.core.*;
 import tiled.io.ImageHelper;
 import tiled.io.MapReader;
 import tiled.io.PluginLogger;
 import tiled.mapeditor.util.cutter.BasicTileCutter;
-import tiled.util.*;
+import tiled.util.Base64;
+import tiled.util.Util;
 
 /**
  * @version $Id$
@@ -373,7 +378,7 @@ public class XMLMapTransformer implements MapReader
                 }
                 else if (child.getNodeName().equalsIgnoreCase("tile")) {
                     Tile tile = unmarshalTile(set, child, tilesetBaseDir);
-                    if (!hasTilesetImage || tile.getId() >= set.getMaxTileId()) {
+                    if (!hasTilesetImage || tile.getId() > set.getMaxTileId()) {
                         set.addTile(tile);
                     } else {
                         Tile myTile = set.getTile(tile.getId());

@@ -92,18 +92,22 @@ public class NumberedSet
 	}
 
 	/**
-	 * Returns the last id in the NumberedSet that is associated with an element,
-	 * or -1 if the NumberedSet is empty.
+	 * Returns the last id in the NumberedSet that is associated with an
+     * element, or -1 if the NumberedSet is empty.
 	 *
 	 * @return int
 	 */
 	public int getMaxId() {
-		int id = -1;
-		for (int i = 0; i < data.size(); i++) {
-			if (data.get(i) != null) id = i;
-		}
+        int maxId = data.size() - 1;
 
-		return id + 1;
+        while (maxId >= 0) {
+            if (data.get(maxId) != null) {
+                break;
+            }
+            maxId--;
+        }
+
+        return maxId;
 	}
 
 	/**
@@ -122,7 +126,7 @@ public class NumberedSet
 	 * @return int
 	 */
 	public int add(Object o) {
-	  int id = getMaxId();
+	  int id = getMaxId() + 1;
 	  put(id, o);
 	  return id;
 	}
