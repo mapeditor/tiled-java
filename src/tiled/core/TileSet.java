@@ -250,7 +250,11 @@ public class TileSet
     /**
      * Removes a tile from this tileset. Does not invalidate other tile
      * indices. Removal is simply setting the reference at the specified
-     * index to <b>null</b>
+     * index to <b>null</b>.
+     *
+     * todo: Fix the behaviour of this function? It actually does seem to
+     * todo: invalidate other tile indices due to implementation of
+     * todo: NumberedSet.
      *
      * @param i the index to remove
      */

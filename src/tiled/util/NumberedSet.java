@@ -84,6 +84,8 @@ public class NumberedSet
 
 	/**
 	 * Removes the element associated with the given id from the NumberedSet.
+     *
+     * todo: this function shifts the ids of any subsequent elements!
 	 *
 	 * @param id
 	 */
