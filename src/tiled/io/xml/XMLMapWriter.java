@@ -135,7 +135,7 @@ public class XMLMapWriter implements MapWriter
             TileSet tileset = (TileSet)itr.next();
             tileset.setFirstGid(firstgid);
             writeTilesetReference(tileset, w, wp);
-            firstgid += tileset.getMaxTileId() + 1;
+            firstgid += tileset.getMaxTileId();
         }
 
         Iterator ml = map.getLayers();
