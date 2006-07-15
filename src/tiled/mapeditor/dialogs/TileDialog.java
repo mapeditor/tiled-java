@@ -227,7 +227,7 @@ public class TileDialog extends JDialog
         // Create actionlisteners
         okButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
-            	tileset.setName(tilesetNameEntry.getText());
+                tileset.setName(tilesetNameEntry.getText());
                 dispose();
             }
         });
@@ -324,9 +324,9 @@ public class TileDialog extends JDialog
 
         Enumeration ids = tileset.getImageIds();
         while(ids.hasMoreElements()) {
-        	Image img = tileset.getImageById(Integer.parseInt((String) ids.nextElement()));
-        	if(img != null)
-        		listData.add(img);
+            Image img = tileset.getImageById(Integer.parseInt((String) ids.nextElement()));
+            if (img != null)
+                listData.add(img);
         }
 
         imageList.setListData(listData);
@@ -362,13 +362,13 @@ public class TileDialog extends JDialog
         boolean tileSelected = currentTile != null;
         boolean atLeastOneSharedImage = tileset.getTotalImages() >= 1;
 
-        newTileButton.setEnabled(atLeastOneSharedImage && !tilebmp);
+        newTileButton.setEnabled(!tilebmp);
         deleteTileButton.setEnabled(!tilebmp && tileSelected);
         changeImageButton.setEnabled(atLeastOneSharedImage && !tilebmp
             && tileSelected);
         duplicateTileButton.setEnabled(!tilebmp && tileSelected);
         //animationButton.setEnabled(!tilebmp && tileSelected &&
-        //		currentTile instanceof AnimatedTile);
+        //        currentTile instanceof AnimatedTile);
         tileProperties.setEnabled(tileSelected);
         createTileButton.setEnabled(!tilebmp);
     }
@@ -456,12 +456,12 @@ public class TileDialog extends JDialog
         }
         */
         else if (source == createTileButton) {
-        	Image img = (Image)imageList.getSelectedValue();
-        	Tile n = new Tile(tileset);
+            Image img = (Image)imageList.getSelectedValue();
+            Tile n = new Tile(tileset);
 
-        	n.setImage(tileset.getIdByImage(img));
-        	tileset.addNewTile(n);
-        	queryTiles();
+            n.setImage(tileset.getIdByImage(img));
+            tileset.addNewTile(n);
+            queryTiles();
             // Select the last (cloned) tile
             tileList.setSelectedIndex(tileset.size() - 1);
             tileList.ensureIndexIsVisible(tileset.size() - 1);

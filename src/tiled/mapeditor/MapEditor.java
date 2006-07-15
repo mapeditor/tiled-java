@@ -74,7 +74,7 @@ public class MapEditor implements ActionListener, MouseListener,
     private Cursor curMarquee;
 
     /** Current release version. */
-    public static final String version = "0.6.0";
+    public static final String version = "0.6.1";
 
     private Map currentMap;
     private MapView mapView;
