@@ -1829,21 +1829,30 @@ public class MapEditor implements ActionListener, MouseListener,
             myView.setMode(MapView.PF_NOSPECIAL, true);
             myView.setZoom(mapView.getZoom());
             Dimension d = myView.getPreferredSize();
-            BufferedImage i = new BufferedImage(d.width, d.height,
-                                                BufferedImage.TYPE_INT_ARGB);
-            Graphics2D g = i.createGraphics();
-            g.setClip(0, 0, d.width, d.height);
-            myView.paint(g);
-
-            String format = filename.substring(filename.lastIndexOf('.') + 1);
 
             try {
-                ImageIO.write(i, format, new File(filename));
-            } catch (IOException e) {
-                e.printStackTrace();
+                BufferedImage i = new BufferedImage(d.width, d.height,
+                                                    BufferedImage.TYPE_INT_ARGB);
+                Graphics2D g = i.createGraphics();
+                g.setClip(0, 0, d.width, d.height);
+                myView.paint(g);
+
+                String format = filename.substring(filename.lastIndexOf('.') + 1);
+
+                try {
+                    ImageIO.write(i, format, new File(filename));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(appFrame,
+                                                  "Error while saving " + filename + ": " + e.toString(),
+                                                  "Error while saving map image",
+                                                  JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (OutOfMemoryError memoryError) {
                 JOptionPane.showMessageDialog(appFrame,
-                                              "Error while saving " + filename + ": " + e.toString(),
-                                              "Error while saving map image",
+                                              "Out of memory while creating image. Try increasing\n" +
+                                                      "your maximum heap size or zooming out a bit.",
+                                              "Out of memory",
                                               JOptionPane.ERROR_MESSAGE);
             }
         }

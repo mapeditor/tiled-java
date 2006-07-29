@@ -40,7 +40,7 @@ public final class PluginClassLoader extends URLClassLoader
     private Vector readers, writers;
     private Hashtable readerFormats, writerFormats;
     private static PluginClassLoader instance;
-    
+
     public PluginClassLoader() {
         super(new URL[0]);
         plugins = new Vector();
@@ -65,7 +65,7 @@ public final class PluginClassLoader extends URLClassLoader
         }
         return instance;
     }
-    
+
     public void readPlugins(String base, JFrame parent) throws Exception {
         String baseURL = base;
         ProgressMonitor monitor;

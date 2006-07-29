@@ -3,11 +3,16 @@ trunk
 * Added support for tile instance properties (by Christian Henz)
 * Added ability to create stamp brushes from the tile palette
 * Embedded the tile palette
+* Report out of memory error when saving map as image
+
+0.6.1 - July 15th, 2006
+
 * Fixed creation of one-tile gaps between tilesets on saving (Christian Henz)
 * Fixed failing to default to map format by extention when plugins are loaded
 * Fixed active marquee not being reset on loading a map
 * Fixed layer duplicates to not share layer properties with the original
 * Fixed width of tile button changing between selecting a tile and no tile
+* Fixed the add-tile button being disabled in the case of empty tilesets
 
 0.6.0 - June 23rd, 2006
 
