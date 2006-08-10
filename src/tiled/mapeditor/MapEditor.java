@@ -98,6 +98,7 @@ public class MapEditor implements ActionListener, MouseListener,
     private boolean bMouseIsDown, bMouseIsDragging;
     private SelectionLayer cursorHighlight;
     private Point mousePressLocation, mouseInitialPressLocation;
+    private Point mouseInitialScreenLocation;
     private Point moveDist;
     private int mouseButton;
     private AbstractBrush currentBrush;
@@ -292,7 +293,7 @@ public class MapEditor implements ActionListener, MouseListener,
         createData();
         createStatusBar();
 
-        // todo: Make continuouslayout an option. Because it's slow, some
+        // todo: Make continuouslayout an option. Because it can be slow, some
         // todo: people may prefer not to have that.
         JSplitPane mainSplit = new JSplitPane(
                 JSplitPane.HORIZONTAL_SPLIT, true, mapScrollPane, dataPanel);
@@ -322,8 +323,10 @@ public class MapEditor implements ActionListener, MouseListener,
     private void createMenuBar() {
         JMenuItem save = new TMenuItem(saveAction);
         JMenuItem saveAs = new TMenuItem(saveAsAction);
-        JMenuItem saveAsImage = createMenuItem(Resources.getString("menu.file.image"), null,
-                Resources.getString("menu.file.image.tooltip"), "control shift I");
+        JMenuItem saveAsImage = createMenuItem(
+                Resources.getString("menu.file.image"), null,
+                Resources.getString("menu.file.image.tooltip"),
+                "control shift I");
         JMenuItem close = new TMenuItem(new CloseMapAction(this, saveAction));
 
         recentMenu = new JMenu(Resources.getString("menu.file.recent"));
@@ -849,6 +852,17 @@ public class MapEditor implements ActionListener, MouseListener,
             } else if (layer instanceof ObjectGroup && !bMouseIsDragging) {
                 // TODO: Add support for ObjectGroups here
             }
+        } else if (mouseButton == MouseEvent.BUTTON2) {
+            // Scroll with middle mouse button
+            int dx = event.getX() - mouseInitialScreenLocation.x;
+            int dy = event.getY() - mouseInitialScreenLocation.y;
+            mouseInitialScreenLocation = new Point(event.getX() - dx, event.getY() - dy);
+            JViewport mapViewPort = mapScrollPane.getViewport();
+            Point currentPosition = mapViewPort.getViewPosition();
+            // TODO: Take into account map boundaries in order to prevent
+            // TODO: scrolling past them
+            mapViewPort.setViewPosition(new Point(currentPosition.x - dx,
+                                                  currentPosition.y - dy));
         } else if (mouseButton == MouseEvent.BUTTON1) {
             switch (currentPointerState) {
                 case PS_PAINT:
@@ -946,7 +960,8 @@ public class MapEditor implements ActionListener, MouseListener,
         if (mouseButton == MouseEvent.BUTTON1) {
             switch (currentPointerState) {
                 case PS_PAINT:
-                    currentBrush.startPaint(currentMap, tile.x, tile.y, mouseButton, currentLayer);
+                    currentBrush.startPaint(currentMap, tile.x, tile.y,
+                            mouseButton, currentLayer);
                 case PS_ERASE:
                 case PS_POUR:
                     MapLayer layer = getCurrentLayer();
@@ -955,6 +970,10 @@ public class MapEditor implements ActionListener, MouseListener,
                     break;
                 default:
             }
+        }
+        else if (mouseButton == MouseEvent.BUTTON2) {
+            // Remember screen location for scrolling with middle mouse button
+            mouseInitialScreenLocation = new Point(e.getX(), e.getY());
         }
 
         if (currentPointerState == PS_MARQUEE) {

@@ -140,6 +140,7 @@ public abstract class MapView extends JPanel implements Scrollable
     public void setZoom(double zoom) {
         if (zoom > 0) {
             this.zoom = zoom;
+            //revalidate();
             setSize(getPreferredSize());
         }
     }
@@ -258,7 +259,7 @@ public abstract class MapView extends JPanel implements Scrollable
                 }
             }
 
-            //Paint Brush
+            // Paint Brush
             if (currentBrush != null) {
                 currentBrush.drawPreview(g2d, this);
             }

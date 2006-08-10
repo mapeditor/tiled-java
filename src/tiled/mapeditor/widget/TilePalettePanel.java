@@ -23,6 +23,8 @@ import javax.swing.event.MouseInputAdapter;
 import tiled.core.Tile;
 import tiled.core.TileLayer;
 import tiled.core.TileSet;
+import tiled.core.TilesetChangeListener;
+import tiled.core.TilesetChangedEvent;
 import tiled.mapeditor.util.TileRegionSelectionEvent;
 import tiled.mapeditor.util.TileSelectionEvent;
 import tiled.mapeditor.util.TileSelectionListener;
@@ -32,7 +34,8 @@ import tiled.mapeditor.util.TileSelectionListener;
  *
  * @version $Id$
  */
-public class TilePalettePanel extends JPanel implements Scrollable
+public class TilePalettePanel extends JPanel implements Scrollable,
+       TilesetChangeListener
 {
     private static final int TILES_PER_ROW = 4;
     private TileSet tileset;
@@ -139,8 +142,25 @@ public class TilePalettePanel extends JPanel implements Scrollable
      * @param tileset
      */
     public void setTileset(TileSet tileset) {
+        // Remove any existing listener
+        if (this.tileset != null) {
+            this.tileset.removeTilesetChangeListener(this);
+        }
+
         this.tileset = tileset;
+
+        // Listen to changes in the new tileset
+        if (this.tileset != null) {
+            this.tileset.addTilesetChangeListener(this);
+        }
+
         if (tileset != null) tilesetMap = tileset.generateGaplessVector();
+        revalidate();
+        repaint();
+    }
+
+    public void tilesetChanged(TilesetChangedEvent event) {
+        tilesetMap = tileset.generateGaplessVector();
         revalidate();
         repaint();
     }

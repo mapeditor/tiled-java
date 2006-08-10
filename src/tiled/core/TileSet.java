@@ -21,6 +21,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.Vector;
+import java.util.LinkedList;
 import javax.imageio.ImageIO;
 
 import tiled.mapeditor.util.TransparentImageFilter;
@@ -55,6 +56,7 @@ public class TileSet
     private Color transparentColor;
     private Properties defaultTileProperties;
     private Image tileSetImage;
+    private LinkedList tilesetChangeListeners = new LinkedList();
 
     /**
      * Default constructor
@@ -231,6 +233,8 @@ public class TileSet
         tiles.put(t.getId(), t);
         t.setTileSet(this);
 
+        fireTilesetChanged();
+
         return t.getId();
     }
 
@@ -260,6 +264,7 @@ public class TileSet
      */
     public void removeTile(int i) {
         tiles.remove(i);
+        fireTilesetChanged();
     }
 
     /**
@@ -589,5 +594,23 @@ public class TileSet
 
     public void setDefaultProperties(Properties defaultSetProperties) {
         defaultTileProperties = defaultSetProperties;
+    }
+
+    public void addTilesetChangeListener(TilesetChangeListener l) {
+        tilesetChangeListeners.add(l);
+    }
+
+    public void removeTilesetChangeListener(TilesetChangeListener l) {
+        tilesetChangeListeners.remove(l);
+    }
+
+    private void fireTilesetChanged() {
+        TilesetChangedEvent event = new TilesetChangedEvent(this);
+
+        Iterator iterator = tilesetChangeListeners.iterator();
+        while (iterator.hasNext()) {
+            TilesetChangeListener l = (TilesetChangeListener) iterator.next();
+            l.tilesetChanged(event);
+        }
     }
 }
