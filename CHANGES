@@ -1,3 +1,5 @@
+* Fixed properties dialog to also save values that were still being edited
+
 0.6.1 - July 15th, 2006
 
 * Fixed failing to default to map format by extention when plugins are loaded

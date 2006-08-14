@@ -18,6 +18,7 @@ import java.awt.event.ActionListener;
 import java.util.Enumeration;
 import java.util.Properties;
 import javax.swing.*;
+import javax.swing.table.TableCellEditor;
 
 import tiled.mapeditor.Resources;
 import tiled.mapeditor.util.PropertiesTableModel;
@@ -84,7 +85,7 @@ public class PropertiesDialog extends JDialog
         //create actionlisteners
         okButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
-            	buildPropertiesAndDispose();
+                buildPropertiesAndDispose();
             }
         });
 
@@ -119,8 +120,13 @@ public class PropertiesDialog extends JDialog
     }
 
     private void buildPropertiesAndDispose() {
-    	// Copy over the new set of properties from the properties table
-        // model.
+        // Make sure there is no active cell editor anymore
+        TableCellEditor editor = tProperties.getCellEditor();
+        if (editor != null) {
+            editor.stopCellEditing();
+        }
+
+        // Copy over the new set of properties from the properties table model.
         properties.clear();
 
         Properties newProps = tableModel.getProperties();
@@ -134,7 +140,7 @@ public class PropertiesDialog extends JDialog
     }
 
     private void deleteSelected() {
-    	int total = tProperties.getSelectedRowCount();
+        int total = tProperties.getSelectedRowCount();
         Object[] keys = new Object[total];
         int[] selRows = tProperties.getSelectedRows();
 
