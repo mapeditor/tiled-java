@@ -18,6 +18,7 @@ import java.awt.event.ActionListener;
 import java.util.Enumeration;
 import java.util.Properties;
 import javax.swing.*;
+import javax.swing.table.TableCellEditor;
 
 import tiled.mapeditor.Resources;
 import tiled.mapeditor.util.PropertiesTableModel;
@@ -28,7 +29,7 @@ import tiled.mapeditor.widget.VerticalStaticJPanel;
  */
 public class PropertiesDialog extends JDialog
 {
-    private JTable tProperties;
+    private JTable propertiesTable;
     private final Properties properties;
     private final PropertiesTableModel tableModel = new PropertiesTableModel();
 
@@ -47,8 +48,8 @@ public class PropertiesDialog extends JDialog
     }
 
     private void init() {
-        tProperties = new JTable(tableModel);
-        JScrollPane propScrollPane = new JScrollPane(tProperties);
+        propertiesTable = new JTable(tableModel);
+        JScrollPane propScrollPane = new JScrollPane(propertiesTable);
         propScrollPane.setPreferredSize(new Dimension(200, 150));
 
         JButton okButton = new JButton(OK_BUTTON);
@@ -119,7 +120,13 @@ public class PropertiesDialog extends JDialog
     }
 
     private void buildPropertiesAndDispose() {
-    	// Copy over the new set of properties from the properties table
+        // Make sure there is no active cell editor anymore
+        TableCellEditor editor = propertiesTable.getCellEditor();
+        if (editor != null) {
+            editor.stopCellEditing();
+        }
+
+        // Copy over the new set of properties from the properties table
         // model.
         properties.clear();
 
@@ -134,12 +141,12 @@ public class PropertiesDialog extends JDialog
     }
 
     private void deleteSelected() {
-    	int total = tProperties.getSelectedRowCount();
+    	int total = propertiesTable.getSelectedRowCount();
         Object[] keys = new Object[total];
-        int[] selRows = tProperties.getSelectedRows();
+        int[] selRows = propertiesTable.getSelectedRows();
 
         for(int i = 0; i < total; i++) {
-            keys[i] = tProperties.getValueAt(selRows[i], 0);
+            keys[i] = propertiesTable.getValueAt(selRows[i], 0);
         }
 
         for (int i = 0; i < total; i++) {

@@ -4,6 +4,7 @@ trunk
 * Added ability to create stamp brushes from the tile palette
 * Embedded the tile palette
 * Report out of memory error when saving map as image
+* Fixed properties dialog to also save values that were still being edited
 
 0.6.1 - July 15th, 2006
 
