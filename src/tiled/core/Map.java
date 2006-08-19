@@ -12,11 +12,7 @@
 
 package tiled.core;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Properties;
-import java.util.Vector;
-import javax.swing.event.EventListenerList;
+import java.util.*;
 
 import tiled.mapeditor.Resources;
 import tiled.mapeditor.util.MapChangeListener;
@@ -47,9 +43,8 @@ public class Map extends MultilayerPlane
     private LinkedList objects;
 
     private int tileWidth, tileHeight;
-    private int totalObjects;
     private int orientation = MDO_ORTHO;
-    private EventListenerList mapChangeListeners;
+    private final List mapChangeListeners = new LinkedList();
     private Properties properties;
     private String filename;
 
@@ -60,7 +55,6 @@ public class Map extends MultilayerPlane
     public Map(int width, int height) {
         super(width, height);
 
-        mapChangeListeners = new EventListenerList();
         properties = new Properties();
         tilesets = new Vector();
         specialLayers = new Vector();
@@ -71,33 +65,31 @@ public class Map extends MultilayerPlane
      * Adds a change listener. The listener will be notified when the map
      * changes in certain ways.
      *
-     * @param l the change listener to add
+     * @param listener the change listener to add
      * @see MapChangeListener#mapChanged(MapChangedEvent)
      */
-    public void addMapChangeListener(MapChangeListener l) {
-        mapChangeListeners.add(MapChangeListener.class, l);
+    public void addMapChangeListener(MapChangeListener listener) {
+        mapChangeListeners.add(listener);
     }
 
     /**
      * Removes a change listener.
-     * @param l
+     * @param listener
      */
-    public void removeMapChangeListener(MapChangeListener l) {
-        mapChangeListeners.remove(MapChangeListener.class, l);
+    public void removeMapChangeListener(MapChangeListener listener) {
+        mapChangeListeners.remove(listener);
     }
 
     /**
      * Notifies all registered map change listeners about a change.
      */
     protected void fireMapChanged() {
-        Object[] listeners = mapChangeListeners.getListenerList();
+        Iterator iterator = mapChangeListeners.iterator();
         MapChangedEvent event = null;
 
-        for (int i = listeners.length - 2; i >= 0; i -= 2) {
-            if (listeners[i] == MapChangeListener.class) {
-                if (event == null) event = new MapChangedEvent(this);
-                ((MapChangeListener)listeners[i + 1]).mapChanged(event);
-            }
+        while (iterator.hasNext()) {
+            if (event == null) event = new MapChangedEvent(this);
+            ((MapChangeListener) iterator.next()).mapChanged(event);
         }
     }
 
@@ -108,17 +100,17 @@ public class Map extends MultilayerPlane
         fireMapChanged();
     }
 
-    public void addLayerSpecial(MapLayer l) {
-        l.setMap(this);
-        specialLayers.add(l);
+    public void addLayerSpecial(MapLayer layer) {
+        layer.setMap(this);
+        specialLayers.add(layer);
         fireMapChanged();
     }
 
-    public MapLayer addLayer(MapLayer l) {
-        l.setMap(this);
-        super.addLayer(l);
+    public MapLayer addLayer(MapLayer layer) {
+        layer.setMap(this);
+        super.addLayer(layer);
         fireMapChanged();
-        return l;
+        return layer;
     }
 
     /**
@@ -135,24 +127,24 @@ public class Map extends MultilayerPlane
         return layer;
     }
 
-    public void setLayer(int index, MapLayer l) {
-        l.setMap(this);
-        super.setLayer(index, l);
+    public void setLayer(int index, MapLayer layer) {
+        layer.setMap(this);
+        super.setLayer(index, layer);
         fireMapChanged();
     }
-    
+
     /**
      * Adds a Tileset to this Map. If the set is already attached to this map,
      * <code>addTileset</code> simply returns.
      *
-     * @param s a tileset to add
+     * @param tileset a tileset to add
      */
-    public void addTileset(TileSet s) {
-        if (s == null || tilesets.indexOf(s) > -1) {
+    public void addTileset(TileSet tileset) {
+        if (tileset == null || tilesets.indexOf(tileset) > -1) {
             return;
         }
 
-        Tile t = s.getTile(0);
+        Tile t = tileset.getTile(0);
 
         if (t != null) {
             int tw = t.getWidth();
@@ -165,7 +157,7 @@ public class Map extends MultilayerPlane
             }
         }
 
-        tilesets.add(s);
+        tilesets.add(tileset);
         fireMapChanged();
     }
 
@@ -174,16 +166,16 @@ public class Map extends MultilayerPlane
      * from the map layers. A {@link MapChangedEvent} is fired when all
      * processing is complete.
      *
-     * @param s TileSet to remove
+     * @param tileset TileSet to remove
      * @throws LayerLockedException
      */
-    public void removeTileset(TileSet s) throws LayerLockedException {
+    public void removeTileset(TileSet tileset) throws LayerLockedException {
         // Sanity check
-        if (tilesets.indexOf(s) == -1)
+        if (tilesets.indexOf(tileset) == -1)
             return;
 
         // Go through the map and remove any instances of the tiles in the set
-        Iterator tileIterator = s.iterator();
+        Iterator tileIterator = tileset.iterator();
         while (tileIterator.hasNext()) {
             Tile tile = (Tile)tileIterator.next();
             Iterator layerIterator = getLayers();
@@ -195,7 +187,7 @@ public class Map extends MultilayerPlane
             }
         }
 
-        tilesets.remove(s);
+        tilesets.remove(tileset);
         fireMapChanged();
     }
 
@@ -296,8 +288,8 @@ public class Map extends MultilayerPlane
 
     /**
      * Sets a new tile width.
-     * 
-     * @param width 
+     *
+     * @param width
      */
     public void setTileWidth(int width) {
         tileWidth = width;
@@ -306,8 +298,8 @@ public class Map extends MultilayerPlane
 
     /**
      * Sets a new tile height.
-     * 
-     * @param height 
+     *
+     * @param height
      */
     public void setTileHeight(int height) {
         tileHeight = height;
@@ -339,7 +331,7 @@ public class Map extends MultilayerPlane
 
     /**
      * Returns a vector with the currently loaded tilesets.
-     * 
+     *
      * @return Vector
      */
     public Vector getTilesets() {
@@ -349,8 +341,8 @@ public class Map extends MultilayerPlane
     /**
      * Get the tile set that matches the given global tile id, only to be used
      * when loading a map.
-     * 
-     * @param gid 
+     *
+     * @param gid
      * @return TileSet
      */
     public TileSet findTileSetForTileGID(int gid) {
@@ -367,7 +359,7 @@ public class Map extends MultilayerPlane
 
     /**
      * Returns width of map in tiles.
-     * 
+     *
      * @return int
      */
     public int getWidth() {
@@ -376,7 +368,7 @@ public class Map extends MultilayerPlane
 
     /**
      * Returns height of map in tiles.
-     * 
+     *
      * @return int
      */
     public int getHeight() {
@@ -448,15 +440,6 @@ public class Map extends MultilayerPlane
         return totalTiles;
     }
     */
-
-    /**
-     * Returns the amount of objects on the map.
-     *
-     * @return The total objects in the map
-     */
-    public int getTotalObjects() {
-        return totalObjects;
-    }
 
     /**
      * Returns the orientation of this map. Orientation will be one of

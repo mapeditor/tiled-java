@@ -14,17 +14,15 @@ package tiled.mapeditor.widget;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Vector;
 import javax.swing.JPanel;
 import javax.swing.Scrollable;
-import javax.swing.event.EventListenerList;
 import javax.swing.event.MouseInputAdapter;
 
-import tiled.core.Tile;
-import tiled.core.TileLayer;
-import tiled.core.TileSet;
-import tiled.core.TilesetChangeListener;
-import tiled.core.TilesetChangedEvent;
+import tiled.core.*;
 import tiled.mapeditor.util.TileRegionSelectionEvent;
 import tiled.mapeditor.util.TileSelectionEvent;
 import tiled.mapeditor.util.TileSelectionListener;
@@ -39,12 +37,12 @@ public class TilePalettePanel extends JPanel implements Scrollable,
 {
     private static final int TILES_PER_ROW = 4;
     private TileSet tileset;
-    private EventListenerList tileSelectionListeners;
+    private List tileSelectionListeners;
     private Vector tilesetMap;
     private Rectangle selection;
 
     public TilePalettePanel() {
-        tileSelectionListeners = new EventListenerList();
+        tileSelectionListeners = new LinkedList();
 
         MouseInputAdapter mouseInputAdapter = new MouseInputAdapter() {
             private Point origin;
@@ -77,44 +75,32 @@ public class TilePalettePanel extends JPanel implements Scrollable,
      * user selects a tile.
      */
     public void addTileSelectionListener(TileSelectionListener listener) {
-        tileSelectionListeners.add(TileSelectionListener.class, listener);
+        tileSelectionListeners.add(listener);
     }
 
     /**
      * Removes tile selection listener.
      */
     public void removeTileSelectionListener(TileSelectionListener listener) {
-        tileSelectionListeners.remove(TileSelectionListener.class, listener);
+        tileSelectionListeners.remove(listener);
     }
 
-    protected void fireTileSelectionEvent(Tile selectedTile) {
-        Object[] listeners = tileSelectionListeners.getListenerList();
-        TileSelectionEvent event = null;
+    private void fireTileSelectionEvent(Tile selectedTile) {
+        TileSelectionEvent event = new TileSelectionEvent(this, selectedTile);
+        Iterator iterator = tileSelectionListeners.iterator();
 
-        for (int i = listeners.length - 2; i >= 0; i -= 2) {
-            if (listeners[i] == TileSelectionListener.class) {
-                if (event == null) {
-                    event = new TileSelectionEvent(this, selectedTile);
-                }
-
-                ((TileSelectionListener) listeners[i + 1]).tileSelected(event);
-            }
+        while (iterator.hasNext()) {
+            ((TileSelectionListener) iterator.next()).tileSelected(event);
         }
     }
 
     private void fireTileRegionSelectionEvent(Rectangle selection) {
-        Object[] listeners = tileSelectionListeners.getListenerList();
-        TileRegionSelectionEvent event = null;
+        TileLayer region = createTileLayerFromRegion(selection);
+        TileRegionSelectionEvent event = new TileRegionSelectionEvent(this, region);
+        Iterator iterator = tileSelectionListeners.iterator();
 
-        for (int i = listeners.length - 2; i >= 0; i -= 2) {
-            if (listeners[i] == TileSelectionListener.class) {
-                if (event == null) {
-                    TileLayer region = createTileLayerFromRegion(selection);
-                    event = new TileRegionSelectionEvent(this, region);
-                }
-
-                ((TileSelectionListener) listeners[i + 1]).tileRegionSelected(event);
-            }
+        while (iterator.hasNext()) {
+            ((TileSelectionListener) iterator.next()).tileRegionSelected(event);
         }
     }
 
@@ -167,14 +153,19 @@ public class TilePalettePanel extends JPanel implements Scrollable,
 
     /**
      * Converts pixel coordinates to tile coordinates. The returned coordinates
-     * are adjusted with respect to the number of tiles per row.
+     * are at least 0 and adjusted with respect to the number of tiles per row
+     * and the number of rows.
      */
     private Point getTileCoordinates(int x, int y) {
         int twidth = tileset.getTileWidth() + 1;
         int theight = tileset.getTileHeight() + 1;
+        int tileCount = tilesetMap.size();
+        int tilesPerRow = getTilesPerRow();
+        int rows = tileCount / tilesPerRow +
+                (tileCount % tilesPerRow > 0 ? 1 : 0);
 
-        int tileX = Math.min(x / twidth, getTilesPerRow() - 1);
-        int tileY = y / theight;
+        int tileX = Math.max(0, Math.min(x / twidth, tilesPerRow - 1));
+        int tileY = Math.max(0, Math.min(y / theight, rows - 1));
 
         return new Point(tileX, tileY);
     }

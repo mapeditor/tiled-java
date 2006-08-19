@@ -85,7 +85,7 @@ public class PropertiesDialog extends JDialog
         //create actionlisteners
         okButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
-            	buildPropertiesAndDispose();
+                buildPropertiesAndDispose();
             }
         });
 
@@ -141,7 +141,7 @@ public class PropertiesDialog extends JDialog
     }
 
     private void deleteSelected() {
-    	int total = propertiesTable.getSelectedRowCount();
+        int total = propertiesTable.getSelectedRowCount();
         Object[] keys = new Object[total];
         int[] selRows = propertiesTable.getSelectedRows();
 
