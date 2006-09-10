@@ -25,9 +25,7 @@ import tiled.core.Map;
 import tiled.core.TileSet;
 import tiled.mapeditor.MapEditor;
 import tiled.mapeditor.brush.CustomBrush;
-import tiled.mapeditor.util.TileRegionSelectionEvent;
-import tiled.mapeditor.util.TileSelectionEvent;
-import tiled.mapeditor.util.TileSelectionListener;
+import tiled.mapeditor.util.*;
 
 /**
  * Shows one tab for each Tileset.
@@ -40,7 +38,9 @@ public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionList
      * List of the tile palette panels (one for each tileset).
      */
     private final List tilePanels = new ArrayList();
+    private final MapChangeListener listener = new MyMapChangeListener();
     private final MapEditor mapEditor;
+    private Map map;
 
     /**
      * Constructor.
@@ -52,12 +52,19 @@ public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionList
     /**
      * Sets the tiles panes to the the ones from this map.
      */
-    public void setMap(Map currentMap) {
-        if (currentMap == null) {
+    public void setMap(Map map) {
+        if (this.map != null) {
+            this.map.removeMapChangeListener(listener);
+        }
+
+        if (map == null) {
             removeAll();
         } else {
-            recreateTabs(currentMap.getTilesets());
+            recreateTabs(map.getTilesets());
+            map.addMapChangeListener(listener);
         }
+
+        this.map = map;
     }
 
     /**
@@ -80,16 +87,25 @@ public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionList
             {
                 TileSet tileset = (TileSet) it.next();
                 if (tileset != null) {
-                    TilePalettePanel tilePanel = new TilePalettePanel();
-                    tilePanel.setTileset(tileset);
-                    tilePanel.addTileSelectionListener(this);
-                    JScrollPane paletteScrollPane = new JScrollPane(tilePanel,
-                            JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-                            JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-                    addTab(tileset.getName(), paletteScrollPane);
+                    addTabForTileset(tileset);
                 }
             }
         }
+    }
+
+    /**
+     * Adds a tab with a {@link TilePalettePanel} for the given tileset.
+     *
+     * @param tileset the given tileset
+     */
+    private void addTabForTileset(TileSet tileset) {
+        TilePalettePanel tilePanel = new TilePalettePanel();
+        tilePanel.setTileset(tileset);
+        tilePanel.addTileSelectionListener(this);
+        JScrollPane paletteScrollPane = new JScrollPane(tilePanel,
+                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        addTab(tileset.getName(), paletteScrollPane);
     }
 
     /**
@@ -105,5 +121,21 @@ public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionList
      */
     public void tileRegionSelected(TileRegionSelectionEvent e) {
         mapEditor.setBrush(new CustomBrush(e.getTileRegion()));
+    }
+
+    private class MyMapChangeListener implements MapChangeListener
+    {
+        public void mapChanged(MapChangedEvent e) {
+        }
+
+        public void tilesetAdded(MapChangedEvent e, TileSet tileset)
+        {
+            addTabForTileset(tileset);
+        }
+
+        public void tilesetRemoved(MapChangedEvent e, int index)
+        {
+            removeTabAt(index);
+        }
     }
 }

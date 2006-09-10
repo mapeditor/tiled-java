@@ -28,7 +28,8 @@ import tiled.mapeditor.util.TileSelectionEvent;
 import tiled.mapeditor.util.TileSelectionListener;
 
 /**
- * Displays a tileset and allows selecting a specific tile.
+ * Displays a tileset and allows selecting a specific tile as well as
+ * selecting several tiles for the creation of a stamp brush.
  *
  * @version $Id$
  */

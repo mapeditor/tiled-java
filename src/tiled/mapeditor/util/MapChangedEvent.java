@@ -5,29 +5,27 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
 
 package tiled.mapeditor.util;
 
-//import java.util.EventObject;
+import java.util.EventObject;
 
 import tiled.core.Map;
 
 /**
  * @version $Id$
  */
-public class MapChangedEvent //extends EventObject
+public class MapChangedEvent extends EventObject
 {
-    private final Map map;
-
     public MapChangedEvent(Map map) {
-        this.map = map;
+        super(map);
     }
 
     public Map getMap() {
-        return map;
+        return (Map) getSource();
     }
 }

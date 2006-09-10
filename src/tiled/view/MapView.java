@@ -13,10 +13,9 @@
 package tiled.view;
 
 import java.awt.*;
-//import java.awt.geom.PathIterator;
 import java.util.Iterator;
-import javax.swing.Scrollable;
 import javax.swing.JPanel;
+import javax.swing.Scrollable;
 
 import tiled.core.*;
 import tiled.mapeditor.brush.Brush;
@@ -62,6 +61,7 @@ public abstract class MapView extends JPanel implements Scrollable
      */
     protected MapView(Map map) {
         this.map = map;
+        setOpaque(true);
     }
 
     public void toggleMode(int modeModifier) {
@@ -224,7 +224,7 @@ public abstract class MapView extends JPanel implements Scrollable
      * @see SelectionLayer
      */
     public void paintComponent(Graphics g) {
-        Graphics2D g2d = (Graphics2D)g.create();
+        Graphics2D g2d = (Graphics2D) g.create();
 
         MapLayer layer;
         Rectangle clip = g2d.getClipBounds();
@@ -301,13 +301,9 @@ public abstract class MapView extends JPanel implements Scrollable
     	Iterator li = m.getLayers();
     	MapLayer layer;
 
-    	if (g2d == null) {
-    		g2d = (Graphics2D)getGraphics().create();
-    		g2d.setClip(getVisibleRect());
-    	}
-
     	while (li.hasNext()) {
-            if ((layer = (MapLayer)li.next()) != null) {
+            layer = (MapLayer) li.next();
+            if (layer != null) {
                 float opacity = layer.getOpacity() * mapOpacity;
                 if (layer.isVisible() && opacity > 0.0f) {
                     if (opacity < 1.0f) {

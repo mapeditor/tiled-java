@@ -5,7 +5,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
@@ -14,10 +14,19 @@ package tiled.mapeditor.util;
 
 import java.util.EventListener;
 
+import tiled.core.TileSet;
+
 /**
+ * Gets notified about changes made to a map. This includes events relating to
+ * changes in the list of layers or tilesets used by this map.
+ *
  * @version $Id$
  */
 public interface MapChangeListener extends EventListener
 {
     public void mapChanged(MapChangedEvent e);
+
+    public void tilesetAdded(MapChangedEvent e, TileSet tileset);
+
+    public void tilesetRemoved(MapChangedEvent e, int index);
 }

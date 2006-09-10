@@ -93,6 +93,35 @@ public class Map extends MultilayerPlane
         }
     }
 
+
+    /**
+     * Notifies all registered map change listeners about the removal of a
+     * tileset.
+     */
+    protected void fireTilesetRemoved(int index) {
+        Iterator iterator = mapChangeListeners.iterator();
+        MapChangedEvent event = null;
+
+        while (iterator.hasNext()) {
+            if (event == null) event = new MapChangedEvent(this);
+            ((MapChangeListener) iterator.next()).tilesetRemoved(event, index);
+        }
+    }
+
+    /**
+     * Notifies all registered map change listeners about the addition of a
+     * tileset.
+     */
+    protected void fireTilesetAdded(TileSet tileset) {
+        Iterator iterator = mapChangeListeners.iterator();
+        MapChangedEvent event = null;
+
+        while (iterator.hasNext()) {
+            if (event == null) event = new MapChangedEvent(this);
+            ((MapChangeListener) iterator.next()).tilesetAdded(event, tileset);
+        }
+    }
+
     /**
      * Causes a MapChangedEvent to be fired.
      */
@@ -158,7 +187,7 @@ public class Map extends MultilayerPlane
         }
 
         tilesets.add(tileset);
-        fireMapChanged();
+        fireTilesetAdded(tileset);
     }
 
     /**
@@ -171,7 +200,8 @@ public class Map extends MultilayerPlane
      */
     public void removeTileset(TileSet tileset) throws LayerLockedException {
         // Sanity check
-        if (tilesets.indexOf(tileset) == -1)
+        final int tilesetIndex = tilesets.indexOf(tileset);
+        if (tilesetIndex == -1)
             return;
 
         // Go through the map and remove any instances of the tiles in the set
@@ -180,15 +210,15 @@ public class Map extends MultilayerPlane
             Tile tile = (Tile)tileIterator.next();
             Iterator layerIterator = getLayers();
             while (layerIterator.hasNext()) {
-                MapLayer ml = (MapLayer)layerIterator.next();
+                MapLayer ml = (MapLayer) layerIterator.next();
                 if (ml instanceof TileLayer) {
-                    ((TileLayer)ml).removeTile(tile);
+                    ((TileLayer) ml).removeTile(tile);
                 }
             }
         }
 
         tilesets.remove(tileset);
-        fireMapChanged();
+        fireTilesetRemoved(tilesetIndex);
     }
 
     public void addObject(MapObject o) {

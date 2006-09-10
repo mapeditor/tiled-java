@@ -1294,11 +1294,21 @@ public class MapEditor implements ActionListener, MouseListener,
         if (e.getMap() == currentMap) {
             mapScrollPane.setViewportView(mapView);
             updateLayerTable();
-            if (tilePaletteDialog != null) {
-                tilePaletteDialog.setMap(currentMap);
-            }
             mapView.repaint();
         }
+    }
+
+    public void tilesetAdded(MapChangedEvent e, TileSet tileset) {
+        if (tilePaletteDialog != null) {
+            tilePaletteDialog.setMap(currentMap);
+        }
+    }
+
+    public void tilesetRemoved(MapChangedEvent e, int index) {
+        if (tilePaletteDialog != null) {
+            tilePaletteDialog.setMap(currentMap);
+        }
+        mapView.repaint();
     }
 
     public void valueChanged(ListSelectionEvent e) {
