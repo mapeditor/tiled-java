@@ -66,11 +66,11 @@ public class ShapeBrush extends AbstractBrush
     public void makePolygonBrush(Polygon p) {
     }
 
-    public void setSize(int s) {
+    public void setSize(int size) {
         if (shape.isRectangular()) {
-            makeQuadBrush(new Rectangle(0, 0, s, s));
+            makeQuadBrush(new Rectangle(0, 0, size, size));
         } else if (!shape.isPolygonal()) {
-            makeCircleBrush(s/2);
+            makeCircleBrush(size/2);
         } else {
             // TODO: scale the polygon brush
         }
@@ -91,7 +91,7 @@ public class ShapeBrush extends AbstractBrush
     public Shape getShape() {
     	return shape;
     }
-    
+
     public boolean isRectangular() {
         return shape.isRectangular();
     }
@@ -107,11 +107,9 @@ public class ShapeBrush extends AbstractBrush
         }*/
     }
 
-    public boolean equals(Brush b) {
-        if (b instanceof ShapeBrush) {
-            return ((ShapeBrush)b).shape.equals(shape);
-        }
-        return false;
+    public boolean equals(Brush brush) {
+        return brush instanceof ShapeBrush &&
+                ((ShapeBrush) brush).shape.equals(shape);
     }
 
     public void startPaint(MultilayerPlane mp, int x, int y, int button, int layer) {
@@ -127,19 +125,19 @@ public class ShapeBrush extends AbstractBrush
      */
     public Rectangle doPaint(int x, int y) throws Exception
     {
-        Rectangle bounds = shape.getBounds();
-        int centerx = x - (bounds.width / 2);
-        int centery = y - (bounds.height / 2);
+        Rectangle shapeBounds = shape.getBounds();
+        int centerx = x - shapeBounds.width / 2;
+        int centery = y - shapeBounds.height / 2;
 
         super.doPaint(x, y);
 
         // FIXME: This loop does not take all edges into account
 
-        for(int l = 0; l < numLayers; l++) {
-            TileLayer tl = (TileLayer)affectedMp.getLayer(initLayer + l);
+        for (int layer = 0; layer < numLayers; layer++) {
+            TileLayer tl = (TileLayer) affectedMp.getLayer(initLayer + layer);
             if (tl != null) {
-                for (int i = 0; i <= bounds.height + 1; i++) {
-                    for (int j = 0; j <= bounds.width + 1; j++) {
+                for (int i = 0; i <= shapeBounds.height + 1; i++) {
+                    for (int j = 0; j <= shapeBounds.width + 1; j++) {
                         if (shape.contains(j, i)) {
                             tl.setTileAt(j + centerx, i + centery, paintTile);
                         }
@@ -149,6 +147,7 @@ public class ShapeBrush extends AbstractBrush
         }
 
         // Return affected area
-        return new Rectangle(centerx, centery, bounds.width, bounds.height);
+        return new Rectangle(
+                centerx, centery, shapeBounds.width, shapeBounds.height);
     }
 }

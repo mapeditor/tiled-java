@@ -11,13 +11,12 @@ import java.util.HashMap;
  * @author JSON.org
  * @version 0.1
  */
-public class XMLTokener extends JSONTokener {
-
-
+public class XMLTokener extends JSONTokener
+{
    /** The table of entity values. It initially contains Character values for
     * amp, apos, gt, lt, quot.
     */
-   public static final HashMap entity;
+   private static final HashMap entity;
 
    static {
        entity = new HashMap(8);

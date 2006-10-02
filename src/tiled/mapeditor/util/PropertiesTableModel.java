@@ -70,12 +70,12 @@ public class PropertiesTableModel extends AbstractTableModel
     public void setValueAt(Object value, int row, int col) {
         if (row >= properties.size() && col == 0) {
             if (((String) value).length() > 0) {
-                properties.put((String) value, "");
+                properties.put(value, "");
                 fireTableDataChanged();
             }
         } else {
             if (col == 1) {
-                properties.put((String) getValueAt(row, 0), (String) value);
+                properties.put(getValueAt(row, 0), value);
                 fireTableCellUpdated(row, col);
             } else if (col == 0) {
                 String val = (String) getValueAt(row, 1);
@@ -83,7 +83,7 @@ public class PropertiesTableModel extends AbstractTableModel
                     properties.remove(getValueAt(row, col));
                 }
                 if (((String) value).length() > 0) {
-                    properties.put((String) value, val);
+                    properties.put(value, val);
                 }
                 fireTableDataChanged();
             }

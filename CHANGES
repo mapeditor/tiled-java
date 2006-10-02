@@ -6,6 +6,7 @@ trunk
 * Report out of memory error when saving map as image
 * Properties table now displays the properties in alphabetical order
 * Fixed properties dialog to also save values that were still being edited
+* Worked around an issue with the open file dialog on GNU classpath
 
 0.6.1 - July 15th, 2006
 

@@ -56,22 +56,23 @@ public class RandomBrush extends ShapeBrush
      *
      * @see ShapeBrush#doPaint
      * @return a Rectangle of the bounds of the area that was modified
-     * @param mp The multilayer plane that will be modified
      * @param x  The x-coordinate where the click occurred.
      * @param y  The y-coordinate where the click occurred.
      */
     public Rectangle doPaint(int x, int y)
     {
-        Rectangle bounds = shape.getBounds();
-        int centerx = x - bounds.width / 2;
-        int centery = y - bounds.height / 2;
+        Rectangle shapeBounds = shape.getBounds();
+        int centerx = x - shapeBounds.width / 2;
+        int centery = y - shapeBounds.height / 2;
 
         for (int i = 0; i < numLayers; i++) {
-            TileLayer tl = (TileLayer)affectedMp.getLayer(initLayer - i);
+            TileLayer tl = (TileLayer) affectedMp.getLayer(initLayer - i);
             if (tl != null) {
-                for (int cy = 0; cy <= bounds.height; cy++) {
-                    for (int cx = 0; cx < bounds.width; cx++) {
-                        if (shape.contains(cx, cy) && mt.genrand() % 101 <= 100 * ratio) {
+                for (int cy = 0; cy <= shapeBounds.height; cy++) {
+                    for (int cx = 0; cx < shapeBounds.width; cx++) {
+                        if (shape.contains(cx, cy) &&
+                                mt.genrand() % 101 <= 100 * ratio)
+                        {
                             tl.setTileAt(
                                     cx + centerx, cy + centery, paintTile);
                         }
@@ -80,6 +81,7 @@ public class RandomBrush extends ShapeBrush
             }
         }
 
-        return new Rectangle(centerx, centery, bounds.width, bounds.height);
+        return new Rectangle(
+                centerx, centery, shapeBounds.width, shapeBounds.height);
     }
 }

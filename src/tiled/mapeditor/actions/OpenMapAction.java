@@ -29,9 +29,8 @@ import tiled.util.TiledConfiguration;
  */
 public class OpenMapAction extends AbstractFileAction
 {
-	
-	private static final String OPEN_ERROR_TITLE = Resources.getString("dialog.saveas.error.title");
-	
+    private static final String OPEN_ERROR_TITLE = Resources.getString("dialog.saveas.error.title");
+
     public OpenMapAction(MapEditor editor, SaveAction saveAction) {
         super(editor, saveAction,
               Resources.getString("action.map.open.name"),
@@ -42,7 +41,8 @@ public class OpenMapAction extends AbstractFileAction
 
     protected void doPerformAction() {
         //Start at the location of the most recently loaded map file
-        String startLocation = TiledConfiguration.node("recent").get("file0", "");
+        String startLocation = TiledConfiguration.node("recent").get("file0",
+                null);
 
         JFileChooser ch = new JFileChooser(startLocation);
 
