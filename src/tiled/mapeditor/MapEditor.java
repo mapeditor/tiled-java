@@ -75,11 +75,7 @@ public class MapEditor implements ActionListener, MouseListener,
     private static final int APP_HEIGHT = 600;
 
     private Cursor curDefault;
-    private Cursor curPaint;
-    private Cursor curErase;
-    private Cursor curPour;
     private Cursor curEyed;
-    private Cursor curMarquee;
 
     /** Current release version. */
     public static final String version = "0.7.0 WIP";
@@ -2085,22 +2081,14 @@ public class MapEditor implements ActionListener, MouseListener,
         if (mapView != null) {
             switch (currentPointerState) {
                 case PS_PAINT:
-                    mapView.setCursor(curPaint);
-                    break;
                 case PS_ERASE:
-                    mapView.setCursor(curErase);
-                    break;
                 case PS_POINT:
-                    mapView.setCursor(curDefault);
-                    break;
                 case PS_POUR:
-                    mapView.setCursor(curPour);
+                case PS_MARQUEE:
+                    mapView.setCursor(curDefault);
                     break;
                 case PS_EYED:
                     mapView.setCursor(curEyed);
-                    break;
-                case PS_MARQUEE:
-                    mapView.setCursor(curMarquee);
                     break;
             }
         }

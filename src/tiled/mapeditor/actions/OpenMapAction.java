@@ -44,12 +44,12 @@ public class OpenMapAction extends AbstractFileAction
         String startLocation = TiledConfiguration.node("recent").get("file0",
                 null);
 
-        JFileChooser ch = new JFileChooser(startLocation);
+        JFileChooser chooser = new JFileChooser(startLocation);
 
         try {
             MapReader[] readers = editor.getPluginLoader().getReaders();
             for(int i = 0; i < readers.length; i++) {
-                ch.addChoosableFileFilter(new TiledFileFilter(
+                chooser.addChoosableFileFilter(new TiledFileFilter(
                             readers[i].getFilter(), readers[i].getName()));
             }
         } catch (Exception e) {
@@ -60,12 +60,12 @@ public class OpenMapAction extends AbstractFileAction
             e.printStackTrace();
         }
 
-        ch.addChoosableFileFilter(
+        chooser.addChoosableFileFilter(
                 new TiledFileFilter(TiledFileFilter.FILTER_TMX));
 
-        int ret = ch.showOpenDialog(editor.getAppFrame());
+        int ret = chooser.showOpenDialog(editor.getAppFrame());
         if (ret == JFileChooser.APPROVE_OPTION) {
-            editor.loadMap(ch.getSelectedFile().getAbsolutePath());
+            editor.loadMap(chooser.getSelectedFile().getAbsolutePath());
         }
     }
 }
