@@ -13,6 +13,8 @@
 package tiled.mapeditor.util;
 
 import java.util.Properties;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import javax.swing.table.AbstractTableModel;
 
 import tiled.mapeditor.Resources;
@@ -22,13 +24,15 @@ import tiled.mapeditor.Resources;
  */
 public class PropertiesTableModel extends AbstractTableModel
 {
-    private Properties properties;
-    
-    private static final String[] columnNames = { Resources.getString("dialog.properties.column.name"), 
-    												Resources.getString("dialog.properties.column.value") };
+    private SortedMap properties;
+
+    private static final String[] columnNames = {
+            Resources.getString("dialog.properties.column.name"),
+            Resources.getString("dialog.properties.column.value")
+    };
 
     public PropertiesTableModel() {
-        properties = new Properties();
+        properties = new TreeMap();
     }
 
     public int getRowCount() {
@@ -64,27 +68,24 @@ public class PropertiesTableModel extends AbstractTableModel
     }
 
     public void setValueAt(Object value, int row, int col) {
-        if (row >= 0) {
-            if (row >= properties.size() && col == 0) {
-                if (((String)value).length() > 0) {
-                    properties.setProperty((String)value, "");
-                    fireTableDataChanged();
+        if (row >= properties.size() && col == 0) {
+            if (((String) value).length() > 0) {
+                properties.put((String) value, "");
+                fireTableDataChanged();
+            }
+        } else {
+            if (col == 1) {
+                properties.put((String) getValueAt(row, 0), (String) value);
+                fireTableCellUpdated(row, col);
+            } else if (col == 0) {
+                String val = (String) getValueAt(row, 1);
+                if (getValueAt(row, col) != null) {
+                    properties.remove(getValueAt(row, col));
                 }
-            } else {
-                if (col == 1) {
-                    properties.setProperty(
-                            (String)getValueAt(row, 0), (String)value);
-                    fireTableCellUpdated(row, col);
-                } else if (col == 0) {
-                    String val = (String)getValueAt(row, 1);
-                    if (getValueAt(row, col) != null) {
-                        properties.remove(getValueAt(row, col));
-                    }
-                    if (((String)value).length() > 0) {
-                        properties.setProperty((String)value, val);
-                    }
-                    fireTableDataChanged();
+                if (((String) value).length() > 0) {
+                    properties.put((String) value, val);
                 }
+                fireTableDataChanged();
             }
         }
     }
@@ -94,12 +95,15 @@ public class PropertiesTableModel extends AbstractTableModel
         fireTableDataChanged();
     }
 
-    public void update(Properties props) {
-        properties = props;
+    public void setProperties(Properties props) {
+        properties.clear();
+        properties.putAll(props);
         fireTableDataChanged();
     }
 
     public Properties getProperties() {
-        return properties;
+        Properties props = new Properties();
+        props.putAll(properties);
+        return props;
     }
 }

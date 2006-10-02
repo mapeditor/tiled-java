@@ -71,8 +71,8 @@ public class MapEditor implements ActionListener, MouseListener,
     private static final int PS_MOVE    = 6;
     private static final int PS_MOVEOBJ = 7;
 
-    private static final int APP_WIDTH = 640;
-    private static final int APP_HEIGHT = 480;
+    private static final int APP_WIDTH = 800;
+    private static final int APP_HEIGHT = 600;
 
     private Cursor curDefault;
     private Cursor curPaint;

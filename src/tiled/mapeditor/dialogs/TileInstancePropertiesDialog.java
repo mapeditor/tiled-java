@@ -20,6 +20,7 @@ import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.Properties;
 import javax.swing.*;
+import javax.swing.table.TableCellEditor;
 
 import tiled.core.MapLayer;
 import tiled.core.Tile;
@@ -35,13 +36,13 @@ import tiled.mapeditor.widget.VerticalStaticJPanel;
  */
 public class TileInstancePropertiesDialog extends JDialog
 {
-    private JTable tProperties;
+    private JTable propertiesTable;
     private Properties properties = new Properties();
     private PropertiesTableModel tableModel = new PropertiesTableModel();
 
-    private static final String DIALOG_TITLE = "Tile Properties"; // Resource this
-    private static final String APPLY_BUTTON = "Apply"; // Resource this
-    private static final String APPLY_TOOLTIP = "Apply properties to selected tiles"; // Resource this
+    private static final String DIALOG_TITLE = "Tile Properties"; // todo: Resource this
+    private static final String APPLY_BUTTON = Resources.getString("general.button.apply");
+    private static final String APPLY_TOOLTIP = "Apply properties to selected tiles"; // todo: Resource this
     private static final String DELETE_BUTTON = Resources.getString("general.button.delete");
 
     private final MapEditor editor;
@@ -56,8 +57,8 @@ public class TileInstancePropertiesDialog extends JDialog
     }
 
     private void init() {
-        tProperties = new JTable(tableModel);
-        JScrollPane propScrollPane = new JScrollPane(tProperties);
+        propertiesTable = new JTable(tableModel);
+        JScrollPane propScrollPane = new JScrollPane(propertiesTable);
         propScrollPane.setPreferredSize(new Dimension(200, 150));
 
         JButton applyButton = new JButton(APPLY_BUTTON);
@@ -159,15 +160,7 @@ public class TileInstancePropertiesDialog extends JDialog
     }
 
     private void updateInfo() {
-        // Make a copy of the properties that will be changed by the
-        // properties table model.
-        Properties props = new Properties();
-        Enumeration keys = properties.keys();
-        while (keys.hasMoreElements()) {
-            String key = (String) keys.nextElement();
-            props.put(key, properties.getProperty(key));
-        }
-        tableModel.update(props);
+        tableModel.setProperties(properties);
     }
 
     public void getProps() {
@@ -176,17 +169,15 @@ public class TileInstancePropertiesDialog extends JDialog
     }
 
     private void buildPropertiesAndApply() {
-        // Copy over the new set of properties from the properties table
-        // model.
-
-        properties.clear();
-
-        Properties newProps = tableModel.getProperties();
-        Enumeration keys = newProps.keys();
-        while (keys.hasMoreElements()) {
-            String key = (String) keys.nextElement();
-            properties.put(key, newProps.getProperty(key));
+        // Make sure there is no active cell editor anymore
+        TableCellEditor cellEditor = propertiesTable.getCellEditor();
+        if (cellEditor != null) {
+            cellEditor.stopCellEditing();
         }
+
+        // Apply possibly changed properties.
+        properties.clear();
+        properties.putAll(tableModel.getProperties());
 
         applyPropertiesToTiles();
     }
@@ -200,12 +191,12 @@ public class TileInstancePropertiesDialog extends JDialog
     }
 
     private void deleteSelected() {
-        int total = tProperties.getSelectedRowCount();
+        int total = propertiesTable.getSelectedRowCount();
         Object[] keys = new Object[total];
-        int[] selRows = tProperties.getSelectedRows();
+        int[] selRows = propertiesTable.getSelectedRows();
 
         for (int i = 0; i < total; i++) {
-            keys[i] = tProperties.getValueAt(selRows[i], 0);
+            keys[i] = propertiesTable.getValueAt(selRows[i], 0);
         }
 
         for (int i = 0; i < total; i++) {

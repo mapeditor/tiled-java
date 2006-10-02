@@ -1,6 +1,8 @@
 ROADMAP TO FUTURE RELEASES
 
 0.7.0
+* Check that tile palette panel doesn't keep listening after being replaced.
+
 * Remove copy constructors in favour of clone method (DONE)
 
 * Add import/export of options (WIP)

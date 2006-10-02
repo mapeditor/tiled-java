@@ -28,6 +28,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.TableCellEditor;
 
 import tiled.core.Map;
 import tiled.core.Tile;
@@ -79,13 +80,13 @@ public class TileDialog extends JDialog
     private static final String TILE_CREATED_TITLE = Resources.getString("action.tile.create.done.title");
 
 
-    public TileDialog(Dialog parent, TileSet s, Map m) {
-        super(parent, DIALOG_TITLE + " '" + s.getName() + "'", true);
+    public TileDialog(Dialog parent, TileSet tileset, Map map) {
+        super(parent, DIALOG_TITLE + " '" + tileset.getName() + "'", true);
         location = "";
-        tileset = s;    //unofficial
-        map = m;        //also unofficial
+        this.tileset = tileset;    //unofficial
+        this.map = map;        //also unofficial
         init();
-        setTileset(s);
+        setTileset(tileset);
         setCurrentTile(null);
         pack();
         setLocationRelativeTo(getOwner());
@@ -223,6 +224,7 @@ public class TileDialog extends JDialog
         okButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
             	tileset.setName(tilesetNameEntry.getText());
+                applyTileProperties();
                 dispose();
             }
         });
@@ -233,11 +235,11 @@ public class TileDialog extends JDialog
             return;
         }
 
-        TileImageDialog d = new TileImageDialog(this, tileset,
+        TileImageDialog dialog = new TileImageDialog(this, tileset,
             currentTile.getImageId());
-        d.setVisible(true);
-        if (d.getImageId() >= 0) {
-            currentTile.setImage(d.getImageId());
+        dialog.setVisible(true);
+        if (dialog.getImageId() >= 0) {
+            currentTile.setImage(dialog.getImageId());
         }
     }
 
@@ -330,20 +332,35 @@ public class TileDialog extends JDialog
         }
     }
 
-    private void setCurrentTile(Tile tile) {
-        // Update the old current tile's properties
-        // (happens automatically as properties are changed in place now)
-        /*
-        if (currentTile != null) {
-            PropertiesTableModel model =
-                (PropertiesTableModel)tileProperties.getModel();
-            currentTile.setProperties(model.getProperties());
+    public void valueChanged(ListSelectionEvent e) {
+        if (e.getSource() == tileList) {
+            setCurrentTile((Tile) tileList.getSelectedValue());
+        } else if (e.getSource() == imageList) {
+            setImageIndex(imageList.getSelectedIndex());
         }
-        */
+    }
+
+    private void setCurrentTile(Tile tile) {
+        applyTileProperties();
 
         currentTile = tile;
         updateTileInfo();
         updateEnabledState();
+    }
+
+    private void applyTileProperties() {
+        // Make sure there is no active cell editor anymore
+        TableCellEditor editor = tileProperties.getCellEditor();
+        if (editor != null) {
+            editor.stopCellEditing();
+        }
+
+        // Apply possibly changed properties
+        if (currentTile != null) {
+            PropertiesTableModel model =
+                    (PropertiesTableModel) tileProperties.getModel();
+            currentTile.setProperties(model.getProperties());
+        }
     }
 
     private void setImageIndex(int i) {
@@ -372,31 +389,21 @@ public class TileDialog extends JDialog
      * Updates the properties table with the properties of the current tile.
      */
     private void updateTileInfo() {
+        PropertiesTableModel model =
+                (PropertiesTableModel) tileProperties.getModel();
+
         if (currentTile == null) {
-            return;
+            model.setProperties(new Properties());
         }
-
-        Properties tileProps = currentTile.getProperties();
-
-        // (disabled making a copy, as properties are changed in place now)
-        /*
-        Properties editProps = new Properties();
-        for (Enumeration keys = tileProps.keys(); keys.hasMoreElements();) {
-            String key = (String)keys.nextElement();
-            editProps.put(key, tileProps.getProperty(key));
+        else {
+            model.setProperties(currentTile.getProperties());
         }
-        */
-
-        ((PropertiesTableModel)tileProperties.getModel()).update(tileProps);
     }
 
     public void actionPerformed(ActionEvent event) {
         Object source = event.getSource();
 
-        if (source == okButton) {
-            tileset.setName(tilesetNameEntry.getText());
-            dispose();
-        } else if (source == deleteTileButton) {
+        if (source == deleteTileButton) {
             int answer = JOptionPane.showConfirmDialog(
                     this,
                     Resources.getString("action.tile.delete.confirm.message"),
@@ -473,13 +480,5 @@ public class TileDialog extends JDialog
         }
 
         repaint();
-    }
-
-    public void valueChanged(ListSelectionEvent e) {
-        if (e.getSource() == tileList) {
-            setCurrentTile((Tile)tileList.getSelectedValue());
-        } else if (e.getSource() == imageList) {
-            setImageIndex(imageList.getSelectedIndex());
-        }
     }
 }

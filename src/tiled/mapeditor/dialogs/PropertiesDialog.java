@@ -15,7 +15,6 @@ package tiled.mapeditor.dialogs;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Enumeration;
 import java.util.Properties;
 import javax.swing.*;
 import javax.swing.table.TableCellEditor;
@@ -103,15 +102,7 @@ public class PropertiesDialog extends JDialog
     }
 
     private void updateInfo() {
-        // Make a copy of the properties that will be changed by the
-        // properties table model.
-        Properties props = new Properties();
-        Enumeration keys = properties.keys();
-        while (keys.hasMoreElements()) {
-            String key = (String)keys.nextElement();
-            props.put(key, properties.getProperty(key));
-        }
-        tableModel.update(props);
+        tableModel.setProperties(properties);
     }
 
     public void getProps() {
@@ -126,16 +117,9 @@ public class PropertiesDialog extends JDialog
             editor.stopCellEditing();
         }
 
-        // Copy over the new set of properties from the properties table
-        // model.
+        // Apply possibly changed properties.
         properties.clear();
-
-        Properties newProps = tableModel.getProperties();
-        Enumeration keys = newProps.keys();
-        while (keys.hasMoreElements()) {
-            String key = (String)keys.nextElement();
-            properties.put(key, newProps.getProperty(key));
-        }
+        properties.putAll(tableModel.getProperties());
 
         dispose();
     }
