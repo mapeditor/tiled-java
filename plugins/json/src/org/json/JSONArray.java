@@ -99,7 +99,7 @@ public class JSONArray {
 
     /**
      * Construct a JSONArray from a source string.
-     * @param string     A string that begins with 
+     * @param string     A string that begins with
      * <code>[</code>&nbsp;<small>(left bracket)</small>
      *  and ends with <code>]</code>&nbsp;<small>(right bracket)</small>.
      * @exception ParseException The string must conform to JSON syntax.
@@ -120,7 +120,7 @@ public class JSONArray {
 
     /**
      * Get the object value associated with an index.
-     * @param index 
+     * @param index
      *  The index must be between 0 and length() - 1.
      * @return An object value.
      * @exception NoSuchElementException
@@ -166,7 +166,7 @@ public class JSONArray {
 
 
     /**
-     * Get the double value associated with an index.     
+     * Get the double value associated with an index.
      * @param index The index must be between 0 and length() - 1.
      * @return      The value.
      * @exception NoSuchElementException if the key is not found
@@ -181,7 +181,7 @@ public class JSONArray {
             return ((Number) o).doubleValue();
         }
         if (o instanceof String) {
-            return new Double((String)o).doubleValue();
+            return Double.parseDouble((String) o);
         }
         throw new NumberFormatException("JSONObject[" +
             index + "] is not a number.");
@@ -190,7 +190,7 @@ public class JSONArray {
 
     /**
      * Get the int value associated with an index.
-     * 
+     *
      * @param index The index must be between 0 and length() - 1.
      * @return      The value.
      * @exception NoSuchElementException if the key is not found
@@ -383,7 +383,7 @@ public class JSONArray {
                 return ((Number) o).doubleValue();
             }
             try {
-                return new Double((String)o).doubleValue();
+                return Double.parseDouble((String) o);
             }
             catch (Exception e) {
             }
@@ -653,8 +653,8 @@ public class JSONArray {
      * @param indentFactor The number of spaces to add to each level of
      *  indentation.
      * @return a printable, displayable, transmittable
-     *  representation of the object, beginning 
-     *  with <code>[</code>&nbsp;<small>(left bracket)</small> and ending 
+     *  representation of the object, beginning
+     *  with <code>[</code>&nbsp;<small>(left bracket)</small> and ending
      *  with <code>]</code>&nbsp;<small>(right bracket)</small>.
      */
     public String toString(int indentFactor) {

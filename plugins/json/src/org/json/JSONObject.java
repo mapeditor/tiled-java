@@ -159,9 +159,9 @@ public class JSONObject {
 
     /**
      * Construct a JSONObject from a string.
-     * 
-     * @param string    A string beginning 
-     *  with <code>{</code>&nbsp;<small>(left brace)</small> and ending 
+     *
+     * @param string    A string beginning
+     *  with <code>{</code>&nbsp;<small>(left brace)</small> and ending
      *  with <code>}</code>&nbsp;<small>(right brace)</small>.
      *  @exception ParseException The string must be properly formatted.
      */
@@ -186,7 +186,7 @@ public class JSONObject {
      * JSONArray is stored under the key to hold all of the accumulated values.
      * If there is already a JSONArray, then the new value is appended to it.
      * In contrast, the put method replaces the previous value.
-     * 
+     *
      * @param key   A key string.
      * @param value An object to be accumulated under the key.
      * @return this.
@@ -213,7 +213,7 @@ public class JSONObject {
 
     /**
      * Get the value object associated with a key.
-     * 
+     *
      *
      * @param key   A key string.
      * @return      The object associated with the key.
@@ -233,7 +233,7 @@ public class JSONObject {
      * Get the boolean value associated with a key.
      * @param key   A key string.
      * @return      The truth.
-     * 
+     *
      * @exception NoSuchElementException if the key is not found.
      * @exception ClassCastException
      *  if the value is not a Boolean or the String "true" or "false".
@@ -267,7 +267,7 @@ public class JSONObject {
             return ((Number)o).doubleValue();
         }
         if (o instanceof String) {
-            return new Double((String)o).doubleValue();
+            return Double.parseDouble((String) o);
         }
         throw new NumberFormatException("JSONObject[" +
             quote(key) + "] is not a number.");
@@ -336,7 +336,7 @@ public class JSONObject {
 
 
     /**
-     * Get the string associated with a key.     
+     * Get the string associated with a key.
      * @param key   A key string.
      * @return      A string which is the value.
      * @exception NoSuchElementException if the key is not found.
@@ -518,7 +518,7 @@ public class JSONObject {
                 return ((Number)o).doubleValue();
             }
             try {
-                return new Double((String)o).doubleValue();
+                return Double.parseDouble((String) o);
             }
             catch (Exception e) {
             }
@@ -800,8 +800,8 @@ public class JSONObject {
      * Warning: This method assumes that the data structure is acyclical.
      *
      * @return a printable, displayable, portable, transmittable
-     *  representation of the object, beginning 
-     *  with <code>{</code>&nbsp;<small>(left brace)</small> and ending 
+     *  representation of the object, beginning
+     *  with <code>{</code>&nbsp;<small>(left brace)</small> and ending
      *  with <code>}</code>&nbsp;<small>(right brace)</small>.
      */
     public String toString() {
@@ -842,7 +842,7 @@ public class JSONObject {
      *  indentation.
      * @return a printable, displayable, portable, transmittable
      *  representation of the object, beginning
-     *  with <code>{</code>&nbsp;<small>(left brace)</small> and ending 
+     *  with <code>{</code>&nbsp;<small>(left brace)</small> and ending
      *  with <code>}</code>&nbsp;<small>(right brace)</small>.
      */
     public String toString(int indentFactor) {
@@ -858,8 +858,8 @@ public class JSONObject {
      *  indentation.
      * @param indent The indentation of the top level.
      * @return a printable, displayable, transmittable
-     *  representation of the object, beginning 
-     *  with <code>{</code>&nbsp;<small>(left brace)</small> and ending 
+     *  representation of the object, beginning
+     *  with <code>{</code>&nbsp;<small>(left brace)</small> and ending
      *  with <code>}</code>&nbsp;<small>(right brace)</small>.
      */
     String toString(int indentFactor, int indent) {

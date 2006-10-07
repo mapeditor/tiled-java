@@ -31,8 +31,6 @@ public class Map extends MultilayerPlane
     public static final int MDO_ORTHO   = 1;
     /** Isometric. */
     public static final int MDO_ISO     = 2;
-    /** Oblique. */
-    public static final int MDO_OBLIQUE = 3;
     /** Hexagonal. */
     public static final int MDO_HEX     = 4;
     /** Shifted (used for iso and hex). */
@@ -74,7 +72,7 @@ public class Map extends MultilayerPlane
 
     /**
      * Removes a change listener.
-     * @param listener
+     * @param listener the listener to remove
      */
     public void removeMapChangeListener(MapChangeListener listener) {
         mapChangeListeners.remove(listener);
@@ -97,6 +95,8 @@ public class Map extends MultilayerPlane
     /**
      * Notifies all registered map change listeners about the removal of a
      * tileset.
+     *
+     * @param index the index of the removed tileset
      */
     protected void fireTilesetRemoved(int index) {
         Iterator iterator = mapChangeListeners.iterator();
@@ -111,6 +111,8 @@ public class Map extends MultilayerPlane
     /**
      * Notifies all registered map change listeners about the addition of a
      * tileset.
+     *
+     * @param tileset the new tileset
      */
     protected void fireTilesetAdded(TileSet tileset) {
         Iterator iterator = mapChangeListeners.iterator();
@@ -196,7 +198,8 @@ public class Map extends MultilayerPlane
      * processing is complete.
      *
      * @param tileset TileSet to remove
-     * @throws LayerLockedException
+     * @throws LayerLockedException when the tileset is in use on a locked
+     *         layer
      */
     public void removeTileset(TileSet tileset) throws LayerLockedException {
         // Sanity check
@@ -372,14 +375,15 @@ public class Map extends MultilayerPlane
      * Get the tile set that matches the given global tile id, only to be used
      * when loading a map.
      *
-     * @param gid
-     * @return TileSet
+     * @param gid a global tile id
+     * @return the tileset containing the tile with the given global tile id,
+     *         or <code>null</code> when no such tileset exists
      */
     public TileSet findTileSetForTileGID(int gid) {
         Iterator itr = tilesets.iterator();
         TileSet has = null;
         while (itr.hasNext()) {
-            TileSet ts = (TileSet)itr.next();
+            TileSet ts = (TileSet) itr.next();
             if (ts.getFirstGid() <= gid) {
                 has = ts;
             }
@@ -474,7 +478,7 @@ public class Map extends MultilayerPlane
     /**
      * Returns the orientation of this map. Orientation will be one of
      * {@link Map#MDO_ISO}, {@link Map#MDO_ORTHO}, {@link Map#MDO_HEX},
-     * {@link Map#MDO_OBLIQUE} and {@link Map#MDO_SHIFTED}.
+     * and {@link Map#MDO_SHIFTED}.
      *
      * @return The orientation from the enumerated set
      */

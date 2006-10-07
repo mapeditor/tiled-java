@@ -28,7 +28,7 @@ import tiled.mapeditor.widget.VerticalStaticJPanel;
 /**
  * @version $Id$
  */
-public class ImageColorDialog extends JDialog implements MouseListener, 
+public class ImageColorDialog extends JDialog implements MouseListener,
 		MouseMotionListener
 {
     private Image image;
@@ -41,10 +41,10 @@ public class ImageColorDialog extends JDialog implements MouseListener,
     private static final String DIALOG_TITLE = Resources.getString("dialog.imagecolor.title");
     private static final String CANCEL_BUTTON = Resources.getString("general.button.cancel");
     /* -- */
-    
-    public ImageColorDialog(Image i) {
-        image = i;
-        PixelGrabber pg = new PixelGrabber(i, 0, 0, -1, -1, true);
+
+    public ImageColorDialog(Image image) {
+        this.image = image;
+        PixelGrabber pg = new PixelGrabber(image, 0, 0, -1, -1, true);
 
         try {
             pg.grabPixels();
@@ -98,7 +98,7 @@ public class ImageColorDialog extends JDialog implements MouseListener,
         mainPanel.add(buttonPanel);
 
         setContentPane(mainPanel);
-        
+
         //create actionlisteners
         cancelButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {

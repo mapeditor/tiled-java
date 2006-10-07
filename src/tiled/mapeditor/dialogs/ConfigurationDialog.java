@@ -20,6 +20,8 @@ import java.awt.event.ItemListener;
 import java.util.prefs.Preferences;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.FileInputStream;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -27,6 +29,8 @@ import javax.swing.event.ChangeListener;
 import tiled.mapeditor.widget.IntegerSpinner;
 import tiled.mapeditor.widget.VerticalStaticJPanel;
 import tiled.mapeditor.Resources;
+import tiled.mapeditor.util.ConfirmingFileChooser;
+import tiled.mapeditor.util.ConfirmableFileFilter;
 import tiled.util.TiledConfiguration;
 
 /**
@@ -42,10 +46,10 @@ public class ConfigurationDialog extends JDialog
     private JCheckBox cbGridAA;
     //private JColorChooser gridColor;
 
-    private final Preferences prefs = TiledConfiguration.root();
-    private final Preferences savingPrefs = prefs.node("saving");
-    private final Preferences ioPrefs = prefs.node("io");
-    private final Preferences displayPrefs = prefs.node("display");
+    private static final Preferences prefs = TiledConfiguration.root();
+    private static final Preferences savingPrefs = prefs.node("saving");
+    private static final Preferences ioPrefs = prefs.node("io");
+    private static final Preferences displayPrefs = prefs.node("display");
 
     private static final String DIALOG_TITLE = Resources.getString("dialog.preferences.title");
     private static final String CLOSE_BUTTON = Resources.getString("general.button.close");
@@ -65,6 +69,19 @@ public class ConfigurationDialog extends JDialog
     private static final String GRID_TAB = Resources.getString("dialog.preferences.grid.tab");
     private static final String EXPORT_BUTTON = "Export...";
     private static final String IMPORT_BUTTON = "Import...";
+
+    private static final ConfirmableFileFilter xmlFileFilter =
+            new ConfirmableFileFilter() {
+                public String getDefaultExtension() {
+                    return "xml";
+                }
+                public boolean accept(File file) {
+                    return file.isDirectory() || file.getPath().endsWith(".xml");
+                }
+                public String getDescription() {
+                    return "XML files (*.xml)";
+                }
+            };
 
     public ConfigurationDialog(JFrame parent) {
         super(parent, DIALOG_TITLE, true);
@@ -164,7 +181,7 @@ public class ConfigurationDialog extends JDialog
         });
 
         JButton importButton = new JButton(IMPORT_BUTTON);
-        exportButton.addActionListener(new ActionListener() {
+        importButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
                 doImport();
             }
@@ -180,13 +197,10 @@ public class ConfigurationDialog extends JDialog
         /* BUTTONS PANEL */
         JPanel buttons = new VerticalStaticJPanel();
         buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
-        /*
-        // todo: add once import/export feature file choosers
         buttons.add(exportButton);
         buttons.add(Box.createRigidArea(new Dimension(5, 5)));
         buttons.add(importButton);
         buttons.add(Box.createRigidArea(new Dimension(5, 5)));
-        */
         buttons.add(Box.createGlue());
         buttons.add(closeButton);
 
@@ -328,27 +342,58 @@ public class ConfigurationDialog extends JDialog
         rbEmbedInSet.setEnabled(embedImages);
     }
 
-    private static void doExport() {
-        File configFile = new File("tiled-configuration.xml");
-        FileOutputStream outputStream = null;
-        try {
+    private void doExport() {
+        JFileChooser chooser = new ConfirmingFileChooser(null);
+        chooser.addChoosableFileFilter(xmlFileFilter);
+        int result = chooser.showSaveDialog(this);
+
+        if (result == JFileChooser.APPROVE_OPTION)
+        {
+            File configFile = chooser.getSelectedFile();
+
             try {
-                outputStream = new FileOutputStream(configFile);
-                TiledConfiguration.root().exportSubtree(outputStream);
-            }
-            finally {
-                if (outputStream != null) {
-                    outputStream.close();
+                FileOutputStream outputStream = null;
+                try {
+                    outputStream = new FileOutputStream(configFile);
+                    prefs.exportSubtree(outputStream);
+                }
+                finally {
+                    if (outputStream != null) {
+                        outputStream.close();
+                    }
                 }
             }
-        }
-        catch (Exception e) {
-            System.out.println("Error while exporting configuration:\n" +
-                    e.toString());
+            catch (Exception e) {
+                System.out.println("Error while exporting configuration:\n" +
+                        e.toString());
+            }
         }
     }
 
-    private static void doImport() {
-        // todo: implement
+    private void doImport() {
+        JFileChooser chooser = new JFileChooser();
+        chooser.addChoosableFileFilter(xmlFileFilter);
+        int result = chooser.showOpenDialog(this);
+
+        if (result == JFileChooser.APPROVE_OPTION)
+        {
+            File configFile = chooser.getSelectedFile();
+            try {
+                FileInputStream inputStream = null;
+                try {
+                    inputStream = new FileInputStream(configFile);
+                    Preferences.importPreferences(inputStream);
+                }
+                finally {
+                    if (inputStream != null) {
+                        inputStream.close();
+                    }
+                }
+            } catch (Exception e) {
+                System.out.println("Error while importing configuration:\n" +
+                        e.toString());
+            }
+            updateFromConfiguration();
+        }
     }
 }

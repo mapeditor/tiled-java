@@ -19,26 +19,27 @@ import java.util.LinkedList;
  */
 public class PluginLogger
 {
-	private LinkedList messages;
+    private LinkedList messages = new LinkedList();
 
-	public void error(Object message) {
-	}
+    public void error(Object message) {
+    }
 
-	public void warn(Object message) {
-	}
+    public void warn(Object message) {
+    }
 
-	public void info(Object message) {
-	}
-	
-	public void debug(Object message) {
-	}
+    public void info(Object message) {
+    }
 
-	public boolean isEmpty() {
-		return messages.isEmpty();
-	}
+    public void debug(Object message) {
+    }
 
-	public class PluginMessage {
-		private int type;
-		private Object message;
-	}
+    public boolean isEmpty() {
+        return messages.isEmpty();
+    }
+
+    public class PluginMessage
+    {
+        private int type;
+        private Object message;
+    }
 }

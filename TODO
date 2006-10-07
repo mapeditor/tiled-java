@@ -5,10 +5,10 @@ ROADMAP TO FUTURE RELEASES
 
 * Remove copy constructors in favour of clone method (DONE)
 
-* Add import/export of options (WIP)
+* Add import/export of options (DONE)
 
-    See about reusing overwrite confirmation and default extension
-    functionality from ConfirmingFileChooser.
+    Update translations for dialog.saveas.confirm.mismatch and add translations
+    for import/export
 
 * Allow embedding of tile palette beneath the map view (WIP)
 

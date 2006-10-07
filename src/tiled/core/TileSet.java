@@ -361,7 +361,7 @@ public class TileSet
      */
     public Tile getTile(int i) {
         try {
-            return (Tile)tiles.get(i);
+            return (Tile) tiles.get(i);
         } catch (ArrayIndexOutOfBoundsException a) {}
         return null;
     }
@@ -374,9 +374,10 @@ public class TileSet
      */
     public Tile getFirstTile() {
         Tile ret = null;
-        final Iterator itr = iterator();
-        if (itr.hasNext()) {
-            ret = (Tile)itr.next();
+        int i = 0;
+        while (ret == null && i <= getMaxTileId()) {
+            ret = getTile(i);
+            i++;
         }
         return ret;
     }

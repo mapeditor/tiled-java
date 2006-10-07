@@ -491,6 +491,8 @@ public class MapEditor implements ActionListener, MouseListener,
 
     /**
      * Creates the tool bar.
+     *
+     * @return the created tool bar
      */
     private JToolBar createToolBar() {
         Icon iconMove = Resources.getIcon("gimp-tool-move-22.png");
@@ -1181,11 +1183,11 @@ public class MapEditor implements ActionListener, MouseListener,
             }
         } else if (command.equals(Resources.getString("menu.tilesets.import"))) {
             if (currentMap != null) {
-                JFileChooser ch = new JFileChooser(currentMap.getFilename());
+                JFileChooser chooser = new JFileChooser(currentMap.getFilename());
                 MapReader[] readers = pluginLoader.getReaders();
                 for (int i = 0; i < readers.length; i++) {
                     try {
-                        ch.addChoosableFileFilter(new TiledFileFilter(
+                        chooser.addChoosableFileFilter(new TiledFileFilter(
                                     readers[i].getFilter(),
                                     readers[i].getName()));
                     } catch (Exception e) {
@@ -1193,12 +1195,12 @@ public class MapEditor implements ActionListener, MouseListener,
                     }
                 }
 
-                ch.addChoosableFileFilter(
+                chooser.addChoosableFileFilter(
                         new TiledFileFilter(TiledFileFilter.FILTER_TSX));
 
-                int ret = ch.showOpenDialog(appFrame);
+                int ret = chooser.showOpenDialog(appFrame);
                 if (ret == JFileChooser.APPROVE_OPTION) {
-                    String filename = ch.getSelectedFile().getAbsolutePath();
+                    String filename = chooser.getSelectedFile().getAbsolutePath();
                     try {
                         TileSet set = MapHelper.loadTileset(filename);
                         currentMap.addTileset(set);
@@ -1257,8 +1259,8 @@ public class MapEditor implements ActionListener, MouseListener,
                 new PluginDialog(appFrame, pluginLoader);
             pluginDialog.setVisible(true);
         } else if (command.equals(Resources.getString("menu.edit.preferences"))) {
-            ConfigurationDialog d = new ConfigurationDialog(appFrame);
-            d.configure();
+            ConfigurationDialog dialog = new ConfigurationDialog(appFrame);
+            dialog.configure();
         } else {
             System.out.println(event);
         }
@@ -1747,8 +1749,8 @@ public class MapEditor implements ActionListener, MouseListener,
         }
     }
 
-    public void setBrush(AbstractBrush b) {
-        currentBrush = b;
+    public void setBrush(AbstractBrush brush) {
+        currentBrush = brush;
 
         Rectangle brushRedraw = currentBrush.getBounds();
 
@@ -1807,10 +1809,10 @@ public class MapEditor implements ActionListener, MouseListener,
         }
 
         try {
-            Map m = MapHelper.loadMap(file);
+            Map map = MapHelper.loadMap(file);
 
-            if (m != null) {
-                setCurrentMap(m);
+            if (map != null) {
+                setCurrentMap(map);
                 updateRecent(file);
                 return true;
             } else {
@@ -1840,11 +1842,12 @@ public class MapEditor implements ActionListener, MouseListener,
      */
     public void saveMapImage(String filename) {
         if (filename == null) {
-            JFileChooser ch = new JFileChooser();
-            ch.setDialogTitle("Save as image");
+            JFileChooser chooser = new JFileChooser();
+            chooser.setDialogTitle("Save as image");
 
-            if (ch.showSaveDialog(appFrame) == JFileChooser.APPROVE_OPTION) {
-                filename = ch.getSelectedFile().getAbsolutePath();
+            if (chooser.showSaveDialog(appFrame) ==
+                    JFileChooser.APPROVE_OPTION) {
+                filename = chooser.getSelectedFile().getAbsolutePath();
             }
         }
 
@@ -1853,32 +1856,33 @@ public class MapEditor implements ActionListener, MouseListener,
             myView.setShowGrid(mapView.getShowGrid());
             myView.setMode(MapView.PF_NOSPECIAL, true);
             myView.setZoom(mapView.getZoom());
-            Dimension d = myView.getPreferredSize();
+            Dimension imgSize = myView.getPreferredSize();
 
             try {
-                BufferedImage i = new BufferedImage(d.width, d.height,
-                                                    BufferedImage.TYPE_INT_ARGB);
-                Graphics2D g = i.createGraphics();
-                g.setClip(0, 0, d.width, d.height);
+                BufferedImage img = new BufferedImage(
+                        imgSize.width, imgSize.height, BufferedImage.TYPE_INT_ARGB);
+                Graphics2D g = img.createGraphics();
+                g.setClip(0, 0, imgSize.width, imgSize.height);
                 myView.paint(g);
 
-                String format = filename.substring(filename.lastIndexOf('.') + 1);
+                int lastDot = filename.lastIndexOf('.');
+                String format = filename.substring(lastDot + 1);
 
                 try {
-                    ImageIO.write(i, format, new File(filename));
+                    ImageIO.write(img, format, new File(filename));
                 } catch (IOException e) {
                     e.printStackTrace();
                     JOptionPane.showMessageDialog(appFrame,
-                                                  "Error while saving " + filename + ": " + e.toString(),
-                                                  "Error while saving map image",
-                                                  JOptionPane.ERROR_MESSAGE);
+                            "Error while saving " + filename + ": " + e.toString(),
+                            "Error while saving map image",
+                            JOptionPane.ERROR_MESSAGE);
                 }
             } catch (OutOfMemoryError memoryError) {
                 JOptionPane.showMessageDialog(appFrame,
-                                              "Out of memory while creating image. Try increasing\n" +
-                                                      "your maximum heap size or zooming out a bit.",
-                                              "Out of memory",
-                                              JOptionPane.ERROR_MESSAGE);
+                        "Out of memory while creating image. Try increasing\n" +
+                                "your maximum heap size or zooming out a bit.",
+                        "Out of memory",
+                        JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -1981,12 +1985,7 @@ public class MapEditor implements ActionListener, MouseListener,
             if (!tilesets.isEmpty()) {
                 Iterator it = tilesets.iterator();
                 while (it.hasNext() && firstTile == null) {
-                    TileSet set = (TileSet) it.next();
-                    int i = 0;
-                    while (firstTile == null && i <= set.getMaxTileId()) {
-                        firstTile = set.getTile(i);
-                        i++;
-                    }
+                    firstTile = ((TileSet) it.next()).getFirstTile();
                 }
             }
             setCurrentTile(firstTile);

@@ -81,9 +81,9 @@ public class TilesetTableModel extends AbstractTableModel
         }
     }
 
-    private int checkSetUsage(TileSet s) {
+    private int checkSetUsage(TileSet set) {
         int used = 0;
-        Iterator tileIterator = s.iterator();
+        Iterator tileIterator = set.iterator();
 
         while (tileIterator.hasNext()) {
             Tile tile = (Tile)tileIterator.next();

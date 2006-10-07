@@ -2,10 +2,12 @@ trunk
 
 * Added support for tile instance properties (by Christian Henz)
 * Added ability to create stamp brushes from the tile palette
+* Added import/export of configuration
 * Embedded the tile palette
 * Report out of memory error when saving map as image
 * Properties table now displays the properties in alphabetical order
 * Fixed properties dialog to also save values that were still being edited
+* Fixed automatically adding the file extention when not given
 * Worked around an issue with the open file dialog on GNU classpath
 * Worked around an issue with setting a null cursor on GNU classpath
 

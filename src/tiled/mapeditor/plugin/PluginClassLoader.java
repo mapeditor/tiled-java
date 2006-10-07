@@ -36,22 +36,13 @@ import tiled.util.TiledConfiguration;
  */
 public final class PluginClassLoader extends URLClassLoader
 {
-    private Vector plugins;
-    private Vector readers, writers;
-    private Hashtable readerFormats, writerFormats;
+    private final Vector plugins;
+    private final Vector readers, writers;
+    private final Hashtable readerFormats, writerFormats;
     private static PluginClassLoader instance;
 
-    public PluginClassLoader() {
+    private PluginClassLoader() {
         super(new URL[0]);
-        plugins = new Vector();
-        readers = new Vector();
-        writers = new Vector();
-        readerFormats = new Hashtable();
-        writerFormats = new Hashtable();
-    }
-
-    public PluginClassLoader(URL[] urls) {
-        super(urls);
         plugins = new Vector();
         readers = new Vector();
         writers = new Vector();
@@ -104,81 +95,84 @@ public final class PluginClassLoader extends URLClassLoader
             String aName =
                 aPath.substring(aPath.lastIndexOf(File.separatorChar) + 1);
 
-            if (aPath.endsWith(".jar")) {
-                try {
-                    monitor.setNote("Reading " + aName + "...");
-                    JarFile jf = new JarFile(files[i]);
+            // Skip non-jar files.
+            if (!aPath.endsWith(".jar")) {
+                continue;
+            }
 
-                    monitor.setProgress(i);
+            try {
+                monitor.setNote("Reading " + aName + "...");
+                JarFile jf = new JarFile(files[i]);
 
-                    if (jf.getManifest() == null)
-                        continue;
+                monitor.setProgress(i);
 
-                    String readerClassName =
-                        jf.getManifest().getMainAttributes().getValue(
-                                "Reader-Class");
-                    String writerClassName =
-                        jf.getManifest().getMainAttributes().getValue(
-                                "Writer-Class");
+                if (jf.getManifest() == null)
+                    continue;
 
-                    Class readerClass = null, writerClass = null;
+                String readerClassName =
+                    jf.getManifest().getMainAttributes().getValue(
+                            "Reader-Class");
+                String writerClassName =
+                    jf.getManifest().getMainAttributes().getValue(
+                            "Writer-Class");
 
-                    // Verify that the jar has the necessary files to be a
-                    // plugin
-                    if (readerClassName == null && writerClassName == null) {
-                        continue;
-                    }
+                Class readerClass = null, writerClass = null;
 
-                    monitor.setNote("Loading " + aName + "...");
-                    addURL((new File(aPath)).toURL());
-
-                    if (readerClassName != null) {
-                        JarEntry reader = jf.getJarEntry(
-                                readerClassName.replace('.', '/') + ".class");
-
-                        if (reader != null) {
-                            readerClass = loadFromJar(
-                                    jf, reader, readerClassName);
-                        }else System.err.println("Manifest entry "+readerClassName+" does not match any class in the jar.");
-                    }
-                    if (writerClassName != null) {
-                        JarEntry writer = jf.getJarEntry(
-                                writerClassName.replace('.', '/') + ".class");
-
-                        if (writer != null) {
-                            writerClass = loadFromJar(
-                                    jf, writer, writerClassName);
-                        } else System.err.println("Manifest entry "+writerClassName+" does not match any class in the jar.");
-                    }
-
-                    boolean bPlugin = false;
-                    if (doesImplement(readerClass, "tiled.io.MapReader")) {
-                        bPlugin = true;
-                    }
-                    if (doesImplement(writerClass, "tiled.io.MapWriter")) {
-                        bPlugin = true;
-                    }
-
-                    if (bPlugin) {
-                        if (readerClass != null) _add(readerClass);
-                        if (writerClass != null) _add(writerClass);
-                        //System.out.println(
-                        //        "Added " + files[i].getCanonicalPath());
-                    }
-
-                } catch (IOException e) {
-                    e.printStackTrace();
+                // Verify that the jar has the necessary files to be a
+                // plugin
+                if (readerClassName == null && writerClassName == null) {
+                    continue;
                 }
+
+                monitor.setNote("Loading " + aName + "...");
+                addURL(new File(aPath).toURL());
+
+                if (readerClassName != null) {
+                    JarEntry reader = jf.getJarEntry(
+                            readerClassName.replace('.', '/') + ".class");
+
+                    if (reader != null) {
+                        readerClass = loadFromJar(
+                                jf, reader, readerClassName);
+                    }else System.err.println("Manifest entry "+readerClassName+" does not match any class in the jar.");
+                }
+                if (writerClassName != null) {
+                    JarEntry writer = jf.getJarEntry(
+                            writerClassName.replace('.', '/') + ".class");
+
+                    if (writer != null) {
+                        writerClass = loadFromJar(
+                                jf, writer, writerClassName);
+                    } else System.err.println("Manifest entry "+writerClassName+" does not match any class in the jar.");
+                }
+
+                boolean bPlugin = false;
+                if (isReader(readerClass)) {
+                    bPlugin = true;
+                }
+                if (isWriter(writerClass)) {
+                    bPlugin = true;
+                }
+
+                if (bPlugin) {
+                    if (readerClass != null) _add(readerClass);
+                    if (writerClass != null) _add(writerClass);
+                    //System.out.println(
+                    //        "Added " + files[i].getCanonicalPath());
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
 
     public MapReader[] getReaders() {
-        return (MapReader[])readers.toArray(new MapReader[readers.size()]);
+        return (MapReader[]) readers.toArray(new MapReader[readers.size()]);
     }
 
     public MapWriter[] getWriters() {
-        return (MapWriter[])writers.toArray(new MapWriter[writers.size()]);
+        return (MapWriter[]) writers.toArray(new MapWriter[writers.size()]);
     }
 
     public Object getReaderFor(String file) throws Exception {
@@ -229,14 +223,14 @@ public final class PluginClassLoader extends URLClassLoader
         return defineClass(className, buffer, 0, buffer.length);
     }
 
-    private static boolean doesImplement(Class c, String interfaceName)
+    private static boolean doesImplement(Class klass, String interfaceName)
         throws Exception
     {
-        if (c == null) {
+        if (klass == null) {
             return false;
         }
 
-        Class[] interfaces = c.getInterfaces();
+        Class[] interfaces = klass.getInterfaces();
         for (int i = 0; i < interfaces.length; i++) {
             String name = interfaces[i].toString();
             if (name.substring(name.indexOf(' ') + 1).equals(interfaceName)) {
@@ -246,24 +240,28 @@ public final class PluginClassLoader extends URLClassLoader
         return false;
     }
 
-    private static boolean isReader(Class c) throws Exception {
-        return doesImplement(c, "tiled.io.MapReader");
+    private static boolean isReader(Class klass) throws Exception {
+        return doesImplement(klass, "tiled.io.MapReader");
     }
 
-    private void _add(Class c) throws Exception{
+    private static boolean isWriter(Class writerClass) throws Exception {
+        return doesImplement(writerClass, "tiled.io.MapWriter");
+    }
+
+    private void _add(Class klass) throws Exception{
         try {
-            PluggableMapIO p = (PluggableMapIO) c.newInstance();
-            String clname = c.toString();
+            PluggableMapIO p = (PluggableMapIO) klass.newInstance();
+            String clname = klass.toString();
             clname = clname.substring(clname.indexOf(' ') + 1);
             String filter = p.getFilter();
             String[] ext = filter.split(",");
 
-            if (isReader(c)) {
+            if (isReader(klass)) {
                 for (int i = 0; i < ext.length; i++) {
                     readerFormats.put(ext[i], clname);
                 }
                 readers.add(p);
-            } else {
+            } else if (isWriter(klass)) {
                 for (int i = 0; i < ext.length; i++){
                     writerFormats.put(ext[i], clname);
                 }

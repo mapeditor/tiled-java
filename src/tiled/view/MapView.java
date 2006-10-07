@@ -202,8 +202,6 @@ public abstract class MapView extends JPanel implements Scrollable
             mapView = new OrthoMapView(p);
         } else if (orientation == Map.MDO_HEX) {
             mapView = new HexMapView(p);
-        } else if (orientation == Map.MDO_OBLIQUE) {
-            mapView = new ObliqueMapView(p);
         } else if (orientation == Map.MDO_SHIFTED) {
             mapView = new ShiftedMapView(p);
         }

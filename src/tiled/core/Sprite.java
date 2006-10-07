@@ -5,69 +5,73 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
- 
+
 package tiled.core;
 
-import java.awt.*;
+import java.awt.Image;
+import java.awt.Rectangle;
 import java.util.Iterator;
 import java.util.Vector;
 
-public class Sprite {
-
+/**
+ * @version $Id$
+ */
+public class Sprite
+{
     private Vector keys;
     private int borderWidth = 0;
     private int fpl = 0;
     private int totalKeys = -1;
 
-    private float currentFrame=0;
+    private float currentFrame = 0;
     private Rectangle frameSize;
-    private boolean bPlaying=true;
+    private boolean bPlaying = true;
 
     public class KeyFrame
     {
-    	public static final int MASK_ANIMATION = 0x0000000F;
-    	
-        public static final int KEY_LOOP    = 0x01;
-        public static final int KEY_STOP    = 0x02;
-        public static final int KEY_AUTO    = 0x04;
+        public static final int MASK_ANIMATION = 0x0000000F;
+
+        public static final int KEY_LOOP = 0x01;
+        public static final int KEY_STOP = 0x02;
+        public static final int KEY_AUTO = 0x04;
         public static final int KEY_REVERSE = 0x08;
 
         public static final int KEY_NAME_LENGTH_MAX = 32;
 
-        private String name=null;
-        private int id=-1;
-        private int flags=KEY_LOOP;
-        private float frameRate=1.0f;   //one fps
-        private Tile [] frames; 
+        private String name = null;
+        private int id = -1;
+        private int flags = KEY_LOOP;
+        private float frameRate = 1.0f;   //one fps
+        private Tile[] frames;
 
         public KeyFrame() {
-            flags=KEY_LOOP;
+            flags = KEY_LOOP;
         }
 
         public KeyFrame(String name) {
-        	this();
-            this.name=name;
+            this();
+            this.name = name;
         }
 
-        public KeyFrame(String name, Tile [] tile) {
-        	this(name);
-        	this.frames = tile;
+        public KeyFrame(String name, Tile[] tile) {
+            this(name);
+            frames = tile;
         }
 
         public void setName(String name) {
-            this.name=name;
+            this.name = name;
         }
 
         public void setFrameRate(float r) {
-            frameRate=r;
+            frameRate = r;
         }
 
         public void setId(int id) {
-            this.id=id;
+            this.id = id;
         }
 
         public int getId() {
@@ -75,15 +79,15 @@ public class Sprite {
         }
 
         public int getLastFrame() {
-        	return frames.length-1;
+            return frames.length - 1;
         }
-        
+
         public boolean isFrameLast(int frame) {
-        	return frames.length-1==frame;
+            return frames.length - 1 == frame;
         }
-        
+
         public void setFlags(int f) {
-            flags=f;
+            flags = f;
         }
 
         public int getFlags() {
@@ -95,160 +99,158 @@ public class Sprite {
         }
 
         public Tile getFrame(int f) {
-        	if(f > 0 && f < frames.length) {
-        		return frames[f];
-        	}
-        	return null;
+            if (f > 0 && f < frames.length) {
+                return frames[f];
+            }
+            return null;
         }
-        
+
         public float getFrameRate() {
             return frameRate;
         }
 
         public int getTotalFrames() {
-        	return frames.length;
+            return frames.length;
         }
-        
+
         public boolean equalsIgnoreCase(String n) {
-            if (name!=null)
-                return(name.equalsIgnoreCase(n));
-            return(false);
+            return name != null && name.equalsIgnoreCase(n);
         }
 
         public String toString() {
-            return "("+name+")"+id+": @ "+frameRate;
+            return "(" + name + ")" + id + ": @ " + frameRate;
         }
     }
 
-    private KeyFrame currentKey=null;
-    
+    private KeyFrame currentKey = null;
+
     public Sprite() {
         frameSize = new Rectangle();
         keys = new Vector();
     }
 
     public Sprite(Tile[] frames) {
-    	setFrames(frames);
+        setFrames(frames);
     }
-    
-    public Sprite(Image image, int fpl, int border,int totalFrames) {
-        Tile [] frames = null;
-        this.fpl=fpl;
-        borderWidth=border;
+
+    public Sprite(Image image, int fpl, int border, int totalFrames) {
+        Tile[] frames = null;
+        this.fpl = fpl;
+        borderWidth = border;
 
         //TODO: break up the image into tiles
-        
+
         //given this information, extrapolate the rest...
-        
-        frameSize.width=image.getWidth(null)/(fpl+borderWidth*fpl);
-        frameSize.height=(int) (image.getHeight(null)/(Math.ceil(totalFrames/fpl)+Math.ceil(totalFrames/fpl)*borderWidth));
+
+        frameSize.width = image.getWidth(null) / (fpl + borderWidth * fpl);
+        frameSize.height = (int) (image.getHeight(null) / (Math.ceil(totalFrames / fpl) + Math.ceil(totalFrames / fpl) * borderWidth));
         createKey("", frames, KeyFrame.KEY_LOOP);
     }
 
-    public void setFrames(Tile [] frames) {
-    	frameSize=new Rectangle(0,0,frames[0].getWidth(),frames[0].getHeight());
-    	
-    	createKey("", frames, KeyFrame.KEY_LOOP);
+    public void setFrames(Tile[] frames) {
+        frameSize = new Rectangle(0, 0, frames[0].getWidth(), frames[0].getHeight());
+
+        createKey("", frames, KeyFrame.KEY_LOOP);
     }
 
     public void setFrameSize(int w, int h) {
-        frameSize.width=w;
-        frameSize.height=h;
+        frameSize.width = w;
+        frameSize.height = h;
     }
 
     public void setBorderWidth(int b) {
-        borderWidth=b;
+        borderWidth = b;
     }
 
     public void setFpl(int f) {
-        fpl=f;
+        fpl = f;
     }
 
     public void setCurrentFrame(float c) {
-    	if (c < 0) {
-    		switch(currentKey.flags & KeyFrame.MASK_ANIMATION) {
-    			case KeyFrame.KEY_LOOP:
-    				currentFrame = currentKey.getLastFrame();
-    			break;
-    			case KeyFrame.KEY_AUTO:
-    				currentKey = getPreviousKey();
-    				currentFrame = currentKey.getLastFrame();
-    			break;
-    			case KeyFrame.KEY_REVERSE:
-    				currentKey.setFrameRate(-currentKey.getFrameRate());
-    				currentFrame = 0;
-    			break;
-    			case KeyFrame.KEY_STOP:
-    				bPlaying = false;
-    				currentFrame = 0;
-    			break;
-    		}
-    	} else if (c > currentKey.getLastFrame()) {
-    		switch(currentKey.flags & KeyFrame.MASK_ANIMATION) {
-				case KeyFrame.KEY_LOOP:
-					currentFrame = 0;
-				break;
-				case KeyFrame.KEY_AUTO:
-					currentFrame = 0;
-					currentKey = getNextKey();
-				break;
-				case KeyFrame.KEY_REVERSE:
-					currentKey.setFrameRate(-currentKey.getFrameRate());
-					currentFrame = currentKey.getLastFrame();
-				break;
-				case KeyFrame.KEY_STOP:
-					bPlaying = false;
-					currentFrame = currentKey.getLastFrame();
-				break;
-    		}
-    	} else {
-    		currentFrame=c;
-    	}
+        if (c < 0) {
+            switch (currentKey.flags & KeyFrame.MASK_ANIMATION) {
+                case KeyFrame.KEY_LOOP:
+                    currentFrame = currentKey.getLastFrame();
+                    break;
+                case KeyFrame.KEY_AUTO:
+                    currentKey = getPreviousKey();
+                    currentFrame = currentKey.getLastFrame();
+                    break;
+                case KeyFrame.KEY_REVERSE:
+                    currentKey.setFrameRate(-currentKey.getFrameRate());
+                    currentFrame = 0;
+                    break;
+                case KeyFrame.KEY_STOP:
+                    bPlaying = false;
+                    currentFrame = 0;
+                    break;
+            }
+        } else if (c > currentKey.getLastFrame()) {
+            switch (currentKey.flags & KeyFrame.MASK_ANIMATION) {
+                case KeyFrame.KEY_LOOP:
+                    currentFrame = 0;
+                    break;
+                case KeyFrame.KEY_AUTO:
+                    currentFrame = 0;
+                    currentKey = getNextKey();
+                    break;
+                case KeyFrame.KEY_REVERSE:
+                    currentKey.setFrameRate(-currentKey.getFrameRate());
+                    currentFrame = currentKey.getLastFrame();
+                    break;
+                case KeyFrame.KEY_STOP:
+                    bPlaying = false;
+                    currentFrame = currentKey.getLastFrame();
+                    break;
+            }
+        } else {
+            currentFrame = c;
+        }
     }
 
     public void setTotalKeys(int t) {
-        totalKeys=t;
+        totalKeys = t;
     }
 
     public Rectangle getFrameSize() {
-        return(frameSize);
+        return frameSize;
     }
 
     public int getTotalFrames() {
-    	int total = 0;
-    	Iterator itr = keys.iterator();
-    	while (itr.hasNext()) {
-    		total += ((KeyFrame)itr.next()).getTotalFrames();
-    	}
-    	
-        return(total);
+        int total = 0;
+        Iterator itr = keys.iterator();
+        while (itr.hasNext()) {
+            total += ((KeyFrame) itr.next()).getTotalFrames();
+        }
+
+        return total;
     }
 
     public int getBorderWidth() {
-        return(borderWidth);
+        return borderWidth;
     }
 
     public Tile getCurrentFrame() {
-    	return currentKey.getFrame((int)currentFrame);
+        return currentKey.getFrame((int) currentFrame);
     }
 
     public KeyFrame getNextKey() {
-    	Iterator itr = keys.iterator();
-    	while(itr.hasNext()) {
-    		KeyFrame k = (KeyFrame)itr.next();
-    		if(k == currentKey) {
-    			if(itr.hasNext()) return (KeyFrame)itr.next();
-    		}
-    	}
-    	
-    	return (KeyFrame)keys.get(0);
+        Iterator itr = keys.iterator();
+        while (itr.hasNext()) {
+            KeyFrame k = (KeyFrame) itr.next();
+            if (k == currentKey) {
+                if (itr.hasNext()) return (KeyFrame) itr.next();
+            }
+        }
+
+        return (KeyFrame) keys.get(0);
     }
-    
+
     public KeyFrame getPreviousKey() {
-    	//TODO: this
-    	return null;
+        //TODO: this
+        return null;
     }
-    
+
     public KeyFrame getCurrentKey() {
         return currentKey;
     }
@@ -263,12 +265,12 @@ public class Sprite {
 
     public void setKeyFrameTo(String name) {
         Iterator itr = keys.iterator();
-        while(itr.hasNext()) {
-        	KeyFrame k = (KeyFrame) itr.next();
-        	if(k.equalsIgnoreCase(name)) {
-        		currentKey=k;
-        		break;
-        	}
+        while (itr.hasNext()) {
+            KeyFrame k = (KeyFrame) itr.next();
+            if (k.equalsIgnoreCase(name)) {
+                currentKey = k;
+                break;
+            }
         }
     }
 
@@ -281,7 +283,7 @@ public class Sprite {
         keys.remove(getKey(name));
     }
 
-    public void createKey(String name, Tile [] frames, int flags) {
+    public void createKey(String name, Tile[] frames, int flags) {
         KeyFrame kf = new KeyFrame(name, frames);
         kf.setName(name);
         kf.setFlags(flags);
@@ -290,16 +292,17 @@ public class Sprite {
 
     public void iterateFrame() {
 
-        if (currentKey!=null) {
+        if (currentKey != null) {
             if (bPlaying) {
-                setCurrentFrame(currentFrame+currentKey.getFrameRate());
+                setCurrentFrame(currentFrame + currentKey.getFrameRate());
             }
         }
     }
 
     /**
      * Sets the current frame relative to the starting frame of the
-     * current key. 
+     * current key.
+     *
      * @param c
      */
     public void keySetFrame(int c) {
@@ -315,50 +318,52 @@ public class Sprite {
     }
 
     public void keyStepBack(int amt) {
-        setCurrentFrame(currentFrame-amt);
+        setCurrentFrame(currentFrame - amt);
     }
 
     public void keyStepForward(int amt) {
-        setCurrentFrame(currentFrame+amt);
+        setCurrentFrame(currentFrame + amt);
     }
 
     public KeyFrame getKey(String keyName) {
         Iterator itr = keys.iterator();
         while (itr.hasNext()) {
-        	KeyFrame k = (KeyFrame) itr.next();
-        	if (k != null && k.equalsIgnoreCase(keyName)) {
-        		return k;
-        	}
+            KeyFrame k = (KeyFrame) itr.next();
+            if (k != null && k.equalsIgnoreCase(keyName)) {
+                return k;
+            }
         }
         return null;
     }
 
-	public KeyFrame getKey(int i) {
-		return (KeyFrame)keys.get(i);
-	}
+    public KeyFrame getKey(int i) {
+        return (KeyFrame) keys.get(i);
+    }
 
-    public Iterator getKeys() throws Exception{
+    public Iterator getKeys() throws Exception {
         return keys.iterator();
     }
 
     public Rectangle getCurrentFrameRect() {
         int x = 0, y = 0;
-        
-        if(frameSize.height>0 && frameSize.width>0) {
-	        y=(((int)currentFrame)/fpl)*(frameSize.height+borderWidth);
-	        x=(((int)currentFrame)%fpl)*(frameSize.width+borderWidth);
+
+        if (frameSize.height > 0 && frameSize.width > 0) {
+            y = ((int) currentFrame / fpl) * (frameSize.height + borderWidth);
+            x = ((int) currentFrame % fpl) * (frameSize.width + borderWidth);
         }
-        
-    	return new Rectangle(x, y, frameSize.width, frameSize.height);
+
+        return new Rectangle(x, y, frameSize.width, frameSize.height);
     }
 
     /**
      * @see Object#toString()
      */
     public String toString() {
-        String s = null;
-        s = "Frame: ("+frameSize.width+"x"+frameSize.height+")\nBorder: "+borderWidth+"\nFPL: "+fpl+"\nTotal Frames: "+getTotalFrames()+"\nTotal keys: "+totalKeys;
-        return s;
+        return "Frame: (" + frameSize.width + "x" + frameSize.height + ")\n" +
+                "Border: " + borderWidth + "\n" +
+                "FPL: " + fpl + "\n" +
+                "Total Frames: " + getTotalFrames() + "\n" +
+                "Total keys: " + totalKeys;
     }
 }
 

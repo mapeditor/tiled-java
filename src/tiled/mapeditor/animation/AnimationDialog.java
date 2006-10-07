@@ -198,8 +198,8 @@ public class AnimationDialog extends JDialog implements ActionListener
             Sprite.KeyFrame k =
                     currentSprite.getKey((String) keyframe.getSelectedItem());
             if (k != null) {
-                lCurrentFrame.setText("" + currentSprite.getCurrentFrame());
-                lFrameRate.setText("" + k.getFrameRate());
+                lCurrentFrame.setText(String.valueOf(currentSprite.getCurrentFrame()));
+                lFrameRate.setText(String.valueOf(k.getFrameRate()));
             }
         }
     }
@@ -320,7 +320,7 @@ class SpriteCanvas extends JPanel
     /**
      * Draws checkerboard background.
      */
-    private void paintBackground(Graphics g) {
+    private static void paintBackground(Graphics g) {
         Rectangle clip = g.getClipBounds();
         int side = 10;
 
@@ -345,7 +345,6 @@ class SpriteCanvas extends JPanel
     }
 
     public void paint(Graphics g) {
-
         if (owner != null) {
             Dimension d = getSize();
             if (buffer == null) {

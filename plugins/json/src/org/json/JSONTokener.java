@@ -109,7 +109,7 @@ public class JSONTokener {
 
 
     /**
-     * Get the next n characters.     
+     * Get the next n characters.
      * @param n     The number of characters to take.
      * @return      A string of n characters.
      * @exception ParseException
@@ -319,7 +319,7 @@ public class JSONTokener {
             } catch (Exception e) {
             }
         }
-        if (s.equals("")) {
+        if (s.length() == 0) {
             throw syntaxError("Missing value.");
         }
         return s;

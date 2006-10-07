@@ -15,7 +15,6 @@ package tiled.mapeditor.util;
 import java.io.File;
 import java.util.Iterator;
 import java.util.LinkedList;
-import javax.swing.filechooser.FileFilter;
 
 import tiled.io.PluggableMapIO;
 import tiled.io.xml.XMLMapWriter;
@@ -24,7 +23,7 @@ import tiled.mapeditor.Resources;
 /**
  * @version $Id$
  */
-public class TiledFileFilter extends FileFilter
+public class TiledFileFilter extends ConfirmableFileFilter
 {
     public static final int FILTER_EXT  = 0;
     public static final int FILTER_TMX  = 1;
@@ -95,30 +94,35 @@ public class TiledFileFilter extends FileFilter
         }
     }
 
-    public void setDescription(String d) {
-        desc = d;
+    public void setDescription(String description) {
+        desc = description;
     }
 
-    public void addExtention(String e) {
-        exts.add(e);
+    public void addExtention(String extension) {
+        exts.add(extension);
     }
 
     public PluggableMapIO getPlugin() {
         return pmio;
     }
 
-    public String getFirstExtention() {
-        return (String) exts.getFirst();
+    public String getDefaultExtension() {
+        if (!exts.isEmpty()) {
+            return (String) exts.getFirst();
+        }
+        else {
+            return null;
+        }
     }
 
     public int getType() {
         return type;
     }
 
-    public boolean accept(File f) {
-        // todo: Verify that the "!f.exists()" check is rather weird.
-        if (type != FILTER_EXT && (f.isFile() || !f.exists())) {
-            String fileName = f.getPath().toLowerCase();
+    public boolean accept(File file) {
+        // todo: Verify that the "!file.exists()" check is rather weird.
+        if (type != FILTER_EXT && (file.isFile() || !file.exists())) {
+            String fileName = file.getPath().toLowerCase();
 
             Iterator itr = exts.iterator();
             while (itr.hasNext()) {
@@ -133,20 +137,19 @@ public class TiledFileFilter extends FileFilter
     }
 
     public String getDescription() {
-        String filter = "";
+        StringBuffer filter = new StringBuffer();
 
         if (!exts.isEmpty()) {
-            filter += " (";
+            filter.append(" (");
             Iterator itr = exts.iterator();
             while (itr.hasNext()) {
-                String ext = (String) itr.next();
-                filter = filter + "*." + ext;
+                filter.append("*.").append((String) itr.next());
                 if (itr.hasNext()) {
-                    filter += ",";
+                    filter.append(",");
                 }
             }
 
-            filter += ")";
+            filter.append(")");
         }
 
         return desc + filter;

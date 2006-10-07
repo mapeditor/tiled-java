@@ -57,7 +57,7 @@ public class XMLMapTransformer implements MapReader
         if (filename.indexOf("://") > 0 || filename.startsWith("file:")) {
             url = filename;
         } else {
-            url = (new File(filename)).toURL().toString();
+            url = new File(filename).toURL().toString();
         }
         return url;
     }
@@ -73,7 +73,7 @@ public class XMLMapTransformer implements MapReader
     }
 
     private void reflectInvokeMethod(Object invokeVictim, Method method,
-            String[] args) throws InvocationTargetException, Exception
+            String[] args) throws Exception
     {
         Class[] parameterTypes = method.getParameterTypes();
         Object[] conformingArguments = new Object[parameterTypes.length];
@@ -109,8 +109,6 @@ public class XMLMapTransformer implements MapReader
             map.setOrientation(Map.MDO_ORTHO);
         } else if ("hexagonal".equalsIgnoreCase(o)) {
             map.setOrientation(Map.MDO_HEX);
-        } else if ("oblique".equalsIgnoreCase(o)) {
-            map.setOrientation(Map.MDO_OBLIQUE);
         } else if ("shifted".equalsIgnoreCase(o)) {
             map.setOrientation(Map.MDO_SHIFTED);
         } else {
@@ -180,8 +178,7 @@ public class XMLMapTransformer implements MapReader
         return o;
     }
 
-    private Image unmarshalImage(Node t, String baseDir)
-        throws MalformedURLException, IOException
+    private Image unmarshalImage(Node t, String baseDir) throws IOException
     {
         Image img = null;
 
@@ -200,9 +197,9 @@ public class XMLMapTransformer implements MapReader
             NodeList nl = t.getChildNodes();
 
             for (int i = 0; i < nl.getLength(); i++) {
-                Node n = nl.item(i);
-                if ("data".equals(n.getNodeName())) {
-                    Node cdata = n.getFirstChild();
+                Node node = nl.item(i);
+                if ("data".equals(node.getNodeName())) {
+                    Node cdata = node.getFirstChild();
                     if (cdata == null) {
                         logger.warn("image <data> tag enclosed no " +
                                 "data. (empty data tag)");
@@ -243,13 +240,12 @@ public class XMLMapTransformer implements MapReader
     {
         TileSet set = null;
         Node tsNode;
-        Document tsDoc = null;
 
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         try {
             DocumentBuilder builder = factory.newDocumentBuilder();
             //builder.setErrorHandler(new XMLErrorHandler());
-            tsDoc = builder.parse(in, ".");
+            Document tsDoc = builder.parse(in, ".");
 
             String xmlPathSave = xmlPath;
             if (filename.indexOf(File.separatorChar) >= 0) {
@@ -259,15 +255,15 @@ public class XMLMapTransformer implements MapReader
 
             NodeList tsNodeList = tsDoc.getElementsByTagName("tileset");
 
-            for (int itr = 0; (tsNode = tsNodeList.item(itr)) != null; itr++) {
+            // There can be only one tileset in a .tsx file.
+            tsNode = tsNodeList.item(0);
+            if (tsNode != null)
+            {
                 set = unmarshalTileset(tsNode);
                 if (set.getSource() != null) {
                     logger.warn("Recursive external Tilesets are not supported.");
                 }
                 set.setSource(filename);
-                // NOTE: This is a deliberate break. multiple tilesets per TSX are
-                // not supported yet (maybe never)...
-                break;
             }
 
             xmlPath = xmlPathSave;
@@ -693,7 +689,7 @@ public class XMLMapTransformer implements MapReader
         }
     }
 
-    private Map unmarshal(InputStream in) throws IOException, Exception {
+    private Map unmarshal(InputStream in) throws Exception {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         Document doc;
         try {

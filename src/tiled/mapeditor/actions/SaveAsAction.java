@@ -13,7 +13,6 @@
 package tiled.mapeditor.actions;
 
 import java.awt.event.ActionEvent;
-import java.io.File;
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -24,6 +23,7 @@ import tiled.io.MapWriter;
 import tiled.mapeditor.MapEditor;
 import tiled.mapeditor.Resources;
 import tiled.mapeditor.util.TiledFileFilter;
+import tiled.mapeditor.util.ConfirmingFileChooser;
 import tiled.util.TiledConfiguration;
 
 /**
@@ -38,11 +38,6 @@ public class SaveAsAction extends AbstractAction
 
     private static final String ACTION_NAME = Resources.getString("action.map.saveas.name");
     private static final String ACTION_TOOLTIP = Resources.getString("action.map.saveas.tooltip");
-    private static final String UNKNOWN_TYPE_MESSAGE = Resources.getString("dialog.saveas.unknown-type.message");
-    private static final String CONFIRM_MISMATCH = Resources.getString("dialog.saveas.confirm.mismatch");
-    private static final String CONFIRM_MISMATCH_TITLE = Resources.getString("dialog.saveas.confirm.mismatch.title");
-    private static final String FILE_EXISTS_MESSAGE = Resources.getString("general.file.exists.message");
-    private static final String FILE_EXISTS_TITLE = Resources.getString("general.file.exists.title");
     private static final String SAVEAS_ERROR_MESSAGE = Resources.getString("dialog.saveas.error.message");
     private static final String SAVEAS_ERROR_TITLE = Resources.getString("dialog.saveas.error.title");
 
@@ -64,7 +59,8 @@ public class SaveAsAction extends AbstractAction
     protected void showFileChooser()
     {
         // Start at the location of the most recently loaded map file
-        String startLocation = TiledConfiguration.node("recent").get("file0", "");
+        String startLocation =
+                TiledConfiguration.node("recent").get("file0", null);
 
         TiledFileFilter byExtensionFilter =
                 new TiledFileFilter(TiledFileFilter.FILTER_EXT);
@@ -72,6 +68,7 @@ public class SaveAsAction extends AbstractAction
                 new TiledFileFilter(TiledFileFilter.FILTER_TMX);
 
         JFileChooser chooser = new ConfirmingFileChooser(startLocation);
+        chooser.setAcceptAllFileFilterUsed(false);
         chooser.addChoosableFileFilter(byExtensionFilter);
         chooser.addChoosableFileFilter(tmxFilter);
 
@@ -89,9 +86,13 @@ public class SaveAsAction extends AbstractAction
         int result = chooser.showSaveDialog(editor.getAppFrame());
         if (result == JFileChooser.APPROVE_OPTION)
         {
+            savingCancelled = false;
             TiledFileFilter saver = (TiledFileFilter) chooser.getFileFilter();
             String selectedFile = chooser.getSelectedFile().getAbsolutePath();
             saveFile(saver, selectedFile);
+        }
+        else {
+            savingCancelled = true;
         }
     }
 
@@ -134,102 +135,5 @@ public class SaveAsAction extends AbstractAction
     public boolean isSavingCancelled ()
     {
         return savingCancelled;
-    }
-
-    public void resetSavingCancelled ()
-    {
-        savingCancelled = false;
-    }
-
-    /**
-     * This file chooser extends the {@link JFileChooser} in a number of ways.
-     * <ul>
-     *   <li>Adds an extention to the filename based on the file filter, when
-     *       the user didn't specify any.</li>
-     *   <li>If the file to be saved is not accepted by the chosen file filter,
-     *       it confirms that the user really wants to do this. This is done
-     *       because the same file filter is used to determine with which
-     *       plugin to load the file.</li>
-     *   <li>Confirms before overwriting an existing file.</li>
-     * </ul>
-     * This file chooser can only be used with {@link TiledFileFilter}.
-     */
-    private final class ConfirmingFileChooser extends JFileChooser
-    {
-        public ConfirmingFileChooser(String currentDirectoryPath) {
-            super(currentDirectoryPath);
-            setAcceptAllFileFilterUsed(false);
-            setDialogTitle(Resources.getString("dialog.saveas.title"));
-        }
-
-        public void approveSelection ()
-        {
-            File file = new File(getSelectedFile().getAbsolutePath());
-            TiledFileFilter saver = (TiledFileFilter) getFileFilter();
-
-            // If the file does not have an extention, append the first
-            // extension specified by the file filter.
-            String filename = file.getName();
-            int lastDot = filename.lastIndexOf('.');
-
-            if (lastDot == -1 || lastDot == filename.length() - 1) {
-                if (saver.getType() == TiledFileFilter.FILTER_EXT) {
-                    // Impossible to determine extension with this filter
-                    JOptionPane.showMessageDialog(this,
-                                                  UNKNOWN_TYPE_MESSAGE);
-                    return;
-                }
-
-                String newFilePath = file.getAbsolutePath();
-
-                // Add a dot if it wasn't at the end already
-                if (lastDot != filename.length() - 1) {
-                    newFilePath += ".";
-                }
-
-                file = new File(newFilePath + saver.getFirstExtention());
-            }
-
-            // Check that chosen plugin accepts the file. It is a good idea to
-            // warn the user when this is not the case, because loading the map
-            // becomes a problem.
-            if (saver.getType() != TiledFileFilter.FILTER_EXT) {
-                if (!saver.accept(file)) {
-                    int result = JOptionPane.showConfirmDialog(
-                            editor.getAppFrame(),
-                            CONFIRM_MISMATCH, CONFIRM_MISMATCH_TITLE,
-                            JOptionPane.YES_NO_OPTION);
-
-                    if (result != JOptionPane.OK_OPTION) {
-                        return;
-                    }
-                }
-            }
-
-            // Confirm overwrite if the file happens to exist already
-            if (file.exists())
-            {
-                int answer = JOptionPane.showConfirmDialog(
-                        editor.getAppFrame(),
-                        FILE_EXISTS_MESSAGE, FILE_EXISTS_TITLE,
-                        JOptionPane.YES_NO_OPTION);
-
-                if (answer == JOptionPane.YES_OPTION)
-                {
-                    savingCancelled = false;
-                    super.approveSelection();
-                }
-            }
-            else {
-                savingCancelled = false;
-                super.approveSelection();
-            }
-        }
-
-        public void cancelSelection ()
-        {
-            savingCancelled = true;
-            super.cancelSelection();
-        }
     }
 }

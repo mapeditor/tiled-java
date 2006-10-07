@@ -48,7 +48,6 @@ public class NewMapDialog extends JDialog implements ActionListener
     private static final String OK_BUTTON = Resources.getString("general.button.ok");
     private static final String CANCEL_BUTTON = Resources.getString("general.button.cancel");
     private static final String ISOMETRIC_MAPTYPE = Resources.getString("general.maptype.isometric");
-    private static final String OBLIQUE_MAPTYPE = Resources.getString("general.maptype.oblique");
     private static final String HEXAGONAL_MAPTYPE = Resources.getString("general.maptype.hexagonal");
     private static final String SHIFTED_MAPTYPE = Resources.getString("general.maptype.shifted");
     private static final String ORTHOGONAL_MAPTYPE = Resources.getString("general.maptype.orthogonal");
@@ -139,7 +138,6 @@ public class NewMapDialog extends JDialog implements ActionListener
         // TODO: Enable views when implemented decently
         //mapTypeChooser.addItem(HEXAGONAL_MAPTYPE);
         //mapTypeChooser.addItem(SHIFTED_MAPTYPE);
-        //mapTypeChooser.addItem(OBLIQUE_MAPTYPE);
 
         JPanel miscPropPanel = new VerticalStaticJPanel();
         miscPropPanel.setLayout(new GridBagLayout());
@@ -192,8 +190,6 @@ public class NewMapDialog extends JDialog implements ActionListener
 
             if (mapTypeString.equals(ISOMETRIC_MAPTYPE)) {
                 orientation = Map.MDO_ISO;
-            } else if (mapTypeString.equals(OBLIQUE_MAPTYPE)) {
-                orientation = Map.MDO_OBLIQUE;
             } else if (mapTypeString.equals(HEXAGONAL_MAPTYPE)) {
                 orientation = Map.MDO_HEX;
             } else if (mapTypeString.equals(SHIFTED_MAPTYPE)) {

@@ -27,7 +27,7 @@ import tiled.core.TileSet;
  */
 public class MappyMapWriter implements MapWriter
 {
-    private LinkedList chunks;
+    private final LinkedList chunks;
 
     public MappyMapWriter() {
         chunks = new LinkedList();
@@ -51,12 +51,11 @@ public class MappyMapWriter implements MapWriter
         System.out.println("Asked to write "+filename);
     }
 
-    public void writeMap(Map map, OutputStream in) throws Exception {
-        in.write("FORM".getBytes());
+    public void writeMap(Map map, OutputStream out) throws Exception {
+        out.write("FORM".getBytes());
         // TODO: write the size of the file minus this header
-        in.write("FMAP".getBytes());
+        out.write("FMAP".getBytes());
         createMPHDChunk(map);
-
 
         // TODO: write all the chunks
     }
@@ -104,14 +103,14 @@ public class MappyMapWriter implements MapWriter
     }
 
 
-    private void createMPHDChunk(Map m) throws IOException {
-        Chunk c = new Chunk("MPHD");
-        OutputStream out = c.getOutputStream();
-        String ver = m.getProperties().getProperty("version");
+    private void createMPHDChunk(Map map) throws IOException {
+        Chunk chunk = new Chunk("MPHD");
+        OutputStream out = chunk.getOutputStream();
+        String ver = map.getProperties().getProperty("version");
         if (ver == null || ver.length() < 3) {
             ver = "0.3";                            // default the value
         }
-        TileSet set = (TileSet) m.getTilesets().get(0);
+        TileSet set = (TileSet) map.getTilesets().get(0);
 
         //FIXME
         //out.write(Integer.parseInt(ver.substring(0,ver.indexOf('.')-1)));
@@ -119,29 +118,31 @@ public class MappyMapWriter implements MapWriter
         out.write(0);
         out.write(3);
         out.write(1); out.write(0);                 // LSB, reserved
-        Util.writeShort(m.getWidth(), out);  Util.writeShort(m.getHeight(), out);
+        Util.writeShort(map.getWidth(), out);
+        Util.writeShort(map.getHeight(), out);
         out.write(0); out.write(0); out.write(0); out.write(0);     // reserved
-        Util.writeShort(m.getTileWidth(), out); Util.writeShort(m.getTileHeight(), out);
+        Util.writeShort(map.getTileWidth(), out);
+        Util.writeShort(map.getTileHeight(), out);
         Util.writeShort(16, out);                   // tile bitdepth
         Util.writeShort(32, out);                   // blkstr bytewidth
-        Util.writeShort(findAllBlocks(m).size(), out);
+        Util.writeShort(findAllBlocks(map).size(), out);
         Util.writeShort(set.getMaxTileId(), out);
 
-        chunks.add(c);
+        chunks.add(chunk);
     }
 
-    private void createBKDTChunk(Map m) {
-        Chunk c = new Chunk("BKDT");
-        LinkedList blocks = findAllBlocks(m);
+    private void createBKDTChunk(Map map) {
+        Chunk chunk = new Chunk("BKDT");
+        LinkedList blocks = findAllBlocks(map);
         Iterator itr = blocks.iterator();
         while(itr.hasNext()) {
             MappyMapReader.BlkStr b = (BlkStr) itr.next();
             // TODO: write the block
         }
-        chunks.add(c);
+        chunks.add(chunk);
     }
 
-    private LinkedList findAllBlocks(Map m) {
+    private LinkedList findAllBlocks(Map map) {
         // TODO: this
         return null;
     }
