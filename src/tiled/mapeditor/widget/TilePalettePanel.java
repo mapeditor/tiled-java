@@ -51,6 +51,7 @@ public class TilePalettePanel extends JPanel implements Scrollable,
             public void mousePressed(MouseEvent e) {
                 origin = getTileCoordinates(e.getX(), e.getY());
                 setSelection(new Rectangle(origin.x, origin.y, 0, 0));
+                scrollTileToVisible(origin);
                 Tile clickedTile = getTileAt(origin.x, origin.y);
                 if (clickedTile != null) {
                     fireTileSelectionEvent(clickedTile);
@@ -63,6 +64,7 @@ public class TilePalettePanel extends JPanel implements Scrollable,
                 select.add(point);
                 if (!select.equals(selection)) {
                     setSelection(select);
+                    scrollTileToVisible(point);
                 }
                 fireTileRegionSelectionEvent(selection);
             }
@@ -74,6 +76,8 @@ public class TilePalettePanel extends JPanel implements Scrollable,
     /**
      * Adds tile selection listener. The listener will be notified when the
      * user selects a tile.
+     *
+     * @param listener the listener to add
      */
     public void addTileSelectionListener(TileSelectionListener listener) {
         tileSelectionListeners.add(listener);
@@ -81,6 +85,8 @@ public class TilePalettePanel extends JPanel implements Scrollable,
 
     /**
      * Removes tile selection listener.
+     *
+     * @param listener the listener to remove
      */
     public void removeTileSelectionListener(TileSelectionListener listener) {
         tileSelectionListeners.remove(listener);
@@ -107,6 +113,7 @@ public class TilePalettePanel extends JPanel implements Scrollable,
 
     /**
      * Creates a tile layer from a certain region of the tile palette.
+     *
      * @param rect the rectangular region from which a tile layer is created
      * @return the created tile layer
      */
@@ -126,7 +133,7 @@ public class TilePalettePanel extends JPanel implements Scrollable,
     /**
      * Change the tileset displayed by this palette panel.
      *
-     * @param tileset
+     * @param tileset the tileset to be displayed by this palette panel
      */
     public void setTileset(TileSet tileset) {
         // Remove any existing listener
@@ -156,6 +163,10 @@ public class TilePalettePanel extends JPanel implements Scrollable,
      * Converts pixel coordinates to tile coordinates. The returned coordinates
      * are at least 0 and adjusted with respect to the number of tiles per row
      * and the number of rows.
+     *
+     * @param x x coordinate
+     * @param y y coordinate
+     * @return tile coordinates
      */
     private Point getTileCoordinates(int x, int y) {
         int twidth = tileset.getTileWidth() + 1;
@@ -175,6 +186,8 @@ public class TilePalettePanel extends JPanel implements Scrollable,
      * Retrieves the tile at the given tile coordinates. It assumes the tile
      * coordinates are adjusted to the number of tiles per row.
      *
+     * @param x x tile coordinate
+     * @param y y tile coordinate
      * @return the tile at the given tile coordinates, or <code>null</code>
      *         if the index is out of range
      */
@@ -192,6 +205,8 @@ public class TilePalettePanel extends JPanel implements Scrollable,
     /**
      * Returns the number of tiles to display per row. This gets calculated
      * dynamically unless the tileset specifies this value.
+     *
+     * @return the number of tiles to display per row, is at least 1
      */
     private int getTilesPerRow() {
         // todo: It should be an option to follow the tiles per row given
@@ -219,6 +234,16 @@ public class TilePalettePanel extends JPanel implements Scrollable,
                     (selection.width + 1) * twidth + 1,
                     (selection.height + 1) * theight + 1);
         }
+    }
+
+    private void scrollTileToVisible(Point tile) {
+        int twidth = tileset.getTileWidth() + 1;
+        int theight = tileset.getTileHeight() + 1;
+
+        scrollRectToVisible(new Rectangle(
+                tile.x * twidth,
+                tile.y * theight,
+                twidth + 1, theight + 1));
     }
 
     public void paint(Graphics g) {
@@ -275,6 +300,8 @@ public class TilePalettePanel extends JPanel implements Scrollable,
 
     /**
      * Draws checkerboard background.
+     *
+     * @param g the {@link Graphics} instance to draw on
      */
     private static void paintBackground(Graphics g) {
         Rectangle clip = g.getClipBounds();
