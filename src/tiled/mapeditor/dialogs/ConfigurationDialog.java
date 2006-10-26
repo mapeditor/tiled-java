@@ -40,9 +40,13 @@ public class ConfigurationDialog extends JDialog
 {
     private IntegerSpinner undoDepth;
     private JSlider gridOpacitySlider;
-    private JCheckBox cbBinaryEncode, cbCompressLayerData, cbEmbedImages;
+    private JCheckBox cbBinaryEncode;
+    private JCheckBox cbCompressLayerData;
+    private JCheckBox cbEmbedImages;
     private JCheckBox cbReportIOWarnings;
-    private JRadioButton rbEmbedInTiles, rbEmbedInSet;
+    private JCheckBox cbAutoOpenLastFile;
+    private JRadioButton rbEmbedInTiles;
+    private JRadioButton rbEmbedInSet;
     private JCheckBox cbGridAA;
     //private JColorChooser gridColor;
 
@@ -58,6 +62,7 @@ public class ConfigurationDialog extends JDialog
     private static final String COMPRESS_LAYER_DATA_CHECKBOX = Resources.getString("dialog.preferences.compress.layer.data.checkbox");
     private static final String EMBED_IMAGES_CHECKBOX = Resources.getString("dialog.preferences.embed.images.checkbox");
     private static final String REPORT_IO_WARNINGS_CHECKBOX = Resources.getString("dialog.preferences.report.io.warnings.checkbox");
+    private static final String AUTO_OPEN_LAST_FILE_CHECKBOX = Resources.getString("dialog.preferences.report.io.autoopenlast.checkbox");
     private static final String EMBED_IN_TILES_CHECKBOX = Resources.getString("dialog.preferences.embed.in.tiles.checkbox");
     private static final String EMBED_IN_SET_CHECKBOX = Resources.getString("dialog.preferences.embed.in.set.checkbox");
     private static final String ANTIALIASING_CHECKBOX = Resources.getString("dialog.preferences.antialiasing.checkbox");
@@ -97,6 +102,7 @@ public class ConfigurationDialog extends JDialog
         cbCompressLayerData = new JCheckBox(COMPRESS_LAYER_DATA_CHECKBOX);
         cbEmbedImages = new JCheckBox(EMBED_IMAGES_CHECKBOX);
         cbReportIOWarnings = new JCheckBox(REPORT_IO_WARNINGS_CHECKBOX);
+        cbAutoOpenLastFile = new JCheckBox(AUTO_OPEN_LAST_FILE_CHECKBOX);
         rbEmbedInTiles = new JRadioButton(EMBED_IN_TILES_CHECKBOX);
         rbEmbedInSet = new JRadioButton(EMBED_IN_SET_CHECKBOX);
         ButtonGroup bg = new ButtonGroup();
@@ -139,6 +145,9 @@ public class ConfigurationDialog extends JDialog
         c.gridy = 1;
         c.gridx = 0;
         generalOps.add(cbReportIOWarnings, c);
+        c.gridy = 2;
+        c.gridx = 0;
+        generalOps.add(cbAutoOpenLastFile, c);
 
         /* TILESET OPTIONS */
         JPanel tilesetOps = new VerticalStaticJPanel();
@@ -271,6 +280,13 @@ public class ConfigurationDialog extends JDialog
             }
         });
 
+        cbAutoOpenLastFile.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent itemEvent) {
+                ioPrefs.putBoolean("autoOpenLast",
+                        cbAutoOpenLastFile.isSelected());
+            }
+        });
+
         cbGridAA.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent itemEvent) {
                 displayPrefs.putBoolean("gridAntialias", cbGridAA.isSelected());
@@ -336,6 +352,7 @@ public class ConfigurationDialog extends JDialog
         cbCompressLayerData.setSelected(savingPrefs.getBoolean("layerCompression", true));
         cbGridAA.setSelected(displayPrefs.getBoolean("gridAntialias", true));
         cbReportIOWarnings.setSelected(ioPrefs.getBoolean("reportWarnings", false));
+        cbAutoOpenLastFile.setSelected(ioPrefs.getBoolean("autoOpenLast", false));
 
         cbCompressLayerData.setEnabled(cbBinaryEncode.isSelected());
         rbEmbedInTiles.setEnabled(embedImages);

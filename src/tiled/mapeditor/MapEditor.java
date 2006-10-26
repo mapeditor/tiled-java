@@ -86,7 +86,7 @@ public class MapEditor implements ActionListener, MouseListener,
     private final UndoableEditSupport undoSupport;
     private final MapEventAdapter mapEventAdapter;
     private final PluginClassLoader pluginLoader;
-    private final Preferences prefs = TiledConfiguration.root();
+    private static final Preferences prefs = TiledConfiguration.root();
 
     private int currentPointerState;
     private Tile currentTile;
@@ -256,7 +256,8 @@ public class MapEditor implements ActionListener, MouseListener,
 
 
         // Make sure the map view is redrawn when grid preferences change.
-        // todo: move this functionality out of here somehow, but not back into MapView
+        // todo: move this functionality out of here somehow, but not back into
+        // MapView
         final Preferences display = prefs.node("display");
         display.addPreferenceChangeListener(new PreferenceChangeListener() {
             public void preferenceChange(PreferenceChangeEvent event) {
@@ -2109,6 +2110,16 @@ public class MapEditor implements ActionListener, MouseListener,
             }
             catch (IOException e) {
                 e.printStackTrace();
+            }
+        }
+        else if (prefs.node("io").getBoolean("autoOpenLast", false)) {
+            // Load last map if it still exists
+            java.util.List recent = TiledConfiguration.getRecentFiles();
+            if (recent.size() > 0) {
+                String filename = (String) recent.get(0);
+                if (new File(filename).exists()) {
+                    editor.loadMap(filename);
+                }
             }
         }
     }
