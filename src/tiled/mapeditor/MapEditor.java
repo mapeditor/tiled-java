@@ -1141,31 +1141,31 @@ public class MapEditor implements ActionListener, MouseListener,
     public void actionPerformed(ActionEvent event) {
         String command = event.getActionCommand();
 
-        if (command.equals("paint")) {
+        if ("paint".equals(command)) {
             setCurrentPointerState(PS_PAINT);
             resetBrush();
-        } else if (command.equals("erase")) {
+        } else if ("erase".equals(command)) {
             setCurrentPointerState(PS_ERASE);
             resetBrush();
-        } else if (command.equals("point")) {
+        } else if ("point".equals(command)) {
             setCurrentPointerState(PS_POINT);
             resetBrush();
-        } else if (command.equals("pour")) {
+        } else if ("pour".equals(command)) {
             setCurrentPointerState(PS_POUR);
             resetBrush();
-        } else if (command.equals("eyed")) {
+        } else if ("eyed".equals(command)) {
             setCurrentPointerState(PS_EYED);
             resetBrush();
-        } else if (command.equals("marquee")) {
+        } else if ("marquee".equals(command)) {
             setCurrentPointerState(PS_MARQUEE);
             resetBrush();
-        } else if (command.equals("move")) {
+        } else if ("move".equals(command)) {
             setCurrentPointerState(PS_MOVE);
             resetBrush();
-        } else if (command.equals("moveobject")) {
+        } else if ("moveobject".equals(command)) {
             setCurrentPointerState(PS_MOVEOBJ);
             resetBrush();
-        } else if (command.equals("palette")) {
+        } else if ("palette".equals(command)) {
             if (currentMap != null) {
                 if (tilePaletteDialog == null) {
                     tilePaletteDialog =
@@ -1173,7 +1173,7 @@ public class MapEditor implements ActionListener, MouseListener,
                 }
                 tilePaletteDialog.setVisible(true);
             }
-        } else if (command.equals("tileInstanceProperties")) {
+        } else if ("tileInstanceProperties".equals(command)) {
             if (currentMap != null) {
                 tileInstancePropertiesDialog.setVisible(true);
             }
@@ -1870,7 +1870,7 @@ public class MapEditor implements ActionListener, MouseListener,
         }
 
         if (filename != null) {
-            MapView myView = MapView.createViewforMap(currentMap);
+            MapView myView = MapView.createViewforMap(currentMap, this);
             myView.setShowGrid(mapView.getShowGrid());
             myView.setMode(MapView.PF_NOSPECIAL, true);
             myView.setZoom(mapView.getZoom());
@@ -1964,7 +1964,7 @@ public class MapEditor implements ActionListener, MouseListener,
         } else {
             final Preferences display = prefs.node("display");
             mapEventAdapter.fireEvent(MapEventAdapter.ME_MAPACTIVE);
-            mapView = MapView.createViewforMap(currentMap);
+            mapView = MapView.createViewforMap(currentMap, this);
             mapView.addMouseListener(this);
             mapView.addMouseMotionListener(this);
             mapView.addComponentListener(this);
@@ -1978,8 +1978,6 @@ public class MapEditor implements ActionListener, MouseListener,
             mapViewport.addChangeListener(this);
             mapScrollPane.setViewport(mapViewport);
             setCurrentPointerState(PS_PAINT);
-
-            currentMap.addMapChangeListener(this);
 
             gridMenuItem.setState(mapView.getShowGrid());
             coordinatesMenuItem.setState(

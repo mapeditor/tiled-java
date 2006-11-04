@@ -50,7 +50,7 @@ public class ResizePanel extends JPanel
 
         DragHandler dragHandler = new DragHandler();
 
-        inner = MapView.createViewforMap(map);
+        inner = MapView.createViewforMap(map, null);
         inner.setZoom(zoom);
         inner.addMouseListener(dragHandler);
         inner.addMouseMotionListener(dragHandler);

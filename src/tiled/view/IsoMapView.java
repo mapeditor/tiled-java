@@ -32,7 +32,7 @@ public class IsoMapView extends MapView
      * @param map the map to be displayed by this map view
      */
     public IsoMapView(Map map) {
-        super(map);
+        super(map, null);
     }
 
     public int getScrollableBlockIncrement(Rectangle visibleRect,
@@ -202,6 +202,10 @@ public class IsoMapView extends MapView
             drawLoc.x -= columns * tileSize.width;
             drawLoc.y += tileStepY;
         }
+    }
+
+    protected void paintPropertyFlags(Graphics2D g2d, TileLayer layer) {
+        throw new RuntimeException("Not yet implemented");    // todo
     }
 
     public void repaintRegion(Rectangle region) {

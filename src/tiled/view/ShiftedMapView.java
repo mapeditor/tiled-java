@@ -33,7 +33,7 @@ public class ShiftedMapView extends MapView
      * @param map the map to be displayed by this map view
      */
     public ShiftedMapView(Map map) {
-        super(map);
+        super(map, null);
 
         horSide = 16;
         verSide = 0;
@@ -116,6 +116,10 @@ public class ShiftedMapView extends MapView
     }
 
     protected void paintCoordinates(Graphics2D g2d) {
+    }
+
+    protected void paintPropertyFlags(Graphics2D g2d, TileLayer layer) {
+        throw new RuntimeException("Not yet implemented");    // todo
     }
 
     public void repaintRegion(Rectangle region) {

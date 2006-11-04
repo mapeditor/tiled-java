@@ -18,6 +18,8 @@ import javax.swing.JPanel;
 import javax.swing.Scrollable;
 
 import tiled.core.*;
+import tiled.mapeditor.MapEditor;
+import tiled.mapeditor.Resources;
 import tiled.mapeditor.brush.Brush;
 import tiled.mapeditor.selection.SelectionLayer;
 
@@ -52,15 +54,35 @@ public abstract class MapView extends JPanel implements Scrollable
     };
 
     private static final Color DEFAULT_BACKGROUND_COLOR = new Color(64, 64, 64);
+    /** The default grid color (black). */
     public static final Color DEFAULT_GRID_COLOR = Color.black;
+
+    protected static Image propertyFlagImage;
+
+    // todo: BL - The map view should NOT need the editor. It is currently used
+    // todo: to determine whether to draw property flags based on the selected
+    // todo: layer. A better solution has to be found.
+    private final MapEditor editor;
 
     /**
      * Creates a new <code>MapView</code> that displays the specified map.
      *
      * @param map the map to be displayed by this map view
      */
-    protected MapView(Map map) {
+    protected MapView(Map map, MapEditor editor) {
+        // Setup static bits on first invocation
+        if (MapView.propertyFlagImage == null) {
+            try {
+                MapView.propertyFlagImage =
+                        Resources.getImage("propertyflag-12.png");
+            }
+            catch (Exception e) {
+            }
+        }
+
         this.map = map;
+        this.editor = editor;
+
         setOpaque(true);
     }
 
@@ -192,18 +214,21 @@ public abstract class MapView extends JPanel implements Scrollable
      * @return a suitable instance of a MapView for the given Map
      * @see Map#getOrientation()
      */
-    public static MapView createViewforMap(Map p) {
+    public static MapView createViewforMap(Map p, MapEditor editor) {
         MapView mapView = null;
 
         int orientation = p.getOrientation();
 
         if (orientation == Map.MDO_ISO) {
             mapView = new IsoMapView(p);
-        } else if (orientation == Map.MDO_ORTHO) {
-            mapView = new OrthoMapView(p);
-        } else if (orientation == Map.MDO_HEX) {
+        }
+        else if (orientation == Map.MDO_ORTHO) {
+            mapView = new OrthoMapView(p, editor); // FIXME
+        }
+        else if (orientation == Map.MDO_HEX) {
             mapView = new HexMapView(p);
-        } else if (orientation == Map.MDO_SHIFTED) {
+        }
+        else if (orientation == Map.MDO_SHIFTED) {
             mapView = new ShiftedMapView(p);
         }
 
@@ -250,11 +275,11 @@ public abstract class MapView extends JPanel implements Scrollable
                 if (layer.isVisible()) {
                     if (layer instanceof SelectionLayer) {
                         g2d.setComposite(AlphaComposite.getInstance(
-                                    AlphaComposite.SRC_ATOP, 0.3f));
+                                AlphaComposite.SRC_ATOP, 0.3f));
                         g2d.setColor(
-                                ((SelectionLayer)layer).getHighlightColor());
+                                ((SelectionLayer) layer).getHighlightColor());
                     }
-                    paintLayer(g2d, (TileLayer)layer);
+                    paintLayer(g2d, (TileLayer) layer);
                 }
             }
 
@@ -272,18 +297,20 @@ public abstract class MapView extends JPanel implements Scrollable
             if (gridOpacity < 255) {
                 g2d.setComposite(AlphaComposite.getInstance(
                         AlphaComposite.SRC_ATOP,
-                        (float)gridOpacity / 255.0f));
-            } else {
+                        (float) gridOpacity / 255.0f));
+            }
+            else {
                 g2d.setComposite(AlphaComposite.SrcOver);
             }
 
             // Configure grid antialiasing
             if (antialiasGrid) {
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                        RenderingHints.VALUE_ANTIALIAS_ON);
-            } else {
+                                     RenderingHints.VALUE_ANTIALIAS_ON);
+            }
+            else {
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                        RenderingHints.VALUE_ANTIALIAS_OFF);
+                                     RenderingHints.VALUE_ANTIALIAS_OFF);
             }
 
             g2d.setStroke(new BasicStroke());
@@ -294,27 +321,39 @@ public abstract class MapView extends JPanel implements Scrollable
             g2d.setComposite(AlphaComposite.SrcOver);
             paintCoordinates(g2d);
         }
+
+        if (editor != null && editor.getCurrentLayer() instanceof TileLayer) {
+            g2d.setComposite(AlphaComposite.SrcOver);
+
+            TileLayer tl = (TileLayer) editor.getCurrentLayer();
+            if (tl != null && tl.isVisible()) {
+                paintPropertyFlags(g2d, tl);
+            }
+        }
     }
 
-    public void paintSubMap(MultilayerPlane m, Graphics2D g2d, float mapOpacity) {
-    	Iterator li = m.getLayers();
-    	MapLayer layer;
+    public void paintSubMap(MultilayerPlane m, Graphics2D g2d,
+                            float mapOpacity) {
+        Iterator li = m.getLayers();
+        MapLayer layer;
 
-    	while (li.hasNext()) {
+        while (li.hasNext()) {
             layer = (MapLayer) li.next();
             if (layer != null) {
                 float opacity = layer.getOpacity() * mapOpacity;
                 if (layer.isVisible() && opacity > 0.0f) {
                     if (opacity < 1.0f) {
                         g2d.setComposite(AlphaComposite.getInstance(
-                                    AlphaComposite.SRC_ATOP, opacity));
-                    } else {
+                                AlphaComposite.SRC_ATOP, opacity));
+                    }
+                    else {
                         g2d.setComposite(AlphaComposite.SrcOver);
                     }
 
                     if (layer instanceof TileLayer) {
                         paintLayer(g2d, (TileLayer) layer);
-                    } else if (layer instanceof ObjectGroup) {
+                    }
+                    else if (layer instanceof ObjectGroup) {
                         paintObjectGroup(g2d, (ObjectGroup) layer);
                     }
                 }
@@ -419,6 +458,8 @@ public abstract class MapView extends JPanel implements Scrollable
      */
     protected abstract void paintCoordinates(Graphics2D g2d);
 
+    protected abstract void paintPropertyFlags(Graphics2D g2d, TileLayer layer);
+
     /**
      * Returns a Polygon that matches the grid around the specified <b>Map</b>.
      *
@@ -432,5 +473,6 @@ public abstract class MapView extends JPanel implements Scrollable
     // Conversion functions
 
     public abstract Point screenToTileCoords(int x, int y);
+
     public abstract Point tileToScreenCoords(double x, double y);
 }

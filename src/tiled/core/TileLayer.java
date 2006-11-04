@@ -16,6 +16,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.Area;
 import java.util.Properties;
+import java.util.HashMap;
 
 /**
  * A TileLayer is a specialized MapLayer, used for tracking two dimensional
@@ -26,31 +27,31 @@ import java.util.Properties;
 public class TileLayer extends MapLayer
 {
     protected Tile[][] map;
-    protected Properties[][] tileInstanceProperties;
+    protected HashMap tileInstanceProperties = new HashMap();
 
     public Properties getTileInstancePropertiesAt(int x, int y) {
-        try {
-            return tileInstanceProperties[y - bounds.y][x - bounds.x];
-        } catch (ArrayIndexOutOfBoundsException e) {
+        if (!bounds.contains(x, y)) {
             return null;
         }
+        Object key = new Point(x, y);
+        return (Properties) tileInstanceProperties.get(key);
     }
 
     public void setTileInstancePropertiesAt(int x, int y, Properties tip) {
-        try {
-            tileInstanceProperties[y - bounds.y][x - bounds.x] = tip;
-        } catch (ArrayIndexOutOfBoundsException e) {
+        if (bounds.contains(x, y)) {
+            Object key = new Point(x, y);
+            tileInstanceProperties.put(key, tip);
         }
     }
 
     /**
-     * Default contructor
+     * Default contructor.
      */
     public TileLayer() {
     }
 
     /**
-     * Construct a TileLayer from the given width and height
+     * Construct a TileLayer from the given width and height.
      *
      * @param w width in tiles
      * @param h height in tiles
@@ -194,13 +195,18 @@ public class TileLayer extends MapLayer
      * this causes a reallocation of the data array, and all previous data is
      * lost.
      *
-     * @param bounds
+     * @param bounds new new bounds of this tile layer (in tiles)
      * @see MapLayer#setBounds
      */
     protected void setBounds(Rectangle bounds) {
         super.setBounds(bounds);
         map = new Tile[bounds.height][bounds.width];
-        tileInstanceProperties = new Properties[bounds.height][bounds.width];
+
+        // Tile instance properties is null when this method is called from
+        // the constructor of MapLayer
+        if (tileInstanceProperties != null) {
+            tileInstanceProperties.clear();
+        }
     }
 
     /**
@@ -247,7 +253,7 @@ public class TileLayer extends MapLayer
      * is locked, an exception is thrown.
      *
      * @param tile the Tile to be removed
-     * @throws LayerLockedException
+     * @throws LayerLockedException when this layer is locked
      */
     public void removeTile(Tile tile) throws LayerLockedException {
         if (getLocked()) {
@@ -400,7 +406,7 @@ public class TileLayer extends MapLayer
     }
 
     /**
-     * Unlike mergeOnto, copyTo includes the null tile when merging
+     * Unlike mergeOnto, copyTo includes the null tile when merging.
      *
      * @see MapLayer#copyFrom
      * @see MapLayer#mergeOnto
@@ -429,16 +435,18 @@ public class TileLayer extends MapLayer
 
         // Clone the layer data
         clone.map = new Tile[map.length][];
-        clone.tileInstanceProperties = new Properties[map.length][];
+        clone.tileInstanceProperties = new HashMap();
 
         for (int i = 0; i < map.length; i++) {
             clone.map[i] = new Tile[map[i].length];
             System.arraycopy(map[i], 0, clone.map[i], 0, map[i].length);
 
-            clone.tileInstanceProperties[i] = new Properties[map[i].length];
             for (int j = 0; j < map[i].length; j++) {
-                if (tileInstanceProperties[i][j] != null) {
-                    clone.tileInstanceProperties[i][j] = new Properties(tileInstanceProperties[i][j]);
+                Properties p = getTileInstancePropertiesAt(i, j);
+
+                if (p != null) {
+                    Integer key = new Integer(i + j * bounds.width);
+                    clone.tileInstanceProperties.put(key, p.clone());
                 }
             }
         }
@@ -459,7 +467,7 @@ public class TileLayer extends MapLayer
             return;
 
         Tile[][] newMap = new Tile[height][width];
-        Properties[][] newTileInstanceProperties = new Properties[height][width];
+        HashMap newTileInstanceProperties = new HashMap();
 
         int maxX = Math.min(width, bounds.width + dx);
         int maxY = Math.min(height, bounds.height + dy);
@@ -467,7 +475,11 @@ public class TileLayer extends MapLayer
         for (int x = Math.max(0, dx); x < maxX; x++) {
             for (int y = Math.max(0, dy); y < maxY; y++) {
                 newMap[y][x] = getTileAt(x - dx, y - dy);
-                newTileInstanceProperties[y][x] = getTileInstancePropertiesAt(x - dx, y - dy);
+
+                Properties tip = getTileInstancePropertiesAt(x - dx, y - dy);
+                if (tip != null) {
+                    newTileInstanceProperties.put(new Point(x, y), tip);
+                }
             }
         }
 

@@ -14,6 +14,7 @@ package tiled.mapeditor.dialogs;
 
 import java.awt.Dimension;
 import java.awt.Rectangle;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Enumeration;
@@ -21,6 +22,8 @@ import java.util.LinkedList;
 import java.util.Properties;
 import javax.swing.*;
 import javax.swing.table.TableCellEditor;
+import javax.swing.event.TableModelListener;
+import javax.swing.event.TableModelEvent;
 
 import tiled.core.MapLayer;
 import tiled.core.Tile;
@@ -35,9 +38,9 @@ import tiled.mapeditor.widget.VerticalStaticJPanel;
  * @version $Id$
  */
 public class TileInstancePropertiesDialog extends JDialog
+    implements TableModelListener
 {
     private JTable propertiesTable;
-    private Properties properties = new Properties();
     private PropertiesTableModel tableModel = new PropertiesTableModel();
 
     private static final String DIALOG_TITLE = "Tile Properties"; // todo: Resource this
@@ -46,14 +49,38 @@ public class TileInstancePropertiesDialog extends JDialog
     private static final String DELETE_BUTTON = Resources.getString("general.button.delete");
 
     private final MapEditor editor;
-    private LinkedList propertiesList = new LinkedList(); // Holds all currently selected Properties
+    /** Holds all currently selected Properties. */
+    private final LinkedList propertiesCoordinates = new LinkedList();
+    private final Properties mergedProperties = new Properties();
 
     public TileInstancePropertiesDialog(MapEditor editor) {
         super(editor.getAppFrame(), DIALOG_TITLE, false);
         this.editor = editor;
+
+        tableModel.addTableModelListener(this);
+
         init();
         pack();
         setLocationRelativeTo(getOwner());
+    }
+
+    private Properties getPropertiesAt(Point p) {
+        MapLayer ml = editor.getCurrentLayer();
+        if (!(ml instanceof TileLayer)) {
+            return null;
+        }
+
+        return ((TileLayer) ml).getTileInstancePropertiesAt(p.x, p.y);
+    }
+
+    private void setPropertiesAt(Point point, Properties properties) {
+        MapLayer ml = editor.getCurrentLayer();
+        if (!(ml instanceof TileLayer)) {
+            return;
+        }
+
+        ((TileLayer) ml).setTileInstancePropertiesAt(point.x, point.y,
+                                                     properties);
     }
 
     private void init() {
@@ -105,8 +132,9 @@ public class TileInstancePropertiesDialog extends JDialog
 
     public void setSelection(SelectionLayer selection) {
         // Start off fresh...
-        properties.clear();
-        propertiesList.clear();
+        //Properties mergedProperties = new Properties();
+        mergedProperties.clear();
+        propertiesCoordinates.clear();
 
         // Get all properties of all selected tiles...
         MapLayer ml = editor.getCurrentLayer();
@@ -116,57 +144,58 @@ public class TileInstancePropertiesDialog extends JDialog
             int maxJ = (int) (r.getY() + r.getHeight());
             int maxI = (int) (r.getX() + r.getWidth());
 
+            // todo: BL - Why are tiles checked on null? Surely whether a tile
+            // todo: is null or not has nothing to do with whether you can place
+            // todo: a property as a certain location?
             for (int j = (int) r.getY(); j < maxJ; j++) {
                 for (int i = (int) r.getX(); i < maxI; i++) {
                     Tile t = selection.getTileAt(i, j);
                     if (t != null) {
-                        Properties p = tl.getTileInstancePropertiesAt(i, j);
-                        if (p != null) propertiesList.add(p);
+                        propertiesCoordinates.add(new Point(i, j));
+                    }
+                }
+            }
+
+            if (!propertiesCoordinates.isEmpty()) {
+                // Start with properties of first tile instance
+                Point point = (Point) propertiesCoordinates.get(0);
+                Properties p = tl.getTileInstancePropertiesAt(point.x, point.y);
+
+                if (p != null) {
+                    mergedProperties.putAll(p);
+
+                    for (int i = 1; i < propertiesCoordinates.size(); i++) {
+                        // Merge the other properties...
+                        point = (Point) propertiesCoordinates.get(i);
+                        p = tl.getTileInstancePropertiesAt(point.x, point.y);
+
+                        if (p != null) {
+                            for (Enumeration e = mergedProperties.keys(); e.hasMoreElements();) {
+                                // We only care for properties that are already "known"...
+                                String key = (String) e.nextElement();
+                                String val = mergedProperties.getProperty(key);
+                                String mval = p.getProperty(key);
+
+                                if (mval == null) {
+                                    // Drop non-common properties
+                                    mergedProperties.remove(key);
+                                } else if (!mval.equals(val)) {
+                                    // Hide non-common values
+                                    mergedProperties.setProperty(key, "?");
+                                }
+                            }
+                        } else {
+                            mergedProperties.clear();
+                            break;
+                        }
                     }
                 }
             }
         }
 
-        if (!propertiesList.isEmpty()) {
-            // Start with properties of first tile instance
-            Properties p = (Properties) propertiesList.get(0);
-
-            for (Enumeration e = p.keys(); e.hasMoreElements();) {
-                String key = (String) e.nextElement();
-                properties.put(key, p.getProperty(key));
-            }
-
-            for (int i = 1; i < propertiesList.size(); i++) {
-                // Merge the other properties...
-                p = (Properties) propertiesList.get(i);
-
-                for (Enumeration e = properties.keys(); e.hasMoreElements();) {
-                    // We only care for properties that are already "known"...
-
-                    String key = (String) e.nextElement();
-                    String val = properties.getProperty(key);
-                    String mval = p.getProperty(key);
-
-                    if (mval == null) {
-                        properties.remove(key); // Drop non-common properties
-                    } else if (!mval.equals(val)) {
-                        properties.setProperty(key, "?"); // Hide non-common values
-                    }
-                }
-            }
-        }
-
-        updateInfo(); // Refresh display
+        tableModel.setProperties(mergedProperties);
     }
 
-    private void updateInfo() {
-        tableModel.setProperties(properties);
-    }
-
-    public void getProps() {
-        updateInfo();
-        setVisible(true);
-    }
 
     private void buildPropertiesAndApply() {
         // Make sure there is no active cell editor anymore
@@ -176,17 +205,15 @@ public class TileInstancePropertiesDialog extends JDialog
         }
 
         // Apply possibly changed properties.
-        properties.clear();
-        properties.putAll(tableModel.getProperties());
-
         applyPropertiesToTiles();
     }
 
 
     private void deleteFromSelectedTiles(String key) {
-        for (int i = 0; i < propertiesList.size(); i++) {
-            Properties p = (Properties) propertiesList.get(i);
-            p.remove(key);
+        for (int i = 0; i < propertiesCoordinates.size(); i++) {
+            Point point = (Point) propertiesCoordinates.get(i);
+            Properties p = getPropertiesAt(point);
+            if (p != null) p.remove(key);
         }
     }
 
@@ -208,18 +235,48 @@ public class TileInstancePropertiesDialog extends JDialog
     }
 
     private void applyPropertiesToTiles() {
-        for (int i = 0; i < propertiesList.size(); i++) {
-            Properties tp = (Properties) propertiesList.get(i);
+        Properties properties = tableModel.getProperties();
 
-            for (Enumeration e = properties.keys();
-                 e.hasMoreElements();) {
+        // First delete all Properties that were previously selected
+        for( int i = 0; i < propertiesCoordinates.size(); i++ ) {
+            Point point = (Point) propertiesCoordinates.get( i );
+            Properties tp = getPropertiesAt( point );
+            if (tp != null) {
+                for (Enumeration e = mergedProperties.keys();
+                     e.hasMoreElements();) {
 
+                    String key = (String) e.nextElement();
+                    String val = (String) properties.get(key);
+
+                    if (!"?".equals(val)) {
+                        // Property was removed or has a valid new value
+                        tp.remove(key);
+                    }
+                }
+            }
+        }
+
+        // Now update all selected Properties with the
+        // new data
+        for (int i = 0; i < propertiesCoordinates.size(); i++) {
+            Point point = (Point) propertiesCoordinates.get(i);
+            Properties tp = getPropertiesAt(point);
+            if (tp == null) {
+                tp = new Properties();
+                setPropertiesAt( point, tp );
+            }
+
+            for (Enumeration e = properties.keys(); e.hasMoreElements();) {
                 String key = (String) e.nextElement();
                 String val = properties.getProperty(key);
-                if (!val.equals("?")) {
+                if (!"?".equals(val)) {
                     tp.setProperty(key, val);
                 }
             }
         }
+    }
+
+    public void tableChanged(TableModelEvent e) {
+        applyPropertiesToTiles();
     }
 }

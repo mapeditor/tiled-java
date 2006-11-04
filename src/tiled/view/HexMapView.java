@@ -60,7 +60,7 @@ public class HexMapView extends MapView
      * @param map the map to be displayed by this map view
      */
     public HexMapView(Map map) {
-        super(map);
+        super(map, null);
     }
 
     public int getScrollableBlockIncrement(Rectangle visibleRect,
@@ -186,6 +186,10 @@ public class HexMapView extends MapView
 
     protected void paintCoordinates(Graphics2D g2d) {
         // TODO: Implement paintCoordinates for HexMapView
+    }
+
+    protected void paintPropertyFlags(Graphics2D g2d, TileLayer layer) {
+        throw new RuntimeException("Not yet implemented");    // todo
     }
 
     public Point screenToTileCoords(int screenX, int screenY) {

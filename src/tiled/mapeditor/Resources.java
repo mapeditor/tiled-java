@@ -54,7 +54,7 @@ public final class Resources {
      * @throws IOException if an error occurs during reading
      * @throws IllegalArgumentException when the resource could not be found
      */
-    private static Image getImage(String filename) throws IOException,
+    public static Image getImage(String filename) throws IOException,
             IllegalArgumentException {
         return ImageIO.read(Resources.class.getResourceAsStream(
                 "resources/" + filename));
