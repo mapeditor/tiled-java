@@ -17,11 +17,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.FilteredImageSource;
 import java.io.File;
 import java.io.IOException;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Properties;
-import java.util.Vector;
-import java.util.LinkedList;
+import java.util.*;
 import javax.imageio.ImageIO;
 
 import tiled.mapeditor.util.TransparentImageFilter;
@@ -137,10 +133,73 @@ public class TileSet
         }
     }
 
-    public void checkUpdate() {
+    /**
+     * Refreshes a tileset from a tileset image file.
+     *
+     * @throws IOException
+     * @see TileSet#importTileBitmap(BufferedImage,TileCutter)
+     */
+    private void refreshImportedTileBitmap()
+            throws IOException
+    {
+        String imgFilename = tilebmpFile.getPath();
+
+        Image image = ImageIO.read(new File(imgFilename));
+        if (image == null) {
+            throw new IOException("Failed to load " + tilebmpFile);
+        }
+
+        Toolkit tk = Toolkit.getDefaultToolkit();
+
+        if (transparentColor != null) {
+            int rgb = transparentColor.getRGB();
+            image = tk.createImage(
+                    new FilteredImageSource(image.getSource(),
+                            new TransparentImageFilter(rgb)));
+        }
+
+        BufferedImage buffered = new BufferedImage(
+                image.getWidth(null),
+                image.getHeight(null),
+                BufferedImage.TYPE_INT_ARGB);
+        buffered.getGraphics().drawImage(image, 0, 0, null);
+
+        refreshImportedTileBitmap(buffered);
+    }
+
+    /**
+     * Refreshes a tileset from a buffered image. Tiles are cut by the passed
+     * cutter.
+     *
+     * @param tilebmp the image to be used, must not be null
+     */
+    private void refreshImportedTileBitmap(BufferedImage tilebmp) {
+        assert tilebmp != null;
+
+        tileCutter.reset();
+        tileCutter.setImage(tilebmp);
+
+        tileSetImage = tilebmp;
+        tileDimensions = new Rectangle(tileCutter.getTileDimensions());
+
+        int id = 0;
+        Image tile = tileCutter.getNextTile();
+        while (tile != null) {
+            int imgId = getTile(id).tileImageId;
+            overlayImage(imgId, tile);
+            tile = tileCutter.getNextTile();
+            id++;
+        }
+
+        fireTilesetChanged();
+    }
+
+    public void checkUpdate() throws IOException {
         if (tilebmpFile != null &&
                 tilebmpFile.lastModified() > tilebmpFileLastModified)
         {
+            refreshImportedTileBitmap();
+            tilebmpFileLastModified = tilebmpFile.lastModified();
         }
     }
 

@@ -25,7 +25,7 @@ public interface TileCutter
 {
     /**
      * Sets the image that this cutter should cut in tile images.
-     * @param image
+     * @param image the image that this cutter should cut
      */
     public void setImage(BufferedImage image);
 
@@ -37,10 +37,20 @@ public interface TileCutter
     public Image getNextTile();
 
     /**
+     * Resets the tile cutter so that the next call to <code>getNextTile</code>
+     * will return the first tile.
+     */
+    void reset();
+
+    /**
      * Returns the default tile dimensions of tiles cut by this cutter.
      * @return the default tile dimensions of tiles cut by this cutter.
      */
     public Dimension getTileDimensions();
 
+    /**
+     * Returns the name of this tile cutter.
+     * @return the name of this tile cutter
+     */
     public String getName();
 }

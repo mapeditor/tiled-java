@@ -148,6 +148,8 @@ public class MapEditor implements ActionListener, MouseListener,
     private final Action moveLayerDownAction, moveLayerUpAction;
     private final Action mergeLayerDownAction, mergeAllLayersAction;
 
+    private static final String IMPORT_ERROR_MSG = Resources.getString("dialog.newtileset.import.error.message");
+
     private static final String TOOL_PAINT = Resources.getString("tool.paint.name");
     private static final String TOOL_ERASE = Resources.getString("tool.erase.name");
     private static final String TOOL_FILL = Resources.getString("tool.fill.name");
@@ -406,16 +408,24 @@ public class MapEditor implements ActionListener, MouseListener,
         layerMenu.add(new TMenuItem(mergeLayerDownAction));
         layerMenu.add(new TMenuItem(mergeAllLayersAction));
         layerMenu.addSeparator();
-        layerMenu.add(createMenuItem(Resources.getString("menu.layer.properties"), null,
+        layerMenu.add(createMenuItem(
+                Resources.getString("menu.layer.properties"), null,
                 Resources.getString("menu.layer.properties.tooltip")));
 
         JMenu tilesetMenu = new JMenu(Resources.getString("menu.tilesets"));
-        tilesetMenu.add(createMenuItem(Resources.getString("menu.tilesets.new"), null,
+        tilesetMenu.add(createMenuItem(
+                Resources.getString("menu.tilesets.new"), null,
                 Resources.getString("menu.tilesets.new.tooltip")));
-        tilesetMenu.add(createMenuItem(Resources.getString("menu.tilesets.import"), null,
+        tilesetMenu.add(createMenuItem(
+                Resources.getString("menu.tilesets.import"), null,
                 Resources.getString("menu.tilesets.import.tooltip")));
         tilesetMenu.addSeparator();
-        tilesetMenu.add(createMenuItem(Resources.getString("menu.tilesets.manager"), null,
+        tilesetMenu.add(createMenuItem(
+                Resources.getString("menu.tilesets.refresh"), null,
+                Resources.getString("menu.tilesets.refresh.tooltip"), "F5"));
+        tilesetMenu.addSeparator();
+        tilesetMenu.add(createMenuItem(
+                Resources.getString("menu.tilesets.manager"), null,
                 Resources.getString("menu.tilesets.manager.tooltip")));
 
 
@@ -1226,6 +1236,23 @@ public class MapEditor implements ActionListener, MouseListener,
                         e.printStackTrace();
                     }
                 }
+            }
+        } else if (command.equals(Resources.getString("menu.tilesets.refresh"))) {
+            if (currentMap != null) {
+               Vector tilesets = currentMap.getTilesets();
+               Iterator iter = tilesets.iterator();
+               while (iter.hasNext()) {
+                       TileSet tileset = (TileSet) iter.next();
+                   try {
+                       tileset.checkUpdate();
+                   } catch (IOException e) {
+                       JOptionPane.showMessageDialog(appFrame,
+                               e.getLocalizedMessage(),
+                               IMPORT_ERROR_MSG, JOptionPane.WARNING_MESSAGE);
+                   }
+               }
+               mapView.repaint();
+               tilePaletteButton.setTile(currentTile);
             }
         } else if (command.equals(Resources.getString("menu.tilesets.manager"))) {
             if (currentMap != null) {
@@ -2132,7 +2159,7 @@ public class MapEditor implements ActionListener, MouseListener,
         else if (prefs.node("io").getBoolean("autoOpenLast", false)) {
             // Load last map if it still exists
             java.util.List recent = TiledConfiguration.getRecentFiles();
-            if (recent.size() > 0) {
+            if (!recent.isEmpty()) {
                 String filename = (String) recent.get(0);
                 if (new File(filename).exists()) {
                     editor.loadMap(filename);

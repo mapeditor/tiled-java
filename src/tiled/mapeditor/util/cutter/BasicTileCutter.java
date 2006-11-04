@@ -39,9 +39,7 @@ public class BasicTileCutter implements TileCutter
         this.tileSpacing = tileSpacing;
         this.offset = offset;
 
-        // Do initial setup
-        nextX = offset;
-        nextY = offset;
+        reset();
     }
 
     public String getName() {
@@ -67,6 +65,11 @@ public class BasicTileCutter implements TileCutter
         }
 
         return null;
+    }
+
+    public void reset() {
+        nextX = offset;
+        nextY = offset;
     }
 
     public Dimension getTileDimensions() {

@@ -34,6 +34,10 @@ public class BorderTileCutter implements TileCutter
         return null;
     }
 
+    public void reset() {
+        // TODO Auto-generated method stub
+    }
+
     public Dimension getTileDimensions() {
         // TODO Auto-generated method stub
         return null;
