@@ -113,6 +113,7 @@ public abstract class MapView extends JPanel implements Scrollable
     /**
      * Sets a new brush. The brush can draw a preview of the change while
      * editing.
+     * @param brush the new brush
      */
     public void setBrush(Brush brush) {
         currentBrush = brush;
@@ -312,9 +313,9 @@ public abstract class MapView extends JPanel implements Scrollable
                     }
 
                     if (layer instanceof TileLayer) {
-                        paintLayer(g2d, (TileLayer)layer);
+                        paintLayer(g2d, (TileLayer) layer);
                     } else if (layer instanceof ObjectGroup) {
-                        paintLayer(g2d, (ObjectGroup)layer);
+                        paintObjectGroup(g2d, (ObjectGroup) layer);
                     }
                 }
             }
@@ -324,6 +325,7 @@ public abstract class MapView extends JPanel implements Scrollable
     /**
      * Draws a TileLayer. Implemented in a subclass.
      *
+     * @param g2d   the graphics context to draw the layer onto
      * @param layer the TileLayer to be drawn
      */
     protected abstract void paintLayer(Graphics2D g2d, TileLayer layer);
@@ -331,9 +333,10 @@ public abstract class MapView extends JPanel implements Scrollable
     /**
      * Draws an ObjectGroup. Implemented in a subclass.
      *
+     * @param g2d   the graphics context to draw the object group onto
      * @param og    the ObjectGroup to be drawn
      */
-    protected abstract void paintLayer(Graphics2D g2d, ObjectGroup og);
+    protected abstract void paintObjectGroup(Graphics2D g2d, ObjectGroup og);
 
     protected void paintEdge(Graphics2D g2d, MapLayer layer, int x, int y) {
         /*
@@ -404,16 +407,20 @@ public abstract class MapView extends JPanel implements Scrollable
 
     /**
      * Draws the map grid.
+     *
+     * @param g2d the graphics context to draw the grid onto
      */
     protected abstract void paintGrid(Graphics2D g2d);
 
     /**
      * Draws the coordinates on each tile.
+     *
+     * @param g2d the graphics context to draw the coordinates onto
      */
     protected abstract void paintCoordinates(Graphics2D g2d);
 
     /**
-     * Returns a Polygon that matches the grid around the specified <b>Map</b>
+     * Returns a Polygon that matches the grid around the specified <b>Map</b>.
      *
      * @param tx
      * @param ty

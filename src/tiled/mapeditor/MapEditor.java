@@ -822,8 +822,8 @@ public class MapEditor implements ActionListener, MouseListener,
                     Tile newTile = ((TileLayer)layer).getTileAt(tile.x, tile.y);
                     setCurrentTile(newTile);
                 } else if (currentPointerState == PS_PAINT) {
-                    //in case we are dragging to create a custom brush, let the user
-                    //know where we are creating it from
+                    // In case we are dragging to create a custom brush, let
+                    // the user know where we are creating it from
                     if (marqueeSelection == null) {
                         marqueeSelection = new SelectionLayer(
                                 currentMap.getWidth(), currentMap.getHeight());
@@ -843,32 +843,45 @@ public class MapEditor implements ActionListener, MouseListener,
 
                     marqueeSelection.selectRegion(selRect);
                     if (oldArea != null) {
-                        oldArea.add(
-                                marqueeSelection.getSelectedAreaBounds());
+                        oldArea.add(marqueeSelection.getSelectedAreaBounds());
                         mapView.repaintRegion(oldArea);
                     }
                 }
             } else if (layer instanceof ObjectGroup && !bMouseIsDragging) {
                 // TODO: Add support for ObjectGroups here
             }
-        } else if (mouseButton == MouseEvent.BUTTON2) {
+        } else if (mouseButton == MouseEvent.BUTTON2 ||
+                (mouseButton == MouseEvent.BUTTON1 &&
+                 (event.getModifiersEx() & MouseEvent.ALT_DOWN_MASK ) != 0)) {
             // Scroll with middle mouse button
             int dx = event.getX() - mouseInitialScreenLocation.x;
             int dy = event.getY() - mouseInitialScreenLocation.y;
-            mouseInitialScreenLocation = new Point(event.getX() - dx, event.getY() - dy);
             JViewport mapViewPort = mapScrollPane.getViewport();
             Point currentPosition = mapViewPort.getViewPosition();
-            // TODO: Take into account map boundaries in order to prevent
-            // TODO: scrolling past them
-            mapViewPort.setViewPosition(new Point(currentPosition.x - dx,
-                                                  currentPosition.y - dy));
+            mouseInitialScreenLocation = new Point(
+                    event.getX() - dx,
+                    event.getY() - dy);
+
+            Point newPosition = new Point(
+                    currentPosition.x - dx,
+                    currentPosition.y - dy);
+
+            // Take into account map boundaries in order to prevent
+            // scrolling past them
+            int maxX = mapView.getWidth() - mapViewPort.getWidth();
+            int maxY = mapView.getHeight() - mapViewPort.getHeight();
+            newPosition.x = Math.min(maxX, Math.max(0, newPosition.x));
+            newPosition.y = Math.min(maxY, Math.max(0, newPosition.y));
+
+            mapViewPort.setViewPosition(newPosition);
         } else if (mouseButton == MouseEvent.BUTTON1) {
             switch (currentPointerState) {
                 case PS_PAINT:
                     paintEdit.setPresentationName(TOOL_PAINT);
                     if (layer instanceof TileLayer) {
                         try {
-                            mapView.repaintRegion(currentBrush.doPaint(tile.x, tile.y));
+                            mapView.repaintRegion(
+                                    currentBrush.doPaint(tile.x, tile.y));
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -884,15 +897,16 @@ public class MapEditor implements ActionListener, MouseListener,
                 case PS_POUR:  // POUR only works on TileLayers
                     paintEdit = null;
                     if (layer instanceof TileLayer) {
-                        Tile oldTile = ((TileLayer)layer).getTileAt(tile.x, tile.y);
-                        pour((TileLayer) layer, tile.x, tile.y, currentTile, oldTile);
+                        TileLayer tileLayer = (TileLayer) layer;
+                        Tile oldTile = tileLayer.getTileAt(tile.x, tile.y);
+                        pour(tileLayer, tile.x, tile.y, currentTile, oldTile);
                         mapView.repaint();
                     }
                     break;
                 case PS_EYED:
                     if (layer instanceof TileLayer) {
-                        Tile newTile = ((TileLayer)layer).getTileAt(
-                                tile.x, tile.y);
+                        TileLayer tileLayer = (TileLayer) layer;
+                        Tile newTile = tileLayer.getTileAt(tile.x, tile.y);
                         setCurrentTile(newTile);
                     } else if (layer instanceof ObjectGroup) {
                         // TODO: Add support for ObjectGroups here
@@ -956,23 +970,26 @@ public class MapEditor implements ActionListener, MouseListener,
         mousePressLocation = mapView.screenToTileCoords(e.getX(), e.getY());
         mouseInitialPressLocation = mousePressLocation;
 
-        if (mouseButton == MouseEvent.BUTTON1) {
+        if (mouseButton == MouseEvent.BUTTON2 ||
+                (mouseButton == MouseEvent.BUTTON1 &&
+                        (e.getModifiersEx() & MouseEvent.ALT_DOWN_MASK) != 0)) {
+            // Remember screen location for scrolling with middle mouse button
+            mouseInitialScreenLocation = new Point(e.getX(), e.getY());
+        }
+        else if (mouseButton == MouseEvent.BUTTON1) {
             switch (currentPointerState) {
                 case PS_PAINT:
                     currentBrush.startPaint(currentMap, tile.x, tile.y,
-                            mouseButton, currentLayer);
+                                            mouseButton, currentLayer);
                 case PS_ERASE:
                 case PS_POUR:
                     MapLayer layer = getCurrentLayer();
                     paintEdit =
-                        new MapLayerEdit(layer, createLayerCopy(layer), null);
+                            new MapLayerEdit(layer, createLayerCopy(layer),
+                                             null);
                     break;
                 default:
             }
-        }
-        else if (mouseButton == MouseEvent.BUTTON2) {
-            // Remember screen location for scrolling with middle mouse button
-            mouseInitialScreenLocation = new Point(e.getX(), e.getY());
         }
 
         if (currentPointerState == PS_MARQUEE) {

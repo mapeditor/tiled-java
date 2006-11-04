@@ -107,7 +107,7 @@ public class OrthoMapView extends MapView
         }
     }
 
-    protected void paintLayer(Graphics2D g, ObjectGroup og) {
+    protected void paintObjectGroup(Graphics2D g, ObjectGroup og) {
         Iterator itr = og.getObjects();
 
         while (itr.hasNext()) {

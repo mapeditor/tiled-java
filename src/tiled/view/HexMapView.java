@@ -137,7 +137,7 @@ public class HexMapView extends MapView
         }
     }
 
-    protected void paintLayer(Graphics2D g2d, ObjectGroup og) {
+    protected void paintObjectGroup(Graphics2D g2d, ObjectGroup og) {
     }
 
     /**

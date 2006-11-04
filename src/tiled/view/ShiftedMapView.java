@@ -77,7 +77,7 @@ public class ShiftedMapView extends MapView
     protected void paintLayer(Graphics2D g2d, TileLayer layer) {
     }
 
-    protected void paintLayer(Graphics2D g2d, ObjectGroup og) {
+    protected void paintObjectGroup(Graphics2D g2d, ObjectGroup og) {
     }
 
     protected void paintGrid(Graphics2D g2d) {

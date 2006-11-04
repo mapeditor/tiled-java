@@ -115,7 +115,7 @@ public class IsoMapView extends MapView
         }
     }
 
-    protected void paintLayer(Graphics2D g2d, ObjectGroup og) {
+    protected void paintObjectGroup(Graphics2D g2d, ObjectGroup og) {
         // TODO: Implement objectgroup painting for IsoMapView
     }
 
