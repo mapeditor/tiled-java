@@ -1979,6 +1979,8 @@ public class MapEditor implements ActionListener, MouseListener,
             mapScrollPane.setViewport(mapViewport);
             setCurrentPointerState(PS_PAINT);
 
+            currentMap.addMapChangeListener(this);
+
             gridMenuItem.setState(mapView.getShowGrid());
             coordinatesMenuItem.setState(
                     mapView.getMode(MapView.PF_COORDINATES));
