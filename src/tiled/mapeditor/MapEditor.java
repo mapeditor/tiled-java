@@ -2079,6 +2079,9 @@ public class MapEditor implements ActionListener, MouseListener,
                 layerTable.changeSelection(totalLayers - currentLayer - 1, 0,
                         false, false);
             }
+            
+            mapView.revalidate();
+            mapView.repaint();
         }
     }
 

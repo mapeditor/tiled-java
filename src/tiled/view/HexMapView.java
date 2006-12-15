@@ -18,6 +18,7 @@ import java.awt.geom.*;
 import javax.swing.SwingConstants;
 
 import tiled.core.*;
+import tiled.mapeditor.MapEditor;
 import tiled.mapeditor.selection.SelectionLayer;
 
 /**
@@ -63,6 +64,10 @@ public class HexMapView extends MapView
         super(map, null);
     }
 
+    public HexMapView(Map map, MapEditor editor) {
+        super(map, editor);
+    }
+    
     public int getScrollableBlockIncrement(Rectangle visibleRect,
             int orientation, int direction) {
         Dimension tsize = getTileSize();
@@ -149,14 +154,21 @@ public class HexMapView extends MapView
     }
 
     private Dimension getTileSize() {
-        return new Dimension(
+        if(currentLayer instanceof TileLayer) {
+            Dimension d = ((TileLayer)currentLayer).getTileSize();
+            d.height *= zoom;
+            d.width *= zoom;
+            return d;
+        } else {
+            return new Dimension(
                 (int)(map.getTileWidth() * zoom),
                 (int)(map.getTileHeight() * zoom));
+        }
     }
 
-    protected void paintGrid(Graphics2D g2d) {
+    protected void paintGrid(Graphics2D g2d, TileLayer layer) {
         g2d.setColor(Color.black);
-        Dimension tileSize = getTileSize();
+        Dimension tileSize = layer.getTileSize();
         // Determine area to draw from clipping rectangle
         Rectangle clipRect = g2d.getClipBounds();
         Point topLeft = screenToTileCoords(
@@ -184,7 +196,7 @@ public class HexMapView extends MapView
         }
     }
 
-    protected void paintCoordinates(Graphics2D g2d) {
+    protected void paintCoordinates(Graphics2D g2d, TileLayer layer) {
         // TODO: Implement paintCoordinates for HexMapView
     }
 
@@ -252,7 +264,7 @@ public class HexMapView extends MapView
      */
     private Point2D getTopLeftCornerOfHex(int x, int y) {
         Dimension tileSize = getTileSize();
-        Point2D centre = tileToScreenCoords(x, y);
+        Point2D centre = tileToScreenCoords(tileSize, x, y);
         double leftX = centre.getX() - tileSize.getWidth() / 2;
         double topY = centre.getY() - tileSize.getHeight() / 2;
         return new Point2D.Double(leftX, topY);
@@ -314,7 +326,7 @@ public class HexMapView extends MapView
      *
      * @return The point at the centre of the Hex.
      */
-    public Point tileToScreenCoords(double x, double y) {
+    public Point tileToScreenCoords(Dimension tileSize, double x, double y) {
         double xx = getWidthBetweenHexCentres() * x;
         double yy = getTileHeight() * y;
         if (x % 2 == 0) {

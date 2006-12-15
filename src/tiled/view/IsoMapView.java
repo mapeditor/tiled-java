@@ -19,9 +19,12 @@ import java.awt.geom.Rectangle2D;
 import javax.swing.SwingConstants;
 
 import tiled.core.*;
+import tiled.mapeditor.MapEditor;
 import tiled.mapeditor.selection.SelectionLayer;
 
 /**
+ * Renderer for Isometric maps
+ * 
  * @version $Id$
  */
 public class IsoMapView extends MapView
@@ -35,6 +38,10 @@ public class IsoMapView extends MapView
         super(map, null);
     }
 
+    public IsoMapView(Map map, MapEditor editor) {
+        super(map, editor);
+    }
+    
     public int getScrollableBlockIncrement(Rectangle visibleRect,
             int orientation, int direction) {
         Dimension tsize = getTileSize();
@@ -56,6 +63,9 @@ public class IsoMapView extends MapView
     }
 
     protected void paintLayer(Graphics2D g2d, TileLayer layer) {
+        
+        currentLayer = layer;
+        
         // Turn anti alias on for selection drawing
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
@@ -67,7 +77,7 @@ public class IsoMapView extends MapView
 
         Point rowItr = screenToTileCoords(clipRect.x, clipRect.y);
         rowItr.x--;
-        Point drawLoc = tileToScreenCoords(rowItr.x, rowItr.y);
+        Point drawLoc = tileToScreenCoords(tileSize, rowItr.x, rowItr.y);
         drawLoc.x -= tileSize.width / 2;
         drawLoc.y += tileSize.height;
 
@@ -117,9 +127,10 @@ public class IsoMapView extends MapView
 
     protected void paintObjectGroup(Graphics2D g2d, ObjectGroup og) {
         // TODO: Implement objectgroup painting for IsoMapView
+        currentLayer = og;
     }
 
-    protected void paintGrid(Graphics2D g2d) {
+    protected void paintGrid(Graphics2D g2d, TileLayer layer) {
         Dimension tileSize = getTileSize();
         Rectangle clipRect = g2d.getClipBounds();
 
@@ -137,23 +148,25 @@ public class IsoMapView extends MapView
                     clipRect.x, clipRect.y + clipRect.height).y);
 
         for (int y = startY; y <= endY; y++) {
-            Point start = tileToScreenCoords(startX, y);
-            Point end = tileToScreenCoords(endX, y);
+            Point start = tileToScreenCoords(tileSize, startX, y);
+            Point end = tileToScreenCoords(tileSize, endX, y);
             g2d.drawLine(start.x, start.y, end.x, end.y);
         }
         for (int x = startX; x <= endX; x++) {
-            Point start = tileToScreenCoords(x, startY);
-            Point end = tileToScreenCoords(x, endY);
+            Point start = tileToScreenCoords(tileSize, x, startY);
+            Point end = tileToScreenCoords(tileSize, x, endY);
             g2d.drawLine(start.x, start.y, end.x, end.y);
         }
     }
 
-    protected void paintCoordinates(Graphics2D g2d) {
+    protected void paintCoordinates(Graphics2D g2d, TileLayer layer) {
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
         Rectangle clipRect = g2d.getClipBounds();
-        Dimension tileSize = getTileSize();
+        Dimension tileSize = layer.getTileSize();
+        tileSize.width *= zoom;
+        tileSize.height *= zoom;
         int tileStepY = tileSize.height / 2 == 0 ? 1 : tileSize.height / 2;
         Font font = new Font("SansSerif", Font.PLAIN, tileSize.height / 4);
         g2d.setFont(font);
@@ -161,7 +174,7 @@ public class IsoMapView extends MapView
 
         Point rowItr = screenToTileCoords(clipRect.x, clipRect.y);
         rowItr.x--;
-        Point drawLoc = tileToScreenCoords(rowItr.x, rowItr.y);
+        Point drawLoc = tileToScreenCoords(tileSize, rowItr.x, rowItr.y);
         drawLoc.y += tileSize.height / 2;
 
         // Determine area to draw from clipping rectangle
@@ -205,7 +218,19 @@ public class IsoMapView extends MapView
     }
 
     protected void paintPropertyFlags(Graphics2D g2d, TileLayer layer) {
-        throw new RuntimeException("Not yet implemented");    // todo
+        Dimension tsize = getTileSize();
+        if (tsize.width <= 0 || tsize.height <= 0) {
+            return;
+        }
+        g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                             RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+        // Determine tile size and offset
+        Font font = new Font("SansSerif", Font.PLAIN, tsize.height / 4);
+        g2d.setFont(font);
+        FontRenderContext fontRenderContext = g2d.getFontRenderContext();
+        
+        //TODO: finish this
     }
 
     public void repaintRegion(Rectangle region) {
@@ -217,11 +242,11 @@ public class IsoMapView extends MapView
         int mapY1 = region.y;
         int mapX2 = mapX1 + region.width;
         int mapY2 = mapY1 + region.height;
-
-        int x1 = tileToScreenCoords(mapX1, mapY2).x;
-        int y1 = tileToScreenCoords(mapX1, mapY1).y - maxExtraHeight;
-        int x2 = tileToScreenCoords(mapX2, mapY1).x;
-        int y2 = tileToScreenCoords(mapX2, mapY2).y;
+        
+        int x1 = tileToScreenCoords(tileSize, mapX1, mapY2).x;
+        int y1 = tileToScreenCoords(tileSize, mapX1, mapY1).y - maxExtraHeight;
+        int x2 = tileToScreenCoords(tileSize, mapX2, mapY1).x;
+        int y2 = tileToScreenCoords(tileSize, mapX2, mapY2).y;
 
         repaint(new Rectangle(x1, y1, x2 - x1, y2 - y1));
     }
@@ -270,20 +295,31 @@ public class IsoMapView extends MapView
     }
 
     protected Dimension getTileSize() {
-        return new Dimension(
+        if(currentLayer instanceof TileLayer) {
+            Dimension d = ((TileLayer)currentLayer).getTileSize();
+            d.height *= zoom;
+            d.width *= zoom;
+            return d;
+        } else {
+            return new Dimension(
                 (int)(map.getTileWidth() * zoom),
                 (int)(map.getTileHeight() * zoom));
+        }
     }
 
     protected double getTileRatio() {
-        return (double)map.getTileWidth() / (double)map.getTileHeight();
+        if(currentLayer instanceof TileLayer) {
+            Dimension d = ((TileLayer)currentLayer).getTileSize();
+            return (double)d.width / (double)d.height;
+        } else {
+            return (double)map.getTileWidth() / (double)map.getTileHeight();
+        }
     }
 
     /**
-     * Returns the location on the screen of the top corner of a tile.
+     * @see tiled.view.MapView#tileToScreenCoords(Dimension, double, double)
      */
-    public Point tileToScreenCoords(double x, double y) {
-        Dimension tileSize = getTileSize();
+    public Point tileToScreenCoords(Dimension tileSize, double x, double y) {
         int originX = (map.getHeight() * tileSize.width) / 2;
         return new Point(
                 (int)((x - y) * tileSize.width / 2) + originX,

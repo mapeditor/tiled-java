@@ -71,7 +71,7 @@ public class TileDialog extends JDialog
     private static final String CREATE_BUTTON = Resources.getString("dialog.tile.button.createtile");
     private static final String DUPLICATE_BUTTON = Resources.getString("dialog.tile.button.duptile");
     private static final String ANIMATION_BUTTON = Resources.getString("dialog.tile.button.animation");
-    private static final String PREVIEW_TAB = Resources.getString("general.button.preview");
+    private static final String PREVIEW_TAB = Resources.getString("dialog.tile.tab.view");
     private static final String TILES_TAB = Resources.getString("general.tile.tiles");
     private static final String IMAGES_TAB = "Images";
     private static final String NAME_LABEL = Resources.getString("dialog.newtileset.name.label");
@@ -161,7 +161,7 @@ public class TileDialog extends JDialog
         imageList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
         imageList.addListSelectionListener(this);
         JScrollPane sp = new JScrollPane(imageList);
-        sp.setPreferredSize(new Dimension(150, 150));
+        sp.setPreferredSize(new Dimension(250, 150));
 
         // Buttons
         createTileButton = new JButton(CREATE_BUTTON);

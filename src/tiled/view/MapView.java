@@ -38,6 +38,7 @@ public abstract class MapView extends JPanel implements Scrollable
     public static int ZOOM_NORMALSIZE = 5;
 
     protected Map map;
+    protected MapLayer currentLayer;
     protected Brush currentBrush;
     protected int modeFlags;
     protected double zoom = 1.0;
@@ -220,16 +221,16 @@ public abstract class MapView extends JPanel implements Scrollable
         int orientation = p.getOrientation();
 
         if (orientation == Map.MDO_ISO) {
-            mapView = new IsoMapView(p);
+            mapView = new IsoMapView(p, editor);
         }
         else if (orientation == Map.MDO_ORTHO) {
             mapView = new OrthoMapView(p, editor); // FIXME
         }
         else if (orientation == Map.MDO_HEX) {
-            mapView = new HexMapView(p);
+            mapView = new HexMapView(p, editor);
         }
         else if (orientation == Map.MDO_SHIFTED) {
-            mapView = new ShiftedMapView(p);
+            mapView = new ShiftedMapView(p, editor);
         }
 
         return mapView;
@@ -256,7 +257,7 @@ public abstract class MapView extends JPanel implements Scrollable
         g2d.setStroke(new BasicStroke(2.0f));
 
         // Do an initial fill with the background color
-        // todo: make background color configurable
+        // TODO: make background color configurable
         //try {
         //    String colorString = displayPrefs.get("backgroundColor", "");
         //    g2d.setColor(Color.decode(colorString));
@@ -291,7 +292,24 @@ public abstract class MapView extends JPanel implements Scrollable
 
         // Grid color (also used for coordinates)
         g2d.setColor(gridColor);
-
+        
+        //----- everything after this point requires a valid TileLayer
+        //we don't show grid on object layers anyway...
+        TileLayer tl = null;
+        if (editor != null && !(editor.getCurrentLayer() instanceof TileLayer)) {
+            // I guess we shouldn't assume the bottom layer is a tile layer...
+            for(int i=0;i<map.getTotalLayers();i++) {
+                if(map.getLayer(i) instanceof TileLayer) {
+                    tl = (TileLayer)map.getLayer(i);
+                }
+            }
+        } else if (editor != null) {
+            tl = (TileLayer) editor.getCurrentLayer();
+        }
+        
+        if(tl == null)
+            return;
+        
         if (showGrid) {
             // Grid opacity
             if (gridOpacity < 255) {
@@ -314,24 +332,21 @@ public abstract class MapView extends JPanel implements Scrollable
             }
 
             g2d.setStroke(new BasicStroke());
-            paintGrid(g2d);
+            paintGrid(g2d, tl);
         }
 
         if (getMode(PF_COORDINATES)) {
             g2d.setComposite(AlphaComposite.SrcOver);
-            paintCoordinates(g2d);
+            paintCoordinates(g2d, tl);
         }
 
-        if (editor != null && editor.getCurrentLayer() instanceof TileLayer) {
-            g2d.setComposite(AlphaComposite.SrcOver);
+        g2d.setComposite(AlphaComposite.SrcOver);
 
-            TileLayer tl = (TileLayer) editor.getCurrentLayer();
-            if (tl != null && tl.isVisible()) {
-                paintPropertyFlags(g2d, tl);
-            }
+        if (tl.isVisible()) {
+            paintPropertyFlags(g2d, tl);
         }
     }
-
+    
     public void paintSubMap(MultilayerPlane m, Graphics2D g2d,
                             float mapOpacity) {
         Iterator li = m.getLayers();
@@ -361,6 +376,12 @@ public abstract class MapView extends JPanel implements Scrollable
         }
     }
 
+    protected Dimension getDefaultTileSize() {
+        return new Dimension(
+                (int)(map.getTileWidth() * zoom),
+                (int)(map.getTileHeight() * zoom));
+    }
+    
     /**
      * Draws a TileLayer. Implemented in a subclass.
      *
@@ -449,14 +470,14 @@ public abstract class MapView extends JPanel implements Scrollable
      *
      * @param g2d the graphics context to draw the grid onto
      */
-    protected abstract void paintGrid(Graphics2D g2d);
+    protected abstract void paintGrid(Graphics2D g2d, TileLayer currentLayer);
 
     /**
      * Draws the coordinates on each tile.
      *
      * @param g2d the graphics context to draw the coordinates onto
      */
-    protected abstract void paintCoordinates(Graphics2D g2d);
+    protected abstract void paintCoordinates(Graphics2D g2d, TileLayer layer);
 
     protected abstract void paintPropertyFlags(Graphics2D g2d, TileLayer layer);
 
@@ -474,5 +495,13 @@ public abstract class MapView extends JPanel implements Scrollable
 
     public abstract Point screenToTileCoords(int x, int y);
 
-    public abstract Point tileToScreenCoords(double x, double y);
+    /**
+     * Returns the location on the screen of the top corner of a tile.
+     * 
+     * @param tileSize 
+     * @param x 
+     * @param y 
+     * @return Point
+     */
+    public abstract Point tileToScreenCoords(Dimension tileSize, double x, double y);
 }

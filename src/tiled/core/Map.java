@@ -411,6 +411,8 @@ public class Map extends MultilayerPlane
 
     /**
      * Returns default tile width for this map.
+     * 
+     * @return the default tile width
      */
     public int getTileWidth() {
         return tileWidth;
@@ -418,6 +420,8 @@ public class Map extends MultilayerPlane
 
     /**
      * Returns default tile height for this map.
+     * 
+     * @return the default tile height
      */
     public int getTileHeight() {
         return tileHeight;
