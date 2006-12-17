@@ -4,11 +4,13 @@ trunk
 * Added ability to create stamp brushes from the tile palette
 * Added import/export of configuration
 * Added option to automatically open the last map on startup (by Pedro Miller)
+* Added brush memory, so that going to another tool and coming back does not reset the brush
 * Embedded the tile palette
 * Report out of memory error when saving map as image
 * Properties table now displays the properties in alphabetical order
 * Fixed properties dialog to also save values that were still being edited
 * Fixed automatically adding the file extension when not given
+* Fixed default tabbed tilesets panel height
 * Worked around an issue with the open file dialog on GNU classpath
 * Worked around an issue with setting a null cursor on GNU classpath
 

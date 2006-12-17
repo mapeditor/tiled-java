@@ -97,6 +97,14 @@ public class SelectionLayer extends TileLayer
     }
 
     /**
+     * Clears the entire selection
+     *
+     */
+    public void unselectAll() {
+        clearRegion(selection);
+    }
+    
+    /**
      * Sets the selected area to the given Shape.
      *
      * @param region
@@ -151,9 +159,9 @@ public class SelectionLayer extends TileLayer
         for (int i = bounded.y; i < bounded.y + bounded.height; i++) {
             for (int j = bounded.x; j < bounded.x + bounded.width; j++) {
                 if (region.contains(j, i)) {
-                    setTileAt(j, i, fill);
+                    setTileAt(j+bounds.x, i+bounds.y, fill);
                 } else {
-                    setTileAt(j, i, null);
+                    setTileAt(j+bounds.x, i+bounds.y, null);
                 }
             }
         }

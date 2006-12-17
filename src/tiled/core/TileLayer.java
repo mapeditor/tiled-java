@@ -293,6 +293,7 @@ public class TileLayer extends MapLayer
      * @param ti the tile object to place
      */
     public void setTileAt(int tx, int ty, Tile ti) {
+        if(!bounds.contains(tx, ty)) return; //quicker than a trap
         try {
             if (canEdit()) {
                 map[ty - bounds.y][tx - bounds.x] = ti;

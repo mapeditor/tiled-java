@@ -278,12 +278,14 @@ public class BrushDialog extends JDialog implements ActionListener,
 
         if (source == okButton) {
             createFromOptions();
-            editor.setBrush(myBrush);
+            editor.setBrush(MapEditor.TOOL_PAINT, myBrush);
+            editor.setCurrentBrush(MapEditor.TOOL_PAINT);
             dispose();
         }
         else if (source == bApply) {
             createFromOptions();
-            editor.setBrush(myBrush);
+            editor.setBrush(MapEditor.TOOL_PAINT, myBrush);
+            editor.setCurrentBrush(MapEditor.TOOL_PAINT);
             bApply.setEnabled(false);
         }
         else if (source == bCancel) {
