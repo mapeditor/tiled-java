@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.*;
 import javax.imageio.ImageIO;
 
+import tiled.mapeditor.Resources;
 import tiled.mapeditor.util.TransparentImageFilter;
 import tiled.mapeditor.util.cutter.BasicTileCutter;
 import tiled.mapeditor.util.cutter.TileCutter;
@@ -77,9 +78,19 @@ public class TileSet
     {
         setTilesetImageFilename(imgFilename);
 
-        Image image = ImageIO.read(new File(imgFilename));
+        //some checks on the file before we try to read it
+        File imageFile = new File(imgFilename);
+        if (!imageFile.exists()) {
+            throw new IOException(Resources.getString("general.file.notexists.message") + " (" + tilebmpFile + ")");
+        }
+        
+        if (!imageFile.canRead()) {
+            throw new IOException(Resources.getString("general.file.cant.read") + " (" + tilebmpFile + ")");
+        }
+        
+        Image image = ImageIO.read(imageFile);
         if (image == null) {
-            throw new IOException("Failed to load " + tilebmpFile);
+            throw new IOException("Failed to load (" + tilebmpFile + ")");
         }
 
         Toolkit tk = Toolkit.getDefaultToolkit();

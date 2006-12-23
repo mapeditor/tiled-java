@@ -1847,7 +1847,6 @@ public class MapEditor implements ActionListener, MouseListener,
     }
     
     public void setBrush(String tool, AbstractBrush brush) {
-        System.out.println("setting "+tool+" to "+brush);
         brushes.put(tool, brush);
     }
 

@@ -281,7 +281,7 @@ public class XMLMapTransformer implements MapReader
 
             xmlPath = xmlPathSave;
         } catch (SAXException e) {
-            logger.error("Failed while loading "+filename+": "+e.getMessage());
+            logger.error("Failed while loading "+filename+": "+e.getLocalizedMessage());
             //e.printStackTrace();
         }
 

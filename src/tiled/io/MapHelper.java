@@ -23,6 +23,7 @@ import tiled.core.Map;
 import tiled.core.TileSet;
 import tiled.io.xml.XMLMapTransformer;
 import tiled.io.xml.XMLMapWriter;
+import tiled.mapeditor.Resources;
 import tiled.mapeditor.dialogs.PluginLogDialog;
 import tiled.mapeditor.plugin.PluginClassLoader;
 import tiled.util.TiledConfiguration;
@@ -35,6 +36,9 @@ import tiled.util.TiledConfiguration;
 public class MapHelper {
     private static PluginClassLoader pluginLoader;
 
+    public static final String ERROR_LOAD_MAP = Resources.getString("general.file.noload.map");
+    public static final String ERROR_LOAD_TILESET = Resources.getString("general.file.noload.tileset");
+    
     /**
      * Called to tell the MapHelper which {@link PluginClassLoader} to use when
      * finding a suitable plugin for a filename.
@@ -165,7 +169,7 @@ public class MapHelper {
             JOptionPane.showMessageDialog(null,
                     e.getMessage() + (e.getCause() != null ? "\nCause: " +
                         e.getCause().getMessage() : ""),
-                    "Error while loading map",
+                        ERROR_LOAD_MAP,
                     JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         } catch (Exception e) {
@@ -173,7 +177,7 @@ public class MapHelper {
                     "Error while loading " + file + ": " +
                     e.getMessage() + (e.getCause() != null ? "\nCause: " +
                         e.getCause().getMessage() : ""),
-                    "Error while loading map",
+                        ERROR_LOAD_MAP,
                     JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
@@ -215,7 +219,7 @@ public class MapHelper {
             JOptionPane.showMessageDialog(null,
                     e.getMessage() + (e.getCause() != null ? "\nCause: " +
                         e.getCause().getMessage() : ""),
-                    "Error while loading tileset",
+                        ERROR_LOAD_TILESET,
                     JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         } catch (Exception e) {
@@ -223,7 +227,7 @@ public class MapHelper {
                     "Error while loading " + file + ": " +
                     e.getMessage() + (e.getCause() != null ? "\nCause: " +
                         e.getCause().getMessage() : ""),
-                    "Error while loading tileset",
+                        ERROR_LOAD_TILESET,
                     JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }

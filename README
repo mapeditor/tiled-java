@@ -54,6 +54,7 @@ TRANSLATORS
 - Rickard Isaksson for an improved image loader
 - Kevin Kelley for the base64 encoder/decoder we use
 - GNOME and GIMP for their magnificent icons
-- Nephilim for suggesting layer opacity
+- Nephilim for suggesting layer opacity (our first suggestion)
 - Rainer Deyke for useful suggestions and many code contributions
 - Jerome Blouin for some meticulous testing
+- Hendrik Brummermann for some clean up
