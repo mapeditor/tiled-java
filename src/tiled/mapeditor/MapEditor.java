@@ -2072,10 +2072,8 @@ public class MapEditor implements ActionListener, MouseListener,
             Tile firstTile = null;
             if (!tilesets.isEmpty()) {
                 Iterator it = tilesets.iterator();
-                while (it.hasNext()) {
-                    if( firstTile == null )
+                while (it.hasNext() && firstTile == null) {
                         firstTile = ((TileSet) it.next()).getFirstTile();
-                    
                 }
             }
             setCurrentTile(firstTile);
