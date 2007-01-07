@@ -161,7 +161,7 @@ public class TileDialog extends JDialog
         imageList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
         imageList.addListSelectionListener(this);
         JScrollPane sp = new JScrollPane(imageList);
-        sp.setPreferredSize(new Dimension(250, 150));
+        sp.setPreferredSize(new Dimension(150, 150));
 
         // Buttons
         createTileButton = new JButton(CREATE_BUTTON);

@@ -97,16 +97,6 @@ State:      Implemented
             random locations, not a brush that picks a random tile to draw. The
             latter is probably what Rainer Deyke meant here)
 
-- 19 --------------------------------------------------------------------------
-Suggestor:  Rainer Deyke <root@rainerdeyke.com>
-Date:       24/09/04
-Summary:    A block tool that lets me draw blocks of tiles with a single mouse
-            drag. I can fake this with select-and-pour, but a block tool would
-            be much more convenient.
-State:      Implemented
-            (Why is this marked as implemented? As far as I know we do not have
-            the block tool described here)
-
 - 20 --------------------------------------------------------------------------
 Suggestor:  Rainer Deyke <root@rainerdeyke.com>
 Date:       24/09/04

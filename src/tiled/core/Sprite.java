@@ -147,10 +147,6 @@ public class Sprite
         createKey("", frames, KeyFrame.KEY_LOOP);
     }
 
-    public Sprite(TileSet set) {
-        
-    }
-    
     public void setFrames(Tile[] frames) {
         frameSize = new Rectangle(0, 0, frames[0].getWidth(), frames[0].getHeight());
 

@@ -18,7 +18,6 @@ import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Stack;
 import java.util.Vector;
@@ -38,6 +37,7 @@ import tiled.io.MapHelper;
 import tiled.io.MapReader;
 import tiled.mapeditor.actions.*;
 import tiled.mapeditor.brush.AbstractBrush;
+import tiled.mapeditor.brush.Brush;
 import tiled.mapeditor.brush.CustomBrush;
 import tiled.mapeditor.brush.ShapeBrush;
 import tiled.mapeditor.dialogs.*;
@@ -114,8 +114,7 @@ public class MapEditor implements ActionListener, MouseListener,
     private JTable      layerTable;
     private JList       editHistoryList;
     private MiniMapViewer miniMap;
-    private JSplitPane  paletteSplit;
-    
+
     private TileButton  tilePaletteButton;
     private JFrame      appFrame;
     private JSlider     opacitySlider;
@@ -134,7 +133,8 @@ public class MapEditor implements ActionListener, MouseListener,
     private JButton tileInstancePropertiesButton;
 
     /** Available brushes */
-    private Hashtable brushes = new Hashtable();
+    private Vector brushes = new Vector();
+    private Brush eraserBrush;
 
     // Actions
     private final SaveAction saveAction;
@@ -150,17 +150,14 @@ public class MapEditor implements ActionListener, MouseListener,
 
     private static final String IMPORT_ERROR_MSG = Resources.getString("dialog.newtileset.import.error.message");
 
-    public static final String TOOL_PAINT = Resources.getString("tool.paint.name");
-    public static final String TOOL_ERASE = Resources.getString("tool.erase.name");
-    public static final String TOOL_FILL = Resources.getString("tool.fill.name");
-    public static final String TOOL_EYE_DROPPER = Resources.getString("tool.eyedropper.name");
-    public static final String TOOL_SELECT = Resources.getString("tool.select.name");
-    public static final String TOOL_MOVE_LAYER = Resources.getString("tool.movelayer.name");
-    public static final String TOOL_MOVE_OBJECT = Resources.getString("tool.moveobject.name");
-    public static final String TOOL_POINTER = "__pointer"; //used internally for brushes
+    private static final String TOOL_PAINT = Resources.getString("tool.paint.name");
+    private static final String TOOL_ERASE = Resources.getString("tool.erase.name");
+    private static final String TOOL_FILL = Resources.getString("tool.fill.name");
+    private static final String TOOL_EYE_DROPPER = Resources.getString("tool.eyedropper.name");
+    private static final String TOOL_SELECT = Resources.getString("tool.select.name");
+    private static final String TOOL_MOVE_LAYER = Resources.getString("tool.movelayer.name");
+    private static final String TOOL_MOVE_OBJECT = Resources.getString("tool.moveobject.name");
 
-    private String currentTool = TOOL_POINTER;
-    
     public MapEditor() {
         /*
         eraserBrush = new Eraser();
@@ -304,10 +301,9 @@ public class MapEditor implements ActionListener, MouseListener,
         mainSplit.setBorder(null);
 
         tabbedTilesetsPane = new TabbedTilesetsPane(this);
-        paletteSplit = new JSplitPane(
+        JSplitPane paletteSplit = new JSplitPane(
                 JSplitPane.VERTICAL_SPLIT, true, mainSplit,
                 tabbedTilesetsPane);
-        
         paletteSplit.setOneTouchExpandable(true);
         paletteSplit.setResizeWeight(1.0);
 
@@ -1072,8 +1068,7 @@ public class MapEditor implements ActionListener, MouseListener,
                         Resources.getString("dialog.selection.empty"),
                         JOptionPane.WARNING_MESSAGE);
             } else {
-                setBrush(TOOL_PAINT, new CustomBrush(brushLayer));
-                setCurrentBrush(TOOL_PAINT);
+                setBrush(new CustomBrush(brushLayer));
             }
 
             //get rid of any visible marquee
@@ -1158,28 +1153,28 @@ public class MapEditor implements ActionListener, MouseListener,
 
         if ("paint".equals(command)) {
             setCurrentPointerState(PS_PAINT);
-            currentTool = TOOL_PAINT;
+            resetBrush();
         } else if ("erase".equals(command)) {
             setCurrentPointerState(PS_ERASE);
-            currentTool = TOOL_ERASE;
+            resetBrush();
         } else if ("point".equals(command)) {
             setCurrentPointerState(PS_POINT);
-            currentTool = TOOL_POINTER;
+            resetBrush();
         } else if ("pour".equals(command)) {
             setCurrentPointerState(PS_POUR);
-            currentTool = TOOL_FILL;
+            resetBrush();
         } else if ("eyed".equals(command)) {
             setCurrentPointerState(PS_EYED);
-            currentTool = TOOL_EYE_DROPPER;
+            resetBrush();
         } else if ("marquee".equals(command)) {
             setCurrentPointerState(PS_MARQUEE);
-            currentTool = TOOL_SELECT;
+            resetBrush();
         } else if ("move".equals(command)) {
             setCurrentPointerState(PS_MOVE);
-            currentTool = TOOL_MOVE_LAYER;
+            resetBrush();
         } else if ("moveobject".equals(command)) {
             setCurrentPointerState(PS_MOVEOBJ);
-            currentTool = TOOL_MOVE_OBJECT;
+            resetBrush();
         } else if ("palette".equals(command)) {
             if (currentMap != null) {
                 if (tilePaletteDialog == null) {
@@ -1195,8 +1190,6 @@ public class MapEditor implements ActionListener, MouseListener,
         } else {
             handleEvent(event);
         }
-        
-        setCurrentBrush(currentTool);
     }
 
     // TODO: Most if not all of the below should be moved into action objects,
@@ -1785,69 +1778,38 @@ public class MapEditor implements ActionListener, MouseListener,
         undoSupport.postEdit(mle);
     }
 
-    public void resetBrushes() {
-        ShapeBrush sb = new ShapeBrush();
-        sb.makeQuadBrush(new Rectangle(0, 0, 1, 1));
-        sb.setTile(currentTile);
-        setBrush(TOOL_PAINT, sb);
-        sb = new ShapeBrush();
-        sb.makeQuadBrush(new Rectangle(0, 0, 1, 1));
-        setBrush(TOOL_ERASE, sb);
-        sb.setTile(null);
-        sb = new ShapeBrush();
-        sb.makeQuadBrush(new Rectangle(0, 0, 1, 1));
-        setBrush(TOOL_EYE_DROPPER, sb);
-        sb = new ShapeBrush();
-        sb.makeQuadBrush(new Rectangle(0, 0, 1, 1));
-        setBrush(TOOL_FILL, sb);
-        sb = new ShapeBrush();
-        sb.makeQuadBrush(new Rectangle(0, 0, 1, 1));
-        setBrush(TOOL_SELECT, sb);
-        sb = new ShapeBrush();
-        sb.makeQuadBrush(new Rectangle(0, 0, 1, 1));
-        setBrush(TOOL_MOVE_OBJECT, sb);
-        sb = new ShapeBrush();
-        sb.makeQuadBrush(new Rectangle(0, 0, 1, 1));
-        setBrush(TOOL_MOVE_LAYER, sb);
-        sb = new ShapeBrush();
-        sb.makeQuadBrush(new Rectangle(0, 0, 1, 1));
-        setBrush(TOOL_POINTER, sb);
+    public void resetBrush() {
+        //FIXME: this is an in-elegant hack, but it gets the user out
+        //       of custom brush mode
+        //(reset the brush if necessary)
+        if (currentBrush instanceof CustomBrush) {
+            if (prefs.getBoolean("cursorhighlight", true)) {
+                Rectangle redraw = cursorHighlight.getBounds();
+                mapView.repaintRegion(redraw);
+            }
+            ShapeBrush sb = new ShapeBrush();
+            sb.makeQuadBrush(new Rectangle(0, 0, 1, 1));
+            sb.setTile(currentTile);
+            setBrush(sb);
+        }
     }
 
-    public void setCurrentBrush(String brush) {
-        
-        if (prefs.getBoolean("cursorhighlight", true) && mapView != null) {
-            Rectangle redraw = cursorHighlight.getBounds();
-            mapView.repaintRegion(redraw);
-        }
-        
-        //is it wrong that Tiled thinks in languages? ;)
-        currentBrush = (AbstractBrush) brushes.get(brush);
-        
+    public void setBrush(AbstractBrush brush) {
+        currentBrush = brush;
+
         Rectangle brushRedraw = currentBrush.getBounds();
 
-        //Make sure it's clean
-        cursorHighlight.unselectAll();
-        
+        // Make sure it's clean
         cursorHighlight.setOffset(0, 0);
 
         // Resize and select the region
         cursorHighlight.resize(brushRedraw.width, brushRedraw.height, 0, 0);
         cursorHighlight.selectRegion(currentBrush.getShape());
-        
-        if(!(currentBrush instanceof CustomBrush)) {
-            ((ShapeBrush)currentBrush).setTile(currentTile);
-        }
-        
         /*if (currentBrush instanceof CustomBrush) {
             cursorHighlight.setVisible(false);
         } else {
             cursorHighlight.setVisible(true);
         }*/
-    }
-    
-    public void setBrush(String tool, AbstractBrush brush) {
-        brushes.put(tool, brush);
     }
 
     public void updateTitle() {
@@ -1871,7 +1833,7 @@ public class MapEditor implements ActionListener, MouseListener,
 
     /**
      * Checks to see if the undo stack is empty
-     * 
+     *
      * @return <code>true</code> if there is an undo history, <code>false</code> otherwise.
      */
     public boolean unsavedChanges() {
@@ -2012,9 +1974,10 @@ public class MapEditor implements ActionListener, MouseListener,
         boolean mapLoaded = currentMap != null;
 
         // Create a default brush (protect against a bug with custom brushes)
-        resetBrushes();
-        setCurrentBrush(TOOL_PAINT);
-        
+        ShapeBrush sb = new ShapeBrush();
+        sb.makeQuadBrush(new Rectangle(0, 0, 1, 1));
+        setBrush(sb);
+
         if (tilePaletteDialog != null) {
             tilePaletteDialog.setMap(currentMap);
         }
@@ -2030,7 +1993,6 @@ public class MapEditor implements ActionListener, MouseListener,
             tileCoordsLabel.setText(" ");
             zoomLabel.setText(" ");
             setCurrentTile(null);
-            paletteSplit.setDividerLocation(1.0f);
         } else {
             final Preferences display = prefs.node("display");
             mapEventAdapter.fireEvent(MapEventAdapter.ME_MAPACTIVE);
@@ -2072,20 +2034,13 @@ public class MapEditor implements ActionListener, MouseListener,
             Tile firstTile = null;
             if (!tilesets.isEmpty()) {
                 Iterator it = tilesets.iterator();
-                while (it.hasNext()) {
-                    if( firstTile == null )
-                        firstTile = ((TileSet) it.next()).getFirstTile();
-                    
+                while (it.hasNext() && firstTile == null) {
+                    firstTile = ((TileSet) it.next()).getFirstTile();
                 }
             }
             setCurrentTile(firstTile);
 
             currentMap.addLayerSpecial(cursorHighlight);
-            
-            Dimension d = paletteSplit.getSize();
-            //Doesn't this look icky? Still, proportional is better.
-            //FIXME: the constant is an expedient fudge factor- should be tileset max height + scrollbar height + tab height
-            paletteSplit.setDividerLocation(1.0 - ((currentMap.getTileHeightMax() + 45) / d.getHeight()));
         }
 
         zoomInAction.setEnabled(mapLoaded);
@@ -2129,9 +2084,6 @@ public class MapEditor implements ActionListener, MouseListener,
                 layerTable.changeSelection(totalLayers - currentLayer - 1, 0,
                         false, false);
             }
-            
-            mapView.revalidate();
-            mapView.repaint();
         }
     }
 
@@ -2141,19 +2093,12 @@ public class MapEditor implements ActionListener, MouseListener,
      * @param tile the new tile to be selected
      */
     public void setCurrentTile(Tile tile) {
+        resetBrush();
 
         if (currentTile != tile) {
             currentTile = tile;
             if (!(currentBrush instanceof CustomBrush)) {
                 ((ShapeBrush) currentBrush).setTile(tile);
-            } else {
-            	//if setCurrentTile() is called directly, we reset the brush
-            	//to get out of custom brush mode
-                ShapeBrush sb = new ShapeBrush();
-                sb.makeQuadBrush(new Rectangle(0, 0, 1, 1));
-                sb.setTile(currentTile);
-                setBrush(currentTool, sb);
-                setCurrentBrush(currentTool);
             }
             tilePaletteButton.setTile(currentTile);
         }

@@ -14,11 +14,11 @@ package tiled.mapeditor.actions;
 
 import javax.swing.JOptionPane;
 
+import tiled.core.Map;
+import tiled.core.TileLayer;
 import tiled.mapeditor.MapEditor;
 import tiled.mapeditor.Resources;
 import tiled.util.TileMergeHelper;
-import tiled.core.TileLayer;
-import tiled.core.Map;
 
 /**
  * Merges all layers of the map. Optionally it will create a new tileset with
@@ -40,8 +40,8 @@ public class MergeAllLayersAction extends AbstractLayerAction
         int ret = JOptionPane.showConfirmDialog(editor.getAppFrame(),
                 "Do you wish to merge tile images, and create a new tile set?",
                 "Merge Tiles?", JOptionPane.YES_NO_CANCEL_OPTION);
-        
-        if ( ret == JOptionPane.YES_OPTION ) {
+
+        if (ret == JOptionPane.YES_OPTION) {
             TileMergeHelper tmh = new TileMergeHelper(map);
             int len = map.getTotalLayers();
             //TODO: Add a dialog option: "Yes, visible only"
@@ -51,7 +51,8 @@ public class MergeAllLayersAction extends AbstractLayerAction
             newLayer.setName("Merged Layer");
             map.addTileset(tmh.getSet());
             editor.setCurrentLayer(0);
-        } else if ( ret == JOptionPane.NO_OPTION ) {
+        }
+        else if (ret == JOptionPane.NO_OPTION) {
             while (map.getTotalLayers() > 1) {
                 map.mergeLayerDown(editor.getCurrentLayerIndex());
             }

@@ -69,9 +69,6 @@ public class OrthoMapView extends MapView
     }
 
     protected void paintLayer(Graphics2D g2d, TileLayer layer) {
-        
-        currentLayer = layer;
-        
         // Determine tile size and offset
         Dimension tsize = getTileSize();
         if (tsize.width <= 0 || tsize.height <= 0) {
@@ -111,9 +108,7 @@ public class OrthoMapView extends MapView
 
     protected void paintObjectGroup(Graphics2D g, ObjectGroup og) {
         Iterator itr = og.getObjects();
-        currentLayer = og;
-        
-        
+
         while (itr.hasNext()) {
             MapObject mo = (MapObject) itr.next();
             double ox = mo.getX() * zoom;
@@ -129,11 +124,9 @@ public class OrthoMapView extends MapView
         }
     }
 
-    protected void paintGrid(Graphics2D g2d, TileLayer layer) {
+    protected void paintGrid(Graphics2D g2d) {
         // Determine tile size
-        Dimension tsize = layer.getTileSize();
-        tsize.width *= zoom;
-        tsize.height *= zoom;
+        Dimension tsize = getTileSize();
         if (tsize.width <= 0 || tsize.height <= 0) {
             return;
         }
@@ -153,10 +146,8 @@ public class OrthoMapView extends MapView
         }
     }
 
-    protected void paintCoordinates(Graphics2D g2d, TileLayer layer) {
-        Dimension tsize = layer.getTileSize();
-        tsize.width *= zoom;
-        tsize.height *= zoom;
+    protected void paintCoordinates(Graphics2D g2d) {
+        Dimension tsize = getTileSize();
         if (tsize.width <= 0 || tsize.height <= 0) {
             return;
         }
@@ -267,16 +258,9 @@ public class OrthoMapView extends MapView
     }
 
     protected Dimension getTileSize() {
-        if(currentLayer instanceof TileLayer) {
-            Dimension d = ((TileLayer)currentLayer).getTileSize();
-            d.height *= zoom;
-            d.width *= zoom;
-            return d;
-        } else {
-            return new Dimension(
-                (int)(map.getTileWidth() * zoom),
-                (int)(map.getTileHeight() * zoom));
-        }
+        return new Dimension(
+                (int) (map.getTileWidth() * zoom),
+                (int) (map.getTileHeight() * zoom));
     }
 
     protected Polygon createGridPolygon(int tx, int ty, int border) {
@@ -291,7 +275,8 @@ public class OrthoMapView extends MapView
         return poly;
     }
 
-    public Point tileToScreenCoords(Dimension tsize, double x, double y) {
+    public Point tileToScreenCoords(double x, double y) {
+        Dimension tsize = getTileSize();
         return new Point((int) x * tsize.width, (int) y * tsize.height);
     }
 }

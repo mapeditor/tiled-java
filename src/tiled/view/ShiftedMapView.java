@@ -13,13 +13,11 @@
 package tiled.view;
 
 import java.awt.*;
-
 import javax.swing.SwingConstants;
 
 import tiled.core.Map;
 import tiled.core.ObjectGroup;
 import tiled.core.TileLayer;
-import tiled.mapeditor.MapEditor;
 
 /**
  * @version $Id$
@@ -41,13 +39,6 @@ public class ShiftedMapView extends MapView
         verSide = 0;
     }
 
-    public ShiftedMapView(Map map, MapEditor editor) {
-        super(map, editor);
-
-        horSide = 16;
-        verSide = 0;
-    }
-    
     public int getScrollableBlockIncrement(Rectangle visibleRect,
             int orientation, int direction) {
         int unit =
@@ -89,9 +80,9 @@ public class ShiftedMapView extends MapView
     protected void paintObjectGroup(Graphics2D g2d, ObjectGroup og) {
     }
 
-    protected void paintGrid(Graphics2D g2d, TileLayer layer) {
+    protected void paintGrid(Graphics2D g2d) {
         // Determine tile size
-        Dimension tsize = layer.getTileSize();
+        Dimension tsize = getTileSize();
         if (tsize.width <= 0 || tsize.height <= 0) return;
         int onceX = (tsize.width - (int)(horSide * zoom)) / 2;
         int repeatX = tsize.width - onceX;
@@ -124,7 +115,7 @@ public class ShiftedMapView extends MapView
         g2d.setColor(prevColor);
     }
 
-    protected void paintCoordinates(Graphics2D g2d, TileLayer layer) {
+    protected void paintCoordinates(Graphics2D g2d) {
     }
 
     protected void paintPropertyFlags(Graphics2D g2d, TileLayer layer) {
@@ -139,23 +130,16 @@ public class ShiftedMapView extends MapView
     }
 
     protected Dimension getTileSize() {
-        if(currentLayer instanceof TileLayer) {
-            Dimension d = ((TileLayer)currentLayer).getTileSize();
-            d.height *= zoom;
-            d.width *= zoom;
-            return d;
-        } else {
-            return new Dimension(
+        return new Dimension(
                 (int)(map.getTileWidth() * zoom),
                 (int)(map.getTileHeight() * zoom));
-        }
     }
 
     protected Polygon createGridPolygon(int tx, int ty, int border) {
         return new Polygon();
     }
 
-    public Point tileToScreenCoords(Dimension tileSize, double x, double y) {
+    public Point tileToScreenCoords(double x, double y) {
         return new Point(0, 0);
     }
 }

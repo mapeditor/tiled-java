@@ -15,7 +15,6 @@
 
 package tiled.mapeditor.widget;
 
-import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -68,27 +67,13 @@ public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionList
         this.map = map;
     }
 
-    public Dimension getPreferredSize() {
-        Dimension d = new Dimension(0,0);
-        for (Iterator it = tilePanels.iterator(); it.hasNext();) {
-            TilePaletteQuickPanel panel = (TilePaletteQuickPanel) it.next();
-            Dimension e = panel.getPreferredSize();
-            if(d.width < e.width)
-                d.width = e.width;
-            if(d.height < e.height)
-                d.height = e.height;
-        }
-        
-        return d;
-    }
-    
     /**
      * Creates the panels for the tilesets.
      */
     private void recreateTabs(List tilesets) {
         // Stop listening to the tile palette panels
         for (Iterator it = tilePanels.iterator(); it.hasNext();) {
-            TilePaletteQuickPanel panel = (TilePaletteQuickPanel) it.next();
+            TilePalettePanel panel = (TilePalettePanel) it.next();
             panel.removeTileSelectionListener(this);
         }
         tilePanels.clear();
@@ -114,11 +99,11 @@ public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionList
      * @param tileset the given tileset
      */
     private void addTabForTileset(TileSet tileset) {
-        TilePaletteQuickPanel tilePanel = new TilePaletteQuickPanel();
+        TilePalettePanel tilePanel = new TilePalettePanel();
         tilePanel.setTileset(tileset);
         tilePanel.addTileSelectionListener(this);
         JScrollPane paletteScrollPane = new JScrollPane(tilePanel,
-                JScrollPane.VERTICAL_SCROLLBAR_NEVER,
+                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         addTab(tileset.getName(), paletteScrollPane);
     }
@@ -135,8 +120,7 @@ public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionList
      * current brush.
      */
     public void tileRegionSelected(TileRegionSelectionEvent e) {
-        mapEditor.setBrush(MapEditor.TOOL_PAINT, new CustomBrush(e.getTileRegion()));
-        mapEditor.setCurrentBrush(MapEditor.TOOL_PAINT);
+        mapEditor.setBrush(new CustomBrush(e.getTileRegion()));
     }
 
     private class MyMapChangeListener implements MapChangeListener

@@ -117,8 +117,7 @@ public class TilePaletteDialog extends JDialog implements
     }
 
     public void tileRegionSelected(TileRegionSelectionEvent e) {
-        editor.setBrush(MapEditor.TOOL_PAINT, new CustomBrush(e.getTileRegion()));
-        editor.setCurrentBrush(MapEditor.TOOL_PAINT);
+        editor.setBrush(new CustomBrush(e.getTileRegion()));
     }
 
     public void valueChanged(ListSelectionEvent e) {

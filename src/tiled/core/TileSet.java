@@ -78,16 +78,17 @@ public class TileSet
     {
         setTilesetImageFilename(imgFilename);
 
-        //some checks on the file before we try to read it
+        // Some checks on the file before we try to read it
+        // TODO: What about catching exceptions instead?
         File imageFile = new File(imgFilename);
         if (!imageFile.exists()) {
             throw new IOException(Resources.getString("general.file.notexists.message") + " (" + tilebmpFile + ")");
         }
-        
+
         if (!imageFile.canRead()) {
             throw new IOException(Resources.getString("general.file.cant.read") + " (" + tilebmpFile + ")");
         }
-        
+
         Image image = ImageIO.read(imageFile);
         if (image == null) {
             throw new IOException("Failed to load (" + tilebmpFile + ")");

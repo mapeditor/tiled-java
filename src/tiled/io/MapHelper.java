@@ -13,10 +13,7 @@
 package tiled.io;
 
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.Stack;
 import java.util.prefs.Preferences;
-
 import javax.swing.JOptionPane;
 
 import tiled.core.Map;
@@ -38,7 +35,7 @@ public class MapHelper {
 
     public static final String ERROR_LOAD_MAP = Resources.getString("general.file.noload.map");
     public static final String ERROR_LOAD_TILESET = Resources.getString("general.file.noload.tileset");
-    
+
     /**
      * Called to tell the MapHelper which {@link PluginClassLoader} to use when
      * finding a suitable plugin for a filename.

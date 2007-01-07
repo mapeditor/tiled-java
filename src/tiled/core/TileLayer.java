@@ -12,12 +12,11 @@
 
 package tiled.core;
 
-import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.Area;
-import java.util.Properties;
 import java.util.HashMap;
+import java.util.Properties;
 
 /**
  * A TileLayer is a specialized MapLayer, used for tracking two dimensional
@@ -29,8 +28,7 @@ public class TileLayer extends MapLayer
 {
     protected Tile[][] map;
     protected HashMap tileInstanceProperties = new HashMap();
-    protected Dimension tileDimensions;
-    
+
     public Properties getTileInstancePropertiesAt(int x, int y) {
         if (!bounds.contains(x, y)) {
             return null;
@@ -50,7 +48,6 @@ public class TileLayer extends MapLayer
      * Default contructor.
      */
     public TileLayer() {
-        tileDimensions = new Dimension(0, 0);
     }
 
     /**
@@ -77,7 +74,6 @@ public class TileLayer extends MapLayer
      */
     TileLayer(Map m) {
         super(m);
-        tileDimensions = new Dimension(m.getTileWidth(), m.getTileHeight());
     }
 
     /**
@@ -90,16 +86,6 @@ public class TileLayer extends MapLayer
         setMap(m);
     }
 
-    public void setMap(Map m) {
-        super.setMap(m);
-        if(m != null)
-            tileDimensions = new Dimension(m.getTileWidth(), m.getTileHeight());
-    }
-    
-    public Dimension getTileSize() {
-        return new Dimension(tileDimensions);
-    }
-    
     /**
      * Rotates the layer by the given Euler angle.
      *
@@ -293,13 +279,8 @@ public class TileLayer extends MapLayer
      * @param ti the tile object to place
      */
     public void setTileAt(int tx, int ty, Tile ti) {
-        if(!bounds.contains(tx, ty)) return; //quicker than a trap
-        try {
-            if (canEdit()) {
-                map[ty - bounds.y][tx - bounds.x] = ti;
-            }
-        } catch (ArrayIndexOutOfBoundsException e) {
-            // Silently ignore out of bounds exception
+        if (bounds.contains(tx, ty) && canEdit()) {
+            map[ty - bounds.y][tx - bounds.x] = ti;
         }
     }
 
@@ -312,14 +293,8 @@ public class TileLayer extends MapLayer
      *         outside this layer
      */
     public Tile getTileAt(int tx, int ty) {
-        if(!bounds.contains(tx, ty))
-            return null;
-        
-        try {
-            return map[ty - bounds.y][tx - bounds.x];
-        } catch (ArrayIndexOutOfBoundsException e) {
-            return null;
-        }
+        return (bounds.contains(tx, ty)) ?
+                map[ty - bounds.y][tx - bounds.x] : null;
     }
 
     /**
