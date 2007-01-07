@@ -154,16 +154,22 @@ public class HexMapView extends MapView
     }
 
     private Dimension getTileSize() {
-        if(currentLayer instanceof TileLayer) {
-            Dimension d = ((TileLayer)currentLayer).getTileSize();
-            d.height *= zoom;
-            d.width *= zoom;
-            return d;
-        } else {
-            return new Dimension(
+        Dimension d = new Dimension(
                 (int)(map.getTileWidth() * zoom),
                 (int)(map.getTileHeight() * zoom));
+        
+        if(currentLayer instanceof TileLayer) {
+            d = ((TileLayer)currentLayer).getTileSize();
+            d.height *= zoom;
+            d.width *= zoom;
+            if(d.height == 0 || d.width == 0) {
+               d = new Dimension(
+                        (int)(map.getTileWidth() * zoom),
+                        (int)(map.getTileHeight() * zoom));
+            }
         }
+        
+        return d;
     }
 
     protected void paintGrid(Graphics2D g2d, TileLayer layer) {
