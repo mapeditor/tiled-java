@@ -125,7 +125,7 @@ public final class PluginClassLoader extends URLClassLoader
                 }
 
                 monitor.setNote("Loading " + aName + "...");
-                addURL(new File(aPath).toURL());
+                addURL(new File(aPath).toURI().toURL());
 
                 if (readerClassName != null) {
                     JarEntry reader = jf.getJarEntry(

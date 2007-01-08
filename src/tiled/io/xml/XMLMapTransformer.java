@@ -57,7 +57,7 @@ public class XMLMapTransformer implements MapReader
         if (filename.indexOf("://") > 0 || filename.startsWith("file:")) {
             url = filename;
         } else {
-            url = new File(filename).toURL().toString();
+            url = new File(filename).toURI().toString();
         }
         return url;
     }
