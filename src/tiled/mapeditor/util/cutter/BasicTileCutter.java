@@ -61,7 +61,7 @@ public class BasicTileCutter implements TileCutter
                 nextY += tileHeight + tileSpacing;
             }
 
-            return tile;
+            return tile.getScaledInstance(-1, -1, Image.SCALE_DEFAULT);
         }
 
         return null;

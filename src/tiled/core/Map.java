@@ -12,6 +12,7 @@
 
 package tiled.core;
 
+import java.awt.Dimension;
 import java.util.*;
 
 import tiled.mapeditor.Resources;
@@ -40,7 +41,7 @@ public class Map extends MultilayerPlane
     private Vector tilesets;
     private LinkedList objects;
 
-    private int tileWidth, tileHeight;
+    private Dimension tileDimensions;
     private int orientation = MDO_ORTHO;
     private final List mapChangeListeners = new LinkedList();
     private Properties properties;
@@ -57,6 +58,7 @@ public class Map extends MultilayerPlane
         tilesets = new Vector();
         specialLayers = new Vector();
         objects = new LinkedList();
+        tileDimensions = new Dimension();
     }
 
     /**
@@ -175,7 +177,7 @@ public class Map extends MultilayerPlane
             return;
         }
 
-        Tile t = tileset.getTile(0);
+        /*Tile t = tileset.getTile(0);
 
         if (t != null) {
             int tw = t.getWidth();
@@ -186,7 +188,7 @@ public class Map extends MultilayerPlane
                     tileHeight = th;
                 }
             }
-        }
+        }*/
 
         tilesets.add(tileset);
         fireTilesetAdded(tileset);
@@ -325,7 +327,7 @@ public class Map extends MultilayerPlane
      * @param width
      */
     public void setTileWidth(int width) {
-        tileWidth = width;
+        tileDimensions.width = width;
         fireMapChanged();
     }
 
@@ -335,7 +337,7 @@ public class Map extends MultilayerPlane
      * @param height
      */
     public void setTileHeight(int height) {
-        tileHeight = height;
+        tileDimensions.height = height;
         fireMapChanged();
     }
 
@@ -415,7 +417,7 @@ public class Map extends MultilayerPlane
      * @return the default tile width
      */
     public int getTileWidth() {
-        return tileWidth;
+        return tileDimensions.width;
     }
 
     /**
@@ -424,7 +426,7 @@ public class Map extends MultilayerPlane
      * @return the default tile height
      */
     public int getTileHeight() {
-        return tileHeight;
+        return tileDimensions.height;
     }
 
     /**
@@ -447,7 +449,7 @@ public class Map extends MultilayerPlane
      * @return int The maximum tile height
      */
     public int getTileHeightMax() {
-        int maxHeight = tileHeight;
+        int maxHeight = tileDimensions.height;
         Iterator itr = tilesets.iterator();
 
         while (itr.hasNext()) {
@@ -499,7 +501,7 @@ public class Map extends MultilayerPlane
      */
     public String toString() {
         return "Map[" + bounds.width + "x" + bounds.height + "x" +
-            getTotalLayers() + "][" + tileWidth + "x" +
-            tileHeight + "]";
+            getTotalLayers() + "][" + tileDimensions.width + "x" +
+            tileDimensions.height + "]";
     }
 }

@@ -1726,7 +1726,7 @@ public class MapEditor implements ActionListener, MouseListener,
 
     private void pour(TileLayer layer, int x, int y,
             Tile newTile, Tile oldTile) {
-        if (newTile == oldTile || layer.getLocked()) return;
+        if (newTile == oldTile || !layer.canEdit()) return;
 
         Rectangle area;
         TileLayer before = (TileLayer) createLayerCopy(layer);

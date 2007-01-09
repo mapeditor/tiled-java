@@ -100,6 +100,10 @@ public class TileLayer extends MapLayer
         return new Dimension(tileDimensions);
     }
     
+    public void setTileSize(Dimension d) {
+        tileDimensions = new Dimension(d);
+    }
+    
     /**
      * Rotates the layer by the given Euler angle.
      *

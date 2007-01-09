@@ -64,7 +64,7 @@ public class ImageHelper
      * @see java.awt.Toolkit#createImage(byte[] imagedata)
      */
     static public Image bytesToImage(byte[] imageData) throws IOException {
-        return ImageIO.read(new ByteArrayInputStream(imageData));
+        return ImageIO.read(new ByteArrayInputStream(imageData)).getScaledInstance(-1, -1, Image.SCALE_DEFAULT);
     }
 
     /**
