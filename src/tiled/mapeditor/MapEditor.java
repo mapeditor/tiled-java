@@ -1930,9 +1930,18 @@ public class MapEditor implements ActionListener, MouseListener,
      */
     public void saveMapImage(String filename) {
         if (filename == null) {
+            
             JFileChooser chooser = new JFileChooser();
             chooser.setDialogTitle("Save as image");
 
+            //make sure the user knows what they can use
+            ImageIO.scanForPlugins();
+            String[] list = ImageIO.getWriterFormatNames();
+            for(int i=0;i<list.length;i++) {
+                if(list[i].matches("[A-Z].*"))
+                    chooser.addChoosableFileFilter(new BasicFileFilter(list[i], list[i].toLowerCase()));
+            }
+            
             if (chooser.showSaveDialog(appFrame) ==
                     JFileChooser.APPROVE_OPTION) {
                 filename = chooser.getSelectedFile().getAbsolutePath();
@@ -1948,13 +1957,15 @@ public class MapEditor implements ActionListener, MouseListener,
 
             try {
                 BufferedImage img = new BufferedImage(
-                        imgSize.width, imgSize.height, BufferedImage.TYPE_INT_ARGB);
+                        imgSize.width, imgSize.height, BufferedImage.TYPE_INT_RGB);
                 Graphics2D g = img.createGraphics();
+                g.setBackground(Color.pink);
+                g.clearRect(0, 0, imgSize.width, imgSize.height);
                 g.setClip(0, 0, imgSize.width, imgSize.height);
                 myView.paint(g);
 
                 int lastDot = filename.lastIndexOf('.');
-                String format = filename.substring(lastDot + 1);
+                String format = filename.substring(lastDot + 1).toUpperCase();
 
                 try {
                     ImageIO.write(img, format, new File(filename));
