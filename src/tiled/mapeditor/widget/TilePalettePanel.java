@@ -42,6 +42,9 @@ public class TilePalettePanel extends JPanel implements Scrollable,
     private Vector tilesetMap;
     private Rectangle selection;
 
+    /**
+     * Constructs an empty tile palette panel.
+     */
     public TilePalettePanel() {
         tileSelectionListeners = new LinkedList();
 

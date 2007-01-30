@@ -295,7 +295,8 @@ public class MapEditor implements ActionListener, MouseListener,
         // todo: Make continuouslayout an option. Because it can be slow, some
         // todo: people may prefer not to have that.
         JSplitPane mainSplit = new JSplitPane(
-                JSplitPane.HORIZONTAL_SPLIT, true, mapScrollPane, dataPanel);
+                JSplitPane.HORIZONTAL_SPLIT, true, mapScrollPane,
+                new FloatablePanel(getAppFrame(), dataPanel, "Layers"));
         mainSplit.setOneTouchExpandable(true);
         mainSplit.setResizeWeight(1.0);
         mainSplit.setBorder(null);
@@ -303,7 +304,7 @@ public class MapEditor implements ActionListener, MouseListener,
         tabbedTilesetsPane = new TabbedTilesetsPane(this);
         JSplitPane paletteSplit = new JSplitPane(
                 JSplitPane.VERTICAL_SPLIT, true, mainSplit,
-                tabbedTilesetsPane);
+                new FloatablePanel(getAppFrame(), tabbedTilesetsPane, "Tile palette"));
         paletteSplit.setOneTouchExpandable(true);
         paletteSplit.setResizeWeight(1.0);
 
