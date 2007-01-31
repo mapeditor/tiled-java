@@ -12,10 +12,7 @@
 
 package tiled.mapeditor.widget;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Frame;
-import java.awt.Point;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -41,7 +38,6 @@ public class FloatablePanel extends JPanel
     private final Frame parent;
     private Dimension lastFrameSize;
     private Point lastFrameLocation;
-    //private boolean floating;
 
     /**
      * Constructs a floatable panel with the given title. When the panel is
@@ -85,6 +81,7 @@ public class FloatablePanel extends JPanel
                         // De-float the child
                         frame.getContentPane().remove(FloatablePanel.this.child);
                         frame.dispose();
+                        frame = null;
                         FloatablePanel.this.child.setBorder(null);
                         add(FloatablePanel.this.child, BorderLayout.CENTER);
                         setVisible(true);
@@ -109,7 +106,7 @@ public class FloatablePanel extends JPanel
             }
         });
 
-        JPanel topPanel = new JPanel(new BorderLayout());
+        JPanel topPanel = new HeaderPanel(new BorderLayout());
         topPanel.add(titleLabel, BorderLayout.WEST);
         topPanel.add(floatButton, BorderLayout.EAST);
 
@@ -123,7 +120,30 @@ public class FloatablePanel extends JPanel
      * @param title the new title
      */
     public void setTitle(String title) {
-        // todo: adapt title of frame when it exists
         titleLabel.setText(title);
+
+        if (frame != null)
+        {
+            frame.setTitle(title);
+        }
+    }
+
+    /**
+     * The panel that holds the title label and float button.
+     */
+    private class HeaderPanel extends JPanel
+    {
+        public HeaderPanel(BorderLayout borderLayout) {
+            super(borderLayout);
+            setBorder(BorderFactory.createEmptyBorder(1, 4, 2, 1));
+        }
+
+        protected void paintComponent(Graphics g) {
+            Color backgroundColor = new Color(200, 200, 240);
+            g.setColor(backgroundColor);
+            ((Graphics2D) g).fill(g.getClip());
+            g.setColor(backgroundColor.darker());
+            g.drawLine(0, getHeight() - 1, getWidth() - 1, getHeight() - 1);
+        }
     }
 }
