@@ -278,7 +278,7 @@ public class XMLMapTransformer implements MapReader
             if (tsNode != null)
             {
                 set = unmarshalTileset(tsNode);
-                if (set.getImageSource() != null) {
+                if (set.getSource() != null) {
                     logger.warn("Recursive external Tilesets are not supported.");
                 }
                 set.setSource(filename);
