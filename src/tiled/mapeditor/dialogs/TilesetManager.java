@@ -29,6 +29,7 @@ import javax.swing.event.ListSelectionListener;
 import tiled.core.*;
 import tiled.io.MapHelper;
 import tiled.io.MapWriter;
+import tiled.mapeditor.MapEditor;
 import tiled.mapeditor.Resources;
 import tiled.mapeditor.plugin.PluginClassLoader;
 import tiled.mapeditor.util.TiledFileFilter;
@@ -195,6 +196,7 @@ public class TilesetManager extends JDialog implements ActionListener,
             }
         } else if (command.equals(EMBED_BUTTON)) {
             set.setSource(null);
+            map.touchTileset(set);
             embedButton.setEnabled(false);
             saveButton.setEnabled(false);
         }

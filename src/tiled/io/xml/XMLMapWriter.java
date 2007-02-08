@@ -163,8 +163,9 @@ public class XMLMapWriter implements MapWriter
 
     /**
      * Writes a reference to an external tileset into a XML document.  In the
-     * degenerate case where the tileset is not stored in an external file,
+     * embedded case where the tileset is not stored in an external file,
      * writes the contents of the tileset instead.
+     * 
      */
     private static void writeTilesetReference(TileSet set, XMLWriter w, String wp)
         throws IOException {
@@ -191,7 +192,7 @@ public class XMLMapWriter implements MapWriter
     private static void writeTileset(TileSet set, XMLWriter w, String wp)
         throws IOException {
 
-        String tilebmpFile = set.getTilebmpFile();
+        String setImageSource = set.getImageSource();
         String name = set.getName();
 
         w.startElement("tileset");
@@ -202,7 +203,7 @@ public class XMLMapWriter implements MapWriter
 
         w.writeAttribute("firstgid", set.getFirstGid());
 
-        if (tilebmpFile != null) {
+        if (set.getTilebmpFile() != null) {
             w.writeAttribute("tilewidth", set.getTileWidth());
             w.writeAttribute("tileheight", set.getTileHeight());
 
@@ -210,22 +211,27 @@ public class XMLMapWriter implements MapWriter
             if (tileSpacing != 0) {
                 w.writeAttribute("spacing", tileSpacing);
             }
-        }
+        }    
 
         if (set.getBaseDir() != null) {
             w.writeAttribute("basedir", set.getBaseDir());
         }
 
-        if (tilebmpFile != null) {
-            w.startElement("image");
-            w.writeAttribute("source", getRelativePath(wp, tilebmpFile));
+        if (setImageSource != null || set.hasTilesetImage()) {
+            if(setImageSource != null) {
+                w.startElement("image");
+                
+                w.writeAttribute("source", getRelativePath(wp, setImageSource));
 
-            Color trans = set.getTransparentColor();
-            if (trans != null) {
-                w.writeAttribute("trans", Integer.toHexString(
-                            trans.getRGB()).substring(2));
+                Color trans = set.getTransparentColor();
+                if (trans != null) {
+                    w.writeAttribute("trans", Integer.toHexString(
+                                trans.getRGB()).substring(2));
+                }
+                w.endElement();
+            } else {
+                writeImage(set.getTilesetImage(), null, set.getTransparentColor(), w);
             }
-            w.endElement();
 
             // Write tile properties when necessary.
             Iterator tileIterator = set.iterator();
@@ -443,6 +449,23 @@ public class XMLMapWriter implements MapWriter
         w.endElement();
     }
 
+    private static void writeImage(Image image, String id, Color transparentColor, XMLWriter w) throws IOException {
+        w.startElement("image");
+        w.writeAttribute("format", "png");
+        if(id != null)
+            w.writeAttribute("id", id);
+        if (transparentColor != null) {
+            w.writeAttribute("trans", Integer.toHexString(
+                    transparentColor.getRGB()).substring(2));
+        }
+        w.startElement("data");
+        w.writeAttribute("encoding", "base64");
+        w.writeCDATA(new String(Base64.encode(
+                        ImageHelper.imageToPNG(image))));
+        w.endElement();
+        w.endElement();
+    }
+    
     /**
      * Used to write tile elements for tilesets not based on a tileset image.
      *
@@ -468,14 +491,7 @@ public class XMLMapWriter implements MapWriter
         // Write encoded data
         if (tileImage != null) {
             if (embedImages && !tileSetImages) {
-                w.startElement("image");
-                w.writeAttribute("format", "png");
-                w.startElement("data");
-                w.writeAttribute("encoding", "base64");
-                w.writeCDATA(new String(Base64.encode(
-                                ImageHelper.imageToPNG(tileImage))));
-                w.endElement();
-                w.endElement();
+                writeImage(tileImage, null, tile.getTileSet().getTransparentColor(), w);
             } else if (embedImages && tileSetImages) {
                 w.startElement("image");
                 w.writeAttribute("id", tile.getImageId());

@@ -52,6 +52,7 @@ public class TileDialog extends JDialog
     private JList imageList;
     private JTable tileProperties;
     private JButton okButton;
+    private JButton packButton;
     private JButton addImagesButton;
     private JButton deleteTileButton;
     private JButton changeImageButton;
@@ -65,6 +66,7 @@ public class TileDialog extends JDialog
 
     private static final String DIALOG_TITLE = Resources.getString("dialog.tile.title");
     private static final String OK_BUTTON = Resources.getString("general.button.ok");
+    private static final String PACK_BUTTON = Resources.getString("dialog.tile.button.pack");
     private static final String DELETE_BUTTON = Resources.getString("dialog.tile.button.deletetile");
     private static final String CI_BUTTON = Resources.getString("dialog.tile.button.changeimage");
     private static final String ADD_IMAGES_BUTTON = Resources.getString("dialog.tile.button.addimages");
@@ -202,10 +204,14 @@ public class TileDialog extends JDialog
         tabs.addTab(IMAGES_TAB, createImagePanel());
 
         okButton = new JButton(OK_BUTTON);
-
+        packButton = new JButton(PACK_BUTTON);
+        packButton.addActionListener(this);
+        
         JPanel buttons = new VerticalStaticJPanel();
         buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
         buttons.add(Box.createGlue());
+        buttons.add(packButton);
+        buttons.add(Box.createRigidArea(new Dimension(5, 0)));
         buttons.add(okButton);
 
         JPanel mainPanel = new JPanel();
@@ -281,8 +287,8 @@ public class TileDialog extends JDialog
 
         if (tileset != null) {
             // Find new tile images at the location of the tileset
-            if (tileset.getSource() != null) {
-                location = tileset.getSource();
+            if (tileset.getImageSource() != null) {
+                location = tileset.getImageSource();
             } else if (map != null) {
                 location = map.getFilename();
             }
@@ -373,6 +379,7 @@ public class TileDialog extends JDialog
         boolean tileSelected = currentTile != null;
         boolean atLeastOneSharedImage = tileset.getTotalImages() >= 1;
         boolean imageSelected = imageList.getSelectedValue() != null;
+        boolean externalImageSource = tileset.getImageSource() != null;
 
         deleteTileButton.setEnabled(!tilebmp && tileSelected);
         changeImageButton.setEnabled(atLeastOneSharedImage && !tilebmp
@@ -383,6 +390,7 @@ public class TileDialog extends JDialog
         tileProperties.setEnabled(tileSelected);
         addImagesButton.setEnabled(!tilebmp);
         createTileButton.setEnabled(!tilebmp && imageSelected);
+        packButton.setEnabled(externalImageSource);
     }
 
     /**
@@ -477,6 +485,9 @@ public class TileDialog extends JDialog
                         TILE_CREATED_TITLE,
                         JOptionPane.INFORMATION_MESSAGE);
             }
+        } else if (source == packButton) {
+            tileset.setImageSource(null);
+            updateEnabledState();
         }
 
         repaint();

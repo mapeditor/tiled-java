@@ -14,6 +14,7 @@ package tiled.io.xml;
 
 import java.awt.Color;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -191,7 +192,7 @@ public class XMLMapTransformer implements MapReader
         return o;
     }
 
-    private Image unmarshalImage(Node t, String baseDir) throws IOException
+    private Image unmarshalImage(Node t, String baseDir, boolean scale) throws IOException
     {
         Image img = null;
 
@@ -222,13 +223,17 @@ public class XMLMapTransformer implements MapReader
                         byte[] imageData = Base64.decode(charArray);
                         img = ImageHelper.bytesToImage(imageData);
 
-                        // Deriving a scaled instance, even if it has the same
-                        // size, somehow makes drawing of the tiles a lot
-                        // faster on various systems (seen on Linux, Windows
-                        // and MacOS X).
-                        img = img.getScaledInstance(
-                                img.getWidth(null), img.getHeight(null),
-                                Image.SCALE_FAST);
+                        //In the case of tileset images, we need a BufferedImage 
+                        //to be able to cut it up quickly. (scale=false)
+                        if(scale) {
+                            // Deriving a scaled instance, even if it has the same
+                            // size, somehow makes drawing of the tiles a lot
+                            // faster on various systems (seen on Linux, Windows
+                            // and MacOS X).
+                            img = img.getScaledInstance(
+                                    img.getWidth(null), img.getHeight(null),
+                                    Image.SCALE_FAST);
+                        }
                     }
                     break;
                 }
@@ -273,7 +278,7 @@ public class XMLMapTransformer implements MapReader
             if (tsNode != null)
             {
                 set = unmarshalTileset(tsNode);
-                if (set.getSource() != null) {
+                if (set.getImageSource() != null) {
                     logger.warn("Recursive external Tilesets are not supported.");
                 }
                 set.setSource(filename);
@@ -328,8 +333,7 @@ public class XMLMapTransformer implements MapReader
 
             ext.setFirstGid(firstGid);
             return ext;
-        }
-        else {
+        } else {
             int tileWidth = getAttribute(t, "tilewidth", map != null ? map.getTileWidth() : 0);
             int tileHeight = getAttribute(t, "tileheight", map != null ? map.getTileHeight() : 0);
             int tileSpacing = getAttribute(t, "spacing", 0);
@@ -378,10 +382,13 @@ public class XMLMapTransformer implements MapReader
 
                         set.importTileBitmap(sourcePath, new BasicTileCutter(
                                 tileWidth, tileHeight, tileSpacing, 0));
+                    } else if(imgSource == null && id == null) {
+                        BufferedImage image = (BufferedImage)unmarshalImage(child, tilesetBaseDir, false);
+                        set.importTileBitmap(image, new BasicTileCutter(
+                                tileWidth, tileHeight, tileSpacing, 0));
                     } else {
-                        Image image = unmarshalImage(child, tilesetBaseDir);
-                        String idValue = getAttributeValue(child, "id");
-                        int imageId = Integer.parseInt(idValue);
+                        Image image = unmarshalImage(child, tilesetBaseDir, true);
+                        int imageId = Integer.parseInt(id);
                         set.addImage(image, imageId);
                     }
                 }
@@ -473,7 +480,7 @@ public class XMLMapTransformer implements MapReader
             Node child = children.item(i);
             if ("image".equalsIgnoreCase(child.getNodeName())) {
                 int id = getAttribute(child, "id", -1);
-                Image img = unmarshalImage(child, baseDir);
+                Image img = unmarshalImage(child, baseDir, true);
                 if (id < 0) {
                     id = set.addImage(img);
                 }

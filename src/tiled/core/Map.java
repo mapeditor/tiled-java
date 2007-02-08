@@ -126,6 +126,16 @@ public class Map extends MultilayerPlane
         }
     }
 
+    protected void fireTilesetChanged(int index) {
+        Iterator iterator = mapChangeListeners.iterator();
+        MapChangedEvent event = null;
+
+        while (iterator.hasNext()) {
+            if (event == null) event = new MapChangedEvent(this);
+            ((MapChangeListener) iterator.next()).tilesetChanged(event, index);
+        }
+    }
+    
     /**
      * Causes a MapChangedEvent to be fired.
      */
@@ -133,6 +143,11 @@ public class Map extends MultilayerPlane
         fireMapChanged();
     }
 
+    public void touchTileset(TileSet set) {
+        int index = tilesets.indexOf(set);
+        fireTilesetChanged(index);
+    }
+    
     public void addLayerSpecial(MapLayer layer) {
         layer.setMap(this);
         specialLayers.add(layer);

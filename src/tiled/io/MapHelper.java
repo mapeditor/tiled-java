@@ -107,7 +107,7 @@ public class MapHelper {
         	PluginLogger logger = new PluginLogger();
             mw.setLogger(logger);
             mw.writeTileset(set, filename);
-            set.setSource(filename);
+            set.setImageSource(filename);
             reportPluginMessages(logger);
         } else {
             throw new Exception("Unsupported tileset format");
@@ -210,7 +210,7 @@ public class MapHelper {
             	PluginLogger logger = new PluginLogger();
                 mr.setLogger(logger);
                 ret = mr.readTileset(file);
-                ret.setSource(file);
+                ret.setImageSource(file);
                 reportPluginMessages(logger);
             } else {
                 throw new Exception("Unsupported tileset format");

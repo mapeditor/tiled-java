@@ -47,7 +47,8 @@ public class TileSet
     private Rectangle tileDimensions;
     private int tileSpacing;
     private int tilesPerRow;
-    private String externalSource;
+    private String imageExternalSource,
+                    externalSource;
     private File tilebmpFile;
     private String name;
     private Color transparentColor;
@@ -118,7 +119,7 @@ public class TileSet
      * @param tilebmp     the image to be used, must not be null
      * @param cutter      the tile cutter, must not be null
      */
-    private void importTileBitmap(BufferedImage tilebmp, TileCutter cutter)
+    public void importTileBitmap(BufferedImage tilebmp, TileCutter cutter)
     {
         assert tilebmp != null;
         assert cutter != null;
@@ -215,15 +216,26 @@ public class TileSet
     }
 
     /**
-     * Sets the URI path of the external source of this tile set. By setting
-     * this, the set is implied to be external in all other operations.
+     * Sets the URI path of the external source of the tileset's image. 
+     * By passing a valid URI, the set is implied to be external in all other 
+     * operations. If set to <code>null</code>, the tileset is implied to
+     * have an embedded tileset image
      *
      * @param source a URI of the tileset image file
+     */
+    public void setImageSource(String source) {
+        imageExternalSource = source;
+    }
+
+    /**
+     * Sets the URI path of the external source of the tileset itself.
+     *  
+     * @param source a URI of the tileset file
      */
     public void setSource(String source) {
         externalSource = source;
     }
-
+    
     /**
      * Sets the base directory for the tileset
      *
@@ -243,6 +255,7 @@ public class TileSet
         if (name != null) {
             tilebmpFile = new File(name);
             tilebmpFileLastModified = tilebmpFile.lastModified();
+            setImageSource(name);
         }
         else {
             tilebmpFile = null;
@@ -453,6 +466,16 @@ public class TileSet
     }
 
     /**
+     * Returns the source of this tileset's image.
+     *
+     * @return a filename if tileset is external or <code>null</code> if
+     *         tileset is internal.
+     */
+    public String getImageSource() {
+        return imageExternalSource;
+    }
+
+    /**
      * Returns the source of this tileset.
      *
      * @return a filename if tileset is external or <code>null</code> if
@@ -461,7 +484,7 @@ public class TileSet
     public String getSource() {
         return externalSource;
     }
-
+    
     /**
      * Returns the base directory for the tileset
      *
@@ -488,6 +511,20 @@ public class TileSet
         return null;
     }
 
+    /**
+     * Returns <code>true</code> if this uses a tileset
+     * image
+     * 
+     * @return
+     */
+    public boolean hasTilesetImage() {
+        return tileSetImage != null;
+    }
+    
+    public Image getTilesetImage() {
+        return tileSetImage;
+    }
+    
     /**
      * Returns the first global id connected to this tileset.
      *

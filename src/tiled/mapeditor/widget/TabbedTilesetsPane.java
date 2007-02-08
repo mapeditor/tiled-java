@@ -144,14 +144,16 @@ public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionList
         public void mapChanged(MapChangedEvent e) {
         }
 
-        public void tilesetAdded(MapChangedEvent e, TileSet tileset)
-        {
+        public void tilesetAdded(MapChangedEvent e, TileSet tileset) {
             addTabForTileset(tileset);
         }
 
-        public void tilesetRemoved(MapChangedEvent e, int index)
-        {
+        public void tilesetRemoved(MapChangedEvent e, int index) {
             removeTabAt(index);
+        }
+        
+        public void tilesetChanged(MapChangedEvent e, int index) {
+            recreateTabs(map.getTilesets());
         }
     }
 }

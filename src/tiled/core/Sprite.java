@@ -157,6 +157,10 @@ public class Sprite
         createKey("", frames, KeyFrame.KEY_LOOP);
     }
 
+    public void setFrameSize(Rectangle r) {
+        frameSize.setBounds(r);
+    }
+    
     public void setFrameSize(int w, int h) {
         frameSize.width = w;
         frameSize.height = h;

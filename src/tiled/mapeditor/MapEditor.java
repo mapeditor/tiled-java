@@ -1361,6 +1361,13 @@ public class MapEditor implements ActionListener, MouseListener,
         mapView.repaint();
     }
 
+    public void tilesetChanged(MapChangedEvent e, int index) {
+        if (tilePaletteDialog != null) {
+            tilePaletteDialog.setMap(currentMap);
+        }
+        mapView.repaint();
+    }
+    
     public void valueChanged(ListSelectionEvent e) {
         int selectedRow = layerTable.getSelectedRow();
 
