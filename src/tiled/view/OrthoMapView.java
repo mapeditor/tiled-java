@@ -114,12 +114,18 @@ public class OrthoMapView extends MapView
             double ox = mo.getX() * zoom;
             double oy = mo.getY() * zoom;
 
-            g.setColor(Color.black);
-            g.fillOval((int) ox, (int) oy, (int) (10 * zoom),
-                       (int) (10 * zoom));
+            g.setColor(Color.orange);
+            if (mo.getWidth() == 0 || mo.getHeight() == 0) {
+                g.fillOval((int) ox, (int) oy,
+                        (int) (10 * zoom), (int) (10 * zoom));                
+            } else {            
+                g.drawRect((int) ox, (int) oy,
+                    (int) (mo.getWidth() * zoom),
+                    (int) (mo.getHeight() * zoom));
+            }
             if (zoom > 0.0625) {
                 g.setColor(Color.white);
-                g.drawString(mo.getType(), (int) (ox - 12), (int) (oy - 5));
+                g.drawString(mo.getName(), (int) (ox - 12), (int) (oy - 5));
             }
         }
     }
@@ -255,6 +261,11 @@ public class OrthoMapView extends MapView
     public Point screenToTileCoords(int x, int y) {
         Dimension tsize = getTileSize();
         return new Point(x / tsize.width, y / tsize.height);
+    }
+
+    public Point screenToPixelCoords(int x, int y) {
+        return new Point(
+                (int) (x / zoom), (int) (y / zoom));
     }
 
     protected Dimension getTileSize() {

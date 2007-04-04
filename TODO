@@ -12,6 +12,7 @@ ROADMAP TO FUTURE RELEASES
   while other tools than stamp brush are selected)
 * Add support for tile instance properties (see Christian's patch) (WIP)
   - Implement an effective way of displaying the presence of these properties
+* Add support for arbitrary objects and zones placement (ElvenProgrammer)
 
 0.8.0
 * Set up a layer->map->mapview changes event trail to automatically handle
@@ -25,7 +26,8 @@ ROADMAP TO FUTURE RELEASES
 * Store stamp brushes and texture transition definitions to project
 
 1.0.0
-* Add support for arbitrary objects and zones placement
+* Tool plugins
+* Fix all remaining issues.
 
 GENERAL TODO ITEMS
 
@@ -33,7 +35,6 @@ GENERAL TODO ITEMS
 * Add ability to select multiple layers from layer table
 * Add preview of new tileset when creating a tileset
 * Add the Shifted view, which emulates several tiling configurations
-* Add full support for animated tiles
 * Add support for animated tiles
 * Add additional "tile cutters"
 * Rewrite main mapeditor code

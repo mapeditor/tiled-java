@@ -474,6 +474,8 @@ public abstract class MapView extends JPanel implements Scrollable
 
     public abstract Point screenToTileCoords(int x, int y);
 
+    public abstract Point screenToPixelCoords(int x, int y);
+
     /**
      * Returns the location on the screen of the top corner of a tile.
      *

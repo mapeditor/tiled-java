@@ -391,15 +391,32 @@ public class XMLMapTransformer implements MapReader
     }
 
     private MapObject unmarshalObject(Node t) throws Exception {
-        MapObject obj = null;
-        try {
-            obj = (MapObject)unmarshalClass(MapObject.class, t);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return obj;
-        }
+        MapObject obj = new MapObject();
+        obj.setName(getAttributeValue(t, "name"));
+        obj.setType(getAttributeValue(t, "type"));
+        obj.setX(getAttribute(t, "x", 0));
+        obj.setY(getAttribute(t, "y", 0));
+        obj.setWidth(getAttribute(t, "width", 0));
+        obj.setHeight(getAttribute(t, "height", 0));
 
-        readProperties(t.getChildNodes(), obj.getProperties());
+        // TODO: Why isn't readProperties() used? - BL
+        NodeList children = t.getChildNodes();
+        Properties props = new Properties();
+        for (int i = 0; i < children.getLength(); i++) {
+            Node child = children.item(i);
+            if ("properties".equalsIgnoreCase(child.getNodeName())) {
+                NodeList properties = child.getChildNodes();
+                for (int j = 0; j < properties.getLength(); j++) {
+                    Node node = properties.item(j);
+                    if ("property".equalsIgnoreCase(node.getNodeName())) {
+                    	String key = getAttributeValue(node, "name");
+                    	String value = node.getFirstChild().getNodeValue().trim();
+                        props.put(key, value);
+                    }
+                }
+            }
+        }
+        obj.setProperties(props);
         return obj;
     }
 

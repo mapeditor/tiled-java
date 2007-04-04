@@ -129,6 +129,11 @@ public class ShiftedMapView extends MapView
         return new Point(0, 0);
     }
 
+    public Point screenToPixelCoords(int x, int y) {
+        // TODO: add proper implementation
+        return new Point();
+    }
+
     protected Dimension getTileSize() {
         return new Dimension(
                 (int)(map.getTileWidth() * zoom),

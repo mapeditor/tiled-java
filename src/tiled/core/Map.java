@@ -152,7 +152,8 @@ public class Map extends MultilayerPlane
      */
     public MapLayer addLayer() {
         MapLayer layer = new TileLayer(this, bounds.width, bounds.height);
-        layer.setName(Resources.getString("general.layer.layer") + " " + super.getTotalLayers());
+        layer.setName(Resources.getString("general.layer.layer") +
+                      " " + super.getTotalLayers());
         super.addLayer(layer);
         fireMapChanged();
         return layer;
@@ -162,6 +163,21 @@ public class Map extends MultilayerPlane
         layer.setMap(this);
         super.setLayer(index, layer);
         fireMapChanged();
+    }
+
+    /**
+     * Create a new empty ObjectGroup. By default, the new layer's name is set
+     * to "ObjectGroup [layer index]"
+     *
+     * @return The new ObjectGroup instance.
+     */
+    public MapLayer addObjectGroup() {
+        MapLayer layer = new ObjectGroup();
+        layer.setName(Resources.getString("general.objectgroup.objectgroup") +
+                      " " + super.getTotalLayers());
+        super.addLayer(layer);
+        fireMapChanged();
+        return layer;
     }
 
     /**

@@ -28,9 +28,10 @@ import tiled.mapeditor.widget.VerticalStaticJPanel;
  */
 public class PropertiesDialog extends JDialog
 {
-    private JTable propertiesTable;
-    private final Properties properties;
-    private final PropertiesTableModel tableModel = new PropertiesTableModel();
+    protected JTable propertiesTable;
+    protected final Properties properties;
+    protected final PropertiesTableModel tableModel = new PropertiesTableModel();
+    protected JPanel mainPanel;
 
     private static final String DIALOG_TITLE = Resources.getString("dialog.properties.title");
     private static final String OK_BUTTON = Resources.getString("general.button.ok");
@@ -46,7 +47,7 @@ public class PropertiesDialog extends JDialog
         setLocationRelativeTo(getOwner());
     }
 
-    private void init() {
+    protected void init() {
         propertiesTable = new JTable(tableModel);
         JScrollPane propScrollPane = new JScrollPane(propertiesTable);
         propScrollPane.setPreferredSize(new Dimension(200, 150));
@@ -71,7 +72,7 @@ public class PropertiesDialog extends JDialog
         buttons.add(Box.createRigidArea(new Dimension(5, 0)));
         buttons.add(cancelButton);
 
-        JPanel mainPanel = new JPanel();
+        mainPanel = new JPanel();
         mainPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.add(propScrollPane);
@@ -101,7 +102,7 @@ public class PropertiesDialog extends JDialog
         });
     }
 
-    private void updateInfo() {
+    public void updateInfo() {
         tableModel.setProperties(properties);
     }
 
@@ -110,7 +111,7 @@ public class PropertiesDialog extends JDialog
         setVisible(true);
     }
 
-    private void buildPropertiesAndDispose() {
+    void buildPropertiesAndDispose() {
         // Make sure there is no active cell editor anymore
         TableCellEditor editor = propertiesTable.getCellEditor();
         if (editor != null) {
@@ -124,7 +125,7 @@ public class PropertiesDialog extends JDialog
         dispose();
     }
 
-    private void deleteSelected() {
+    protected void deleteSelected() {
         int total = propertiesTable.getSelectedRowCount();
         Object[] keys = new Object[total];
         int[] selRows = propertiesTable.getSelectedRows();

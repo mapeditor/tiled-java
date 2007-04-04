@@ -26,11 +26,13 @@ public class MapObject
     protected float mapX, mapY;
     protected Rectangle bounds;
     protected boolean bVisible = true;
-    protected String source, type;
+    protected String name, source, type;
+    protected int width, height;
 
     public MapObject() {
         bounds = new Rectangle();
         properties = new Properties();
+        name = "Object";
     }
 
     public void setX(int x) {
@@ -40,17 +42,33 @@ public class MapObject
     public void setY(int y) {
         mapY = y;
     }
+    
+    public void setName(String s) {
+        name = s;
+    }
+    
+    public void setSource(String s) {
+        source = s;
+    }
 
     public void setType(String s) {
         type = s;
     }
 
-    public void setSource(String s) {
-        source = s;
-    }
-
     public void setSprite(Sprite s) {
-        sprite=s;
+        sprite = s;
+    }
+    
+    public void setWidth(int w) {
+        width = w;
+    }
+    
+    public void setHeight(int h) {
+        height = h;
+    }
+    
+    public void setProperties(Properties p) {
+        properties = p;
     }
 
     public void translate(int x, int y) {
@@ -65,13 +83,25 @@ public class MapObject
     public int getY() {
         return (int) mapY;
     }
+    
+    public String getName() {
+        return name;
+    }
+    
+    public String getSource() {
+        return source;
+    }
 
     public String getType() {
         return type;
     }
-
-    public String getSource() {
-        return source;
+    
+    public int getWidth() {
+        return width;
+    }
+    
+    public int getHeight() {
+        return height;
     }
 
     public Properties getProperties() {

@@ -248,6 +248,11 @@ public class HexMapView extends MapView
         return new Point(tx, ty);
     }
 
+    public Point screenToPixelCoords(int x, int y) {
+        // TODO: add proper implementation
+        return new Point();
+    }
+
     /**
      * Get the point at the top left corner of the bounding rectangle of this
      * hex.

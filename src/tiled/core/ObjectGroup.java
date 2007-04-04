@@ -14,7 +14,8 @@ package tiled.core;
 
 import java.awt.Rectangle;
 import java.awt.geom.Area;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.ListIterator;
 
 /**
  * @version $Id$
@@ -124,5 +125,18 @@ public class ObjectGroup extends MapLayer
 
     public ListIterator getObjects() {
         return (ListIterator) boundObjects.iterator();
+    }
+
+    public MapObject getObjectAt(int x, int y) {
+        ListIterator iterator = getObjects();
+        while (iterator.hasNext()) {
+            MapObject obj = (MapObject) iterator.next();
+            Rectangle rect = new Rectangle(obj.getX(), obj.getY(),
+                    obj.getWidth(), obj.getHeight());
+            if (rect.contains(x, y)) {
+                return obj;
+            }
+        }
+        return null;
     }
 }

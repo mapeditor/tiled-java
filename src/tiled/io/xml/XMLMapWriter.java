@@ -521,16 +521,30 @@ public class XMLMapWriter implements MapWriter
     private static void writeObject(MapObject m, ObjectGroup o, XMLWriter w)
         throws IOException
     {
-        Rectangle b = o.getBounds();
         w.startElement("object");
-        w.writeAttribute("x", m.getX() + b.x);
-        w.writeAttribute("y", m.getY() + b.y);
+        w.writeAttribute("name", m.getName());
         w.writeAttribute("type", m.getType());
+        w.writeAttribute("x", m.getX());
+        w.writeAttribute("y", m.getY());
+        w.writeAttribute("width", m.getWidth());
+        w.writeAttribute("height", m.getHeight());
         if (m.getSource() != null) {
             w.writeAttribute("source", m.getSource());
         }
 
-        writeProperties(m.getProperties(), w);
+        // TODO: Why isn't writeProperties() used? - BL
+        w.startElement("properties");
+        Properties props = m.getProperties();
+        if (!props.isEmpty()) {
+            for (Enumeration keys = props.keys(); keys.hasMoreElements();) {
+                String key = (String)keys.nextElement();
+                w.startElement("property");
+                w.writeAttribute("name", key);
+                w.writeCDATA(props.getProperty(key));
+                w.endElement();
+            }
+        }
+        w.endElement();
 
         w.endElement();
     }
