@@ -683,16 +683,20 @@ public class XMLMapTransformer implements MapReader
             setOrientation("orthogonal");
         }
 
+        // Load properties
         readProperties(mapNode.getChildNodes(), map.getProperties());
 
-        // Load the tilesets, properties, layers and objectgroups
+        // Load tilesets first, in case order is munged
+        NodeList l = doc.getElementsByTagName("tileset");
+            for (int i = 0; (item = l.item(i)) != null; i++) {
+                    map.addTileset(unmarshalTileset(item));
+        }
+
+        // Load the layers and objectgroups
         for (Node sibs = mapNode.getFirstChild(); sibs != null;
                 sibs = sibs.getNextSibling())
         {
-            if ("tileset".equals(sibs.getNodeName())) {
-                map.addTileset(unmarshalTileset(sibs));
-            }
-            else if ("layer".equals(sibs.getNodeName())) {
+            if ("layer".equals(sibs.getNodeName())) {
                 MapLayer layer = readLayer(sibs);
                 if (layer != null) {
                     map.addLayer(layer);
