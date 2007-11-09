@@ -13,6 +13,8 @@ ROADMAP TO FUTURE RELEASES
 * Add support for tile instance properties (see Christian's patch) (WIP)
   - Implement an effective way of displaying the presence of these properties
 * Add support for arbitrary objects and zones placement (ElvenProgrammer)
+* Add separate buttons for adding and removing objects, and enable/disable them depending on the selected layer
+* Update map view when showing/hiding an object group
 
 0.8.0
 * Set up a layer->map->mapview changes event trail to automatically handle

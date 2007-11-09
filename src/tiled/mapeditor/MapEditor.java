@@ -126,7 +126,6 @@ public class MapEditor implements ActionListener, MouseListener,
     private AbstractButton objectMoveButton, objectAddButton;
 
     private TabbedTilesetsPane tabbedTilesetsPane;
-    private TilePaletteDialog tilePaletteDialog;
     private AboutDialog aboutDialog;
     private MapLayerEdit paintEdit;
 
@@ -151,6 +150,9 @@ public class MapEditor implements ActionListener, MouseListener,
     private final Action addObjectGroupAction;
 
     private static final String IMPORT_ERROR_MSG = Resources.getString("dialog.newtileset.import.error.message");
+
+    private static final String PANEL_TILE_PALETTE = Resources.getString("panel.tilepalette.title");
+    private static final String PANEL_LAYERS = Resources.getString("panel.layers.title");
 
     private static final String TOOL_PAINT = Resources.getString("tool.paint.name");
     private static final String TOOL_ERASE = Resources.getString("tool.erase.name");
@@ -229,9 +231,6 @@ public class MapEditor implements ActionListener, MouseListener,
         appFrame.setJMenuBar(menuBar);
         appFrame.setSize(APP_WIDTH, APP_HEIGHT);
 
-        tilePaletteDialog =
-            new TilePaletteDialog(this, currentMap);
-
         setCurrentMap(null);
         updateRecent(null);
 
@@ -299,15 +298,16 @@ public class MapEditor implements ActionListener, MouseListener,
         // todo: people may prefer not to have that.
         JSplitPane mainSplit = new JSplitPane(
                 JSplitPane.HORIZONTAL_SPLIT, true, mapScrollPane,
-                new FloatablePanel(getAppFrame(), dataPanel, "Layers"));
+                new FloatablePanel(getAppFrame(), dataPanel, PANEL_LAYERS));
         mainSplit.setOneTouchExpandable(true);
         mainSplit.setResizeWeight(1.0);
         mainSplit.setBorder(null);
 
         tabbedTilesetsPane = new TabbedTilesetsPane(this);
+        FloatablePanel tilesetPanel = new FloatablePanel(getAppFrame(),
+                tabbedTilesetsPane, PANEL_TILE_PALETTE);
         JSplitPane paletteSplit = new JSplitPane(
-                JSplitPane.VERTICAL_SPLIT, true, mainSplit,
-                new FloatablePanel(getAppFrame(), tabbedTilesetsPane, "Tile palette"));
+                JSplitPane.VERTICAL_SPLIT, true, mainSplit, tilesetPanel);
         paletteSplit.setOneTouchExpandable(true);
         paletteSplit.setResizeWeight(1.0);
 
@@ -1272,14 +1272,6 @@ public class MapEditor implements ActionListener, MouseListener,
         } else if ("moveobject".equals(command)) {
             setCurrentPointerState(PS_MOVEOBJ);
             resetBrush();
-        } else if ("palette".equals(command)) {
-            if (currentMap != null) {
-                if (tilePaletteDialog == null) {
-                    tilePaletteDialog =
-                        new TilePaletteDialog(this, currentMap);
-                }
-                tilePaletteDialog.setVisible(true);
-            }
         } else if ("tileInstanceProperties".equals(command)) {
             if (currentMap != null) {
                 tileInstancePropertiesDialog.setVisible(true);
@@ -1439,15 +1431,9 @@ public class MapEditor implements ActionListener, MouseListener,
     }
 
     public void tilesetAdded(MapChangedEvent e, TileSet tileset) {
-        if (tilePaletteDialog != null) {
-            tilePaletteDialog.setMap(currentMap);
-        }
     }
 
     public void tilesetRemoved(MapChangedEvent e, int index) {
-        if (tilePaletteDialog != null) {
-            tilePaletteDialog.setMap(currentMap);
-        }
         mapView.repaint();
     }
 
@@ -1509,14 +1495,6 @@ public class MapEditor implements ActionListener, MouseListener,
         // Save the extended window state if the window isn't minimized
         int extendedState = appFrame.getExtendedState();
         prefs.node("dialog/main").putInt("state", extendedState);
-
-        // Allow the the tile palette dialog to save its prefs (because it's
-        // common to tweak this to a certain width for convenient tileset
-        // display)
-        // todo: would be nicer to introduce a ShutdownListener interface
-        if (tilePaletteDialog != null) {
-            tilePaletteDialog.shutdown();
-        }
     }
 
     private class LayerTransformAction extends AbstractAction {
@@ -2075,9 +2053,6 @@ public class MapEditor implements ActionListener, MouseListener,
         sb.makeQuadBrush(new Rectangle(0, 0, 1, 1));
         setBrush(sb);
 
-        if (tilePaletteDialog != null) {
-            tilePaletteDialog.setMap(currentMap);
-        }
         tabbedTilesetsPane.setMap(currentMap);
 
         if (!mapLoaded) {
