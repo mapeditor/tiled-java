@@ -27,83 +27,81 @@ import tiled.io.xml.XMLMapWriter;
  */
 public class JSONMapWriter extends  XMLMapWriter implements MapWriter
 {
-	public JSONMapWriter() {
-		// TODO Auto-generated constructor stub
-	}
+    public JSONMapWriter() {
+        // TODO Auto-generated constructor stub
+    }
 
 
-	/**
-	 * this method write a map OR a tileset in json format
-	 *
-	 * @param map
-	 * @param set
-	 * @param filename
-	 * @throws Exception
-	 */
-	private void writeMapOrTileset(Map map ,TileSet set, String filename) throws Exception {
+    /**
+     * this method write a map OR a tileset in json format
+     *
+     * @param map
+     * @param set
+     * @param filename
+     * @throws Exception
+     */
+    private void writeMapOrTileset(Map map ,TileSet set, String filename) throws Exception {
 
-		//		create a temporary file
-		File tempFile = File.createTempFile("tiled_json_",".tmx");
+        // Create a temporary file
+        File tempFile = File.createTempFile("tiled_json_",".tmx");
 
-		//		write in this temp file an xml content (tmx format)
-		if (map != null) {
-			super.writeMap(map,tempFile.getAbsolutePath());
-		} else {
-			if (set != null) {
-				super.writeTileset(set,tempFile.getAbsolutePath()); //write in this temp file an xml content (tmx format)
-			} else
-				return;
-		}
+        // Write in this temp file an xml content (tmx format)
+        if (map != null) {
+            super.writeMap(map,tempFile.getAbsolutePath());
+        } else {
+            if (set != null) {
+                super.writeTileset(set,tempFile.getAbsolutePath()); //write in this temp file an xml content (tmx format)
+            } else
+                return;
+        }
 
-		tempFile = new File(tempFile.getAbsolutePath()); //TODO useful?
+        tempFile = new File(tempFile.getAbsolutePath()); //TODO useful?
 
-		//		now read this temp file and get the tmx content
-		int fileSize = 100000; //TODO Replace here by true file size //(int) tempFile.length(); //100000;
-		char[] TMXContent = new char[fileSize];
+        // Now read this temp file and get the tmx content
+        int fileSize = 100000; //TODO Replace here by true file size //(int) tempFile.length(); //100000;
+        char[] TMXContent = new char[fileSize];
 
-		FileReader fileR = new FileReader(tempFile.getAbsolutePath());
-		fileR.read(TMXContent);
-		fileR.close();
+        FileReader fileR = new FileReader(tempFile.getAbsolutePath());
+        fileR.read(TMXContent);
+        fileR.close();
 
-		// 		avoid retrieving xml header like <?xml version=\"1.0\"?>, JSON parser doesn't like it!
-		String TMXContentString = new String(TMXContent).trim().replaceFirst("\\<\\?.*\\?\\>","");
+        // Avoid retrieving xml header like <?xml version=\"1.0\"?>, JSON parser doesn't like it!
+        String TMXContentString = new String(TMXContent).trim().replaceFirst("\\<\\?.*\\?\\>","");
 
-		System.out.println("temp file path="+tempFile.getAbsolutePath());
-		System.out.println("filesize="+fileSize);
-		System.out.println("content="+TMXContentString);
+        System.out.println("temp file path="+tempFile.getAbsolutePath());
+        System.out.println("filesize="+fileSize);
+        System.out.println("content="+TMXContentString);
 
-		//		delete useless temp file
-		tempFile.delete();
+        // Delete useless temp file
+        tempFile.delete();
 
-		// 		turn it into JSON format string
-		String JSONContent = XML.toJSONObject(TMXContentString).toString(2);
+        // Turn it into JSON format string
+        String JSONContent = XML.toJSONObject(TMXContentString).toString(2);
 
-		System.err.println("json content="+JSONContent);
+        System.err.println("json content="+JSONContent);
 
-		//		write in destination file
-		FileWriter fileW = new FileWriter(filename);
-		fileW.write(JSONContent);
-		fileW.flush();
-		fileW.close();
+        // Write in destination file
+        FileWriter fileW = new FileWriter(filename);
+        fileW.write(JSONContent);
+        fileW.flush();
+        fileW.close();
+    }
 
-	}
+    public void writeMap(Map map, String filename) throws Exception {
+        writeMapOrTileset(map,null,filename);
+    }
 
+    public void writeTileset(TileSet set, String filename) throws Exception {
+        writeMapOrTileset(null,set,filename);
+    }
 
-	public void writeMap(Map map, String filename) throws Exception {
-		writeMapOrTileset(map,null,filename);
-	}
+    public void writeMap(Map map, OutputStream out) throws Exception {
+        super.writeMap(map,out); //not implemented because can't turn into JSON an OutputStream
+    }
 
-	public void writeTileset(TileSet set, String filename) throws Exception {
-		writeMapOrTileset(null,set,filename);
-	}
-
-	public void writeMap(Map map, OutputStream out) throws Exception {
-		super.writeMap(map,out); //not implemented because can't turn into JSON an OutputStream
-	}
-
-	public void writeTileset(TileSet set, OutputStream out) throws Exception {
-		super.writeTileset(set,out); //not implemented because can't turn into JSON an OutputStream
-	}
+    public void writeTileset(TileSet set, OutputStream out) throws Exception {
+        super.writeTileset(set,out); //not implemented because can't turn into JSON an OutputStream
+    }
 
     /**
      * @see MapReader#getFilter()

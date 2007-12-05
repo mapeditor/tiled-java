@@ -58,3 +58,5 @@ TRANSLATORS
 - Rainer Deyke for useful suggestions and many code contributions
 - Jerome Blouin for some meticulous performance testing
 - Hendrik Brummermann for improving error reporting on map loading
+- Nader Akhres for the JSON map writer plugin
+- William C. Bubel for the Lua map writer plugin

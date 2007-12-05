@@ -8,6 +8,7 @@
       <ant dir="mappy" target="dist" inheritAll="false"/>
       <ant dir="tmw" target="dist" inheritAll="false"/>
       <ant dir="json" target="dist" inheritAll="false"/>
+      <ant dir="lua" target="dist" inheritAll="false"/>
   </target>
 
   <target name="nightly" description="Generate a nightly build" >
@@ -17,5 +18,6 @@
     <ant dir="mappy" target="clean" inheritAll="false"/>
     <ant dir="tmw" target="clean" inheritAll="false"/>
     <ant dir="json" target="clean" inheritAll="false"/>
+    <ant dir="lua" target="clean" inheritAll="false"/>
   </target>
 </project>
