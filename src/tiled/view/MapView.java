@@ -43,6 +43,8 @@ public abstract class MapView extends JPanel implements Scrollable
     protected double zoom = 1.0;
     protected int zoomLevel = ZOOM_NORMALSIZE;
 
+    protected Polygon propPoly;
+    
     // Grid properties
     protected boolean showGrid;
     protected boolean antialiasGrid;

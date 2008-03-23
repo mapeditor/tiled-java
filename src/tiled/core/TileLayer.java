@@ -337,12 +337,7 @@ public class TileLayer extends MapLayer
     }
 
     /**
-     * Merges the tile data of this layer with the specified layer. The calling
-     * layer is considered the significant layer, and will overwrite the data
-     * of the argument layer. At cells where the calling layer has no data, the
-     * argument layer data is preserved.
-     *
-     * @param other the insignificant layer to merge with
+     * @inheritDoc MapLayer#mergeOnto(MapLayer)
      */
     public void mergeOnto(MapLayer other) {
         if (!other.canEdit())
@@ -358,6 +353,29 @@ public class TileLayer extends MapLayer
         }
     }
 
+    /**
+     * Like mergeOnto, but will only copy the area specified.
+     *
+     * @see TileLayer#mergeOnto(MapLayer)
+     * @param other
+     * @param mask
+     */
+    public void maskedMergeOnto(MapLayer other, Area mask) {
+        if (!canEdit())
+            return;
+
+        Rectangle boundBox = mask.getBounds();
+
+        for (int y = boundBox.y; y < boundBox.y + boundBox.height; y++) {
+            for (int x = boundBox.x; x < boundBox.x + boundBox.width; x++) {
+            	Tile tile = ((TileLayer) other).getTileAt(x, y);
+                if (mask.contains(x,y) && tile != null) {
+                    setTileAt(x, y, tile);
+                }
+            }
+        }
+    }
+    
     /**
      * Copy data from another layer onto this layer. Unlike mergeOnto,
      * copyFrom() copies the empty cells as well.

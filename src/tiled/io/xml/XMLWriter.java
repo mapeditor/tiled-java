@@ -84,6 +84,8 @@ public class XMLWriter
         while (!openElements.isEmpty()) {
             endElement();
         }
+        
+        w.flush(); //writers do not always flush automatically...
     }
 
     public void endElement() throws IOException {

@@ -238,8 +238,18 @@ public abstract class MapLayer implements Cloneable
         return isVisible;
     }
 
+    /**
+     * Merges the tile data of this layer with the specified layer. The calling
+     * layer is considered the significant layer, and will overwrite the data
+     * of the argument layer. At cells where the calling layer has no data, the
+     * argument layer data is preserved.
+     *
+     * @param other the insignificant layer to merge with
+     */
     public abstract void mergeOnto(MapLayer other);
 
+    public abstract void maskedMergeOnto(MapLayer other, Area mask);
+    
     public abstract void copyFrom(MapLayer other);
 
     public abstract void maskedCopyFrom(MapLayer other, Area mask);

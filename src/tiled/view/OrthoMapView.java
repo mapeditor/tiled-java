@@ -35,6 +35,11 @@ public class OrthoMapView extends MapView
      */
     public OrthoMapView(Map map, MapEditor editor) {
         super(map, editor);
+        
+        propPoly = new Polygon();
+        propPoly.addPoint(0, 0);
+        propPoly.addPoint(12, 0);
+        propPoly.addPoint(12, 12);
     }
 
     public int getScrollableBlockIncrement(Rectangle visibleRect,
@@ -125,7 +130,7 @@ public class OrthoMapView extends MapView
             }
             if (zoom > 0.0625) {
                 g.setColor(Color.white);
-                g.drawString(mo.getName(), (int) (ox - 12), (int) (oy - 5));
+                g.drawString(mo.getName() != null ? mo.getName() : "(null)", (int) (ox - 12), (int) (oy - 5));
             }
         }
     }
@@ -201,10 +206,15 @@ public class OrthoMapView extends MapView
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
                              RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
+        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, 
+				RenderingHints.VALUE_RENDER_QUALITY);
+
+        g2d.setComposite(AlphaComposite.SrcAtop);
+        
+        //g2d.setColor(new Color(0.1f, 0.1f, 0.5f, 0.5f));
+    	g2d.setXORMode(new Color(0.9f, 0.9f, 0.9f, 0.5f));
+        
         // Determine tile size and offset
-        Font font = new Font("SansSerif", Font.PLAIN, tsize.height / 4);
-        g2d.setFont(font);
-        FontRenderContext fontRenderContext = g2d.getFontRenderContext();
 
         // Determine area to draw from clipping rectangle
         Rectangle clipRect = g2d.getClipBounds();
@@ -225,7 +235,10 @@ public class OrthoMapView extends MapView
                     }
                     else {
                         //g2d.drawString( "PROP", x, y );
-                        g2d.drawImage(MapView.propertyFlagImage, x, y, null);
+                        //g2d.drawImage(MapView.propertyFlagImage, x + (tsize.width - 12), y, null);
+                    	g2d.translate(x + (tsize.width - 13), y+1);
+                    	g2d.drawPolygon(propPoly);
+                    	g2d.translate(-(x + (tsize.width - 13)), -(y+1));
                     }
                 }
                 catch (Exception e) {

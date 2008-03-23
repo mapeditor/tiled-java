@@ -71,6 +71,9 @@ public class ObjectGroup extends MapLayer
     public void mergeOnto(MapLayer other) {
     }
 
+    public void maskedMergeOnto(MapLayer other, Area mask) {
+    }
+    
     public void copyFrom(MapLayer other) {
     }
 

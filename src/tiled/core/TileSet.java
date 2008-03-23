@@ -121,8 +121,8 @@ public class TileSet
      */
     private void importTileBitmap(BufferedImage tilebmp, TileCutter cutter)
     {
-        assert tilebmp != null;
-        assert cutter != null;
+        assert(tilebmp != null);
+        assert(cutter != null);
 
         tileCutter = cutter;
         tileSetImage = tilebmp;

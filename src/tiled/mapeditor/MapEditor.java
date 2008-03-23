@@ -19,6 +19,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.ListIterator;
 import java.util.Stack;
 import java.util.Vector;
 import java.util.prefs.PreferenceChangeEvent;
@@ -351,9 +352,11 @@ public class MapEditor implements ActionListener, MouseListener,
         fileMenu.add(new TMenuItem(exitAction));
 
         JMenuItem copyMenuItem = new TMenuItem(new CopyAction());
+        JMenuItem copyAllMenuItem = new TMenuItem(new CopyAllAction());
         JMenuItem cutMenuItem = new TMenuItem(new CutAction());
         JMenuItem pasteMenuItem = new TMenuItem(new PasteAction());
         copyMenuItem.setEnabled(false);
+        copyAllMenuItem.setEnabled(false);
         cutMenuItem.setEnabled(false);
         pasteMenuItem.setEnabled(false);
 
@@ -371,6 +374,7 @@ public class MapEditor implements ActionListener, MouseListener,
         editMenu.add(new TMenuItem(undoHandler.getRedoAction()));
         editMenu.addSeparator();
         editMenu.add(copyMenuItem);
+        editMenu.add(copyAllMenuItem);
         editMenu.add(cutMenuItem);
         editMenu.add(pasteMenuItem);
         editMenu.addSeparator();
@@ -383,6 +387,7 @@ public class MapEditor implements ActionListener, MouseListener,
                 "control B"));
 
         mapEventAdapter.addListener(copyMenuItem);
+        mapEventAdapter.addListener(copyAllMenuItem);
         mapEventAdapter.addListener(cutMenuItem);
         mapEventAdapter.addListener(pasteMenuItem);
 
@@ -1731,6 +1736,32 @@ public class MapEditor implements ActionListener, MouseListener,
         }
     }
 
+    private class CopyAllAction extends AbstractAction {
+        public CopyAllAction() {
+            super(Resources.getString("action.copyall.name"));
+            putValue(ACCELERATOR_KEY,
+                    KeyStroke.getKeyStroke("shift control C"));
+            putValue(SHORT_DESCRIPTION,
+                     Resources.getString("action.copyall.tooltip"));
+        }
+        public void actionPerformed(ActionEvent evt) {
+        	//FIXME: only works for TileLayers
+            if (currentMap != null && marqueeSelection != null) {
+            	clipboardLayer = new TileLayer(
+                        marqueeSelection.getSelectedAreaBounds());
+            	ListIterator itr = currentMap.getLayers();
+            	while(itr.hasNext()) {
+            		MapLayer layer = (MapLayer) itr.next();
+	                if (layer instanceof TileLayer) {
+	                	clipboardLayer.maskedMergeOnto(
+	                            layer,
+	                            marqueeSelection.getSelectedArea());
+	                }
+            	}
+            }
+        }
+    }
+    
     private class CutAction extends AbstractAction {
         public CutAction() {
             super(Resources.getString("action.cut.name"));
@@ -2045,6 +2076,7 @@ public class MapEditor implements ActionListener, MouseListener,
         }
         marqueeSelection = null;
 
+    	if(currentMap == newMap) return;
         currentMap = newMap;
         boolean mapLoaded = currentMap != null;
 
@@ -2094,8 +2126,9 @@ public class MapEditor implements ActionListener, MouseListener,
                     + ", " + (currentMap.getHeight() - 1));
             tileCoordsLabel.setPreferredSize(null);
             Dimension size = tileCoordsLabel.getPreferredSize();
+            //Dimension size = new Dimension(20,50);
             tileCoordsLabel.setText(" ");
-            tileCoordsLabel.setMinimumSize(size);
+            tileCoordsLabel.setMinimumSize(new Dimension(20,50));
             tileCoordsLabel.setPreferredSize(size);
             zoomLabel.setText(
                     String.valueOf((int) (mapView.getZoom() * 100)) + "%");
