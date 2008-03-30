@@ -105,6 +105,7 @@ public class XMLMapWriter implements MapWriter
     }
 
     private static void writeMap(Map map, XMLWriter w, String wp) throws IOException {
+    	Preferences prefs = TiledConfiguration.node("saving");
         w.startElement("map");
 
         w.writeAttribute("version", "0.99b");
@@ -136,6 +137,8 @@ public class XMLMapWriter implements MapWriter
             firstgid += tileset.getMaxTileId() + 1;
         }
 
+        if (prefs.getBoolean("encodeLayerData", true) && prefs.getBoolean("usefulComments", true))
+        	w.writeComment("Layer data is " + (prefs.getBoolean("layerCompression", true) ? "compressed (GZip)" : "") + " binary data, encoded in Base64");
         Iterator ml = map.getLayers();
         while (ml.hasNext()) {
             MapLayer layer = (MapLayer)ml.next();

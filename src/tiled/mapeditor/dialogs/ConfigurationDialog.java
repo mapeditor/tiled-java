@@ -20,7 +20,6 @@ import java.awt.event.ItemListener;
 import java.util.prefs.Preferences;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.io.FileInputStream;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -42,6 +41,7 @@ public class ConfigurationDialog extends JDialog
     private JSlider gridOpacitySlider;
     private JCheckBox cbBinaryEncode;
     private JCheckBox cbCompressLayerData;
+    private JCheckBox cbUsefulComments;
     private JCheckBox cbEmbedImages;
     private JCheckBox cbReportIOWarnings;
     private JCheckBox cbAutoOpenLastFile;
@@ -60,6 +60,7 @@ public class ConfigurationDialog extends JDialog
     private static final String OPACITY_LABEL = Resources.getString("dialog.preferences.opacity.label");
     private static final String BINARY_ENCODE_CHECKBOX = Resources.getString("dialog.preferences.binary.encode.checkbox");
     private static final String COMPRESS_LAYER_DATA_CHECKBOX = Resources.getString("dialog.preferences.compress.layer.data.checkbox");
+    private static final String USEFUL_COMMENTS_CHECKBOX = Resources.getString("dialog.preferences.useful.comments.checkbox");
     private static final String EMBED_IMAGES_CHECKBOX = Resources.getString("dialog.preferences.embed.images.checkbox");
     private static final String REPORT_IO_WARNINGS_CHECKBOX = Resources.getString("dialog.preferences.report.io.warnings.checkbox");
     private static final String AUTO_OPEN_LAST_FILE_CHECKBOX = Resources.getString("dialog.preferences.report.io.autoopenlast.checkbox");
@@ -100,6 +101,7 @@ public class ConfigurationDialog extends JDialog
 
         cbBinaryEncode = new JCheckBox(BINARY_ENCODE_CHECKBOX);
         cbCompressLayerData = new JCheckBox(COMPRESS_LAYER_DATA_CHECKBOX);
+        cbUsefulComments = new JCheckBox(USEFUL_COMMENTS_CHECKBOX);
         cbEmbedImages = new JCheckBox(EMBED_IMAGES_CHECKBOX);
         cbReportIOWarnings = new JCheckBox(REPORT_IO_WARNINGS_CHECKBOX);
         cbAutoOpenLastFile = new JCheckBox(AUTO_OPEN_LAST_FILE_CHECKBOX);
@@ -128,7 +130,7 @@ public class ConfigurationDialog extends JDialog
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 1; c.gridy = 0; c.weightx = 1;
         layerOps.add(cbBinaryEncode, c);
-        c.gridy = 1; c.insets = new Insets(0, 10, 0, 0);
+        c.gridy = 2; c.insets = new Insets(0, 10, 0, 0);
         layerOps.add(cbCompressLayerData, c);
 
         /* GENERAL OPTIONS */
@@ -148,7 +150,7 @@ public class ConfigurationDialog extends JDialog
         c.gridy = 2;
         c.gridx = 0;
         generalOps.add(cbAutoOpenLastFile, c);
-
+        
         /* TILESET OPTIONS */
         JPanel tilesetOps = new VerticalStaticJPanel();
         tilesetOps.setLayout(new GridBagLayout());
@@ -216,6 +218,7 @@ public class ConfigurationDialog extends JDialog
         JPanel saving = new JPanel();
         saving.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
         saving.setLayout(new BoxLayout(saving, BoxLayout.Y_AXIS));
+        saving.add(cbUsefulComments);
         saving.add(layerOps);
         saving.add(tilesetOps);
 
@@ -264,6 +267,13 @@ public class ConfigurationDialog extends JDialog
             }
         });
 
+        cbUsefulComments.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent itemEvent) {
+                savingPrefs.putBoolean("usefulComments",
+                        cbUsefulComments.isSelected());
+            }
+        });
+        
         cbEmbedImages.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent itemEvent) {
                 final boolean embed = cbEmbedImages.isSelected();
