@@ -30,6 +30,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import tiled.core.*;
 import tiled.io.ImageHelper;
@@ -719,7 +720,10 @@ public class XMLMapTransformer implements MapReader
             factory.setIgnoringElementContentWhitespace(true);
             factory.setExpandEntityReferences(false);
             DocumentBuilder builder = factory.newDocumentBuilder();
-            doc = builder.parse(in, xmlPath);
+            InputSource insrc = new InputSource(in);
+            insrc.setSystemId(xmlPath);
+            insrc.setEncoding("UTF8");
+            doc = builder.parse(insrc);
         } catch (SAXException e) {
             e.printStackTrace();
             throw new Exception("Error while parsing map file: " +
