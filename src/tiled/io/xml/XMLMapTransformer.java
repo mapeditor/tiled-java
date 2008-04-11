@@ -138,6 +138,19 @@ public class XMLMapTransformer implements MapReader
         }
     }
 
+    private static Node findChild(Node node, String childName) {
+        NodeList children = node.getChildNodes();
+
+        for (int i = 0; i < children.getLength(); i++) {
+            Node child = children.item(i);
+            if (child.getNodeName().equalsIgnoreCase(childName)) {
+                return child;
+            }
+        }
+
+        return null;
+    }
+
     private Object unmarshalClass(Class reflector, Node node)
         throws InstantiationException, IllegalAccessException,
                InvocationTargetException {
@@ -754,7 +767,7 @@ public class XMLMapTransformer implements MapReader
 
         Map unmarshalledMap = unmarshal(is);
         unmarshalledMap.setFilename(filename);
-
+        
         map = null;
 
         return unmarshalledMap;
