@@ -1080,10 +1080,33 @@ public class MapEditor implements ActionListener, MouseListener,
         }
 
         if (currentPointerState == PS_MARQUEE) {
-            if (marqueeSelection == null) {
+            boolean contains = false;
+            Iterator li = currentMap.getLayersSpecial();
+            while (li.hasNext()) {
+                MapLayer l = (MapLayer) li.next();
+                if (l.isVisible()) {
+                    if (l instanceof SelectionLayer) {
+                        if ( ((SelectionLayer)l).getSelectedArea().contains(tile.x,tile.y) ) {
+                            contains = true;
+                        }
+                    }
+                }
+            }
+            if (marqueeSelection == null && !contains) {
                 marqueeSelection = new SelectionLayer(
                         currentMap.getWidth(), currentMap.getHeight());
                 currentMap.addLayerSpecial(marqueeSelection);
+            }
+            else if (marqueeSelection != null && e.getModifiers() == InputEvent.BUTTON1_MASK) {
+                currentMap.removeLayerSpecial(marqueeSelection);
+                if (contains) {
+                    marqueeSelection = null;
+                }
+                else {
+                    marqueeSelection = new SelectionLayer(
+                            currentMap.getWidth(), currentMap.getHeight());
+                    currentMap.addLayerSpecial(marqueeSelection);
+                }
             }
         } else if (currentPointerState == PS_MOVE) {
             // Initialize move distance to (0, 0)
@@ -1098,19 +1121,21 @@ public class MapEditor implements ActionListener, MouseListener,
         final Point limp = mouseInitialPressLocation;
 
         if (currentPointerState == PS_MARQUEE) {
-           // Uncommented to allow single tile selections
-           /*
-           Point tile = mapView.screenToTileCoords(event.getX(), event.getY());
-           if (tile.y - limp.y == 0 && tile.x - limp.x == 0) {
-               if (marqueeSelection != null) {
-                   currentMap.removeLayerSpecial(marqueeSelection);
-                   marqueeSelection = null;
-               }
-           }
-           */
+            // Uncommented to allow single tile selections
+            /*
+            Point tile = mapView.screenToTileCoords(event.getX(), event.getY());
+            if (tile.y - limp.y == 0 && tile.x - limp.x == 0) {
+                if (marqueeSelection != null) {
+                    currentMap.removeLayerSpecial(marqueeSelection);
+                    marqueeSelection = null;
+                }
+            }
+            */
 
-           // There should be a proper notification mechanism for this...
-           tileInstancePropertiesDialog.setSelection(marqueeSelection);
+            // There should be a proper notification mechanism for this...
+            if (marqueeSelection != null) {
+                tileInstancePropertiesDialog.setSelection(marqueeSelection);
+            }
         } else if (currentPointerState == PS_MOVE) {
             if (layer != null && moveDist.x != 0 || moveDist.x != 0) {
                 undoSupport.postEdit(new MoveLayerEdit(layer, moveDist));

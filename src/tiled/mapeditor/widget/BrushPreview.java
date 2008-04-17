@@ -35,7 +35,7 @@ public class BrushPreview extends JPanel
 
     public void paint(Graphics graphics) {
         if (brush != null) {
-            brush.drawPreview((Graphics2D) graphics, size());
+            brush.drawPreview((Graphics2D) graphics, getSize());
         }
     }
 }
