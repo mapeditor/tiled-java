@@ -12,8 +12,7 @@
 
 package tiled.mapeditor.brush;
 
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
+import java.awt.*;
 
 import tiled.core.MultilayerPlane;
 import tiled.view.MapView;
@@ -86,6 +85,13 @@ public interface Brush
      * @param mv
      */
     public void drawPreview(Graphics2D g2d, MapView mv);
+
+    /**
+     * Draws a preview of the editing operation when applicable. This is meant for off-map brush preview.
+     * @param g2d The graphics context to draw to.
+     * @param dimension
+     */
+    public void drawPreview(Graphics2D g2d, Dimension dimension);
 
     /**
      * Returns wether this brush equals another brush.

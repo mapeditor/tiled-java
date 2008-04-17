@@ -12,9 +12,7 @@
 
 package tiled.mapeditor.brush;
 
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.Shape;
+import java.awt.*;
 
 import tiled.core.MultilayerPlane;
 import tiled.view.MapView;
@@ -26,8 +24,8 @@ public abstract class AbstractBrush extends MultilayerPlane implements Brush
     protected MultilayerPlane affectedMp;
     protected int sx, sy;
     protected boolean paintingStarted = false;
-	protected int initLayer;
-    
+    protected int initLayer;
+
     public AbstractBrush() {
     }
 
@@ -49,27 +47,30 @@ public abstract class AbstractBrush extends MultilayerPlane implements Brush
     public int getAffectedLayers() {
         return numLayers;
     }
-    
+
     public void startPaint(MultilayerPlane mp, int x, int y, int button, int layer) {
-    	affectedMp = mp;
-		initLayer = layer;
-    	paintingStarted = true;
-    }
-    
-    public Rectangle doPaint(int x, int y) throws Exception {
-    	if(!paintingStarted) throw new Exception("Attempted to call doPaint() without calling startPaint()!");
-    	return null;
-    }
-    
-    public void endPaint() {
-    	paintingStarted = false;
-    }
-    
-    public void drawPreview(Graphics2D g2d, int x, int y, MapView mv) {
-    	sx = x;
-    	sy = y;
-    	drawPreview(g2d, mv);
+        affectedMp = mp;
+        initLayer = layer;
+        paintingStarted = true;
     }
 
-	public abstract Shape getShape();
+    public Rectangle doPaint(int x, int y) throws Exception {
+        if (!paintingStarted) throw new Exception("Attempted to call doPaint() without calling startPaint()!");
+        return null;
+    }
+
+    public void endPaint() {
+        paintingStarted = false;
+    }
+
+    public void drawPreview(Graphics2D g2d, int x, int y, MapView mv) {
+        sx = x;
+        sy = y;
+        drawPreview(g2d, mv);
+    }
+
+    public void drawPreview(Graphics2D g2d, Dimension dimension) {
+    }
+
+    public abstract Shape getShape();
 }

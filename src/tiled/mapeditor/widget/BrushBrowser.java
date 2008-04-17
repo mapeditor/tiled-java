@@ -103,9 +103,9 @@ public class BrushBrowser extends JPanel
         while (itr.hasNext()) {
             Brush brush = (Brush) itr.next();
             Rectangle bb = brush.getBounds();
-        	float o = maxWidth/2.0f - bb.width/2.0f;
-        	g.translate((int)o, (int)o);
-            brush.drawPreview((Graphics2D) g, null);
+            float o = maxWidth/2.0f - bb.width/2.0f;
+            g.translate((int)o, (int)o);
+            brush.drawPreview((Graphics2D) g, new Dimension(maxWidth, maxWidth));
             g.translate((int)-o, (int)-o);
 
             if (brush == selectedBrush) {
@@ -115,7 +115,7 @@ public class BrushBrowser extends JPanel
             g.translate(maxWidth,0);
             x += maxWidth;
             if (x + maxWidth > getWidth()) {
-            	g.translate(-x, maxWidth);
+                g.translate(-x, maxWidth);
                 x = 0;
             }
         }

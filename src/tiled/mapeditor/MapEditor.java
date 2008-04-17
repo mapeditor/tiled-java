@@ -117,7 +117,7 @@ public class MapEditor implements ActionListener, MouseListener,
     private JList       editHistoryList;
     private MiniMapViewer miniMap;
 
-    private TileButton  tilePaletteButton;
+    private BrushPreview brushPreview;
     private JFrame      appFrame;
     private JSlider     opacitySlider;
     private JLabel      zoomLabel, tileCoordsLabel;
@@ -556,11 +556,9 @@ public class MapEditor implements ActionListener, MouseListener,
         toolBar.add(Box.createRigidArea(new Dimension(5, 5)));
         toolBar.add(Box.createGlue());
 
-        tilePaletteButton = new TileButton();
-        tilePaletteButton.setActionCommand("palette");
-        mapEventAdapter.addListener(tilePaletteButton);
-        tilePaletteButton.addActionListener(this);
-        toolBar.add(tilePaletteButton);
+        brushPreview = new BrushPreview();
+        mapEventAdapter.addListener(brushPreview);
+        toolBar.add(brushPreview);
 
         return toolBar;
     }
@@ -1346,7 +1344,7 @@ public class MapEditor implements ActionListener, MouseListener,
                    }
                }
                mapView.repaint();
-               tilePaletteButton.setTile(currentTile);
+               brushPreview.setBrush(currentBrush);
             }
         } else if (command.equals(Resources.getString("menu.tilesets.manager"))) {
             if (currentMap != null) {
@@ -2205,7 +2203,7 @@ public class MapEditor implements ActionListener, MouseListener,
             if (!(currentBrush instanceof CustomBrush)) {
                 ((ShapeBrush) currentBrush).setTile(tile);
             }
-            tilePaletteButton.setTile(currentTile);
+            brushPreview.setBrush(currentBrush);
         }
     }
 
