@@ -1081,16 +1081,8 @@ public class MapEditor implements ActionListener, MouseListener,
 
         if (currentPointerState == PS_MARQUEE) {
             boolean contains = false;
-            Iterator li = currentMap.getLayersSpecial();
-            while (li.hasNext()) {
-                MapLayer l = (MapLayer) li.next();
-                if (l.isVisible()) {
-                    if (l instanceof SelectionLayer) {
-                        if ( ((SelectionLayer)l).getSelectedArea().contains(tile.x,tile.y) ) {
-                            contains = true;
-                        }
-                    }
-                }
+            if (marqueeSelection != null && marqueeSelection.getSelectedArea().contains(tile.x,tile.y)) {
+                contains = true;
             }
             if (marqueeSelection == null && !contains) {
                 marqueeSelection = new SelectionLayer(
