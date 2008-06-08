@@ -20,13 +20,13 @@ import java.io.IOException;
 import java.util.*;
 import javax.imageio.ImageIO;
 
-import tiled.mapeditor.Resources;
 import tiled.mapeditor.util.TransparentImageFilter;
 import tiled.mapeditor.util.cutter.BasicTileCutter;
 import tiled.mapeditor.util.cutter.TileCutter;
 import tiled.util.NumberedSet;
 
 /**
+ * todo: Update documentation
  * <p>TileSet handles operations on tiles as a set, or group. It has several
  * advanced internal functions aimed at reducing unnecessary data replication.
  * A 'tile' is represented internally as two distinct pieces of data. The
@@ -78,20 +78,9 @@ public class TileSet
     {
         setTilesetImageFilename(imgFilename);
 
-        // Some checks on the file before we try to read it
-        // TODO: What about catching exceptions instead?
-        File imageFile = new File(imgFilename);
-        if (!imageFile.exists()) {
-            throw new IOException(Resources.getString("general.file.notexists.message") + " (" + tilebmpFile + ")");
-        }
-
-        if (!imageFile.canRead()) {
-            throw new IOException(Resources.getString("general.file.cant.read") + " (" + tilebmpFile + ")");
-        }
-
-        Image image = ImageIO.read(imageFile);
+        Image image = ImageIO.read(new File(imgFilename));
         if (image == null) {
-            throw new IOException("Failed to load (" + tilebmpFile + ")");
+            throw new IOException("Failed to load " + tilebmpFile);
         }
 
         Toolkit tk = Toolkit.getDefaultToolkit();
@@ -253,10 +242,10 @@ public class TileSet
     /**
      * Sets the first global id used by this tileset.
      *
-     * @param f first global id
+     * @param firstGid first global id
      */
-    public void setFirstGid(int f) {
-        firstGid = f;
+    public void setFirstGid(int firstGid) {
+        this.firstGid = firstGid;
     }
 
     /**
@@ -366,11 +355,11 @@ public class TileSet
     }
 
     /**
-     * Generates a vector that removes the gaps that can
-     * occur if a tile is removed from the middle of a set
-     * of tiles. (Maps tiles contiguously)
+     * Generates a vector that removes the gaps that can occur if a tile is
+     * removed from the middle of a set of tiles. (Maps tiles contiguously)
      *
-     * @return a {@link Vector} mapping ordered set location to the next non-null tile
+     * @return a {@link Vector} mapping ordered set location to the next
+     *         non-null tile
      */
     public Vector generateGaplessVector() {
         Vector gapless = new Vector();
@@ -570,10 +559,10 @@ public class TileSet
      * Overlays the image in the set referred to by the given key.
      *
      * @param id
-     * @param i
+     * @param image
      */
-    public void overlayImage(int id, Image i) {
-        images.put(id, i);
+    public void overlayImage(int id, Image image) {
+        images.put(id, image);
     }
 
     /**
@@ -587,9 +576,9 @@ public class TileSet
      * @return dimensions of image with referenced by given key
      */
     public Dimension getImageDimensions(int id) {
-        Image i = (Image) images.get(id);
-        if (i != null) {
-            return new Dimension(i.getWidth(null), i.getHeight(null));
+        Image img = (Image) images.get(id);
+        if (img != null) {
+            return new Dimension(img.getWidth(null), img.getHeight(null));
         } else {
             return new Dimension(0, 0);
         }
@@ -597,8 +586,8 @@ public class TileSet
 
     /**
      * Adds the specified image to the image cache. If the image already exists
-     * in the cache, returns the id of the existing image. If it does not exist,
-     * this function adds the image and returns the new id.
+     * in the cache, returns the id of the existing image. If it does not
+     * exist, this function adds the image and returns the new id.
      *
      * @param image the java.awt.Image to add to the image cache
      * @return the id as an <code>int</code> of the image in the cache
@@ -650,7 +639,7 @@ public class TileSet
             itr = iterator();
 
             while (itr.hasNext()) {
-                Tile t = (Tile)itr.next();
+                Tile t = (Tile) itr.next();
                 // todo: move the null check back into the iterator?
                 if (t != null && t.getImageId() == id) {
                     relations++;
@@ -668,12 +657,12 @@ public class TileSet
         defaultTileProperties = defaultSetProperties;
     }
 
-    public void addTilesetChangeListener(TilesetChangeListener l) {
-        tilesetChangeListeners.add(l);
+    public void addTilesetChangeListener(TilesetChangeListener listener) {
+        tilesetChangeListeners.add(listener);
     }
 
-    public void removeTilesetChangeListener(TilesetChangeListener l) {
-        tilesetChangeListeners.remove(l);
+    public void removeTilesetChangeListener(TilesetChangeListener listener) {
+        tilesetChangeListeners.remove(listener);
     }
 
     private void fireTilesetChanged() {

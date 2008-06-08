@@ -114,7 +114,7 @@ public class MapEditor implements ActionListener, MouseListener,
     private JMenu       recentMenu;
     private JScrollPane mapScrollPane;
     private JTable      layerTable;
-    private JList       editHistoryList;
+    //private JList       editHistoryList;
     private MiniMapViewer miniMap;
 
     private BrushPreview brushPreview;
@@ -130,8 +130,11 @@ public class MapEditor implements ActionListener, MouseListener,
     private AboutDialog aboutDialog;
     private MapLayerEdit paintEdit;
 
-    private TileInstancePropertiesDialog tileInstancePropertiesDialog;
-    private JButton tileInstancePropertiesButton;
+    private FloatablePanel layersPanel;
+    private FloatablePanel tilesetsPanel;
+
+    //private TileInstancePropertiesDialog tileInstancePropertiesDialog;
+    //private JButton tileInstancePropertiesButton;
 
     /** Available brushes */
     private Vector brushes = new Vector();
@@ -237,7 +240,7 @@ public class MapEditor implements ActionListener, MouseListener,
 
         appFrame.setVisible(true);
 
-        tileInstancePropertiesDialog = new TileInstancePropertiesDialog(this);
+        //tileInstancePropertiesDialog = new TileInstancePropertiesDialog(this);
 
         // Restore the state of the main frame. This needs to happen after
         // making the frame visible, otherwise it has no effect (in Linux).
@@ -246,6 +249,10 @@ public class MapEditor implements ActionListener, MouseListener,
         if (state != Frame.ICONIFIED) {
             appFrame.setExtendedState(state);
         }
+
+        // Restore the size and position of the layers and tileset panels.
+        layersPanel.restore();
+        tilesetsPanel.restore();
 
         // Load plugins
         pluginLoader  = PluginClassLoader.getInstance();
@@ -297,18 +304,21 @@ public class MapEditor implements ActionListener, MouseListener,
 
         // todo: Make continuouslayout an option. Because it can be slow, some
         // todo: people may prefer not to have that.
+        layersPanel = new FloatablePanel(
+                getAppFrame(), dataPanel, PANEL_LAYERS, "layers");
         JSplitPane mainSplit = new JSplitPane(
                 JSplitPane.HORIZONTAL_SPLIT, true, mapScrollPane,
-                new FloatablePanel(getAppFrame(), dataPanel, PANEL_LAYERS));
+                layersPanel);
         mainSplit.setOneTouchExpandable(true);
         mainSplit.setResizeWeight(1.0);
         mainSplit.setBorder(null);
 
         tabbedTilesetsPane = new TabbedTilesetsPane(this);
-        FloatablePanel tilesetPanel = new FloatablePanel(getAppFrame(),
-                tabbedTilesetsPane, PANEL_TILE_PALETTE);
+        tilesetsPanel = new FloatablePanel(
+                getAppFrame(), tabbedTilesetsPane, PANEL_TILE_PALETTE,
+                "tilesets");
         JSplitPane paletteSplit = new JSplitPane(
-                JSplitPane.VERTICAL_SPLIT, true, mainSplit, tilesetPanel);
+                JSplitPane.VERTICAL_SPLIT, true, mainSplit, tilesetsPanel);
         paletteSplit.setOneTouchExpandable(true);
         paletteSplit.setResizeWeight(1.0);
 
@@ -613,10 +623,10 @@ public class MapEditor implements ActionListener, MouseListener,
         layerButtons.setMaximumSize(new Dimension(Integer.MAX_VALUE,
                     layerButtons.getPreferredSize().height));
 
-        tileInstancePropertiesButton = new JButton("Properties");
-        tileInstancePropertiesButton.setActionCommand("tileInstanceProperties");
-        mapEventAdapter.addListener(tileInstancePropertiesButton);
-        tileInstancePropertiesButton.addActionListener(this);
+        //tileInstancePropertiesButton = new JButton("Properties");
+        //tileInstancePropertiesButton.setActionCommand("tileInstanceProperties");
+        //mapEventAdapter.addListener(tileInstancePropertiesButton);
+        //tileInstancePropertiesButton.addActionListener(this);
 
         objectAddButton = new JButton("Objects");
         objectAddButton.setActionCommand("objectAdd");
@@ -646,8 +656,8 @@ public class MapEditor implements ActionListener, MouseListener,
         layerPanel.add(new JScrollPane(layerTable), c);
         c.weighty = 0; c.insets = new Insets(0, 0, 0, 0); c.gridy += 1;
         layerPanel.add(layerButtons, c);
-        c.gridy += 1;
-        layerPanel.add(tileInstancePropertiesButton, c);
+        //c.gridy += 1;
+        //layerPanel.add(tileInstancePropertiesButton, c);
         /*
         c.weighty = 0.25; c.insets = new Insets(3, 0, 0, 0); c.gridy += 1;
         layerPanel.add(editSp, c);
@@ -1019,18 +1029,20 @@ public class MapEditor implements ActionListener, MouseListener,
                     }
                     break;
                 case PS_MOVEOBJ:
-                    ObjectGroup group = (ObjectGroup) layer;
-                    Point pos = mapView.screenToPixelCoords(
-                            event.getX(), event.getY());
-                    if (currentObject == null) {
-                        currentObject = group.getObjectAt(pos.x, pos.y);
-                        moveDist = new Point(
-                                currentObject.getX() - pos.x,
-                                currentObject.getY() - pos.y);
+                    if (layer instanceof ObjectGroup) {
+                        ObjectGroup group = (ObjectGroup) layer;
+                        Point pos = mapView.screenToPixelCoords(
+                                event.getX(), event.getY());
+                        if (currentObject == null) {
+                            currentObject = group.getObjectAt(pos.x, pos.y);
+                            moveDist = new Point(
+                                    currentObject.getX() - pos.x,
+                                    currentObject.getY() - pos.y);
+                        }
+                        currentObject.setX(pos.x + moveDist.x);
+                        currentObject.setY(pos.y + moveDist.y);
+                        mapView.repaint();
                     }
-                    currentObject.setX(pos.x + moveDist.x);
-                    currentObject.setY(pos.y + moveDist.y);
-                    mapView.repaint();
                     break;
             }
         }
@@ -1125,9 +1137,9 @@ public class MapEditor implements ActionListener, MouseListener,
             */
 
             // There should be a proper notification mechanism for this...
-            if (marqueeSelection != null) {
-                tileInstancePropertiesDialog.setSelection(marqueeSelection);
-            }
+            //if (marqueeSelection != null) {
+            //    tileInstancePropertiesDialog.setSelection(marqueeSelection);
+            //}
         } else if (currentPointerState == PS_MOVE) {
             if (layer != null && moveDist.x != 0 || moveDist.x != 0) {
                 undoSupport.postEdit(new MoveLayerEdit(layer, moveDist));
@@ -1292,11 +1304,11 @@ public class MapEditor implements ActionListener, MouseListener,
         } else if ("moveobject".equals(command)) {
             setCurrentPointerState(PS_MOVEOBJ);
             resetBrush();
-        } else if ("tileInstanceProperties".equals(command)) {
-            if (currentMap != null) {
-                tileInstancePropertiesDialog.setVisible(true);
-            }
-        } else {
+        //} else if ("tileInstanceProperties".equals(command)) {
+        //    if (currentMap != null) {
+        //        tileInstancePropertiesDialog.setVisible(true);
+        //    }
+        //} else {
             handleEvent(event);
         }
     }
@@ -1515,6 +1527,10 @@ public class MapEditor implements ActionListener, MouseListener,
         // Save the extended window state if the window isn't minimized
         int extendedState = appFrame.getExtendedState();
         prefs.node("dialog/main").putInt("state", extendedState);
+
+        // Allow the floatable panels to save their position and size
+        layersPanel.save();
+        tilesetsPanel.save();
     }
 
     private class LayerTransformAction extends AbstractAction {
@@ -1776,7 +1792,7 @@ public class MapEditor implements ActionListener, MouseListener,
             }
         }
     }
-    
+
     private class CutAction extends AbstractAction {
         public CutAction() {
             super(Resources.getString("action.cut.name"));
