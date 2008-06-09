@@ -1,9 +1,10 @@
 trunk
 
-* Added support for tile instance properties (by Christian Henz)
+* Added support for arbitrary objects and zones placement (by ElvenProgrammer)
 * Added ability to create stamp brushes from the tile palette
 * Added import/export of configuration
 * Added option to automatically open the last map on startup (by Pedro Miller)
+* Added option to include comments in .tmx map files when saving
 * Tiles and layers panels are now both floatable and dockable
 * Report out of memory error when saving map as image
 * Properties table now displays the properties in alphabetical order

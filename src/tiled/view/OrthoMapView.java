@@ -119,18 +119,26 @@ public class OrthoMapView extends MapView
             double ox = mo.getX() * zoom;
             double oy = mo.getY() * zoom;
 
-            g.setColor(Color.orange);
             if (mo.getWidth() == 0 || mo.getHeight() == 0) {
+                g.setColor(Color.orange);
                 g.fillOval((int) ox, (int) oy,
                         (int) (10 * zoom), (int) (10 * zoom));                
-            } else {            
+            } else {
+                g.setColor(Color.black);
+                g.drawRect((int) ox + 1, (int) oy + 1,
+                    (int) (mo.getWidth() * zoom),
+                    (int) (mo.getHeight() * zoom));
+                g.setColor(Color.orange);
                 g.drawRect((int) ox, (int) oy,
                     (int) (mo.getWidth() * zoom),
                     (int) (mo.getHeight() * zoom));
             }
             if (zoom > 0.0625) {
+                final String s = mo.getName() != null ? mo.getName() : "(null)";
+                g.setColor(Color.black);
+                g.drawString(s, (int) (ox - 5) + 1, (int) (oy - 5) + 1);
                 g.setColor(Color.white);
-                g.drawString(mo.getName() != null ? mo.getName() : "(null)", (int) (ox - 12), (int) (oy - 5));
+                g.drawString(s, (int) (ox - 5), (int) (oy - 5));
             }
         }
     }

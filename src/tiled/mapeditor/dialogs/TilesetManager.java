@@ -210,14 +210,16 @@ public class TilesetManager extends JDialog implements ActionListener,
         Iterator tileIterator = s.iterator();
 
         while (tileIterator.hasNext()) {
-            Tile tile = (Tile)tileIterator.next();
+            Tile tile = (Tile) tileIterator.next();
             Iterator layerIterator = map.getLayers();
 
             while (layerIterator.hasNext()) {
-                MapLayer ml = (MapLayer)layerIterator.next();
-                if (ml.isUsed(tile)) {
-                    used++;
-                    break;
+                MapLayer ml = (MapLayer) layerIterator.next();
+                if (ml instanceof TileLayer) {
+                    if (((TileLayer) ml).isUsed(tile)) {
+                        used++;
+                        break;
+                    }
                 }
             }
         }

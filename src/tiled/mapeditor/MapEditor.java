@@ -63,14 +63,16 @@ public class MapEditor implements ActionListener, MouseListener,
         ChangeListener, ComponentListener
 {
     // Constants and the like
-    private static final int PS_POINT   = 0;
-    private static final int PS_PAINT   = 1;
-    private static final int PS_ERASE   = 2;
-    private static final int PS_POUR    = 3;
-    private static final int PS_EYED    = 4;
-    private static final int PS_MARQUEE = 5;
-    private static final int PS_MOVE    = 6;
-    private static final int PS_MOVEOBJ = 7;
+    private static final int PS_POINT     = 0;
+    private static final int PS_PAINT     = 1;
+    private static final int PS_ERASE     = 2;
+    private static final int PS_POUR      = 3;
+    private static final int PS_EYED      = 4;
+    private static final int PS_MARQUEE   = 5;
+    private static final int PS_MOVE      = 6;
+    private static final int PS_ADDOBJ    = 7;
+    private static final int PS_REMOVEOBJ = 8;
+    private static final int PS_MOVEOBJ   = 9;
 
     private static final int APP_WIDTH = 800;
     private static final int APP_HEIGHT = 600;
@@ -125,6 +127,7 @@ public class MapEditor implements ActionListener, MouseListener,
     private AbstractButton paintButton, eraseButton, pourButton;
     private AbstractButton eyedButton, marqueeButton, moveButton;
     private AbstractButton objectMoveButton, objectAddButton;
+    private AbstractButton objectRemoveButton;
 
     private TabbedTilesetsPane tabbedTilesetsPane;
     private AboutDialog aboutDialog;
@@ -164,6 +167,8 @@ public class MapEditor implements ActionListener, MouseListener,
     private static final String TOOL_EYE_DROPPER = Resources.getString("tool.eyedropper.name");
     private static final String TOOL_SELECT = Resources.getString("tool.select.name");
     private static final String TOOL_MOVE_LAYER = Resources.getString("tool.movelayer.name");
+    private static final String TOOL_ADD_OBJECT = Resources.getString("tool.addobject.name");
+    private static final String TOOL_REMOVE_OBJECT = Resources.getString("tool.removeobject.name");
     private static final String TOOL_MOVE_OBJECT = Resources.getString("tool.moveobject.name");
 
     public MapEditor() {
@@ -532,6 +537,8 @@ public class MapEditor implements ActionListener, MouseListener,
         Icon iconPour = Resources.getIcon("gimp-tool-bucket-fill-22.png");
         Icon iconEyed = Resources.getIcon("gimp-tool-color-picker-22.png");
         Icon iconMarquee = Resources.getIcon("gimp-tool-rect-select-22.png");
+        Icon iconAddObject = Resources.getIcon("gnome-list-add-22.png");
+        Icon iconRemoveObject = Resources.getIcon("gnome-list-remove-22.png");
         Icon iconMoveObject = Resources.getIcon("gimp-tool-object-move-22.png");
 
         paintButton = createToggleButton(iconPaint, "paint", TOOL_PAINT);
@@ -540,6 +547,8 @@ public class MapEditor implements ActionListener, MouseListener,
         eyedButton = createToggleButton(iconEyed, "eyed", TOOL_EYE_DROPPER);
         marqueeButton = createToggleButton(iconMarquee, "marquee", TOOL_SELECT);
         moveButton = createToggleButton(iconMove, "move", TOOL_MOVE_LAYER);
+        objectAddButton = createToggleButton(iconAddObject, "addobject", TOOL_ADD_OBJECT);
+        objectRemoveButton = createToggleButton(iconRemoveObject, "removeobject", TOOL_REMOVE_OBJECT);
         objectMoveButton = createToggleButton(iconMoveObject, "moveobject", TOOL_MOVE_OBJECT);
 
         mapEventAdapter.addListener(moveButton);
@@ -559,6 +568,8 @@ public class MapEditor implements ActionListener, MouseListener,
         toolBar.add(eyedButton);
         toolBar.add(marqueeButton);
         toolBar.add(Box.createRigidArea(new Dimension(5, 5)));
+        toolBar.add(objectAddButton);
+        toolBar.add(objectRemoveButton);
         toolBar.add(objectMoveButton);
         toolBar.add(Box.createRigidArea(new Dimension(0, 5)));
         toolBar.add(new TButton(zoomInAction));
@@ -627,11 +638,6 @@ public class MapEditor implements ActionListener, MouseListener,
         //tileInstancePropertiesButton.setActionCommand("tileInstanceProperties");
         //mapEventAdapter.addListener(tileInstancePropertiesButton);
         //tileInstancePropertiesButton.addActionListener(this);
-
-        objectAddButton = new JButton("Objects");
-        objectAddButton.setActionCommand("objectAdd");
-        mapEventAdapter.addListener(objectAddButton);
-        objectAddButton.addActionListener(this);
 
         // Edit history
         /*
@@ -722,9 +728,23 @@ public class MapEditor implements ActionListener, MouseListener,
             nrLayers = currentMap.getTotalLayers();
         }
 
-        boolean validSelection = currentLayer >= 0;
-        boolean notBottom = currentLayer > 0;
-        boolean notTop = currentLayer < nrLayers - 1 && validSelection;
+        final boolean validSelection = currentLayer >= 0;
+        final boolean notBottom = currentLayer > 0;
+        final boolean notTop = currentLayer < nrLayers - 1 && validSelection;
+        final boolean tileLayer =
+                validSelection && getCurrentLayer() instanceof TileLayer;
+        final boolean objectGroup =
+                validSelection && getCurrentLayer() instanceof ObjectGroup;
+
+        paintButton.setEnabled(tileLayer);
+        eraseButton.setEnabled(tileLayer);
+        pourButton.setEnabled(tileLayer);
+        eyedButton.setEnabled(tileLayer);
+        marqueeButton.setEnabled(tileLayer);
+        moveButton.setEnabled(tileLayer);
+        objectAddButton.setEnabled(objectGroup);
+        objectRemoveButton.setEnabled(objectGroup);
+        objectMoveButton.setEnabled(objectGroup);
 
         cloneLayerAction.setEnabled(validSelection);
         deleteLayerAction.setEnabled(validSelection);
@@ -882,7 +902,6 @@ public class MapEditor implements ActionListener, MouseListener,
                     }
                 }
             } else if (layer instanceof ObjectGroup && !bMouseIsDragging) {
-                // TODO: Add support for ObjectGroups here
                 // Get the object on this location and display the relative options dialog
                 ObjectGroup group = (ObjectGroup) layer;
                 Point pos = mapView.screenToPixelCoords(
@@ -929,31 +948,6 @@ public class MapEditor implements ActionListener, MouseListener,
                             e.printStackTrace();
                         }
                     }
-                    else if (layer instanceof  ObjectGroup) {
-                        if (marqueeSelection == null) {
-                            marqueeSelection = new SelectionLayer(
-                                    currentMap.getWidth(),
-                                    currentMap.getHeight());
-                            currentMap.addLayerSpecial(marqueeSelection);
-                        }
-
-                        Point limp = mouseInitialPressLocation;
-                        Rectangle oldArea =
-                            marqueeSelection.getSelectedAreaBounds();
-                        int minx = Math.min(limp.x, tile.x);
-                        int miny = Math.min(limp.y, tile.y);
-
-                        Rectangle selRect = new Rectangle(
-                                minx, miny,
-                                (Math.max(limp.x, tile.x) - minx) + 1,
-                                (Math.max(limp.y, tile.y) - miny) + 1);
-
-                        marqueeSelection.selectRegion(selRect);
-                        if (oldArea != null) {
-                            oldArea.add(marqueeSelection.getSelectedAreaBounds());
-                            mapView.repaintRegion(oldArea);
-                        }
-                    }
                     break;
                 case PS_ERASE:
                     paintEdit.setPresentationName(TOOL_ERASE);
@@ -962,19 +956,8 @@ public class MapEditor implements ActionListener, MouseListener,
                         mapView.repaintRegion(new Rectangle(
                                 tile.x, tile.y, 1, 1));
                     }
-                    else if (layer instanceof ObjectGroup) {
-                        ObjectGroup group = (ObjectGroup) layer;
-                        Point pos = mapView.screenToPixelCoords(
-                                event.getX(), event.getY());
-                        MapObject obj = group.getObjectAt(pos.x, pos.y);
-                        if (obj != null) {
-                            group.unbindObject(obj);
-                            // TODO: repaint only affected area
-                            mapView.repaint();
-                        }
-                    }
                     break;
-                case PS_POUR:  // POUR only works on TileLayers
+                case PS_POUR:
                     paintEdit = null;
                     if (layer instanceof TileLayer) {
                         TileLayer tileLayer = (TileLayer) layer;
@@ -988,8 +971,6 @@ public class MapEditor implements ActionListener, MouseListener,
                         TileLayer tileLayer = (TileLayer) layer;
                         Tile newTile = tileLayer.getTileAt(tile.x, tile.y);
                         setCurrentTile(newTile);
-                    } else if (layer instanceof ObjectGroup) {
-                        // TODO: Add support for ObjectGroups here
                     }
                     break;
                 case PS_MOVE:
@@ -1002,6 +983,9 @@ public class MapEditor implements ActionListener, MouseListener,
                     mapView.repaint();
                     break;
                 case PS_MARQUEE:
+                    if (!(layer instanceof TileLayer)) {
+                        break;
+                    }
                     if (marqueeSelection != null) {
                         Point limp = mouseInitialPressLocation;
                         Rectangle oldArea =
@@ -1028,6 +1012,46 @@ public class MapEditor implements ActionListener, MouseListener,
                         }
                     }
                     break;
+                case PS_ADDOBJ:
+                    if (layer instanceof  ObjectGroup) {
+                        if (marqueeSelection == null) {
+                            marqueeSelection = new SelectionLayer(
+                                    currentMap.getWidth(),
+                                    currentMap.getHeight());
+                            currentMap.addLayerSpecial(marqueeSelection);
+                        }
+
+                        Point limp = mouseInitialPressLocation;
+                        Rectangle oldArea =
+                            marqueeSelection.getSelectedAreaBounds();
+                        int minx = Math.min(limp.x, tile.x);
+                        int miny = Math.min(limp.y, tile.y);
+
+                        Rectangle selRect = new Rectangle(
+                                minx, miny,
+                                (Math.max(limp.x, tile.x) - minx) + 1,
+                                (Math.max(limp.y, tile.y) - miny) + 1);
+
+                        marqueeSelection.selectRegion(selRect);
+                        if (oldArea != null) {
+                            oldArea.add(marqueeSelection.getSelectedAreaBounds());
+                            mapView.repaintRegion(oldArea);
+                        }
+                    }
+                    break;
+                case PS_REMOVEOBJ:
+                    if (layer instanceof ObjectGroup) {
+                        ObjectGroup group = (ObjectGroup) layer;
+                        Point pos = mapView.screenToPixelCoords(
+                                event.getX(), event.getY());
+                        MapObject obj = group.getObjectAt(pos.x, pos.y);
+                        if (obj != null) {
+                            group.removeObject(obj);
+                            // TODO: repaint only affected area
+                            mapView.repaint();
+                        }
+                    }
+                    break;
                 case PS_MOVEOBJ:
                     if (layer instanceof ObjectGroup) {
                         ObjectGroup group = (ObjectGroup) layer;
@@ -1035,6 +1059,9 @@ public class MapEditor implements ActionListener, MouseListener,
                                 event.getX(), event.getY());
                         if (currentObject == null) {
                             currentObject = group.getObjectAt(pos.x, pos.y);
+                            if (currentObject == null) { // No object to move
+                                break;
+                            }
                             moveDist = new Point(
                                     currentObject.getX() - pos.x,
                                     currentObject.getY() - pos.y);
@@ -1151,7 +1178,8 @@ public class MapEditor implements ActionListener, MouseListener,
         }
 
 
-        if (/*bMouseIsDragging && */currentPointerState == PS_PAINT)
+        if (/*bMouseIsDragging && */currentPointerState == PS_PAINT ||
+                currentPointerState == PS_ADDOBJ)
         {
             Point tile = mapView.screenToTileCoords(
                     event.getX(), event.getY());
@@ -1182,17 +1210,16 @@ public class MapEditor implements ActionListener, MouseListener,
             }
             else if (mouseButton == MouseEvent.BUTTON1 &&
                     layer instanceof ObjectGroup) {
-                MapObject object = new MapObject();
-                /*Point pos = mapView.screenToPixelCoords(
-                        event.getX(), event.getY());*/
                 int w = currentMap.getTileWidth();
                 int h = currentMap.getTileHeight();
-                object.setX(bounds.x * w);
-                object.setY(bounds.y * h);
-                object.setWidth(bounds.width * w);
-                object.setHeight(bounds.height * h);
-                ObjectGroup group = (ObjectGroup) layer;
-                group.bindObject(object);
+                MapObject object = new MapObject(
+                        bounds.x * w,
+                        bounds.y * h,
+                        bounds.width * w,
+                        bounds.height * h);
+                /*Point pos = mapView.screenToPixelCoords(
+                        event.getX(), event.getY());*/
+                ((ObjectGroup) layer).addObject(object);
                 mapView.repaint();
             }
 
@@ -1300,6 +1327,12 @@ public class MapEditor implements ActionListener, MouseListener,
             resetBrush();
         } else if ("move".equals(command)) {
             setCurrentPointerState(PS_MOVE);
+            resetBrush();
+        } else if ("addobject".equals(command)) {
+            setCurrentPointerState(PS_ADDOBJ);
+            resetBrush();
+        } else if ("removeobject".equals(command)) {
+            setCurrentPointerState(PS_REMOVEOBJ);
             resetBrush();
         } else if ("moveobject".equals(command)) {
             setCurrentPointerState(PS_MOVEOBJ);
@@ -2263,6 +2296,8 @@ public class MapEditor implements ActionListener, MouseListener,
         eyedButton.setSelected(state == PS_EYED);
         marqueeButton.setSelected(state == PS_MARQUEE);
         moveButton.setSelected(state == PS_MOVE);
+        objectAddButton.setSelected(state == PS_ADDOBJ);
+        objectRemoveButton.setSelected(state == PS_REMOVEOBJ);
         objectMoveButton.setSelected(state == PS_MOVEOBJ);
 
         // Set the matching cursor

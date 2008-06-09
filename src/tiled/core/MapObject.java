@@ -20,27 +20,31 @@ import java.util.Properties;
  */
 public class MapObject
 {
-    private Sprite sprite;
-    private Properties properties;
+    private Properties properties = new Properties();
 
-    protected float mapX, mapY;
-    protected Rectangle bounds;
+    protected float x, y;
+    protected Rectangle bounds = new Rectangle();
     protected boolean bVisible = true;
-    protected String name, source, type;
+    protected String name = "Object";
+    protected String source, type;
     protected int width, height;
 
     public MapObject() {
-        bounds = new Rectangle();
-        properties = new Properties();
-        name = "Object";
+    }
+
+    public MapObject(int x, int y, int width, int height) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
     }
 
     public void setX(int x) {
-        mapX = x;
+        this.x = x;
     }
 
     public void setY(int y) {
-        mapY = y;
+        this.y = y;
     }
     
     public void setName(String s) {
@@ -55,10 +59,6 @@ public class MapObject
         type = s;
     }
 
-    public void setSprite(Sprite s) {
-        sprite = s;
-    }
-    
     public void setWidth(int w) {
         width = w;
     }
@@ -72,16 +72,16 @@ public class MapObject
     }
 
     public void translate(int x, int y) {
-        mapX += x;
-        mapY += y;
+        this.x += x;
+        this.y += y;
     }
 
     public int getX() {
-        return (int) mapX;
+        return (int) x;
     }
 
     public int getY() {
-        return (int) mapY;
+        return (int) y;
     }
     
     public String getName() {
@@ -109,6 +109,6 @@ public class MapObject
     }
 
     public String toString() {
-        return type + " (" + mapX + "," + mapY + ")";
+        return type + " (" + x + "," + y + ")";
     }
 }

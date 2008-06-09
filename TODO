@@ -2,11 +2,7 @@ ROADMAP TO FUTURE RELEASES
 
 0.7.0
 * Replace tile button with a brush preview beneath the layer table
-* Add support for arbitrary objects and zones placement (ElvenProgrammer)
-* Fix Object editing to be less confusing
-* Add separate buttons for adding and removing objects, and enable/disable them
-  depending on the selected layer
-* Update map view when showing/hiding an object group
+* Fix undo/redo for object group related actions
 
 0.7.1
 * Check that tile palette panel doesn't keep listening after being replaced
@@ -38,7 +34,7 @@ ROADMAP TO FUTURE RELEASES
 
 GENERAL TODO ITEMS
 
-* Add support for tile instance properties (see Christian's patch) (WIP)
+* Add support for tile instance properties (by Christian Henz) (WIP)
   - Implement an effective way of displaying the presence of these properties
 * Fix memory problems when loading several maps with many tilesets in a row
 * Add ability to select multiple layers from layer table

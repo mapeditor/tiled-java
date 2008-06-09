@@ -22,13 +22,13 @@ import java.util.ListIterator;
  */
 public class ObjectGroup extends MapLayer
 {
-    private LinkedList boundObjects;
+    private LinkedList objects;
 
     /**
      * Default constructor.
      */
     public ObjectGroup() {
-        boundObjects = new LinkedList();
+        objects = new LinkedList();
     }
 
     /**
@@ -41,7 +41,7 @@ public class ObjectGroup extends MapLayer
      */
     public ObjectGroup(Map map, int origx, int origy) {
         super(map);
-        boundObjects = new LinkedList();
+        objects = new LinkedList();
         setBounds(new Rectangle(origx, origy, 0, 0));
     }
 
@@ -53,34 +53,41 @@ public class ObjectGroup extends MapLayer
      */
     public ObjectGroup(Rectangle area) {
         super(area);
-        boundObjects = new LinkedList();
+        objects = new LinkedList();
     }
 
     /**
      * @see MapLayer#rotate(int)
      */
     public void rotate(int angle) {
+        // TODO: Implement rotating an object group
     }
 
     /**
      * @see MapLayer#mirror(int)
      */
     public void mirror(int dir) {
+        // TODO: Implement mirroring an object group
     }
 
     public void mergeOnto(MapLayer other) {
+        // TODO: Implement merging with another object group
     }
 
     public void maskedMergeOnto(MapLayer other, Area mask) {
+        // TODO: Figure out what object group should do with this method
     }
     
     public void copyFrom(MapLayer other) {
+        // TODO: Implement copying from another object group (same as merging)
     }
 
     public void maskedCopyFrom(MapLayer other, Area mask) {
+        // TODO: Figure out what object group should do with this method
     }
 
     public void copyTo(MapLayer other) {
+        // TODO: Implement copying to another object group (same as merging)
     }
 
     /**
@@ -90,20 +97,13 @@ public class ObjectGroup extends MapLayer
         // TODO: Translate contained objects by the change of origin
     }
 
-    /**
-     * @deprecated
-     */
-    public boolean isUsed(Tile t) {
-        return false;
-    }
-
     public boolean isEmpty() {
-    	return boundObjects.isEmpty();
+    	return objects.isEmpty();
     }
 
     public Object clone() throws CloneNotSupportedException {
         ObjectGroup clone = (ObjectGroup) super.clone();
-        clone.boundObjects = new LinkedList(boundObjects);
+        clone.objects = new LinkedList(objects);
         return clone;
     }
 
@@ -114,20 +114,16 @@ public class ObjectGroup extends MapLayer
         return null;
     }
 
-    public void bindObject(MapObject o) {
-        boundObjects.add(o);
+    public void addObject(MapObject o) {
+        objects.add(o);
     }
 
-    public void unbindObject(MapObject o) {
-        boundObjects.remove(o);
-    }
-
-    public void unbindAll() {
-        boundObjects.clear();
+    public void removeObject(MapObject o) {
+        objects.remove(o);
     }
 
     public ListIterator getObjects() {
-        return (ListIterator) boundObjects.iterator();
+        return (ListIterator) objects.iterator();
     }
 
     public MapObject getObjectAt(int x, int y) {

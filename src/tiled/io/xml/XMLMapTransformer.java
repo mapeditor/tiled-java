@@ -514,13 +514,13 @@ public class XMLMapTransformer implements MapReader
             return og;
         }
 
-        //Read all objects from the group, "...and in the darkness bind them."
+        // Add all objects from the objects group
         NodeList children = t.getChildNodes();
 
         for (int i = 0; i < children.getLength(); i++) {
             Node child = children.item(i);
             if ("object".equalsIgnoreCase(child.getNodeName())) {
-                og.bindObject(unmarshalObject(child));
+                og.addObject(unmarshalObject(child));
             }
         }
 

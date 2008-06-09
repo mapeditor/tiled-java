@@ -93,7 +93,7 @@ public class TilesetTableModel extends AbstractTableModel
                 MapLayer ml = (MapLayer)itr.next();
 
                 if (ml instanceof TileLayer) {
-                    if (ml.isUsed(tile)) {
+                    if (((TileLayer) ml).isUsed(tile)) {
                         used++;
                         break;
                     }
