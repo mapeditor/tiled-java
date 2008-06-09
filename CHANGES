@@ -4,7 +4,7 @@ trunk
 * Added ability to create stamp brushes from the tile palette
 * Added import/export of configuration
 * Added option to automatically open the last map on startup (by Pedro Miller)
-* Embedded the tile palette
+* Tiles and layers panels are now both floatable and dockable
 * Report out of memory error when saving map as image
 * Properties table now displays the properties in alphabetical order
 * Fixed properties dialog to also save values that were still being edited
