@@ -67,6 +67,7 @@ public class ConfigurationDialog extends JDialog
     private static final String EMBED_IN_TILES_CHECKBOX = Resources.getString("dialog.preferences.embed.in.tiles.checkbox");
     private static final String EMBED_IN_SET_CHECKBOX = Resources.getString("dialog.preferences.embed.in.set.checkbox");
     private static final String ANTIALIASING_CHECKBOX = Resources.getString("dialog.preferences.antialiasing.checkbox");
+    private static final String GENERAL_SAVING_OPTIONS_TITLE = Resources.getString("dialog.preferences.general.tab");
     private static final String LAYER_OPTIONS_TITLE = Resources.getString("dialog.preferences.layer.options.title");
     private static final String UNDO_DEPTH_LABEL = Resources.getString("dialog.preferences.undo.depth.label");
     private static final String TILESET_OPTIONS_TITLE = Resources.getString("dialog.preferences.tileset.options.title");
@@ -93,6 +94,7 @@ public class ConfigurationDialog extends JDialog
         super(parent, DIALOG_TITLE, true);
         init();
         pack();
+        setResizable(false);
         setLocationRelativeTo(parent);
     }
 
@@ -150,16 +152,24 @@ public class ConfigurationDialog extends JDialog
         c.gridy = 2;
         c.gridx = 0;
         generalOps.add(cbAutoOpenLastFile, c);
-        
+
+        /* GENERAL SAVING OPTIONS */
+        JPanel generalSavingOps = new VerticalStaticJPanel();
+        generalSavingOps.setLayout(new GridBagLayout());
+        generalSavingOps.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createTitledBorder(GENERAL_SAVING_OPTIONS_TITLE),
+                    BorderFactory.createEmptyBorder(0, 5, 5, 5)));
+        c = new GridBagConstraints();
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 1; c.gridy = 0; c.weightx = 1;
+        generalSavingOps.add(cbUsefulComments, c);
+
         /* TILESET OPTIONS */
         JPanel tilesetOps = new VerticalStaticJPanel();
         tilesetOps.setLayout(new GridBagLayout());
         tilesetOps.setBorder(BorderFactory.createCompoundBorder(
                     BorderFactory.createTitledBorder(TILESET_OPTIONS_TITLE),
                     BorderFactory.createEmptyBorder(0, 5, 5, 5)));
-        c = new GridBagConstraints();
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.gridx = 1; c.gridy = 0; c.weightx = 1;
         tilesetOps.add(cbEmbedImages, c);
         c.gridy = 1; c.insets = new Insets(0, 10, 0, 0);
         tilesetOps.add(rbEmbedInTiles, c);
@@ -218,7 +228,7 @@ public class ConfigurationDialog extends JDialog
         JPanel saving = new JPanel();
         saving.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
         saving.setLayout(new BoxLayout(saving, BoxLayout.Y_AXIS));
-        saving.add(cbUsefulComments);
+        saving.add(generalSavingOps);
         saving.add(layerOps);
         saving.add(tilesetOps);
 
