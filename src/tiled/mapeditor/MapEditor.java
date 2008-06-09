@@ -1308,13 +1308,12 @@ public class MapEditor implements ActionListener, MouseListener,
         //    if (currentMap != null) {
         //        tileInstancePropertiesDialog.setVisible(true);
         //    }
-        //} else {
+        } else {
             handleEvent(event);
         }
     }
 
-    // TODO: Most if not all of the below should be moved into action objects,
-    // TODO: and properly internationalized.
+    // TODO: Most if not all of the below should be moved into action objects
     private void handleEvent(ActionEvent event) {
         String command = event.getActionCommand();
 
@@ -1416,10 +1415,7 @@ public class MapEditor implements ActionListener, MouseListener,
             SearchDialog sd = new SearchDialog(appFrame, currentMap);
             sd.setVisible(true);
         } else if (command.equals(Resources.getString("menu.help.about"))) {
-            if (aboutDialog == null) {
-                aboutDialog = new AboutDialog(appFrame);
-            }
-            aboutDialog.setVisible(true);
+            showAboutDialog();
         } else if (command.equals(Resources.getString("menu.help.plugins"))) {
             PluginDialog pluginDialog =
                 new PluginDialog(appFrame, pluginLoader);
@@ -1531,6 +1527,13 @@ public class MapEditor implements ActionListener, MouseListener,
         // Allow the floatable panels to save their position and size
         layersPanel.save();
         tilesetsPanel.save();
+    }
+
+    private void showAboutDialog() {
+        if (aboutDialog == null) {
+            aboutDialog = new AboutDialog(appFrame);
+        }
+        aboutDialog.setVisible(true);
     }
 
     private class LayerTransformAction extends AbstractAction {
