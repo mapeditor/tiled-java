@@ -74,8 +74,8 @@ public class ConfigurationDialog extends JDialog
     private static final String GENERAL_TAB = Resources.getString("dialog.preferences.general.tab");
     private static final String SAVING_TAB = Resources.getString("dialog.preferences.saving.tab");
     private static final String GRID_TAB = Resources.getString("dialog.preferences.grid.tab");
-    private static final String EXPORT_BUTTON = "Export...";
-    private static final String IMPORT_BUTTON = "Import...";
+    private static final String EXPORT_BUTTON = Resources.getString("dialog.preferences.export.button");
+    private static final String IMPORT_BUTTON = Resources.getString("dialog.preferences.import.button");
 
     private static final ConfirmableFileFilter xmlFileFilter =
             new ConfirmableFileFilter() {
