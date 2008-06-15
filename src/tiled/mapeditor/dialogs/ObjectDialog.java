@@ -23,6 +23,8 @@ import tiled.mapeditor.widget.IntegerSpinner;
 import tiled.mapeditor.widget.VerticalStaticJPanel;
 
 /**
+ * A dialog for editing the name, type, size and properties of an object.
+ *
  * @version $Id$
  */
 public class ObjectDialog extends PropertiesDialog

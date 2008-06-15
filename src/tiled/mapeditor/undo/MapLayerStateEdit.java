@@ -13,11 +13,15 @@
 package tiled.mapeditor.undo;
 
 import java.util.Vector;
-import javax.swing.undo.*;
+import javax.swing.undo.AbstractUndoableEdit;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
 
-import tiled.core.*;
+import tiled.core.Map;
 
-
+/**
+ * @version $Id$
+ */
 public class MapLayerStateEdit extends AbstractUndoableEdit
 {
     private final Map map;

@@ -12,16 +12,18 @@
 
 package tiled.mapeditor.undo;
 
-import tiled.core.ObjectGroup;
-import tiled.core.MapObject;
-import tiled.mapeditor.Resources;
-
 import javax.swing.undo.AbstractUndoableEdit;
-import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+
+import tiled.core.MapObject;
+import tiled.core.ObjectGroup;
+import tiled.mapeditor.Resources;
 
 /**
  * Adds an object to an object group.
+ *
+ * @version $Id$
  */
 public class AddObjectEdit extends AbstractUndoableEdit
 {

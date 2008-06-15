@@ -1,5 +1,5 @@
 /*
- *  Tiled Map Editor, (c) 2004-2006
+ *  Tiled Map Editor, (c) 2004-2008
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -15,7 +15,6 @@ package tiled.mapeditor;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Area;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
@@ -25,7 +24,6 @@ import java.util.Vector;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 import java.util.prefs.Preferences;
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -144,6 +142,7 @@ public class MapEditor implements ActionListener, MouseListener,
     // Actions
     private final SaveAction saveAction;
     private final SaveAsAction saveAsAction;
+    private final SaveAsImageAction saveAsImageAction;
     private final Action exitAction;
     private final Action zoomInAction, zoomOutAction, zoomNormalAction;
     private final Action rot90Action, rot180Action, rot270Action;
@@ -204,6 +203,7 @@ public class MapEditor implements ActionListener, MouseListener,
         // Create the actions
         saveAction = new SaveAction(this);
         saveAsAction = new SaveAsAction(this);
+        saveAsImageAction = new SaveAsImageAction(this);
         exitAction = new ExitAction(this, saveAction);
         zoomInAction = new ZoomInAction();
         zoomOutAction = new ZoomOutAction();
@@ -340,10 +340,7 @@ public class MapEditor implements ActionListener, MouseListener,
     private void createMenuBar() {
         JMenuItem save = new TMenuItem(saveAction);
         JMenuItem saveAs = new TMenuItem(saveAsAction);
-        JMenuItem saveAsImage = createMenuItem(
-                Resources.getString("menu.file.image"), null,
-                Resources.getString("menu.file.image.tooltip"),
-                "control shift I");
+        JMenuItem saveAsImage = new TMenuItem(saveAsImageAction);
         JMenuItem close = new TMenuItem(new CloseMapAction(this, saveAction));
 
         recentMenu = new JMenu(Resources.getString("menu.file.recent"));
@@ -1425,10 +1422,6 @@ public class MapEditor implements ActionListener, MouseListener,
                 TilesetManager manager = new TilesetManager(appFrame, currentMap);
                 manager.setVisible(true);
             }
-        } else if (command.equals(Resources.getString("menu.file.image"))) {
-            if (currentMap != null) {
-                saveMapImage(null);
-            }
         } else if (command.equals(Resources.getString("menu.map.properties"))) {
             PropertiesDialog pd = new PropertiesDialog(appFrame,
                     currentMap.getProperties());
@@ -2068,59 +2061,6 @@ public class MapEditor implements ActionListener, MouseListener,
         }
 
         return false;
-    }
-
-    /**
-     * Attempts to draw the entire map to an image file
-     * of the format of the extension. (filename.ext)
-     *
-     * @param filename Image filename to save map render to.
-     */
-    public void saveMapImage(String filename) {
-        if (filename == null) {
-            JFileChooser chooser = new JFileChooser();
-            chooser.setDialogTitle("Save as image");
-
-            if (chooser.showSaveDialog(appFrame) ==
-                    JFileChooser.APPROVE_OPTION) {
-                filename = chooser.getSelectedFile().getAbsolutePath();
-            }
-        }
-
-        if (filename != null) {
-            MapView myView = MapView.createViewforMap(currentMap);
-            myView.setShowGrid(mapView.getShowGrid());
-            myView.setMode(MapView.PF_NOSPECIAL, true);
-            myView.setZoom(mapView.getZoom());
-            Dimension imgSize = myView.getPreferredSize();
-
-            try {
-                BufferedImage img = new BufferedImage(
-                        imgSize.width, imgSize.height, BufferedImage.TYPE_INT_ARGB);
-                Graphics2D g = img.createGraphics();
-                g.setClip(0, 0, imgSize.width, imgSize.height);
-                myView.paint(g);
-
-                int lastDot = filename.lastIndexOf('.');
-                String format = filename.substring(lastDot + 1);
-
-                try {
-                    ImageIO.write(img, format, new File(filename));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    JOptionPane.showMessageDialog(appFrame,
-                            "Error while saving " + filename + ": " + e.toString(),
-                            "Error while saving map image",
-                            JOptionPane.ERROR_MESSAGE);
-                }
-            } catch (OutOfMemoryError memoryError) {
-                JOptionPane.showMessageDialog(appFrame,
-                        "Out of memory while creating image. Try increasing\n" +
-                                "your maximum heap size or zooming out a bit.",
-                        "Out of memory",
-                        JOptionPane.ERROR_MESSAGE);
-            }
-        }
     }
 
     private static MapLayer createLayerCopy(MapLayer layer) {
