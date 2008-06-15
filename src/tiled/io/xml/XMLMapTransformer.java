@@ -118,19 +118,19 @@ public class XMLMapTransformer implements MapReader
     }
 
     private static String getAttributeValue(Node node, String attribname) {
-        NamedNodeMap attributes = node.getAttributes();
-        String att = null;
+        final NamedNodeMap attributes = node.getAttributes();
+        String value = null;
         if (attributes != null) {
             Node attribute = attributes.getNamedItem(attribname);
             if (attribute != null) {
-                att = attribute.getNodeValue();
+                value = attribute.getNodeValue();
             }
         }
-        return att;
+        return value;
     }
 
     private static int getAttribute(Node node, String attribname, int def) {
-        String attr = getAttributeValue(node, attribname);
+        final String attr = getAttributeValue(node, attribname);
         if (attr != null) {
             return Integer.parseInt(attr);
         } else {
@@ -405,31 +405,23 @@ public class XMLMapTransformer implements MapReader
     }
 
     private MapObject unmarshalObject(Node t) throws Exception {
-        MapObject obj = new MapObject();
-        obj.setName(getAttributeValue(t, "name"));
-        obj.setType(getAttributeValue(t, "type"));
-        obj.setX(getAttribute(t, "x", 0));
-        obj.setY(getAttribute(t, "y", 0));
-        obj.setWidth(getAttribute(t, "width", 0));
-        obj.setHeight(getAttribute(t, "height", 0));
+        final String name = getAttributeValue(t, "name");
+        final String type = getAttributeValue(t, "type");
+        final int x = getAttribute(t, "x", 0);
+        final int y = getAttribute(t, "y", 0);
+        final int width = getAttribute(t, "width", 0);
+        final int height = getAttribute(t, "height", 0);
 
-        // TODO: Why isn't readProperties() used? - BL
+        MapObject obj = new MapObject(x, y, width, height);
+        if (name != null)
+            obj.setName(name);
+        if (type != null)
+            obj.setType(type);
+
         NodeList children = t.getChildNodes();
         Properties props = new Properties();
-        for (int i = 0; i < children.getLength(); i++) {
-            Node child = children.item(i);
-            if ("properties".equalsIgnoreCase(child.getNodeName())) {
-                NodeList properties = child.getChildNodes();
-                for (int j = 0; j < properties.getLength(); j++) {
-                    Node node = properties.item(j);
-                    if ("property".equalsIgnoreCase(node.getNodeName())) {
-                    	String key = getAttributeValue(node, "name");
-                    	String value = node.getFirstChild().getNodeValue().trim();
-                        props.put(key, value);
-                    }
-                }
-            }
-        }
+        readProperties(children, props);
+
         obj.setProperties(props);
         return obj;
     }
@@ -440,6 +432,9 @@ public class XMLMapTransformer implements MapReader
      * of this node. This function ensures backward compatibility with tmx
      * version 0.99a.
      *
+     * Support for reading property values stored as character data was added
+     * in Tiled 0.7.0 (tmx version 0.99c).
+     *
      * @param children the children amongst which to find properties
      * @param props    the properties object to set the properties of
      */
@@ -447,9 +442,18 @@ public class XMLMapTransformer implements MapReader
         for (int i = 0; i < children.getLength(); i++) {
             Node child = children.item(i);
             if ("property".equalsIgnoreCase(child.getNodeName())) {
-                props.setProperty(
-                        getAttributeValue(child, "name"),
-                        getAttributeValue(child, "value"));
+                final String key = getAttributeValue(child, "name");
+                String value = getAttributeValue(child, "value");
+                if (value == null) {
+                    Node grandChild = child.getFirstChild();
+                    if (grandChild != null) {
+                        value = grandChild.getNodeValue();
+                        if (value != null)
+                            value = value.trim();
+                    }
+                }
+                if (value != null)
+                    props.setProperty(key, value);
             }
             else if ("properties".equals(child.getNodeName())) {
                 readProperties(child.getChildNodes(), props);

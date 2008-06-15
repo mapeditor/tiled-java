@@ -12,18 +12,14 @@
 
 package tiled.io.xml;
 
-import java.awt.Color;
-import java.awt.Image;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.io.*;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Properties;
-import java.util.Vector;
+import java.util.*;
 import java.util.prefs.Preferences;
 import java.util.zip.GZIPOutputStream;
 
 import tiled.core.*;
+import tiled.core.Map;
 import tiled.io.ImageHelper;
 import tiled.io.MapWriter;
 import tiled.io.PluginLogger;
@@ -108,7 +104,7 @@ public class XMLMapWriter implements MapWriter
     	Preferences prefs = TiledConfiguration.node("saving");
         w.startElement("map");
 
-        w.writeAttribute("version", "0.99b");
+        w.writeAttribute("version", "0.99c");
 
         switch (map.getOrientation()) {
             case Map.MDO_ORTHO:
@@ -152,12 +148,20 @@ public class XMLMapWriter implements MapWriter
             IOException
     {
         if (!props.isEmpty()) {
+            final SortedSet propertyKeys = new TreeSet();
+            propertyKeys.addAll(props.keySet());
             w.startElement("properties");
-            for (Enumeration keys = props.keys(); keys.hasMoreElements();) {
-                String key = (String)keys.nextElement();
+            for (Iterator keys = propertyKeys.iterator(); keys.hasNext();) {
+                final String key = (String) keys.next();
+                final String property = props.getProperty(key);
                 w.startElement("property");
                 w.writeAttribute("name", key);
-                w.writeAttribute("value", props.getProperty(key));
+                if (property.indexOf('\n') == -1) {
+                    w.writeAttribute("value", property);
+                } else {
+                    // Save multiline values as character data
+                    w.writeCDATA(property);
+                }
                 w.endElement();
             }
             w.endElement();
@@ -320,7 +324,7 @@ public class XMLMapWriter implements MapWriter
     {
         Iterator itr = o.getObjects();
         while (itr.hasNext()) {
-            writeObject((MapObject)itr.next(), o, w);
+            writeObject((MapObject)itr.next(), w);
         }
     }
 
@@ -521,33 +525,27 @@ public class XMLMapWriter implements MapWriter
         w.endElement();
     }
 
-    private static void writeObject(MapObject m, ObjectGroup o, XMLWriter w)
+    private static void writeObject(MapObject mapObject, XMLWriter w)
         throws IOException
     {
         w.startElement("object");
-        w.writeAttribute("name", m.getName());
-        w.writeAttribute("type", m.getType());
-        w.writeAttribute("x", m.getX());
-        w.writeAttribute("y", m.getY());
-        w.writeAttribute("width", m.getWidth());
-        w.writeAttribute("height", m.getHeight());
-        if (m.getSource() != null) {
-            w.writeAttribute("source", m.getSource());
-        }
+        w.writeAttribute("name", mapObject.getName());
 
-        // TODO: Why isn't writeProperties() used? - BL
-        w.startElement("properties");
-        Properties props = m.getProperties();
-        if (!props.isEmpty()) {
-            for (Enumeration keys = props.keys(); keys.hasMoreElements();) {
-                String key = (String)keys.nextElement();
-                w.startElement("property");
-                w.writeAttribute("name", key);
-                w.writeCDATA(props.getProperty(key));
-                w.endElement();
-            }
-        }
-        w.endElement();
+        if (!mapObject.getType().isEmpty())
+            w.writeAttribute("type", mapObject.getType());
+
+        w.writeAttribute("x", mapObject.getX());
+        w.writeAttribute("y", mapObject.getY());
+
+        if (mapObject.getWidth() != 0)
+            w.writeAttribute("width", mapObject.getWidth());
+        if (mapObject.getHeight() != 0)
+            w.writeAttribute("height", mapObject.getHeight());
+
+        if (mapObject.getSource() != null)
+            w.writeAttribute("source", mapObject.getSource());
+
+        writeProperties(mapObject.getProperties(), w);
 
         w.endElement();
     }
