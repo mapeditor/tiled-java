@@ -20,7 +20,6 @@ import java.util.Properties;
 import javax.swing.SwingConstants;
 
 import tiled.core.*;
-import tiled.mapeditor.MapEditor;
 import tiled.mapeditor.selection.SelectionLayer;
 
 /**
@@ -33,8 +32,8 @@ public class OrthoMapView extends MapView
      *
      * @param map the map to be displayed by this map view
      */
-    public OrthoMapView(Map map, MapEditor editor) {
-        super(map, editor);
+    public OrthoMapView(Map map) {
+        super(map);
         
         propPoly = new Polygon();
         propPoly.addPoint(0, 0);

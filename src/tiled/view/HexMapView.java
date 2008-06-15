@@ -13,11 +13,8 @@
 package tiled.view;
 
 // for console logging
-import java.util.logging.*;
-import java.io.IOException;
 
 import java.awt.*;
-import java.awt.geom.*;
 
 import javax.swing.SwingConstants;
 
@@ -89,7 +86,7 @@ public class HexMapView extends MapView
      * @param map The map to be displayed by this map view.
      */
     public HexMapView(Map map) {
-        super(map, null);
+        super(map);
 
         //mapAlignment = map.getAlignment();
         mapAlignment = ALIGN_TOP;

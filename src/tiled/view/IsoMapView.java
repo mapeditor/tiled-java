@@ -34,7 +34,7 @@ public class IsoMapView extends MapView
      * @param map the map to be displayed by this map view
      */
     public IsoMapView(Map map) {
-        super(map, null);
+        super(map);
     }
 
     public int getScrollableBlockIncrement(Rectangle visibleRect,

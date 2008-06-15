@@ -18,7 +18,6 @@ import javax.swing.JPanel;
 import javax.swing.Scrollable;
 
 import tiled.core.*;
-import tiled.mapeditor.MapEditor;
 import tiled.mapeditor.Resources;
 import tiled.mapeditor.brush.Brush;
 import tiled.mapeditor.selection.SelectionLayer;
@@ -61,17 +60,12 @@ public abstract class MapView extends JPanel implements Scrollable
 
     protected static Image propertyFlagImage;
 
-    // todo: BL - The map view should NOT need the editor. It is currently used
-    // todo: to determine whether to draw property flags based on the selected
-    // todo: layer. A better solution has to be found.
-    private final MapEditor editor;
-
     /**
      * Creates a new <code>MapView</code> that displays the specified map.
      *
      * @param map the map to be displayed by this map view
      */
-    protected MapView(Map map, MapEditor editor) {
+    protected MapView(Map map) {
         // Setup static bits on first invocation
         if (MapView.propertyFlagImage == null) {
             try {
@@ -83,7 +77,6 @@ public abstract class MapView extends JPanel implements Scrollable
         }
 
         this.map = map;
-        this.editor = editor;
 
         setOpaque(true);
     }
@@ -216,7 +209,7 @@ public abstract class MapView extends JPanel implements Scrollable
      * @return a suitable instance of a MapView for the given Map
      * @see Map#getOrientation()
      */
-    public static MapView createViewforMap(Map p, MapEditor editor) {
+    public static MapView createViewforMap(Map p) {
         MapView mapView = null;
 
         int orientation = p.getOrientation();
@@ -225,7 +218,7 @@ public abstract class MapView extends JPanel implements Scrollable
             mapView = new IsoMapView(p);
         }
         else if (orientation == Map.MDO_ORTHO) {
-            mapView = new OrthoMapView(p, editor); // FIXME
+            mapView = new OrthoMapView(p);
         }
         else if (orientation == Map.MDO_HEX) {
             mapView = new HexMapView(p);
@@ -324,14 +317,14 @@ public abstract class MapView extends JPanel implements Scrollable
             paintCoordinates(g2d);
         }
 
-        if (editor != null && editor.getCurrentLayer() instanceof TileLayer) {
-            g2d.setComposite(AlphaComposite.SrcOver);
-
-            TileLayer tl = (TileLayer) editor.getCurrentLayer();
-            if (tl != null && tl.isVisible()) {
-                paintPropertyFlags(g2d, tl);
-            }
-        }
+        //if (editor != null && editor.getCurrentLayer() instanceof TileLayer) {
+        //    g2d.setComposite(AlphaComposite.SrcOver);
+        //
+        //    TileLayer tl = (TileLayer) editor.getCurrentLayer();
+        //    if (tl != null && tl.isVisible()) {
+        //        paintPropertyFlags(g2d, tl);
+        //    }
+        //}
     }
 
     public void paintSubMap(MultilayerPlane m, Graphics2D g2d,

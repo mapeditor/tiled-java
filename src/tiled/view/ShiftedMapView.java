@@ -33,7 +33,7 @@ public class ShiftedMapView extends MapView
      * @param map the map to be displayed by this map view
      */
     public ShiftedMapView(Map map) {
-        super(map, null);
+        super(map);
 
         horSide = 16;
         verSide = 0;

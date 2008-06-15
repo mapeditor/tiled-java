@@ -2088,7 +2088,7 @@ public class MapEditor implements ActionListener, MouseListener,
         }
 
         if (filename != null) {
-            MapView myView = MapView.createViewforMap(currentMap, this);
+            MapView myView = MapView.createViewforMap(currentMap);
             myView.setShowGrid(mapView.getShowGrid());
             myView.setMode(MapView.PF_NOSPECIAL, true);
             myView.setZoom(mapView.getZoom());
@@ -2180,7 +2180,7 @@ public class MapEditor implements ActionListener, MouseListener,
         } else {
             final Preferences display = prefs.node("display");
             mapEventAdapter.fireEvent(MapEventAdapter.ME_MAPACTIVE);
-            mapView = MapView.createViewforMap(currentMap, this);
+            mapView = MapView.createViewforMap(currentMap);
             mapView.addMouseListener(this);
             mapView.addMouseMotionListener(this);
             mapView.addComponentListener(this);

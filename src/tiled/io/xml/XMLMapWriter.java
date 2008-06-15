@@ -531,7 +531,7 @@ public class XMLMapWriter implements MapWriter
         w.startElement("object");
         w.writeAttribute("name", mapObject.getName());
 
-        if (!mapObject.getType().isEmpty())
+        if (mapObject.getType().length() != 0)
             w.writeAttribute("type", mapObject.getType());
 
         w.writeAttribute("x", mapObject.getX());
