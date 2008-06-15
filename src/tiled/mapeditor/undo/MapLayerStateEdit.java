@@ -20,10 +20,10 @@ import tiled.core.*;
 
 public class MapLayerStateEdit extends AbstractUndoableEdit
 {
-    private Map map;
-    private Vector layersBefore;
-    private Vector layersAfter;
-    private String name;
+    private final Map map;
+    private final Vector layersBefore;
+    private final Vector layersAfter;
+    private final String name;
 
     public MapLayerStateEdit(Map m, Vector before, Vector after, String name) {
         map = m;

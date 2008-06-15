@@ -44,10 +44,7 @@ import tiled.mapeditor.brush.ShapeBrush;
 import tiled.mapeditor.dialogs.*;
 import tiled.mapeditor.plugin.PluginClassLoader;
 import tiled.mapeditor.selection.SelectionLayer;
-import tiled.mapeditor.undo.MapLayerEdit;
-import tiled.mapeditor.undo.MapLayerStateEdit;
-import tiled.mapeditor.undo.MoveLayerEdit;
-import tiled.mapeditor.undo.UndoHandler;
+import tiled.mapeditor.undo.*;
 import tiled.mapeditor.util.*;
 import tiled.mapeditor.widget.*;
 import tiled.util.TiledConfiguration;
@@ -98,6 +95,7 @@ public class MapEditor implements ActionListener, MouseListener,
     private boolean bMouseIsDown, bMouseIsDragging;
     private SelectionLayer cursorHighlight;
     private Point mousePressLocation, mouseInitialPressLocation;
+    private Point mouseLastPixelLocation;
     private Point mouseInitialScreenLocation;
     private Point moveDist;
     private int mouseButton;
@@ -974,13 +972,15 @@ public class MapEditor implements ActionListener, MouseListener,
                     }
                     break;
                 case PS_MOVE:
-                    Point translation = new Point(
-                            tile.x - mousePressLocation.x,
-                            tile.y - mousePressLocation.y);
+                    if (layer instanceof TileLayer) {
+                        Point translation = new Point(
+                                tile.x - mousePressLocation.x,
+                                tile.y - mousePressLocation.y);
 
-                    layer.translate(translation.x, translation.y);
-                    moveDist.translate(translation.x, translation.y);
-                    mapView.repaint();
+                        layer.translate(translation.x, translation.y);
+                        moveDist.translate(translation.x, translation.y);
+                        mapView.repaint();
+                    }
                     break;
                 case PS_MARQUEE:
                     if (!(layer instanceof TileLayer)) {
@@ -1046,6 +1046,7 @@ public class MapEditor implements ActionListener, MouseListener,
                                 event.getX(), event.getY());
                         MapObject obj = group.getObjectAt(pos.x, pos.y);
                         if (obj != null) {
+                            undoSupport.postEdit(new RemoveObjectEdit(group, obj));
                             group.removeObject(obj);
                             // TODO: repaint only affected area
                             mapView.repaint();
@@ -1054,20 +1055,24 @@ public class MapEditor implements ActionListener, MouseListener,
                     break;
                 case PS_MOVEOBJ:
                     if (layer instanceof ObjectGroup) {
-                        ObjectGroup group = (ObjectGroup) layer;
                         Point pos = mapView.screenToPixelCoords(
                                 event.getX(), event.getY());
                         if (currentObject == null) {
+                            ObjectGroup group = (ObjectGroup) layer;
                             currentObject = group.getObjectAt(pos.x, pos.y);
                             if (currentObject == null) { // No object to move
                                 break;
                             }
-                            moveDist = new Point(
-                                    currentObject.getX() - pos.x,
-                                    currentObject.getY() - pos.y);
+                            mouseLastPixelLocation = pos;
+                            moveDist = new Point(0, 0);
+                            break;
                         }
-                        currentObject.setX(pos.x + moveDist.x);
-                        currentObject.setY(pos.y + moveDist.y);
+                        Point translation = new Point(
+                                pos.x - mouseLastPixelLocation.x,
+                                pos.y - mouseLastPixelLocation.y);
+                        currentObject.translate(translation.x, translation.y);
+                        moveDist.translate(translation.x, translation.y);
+                        mouseLastPixelLocation = pos;
                         mapView.repaint();
                     }
                     break;
@@ -1168,12 +1173,18 @@ public class MapEditor implements ActionListener, MouseListener,
             //    tileInstancePropertiesDialog.setSelection(marqueeSelection);
             //}
         } else if (currentPointerState == PS_MOVE) {
-            if (layer != null && moveDist.x != 0 || moveDist.x != 0) {
+            if (layer != null && (moveDist.x != 0 || moveDist.x != 0)) {
                 undoSupport.postEdit(new MoveLayerEdit(layer, moveDist));
             }
         } else if (currentPointerState == PS_PAINT) {
             if (layer instanceof TileLayer) {
                 currentBrush.endPaint();
+            }
+        } else if (currentPointerState == PS_MOVEOBJ) {
+            if (layer instanceof ObjectGroup && currentObject != null &&
+                    (moveDist.x != 0 || moveDist.x != 0)) {
+                undoSupport.postEdit(
+                        new MoveObjectEdit(currentObject, moveDist));
             }
         }
 
@@ -1219,7 +1230,9 @@ public class MapEditor implements ActionListener, MouseListener,
                         bounds.height * h);
                 /*Point pos = mapView.screenToPixelCoords(
                         event.getX(), event.getY());*/
-                ((ObjectGroup) layer).addObject(object);
+                ObjectGroup group = (ObjectGroup) layer;
+                undoSupport.postEdit(new AddObjectEdit(group, object));
+                group.addObject(object);
                 mapView.repaint();
             }
 

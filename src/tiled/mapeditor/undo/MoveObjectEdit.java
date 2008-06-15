@@ -1,5 +1,5 @@
 /*
- *  Tiled Map Editor, (c) 2004-2006
+ *  Tiled Map Editor, (c) 2008
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -12,34 +12,38 @@
 
 package tiled.mapeditor.undo;
 
-import java.awt.Point;
-import javax.swing.undo.*;
-
-import tiled.core.*;
+import tiled.core.MapObject;
 import tiled.mapeditor.Resources;
 
+import javax.swing.undo.AbstractUndoableEdit;
+import javax.swing.undo.CannotUndoException;
+import javax.swing.undo.CannotRedoException;
+import java.awt.*;
 
-public class MoveLayerEdit extends AbstractUndoableEdit
+/**
+ * Moves an object.
+ */
+public class MoveObjectEdit extends AbstractUndoableEdit
 {
-    private final MapLayer layer;
+    private final MapObject mapObject;
     private final Point moveDist;
 
-    public MoveLayerEdit(MapLayer layer, Point moveDist) {
-        this.layer = layer;
+    public MoveObjectEdit(MapObject mapObject, Point moveDist) {
+        this.mapObject = mapObject;
         this.moveDist = moveDist;
     }
 
     public void undo() throws CannotUndoException {
         super.undo();
-        layer.translate(-moveDist.x, -moveDist.y);
+        mapObject.translate(-moveDist.x, -moveDist.y);
     }
 
     public void redo() throws CannotRedoException {
         super.redo();
-        layer.translate(moveDist.x, moveDist.y);
+        mapObject.translate(moveDist.x, moveDist.y);
     }
 
     public String getPresentationName() {
-        return Resources.getString("action.layer.move.name");
+        return Resources.getString("action.object.move.name");
     }
 }

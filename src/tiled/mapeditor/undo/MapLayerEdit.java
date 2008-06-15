@@ -24,7 +24,7 @@ import tiled.core.MapLayer;
  */
 public class MapLayerEdit extends AbstractUndoableEdit
 {
-    private MapLayer editedLayer;
+    private final MapLayer editedLayer;
     private MapLayer layerUndo, layerRedo;
     private String name;
     private boolean inProgress;
