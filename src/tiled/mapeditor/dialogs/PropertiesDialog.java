@@ -111,7 +111,7 @@ public class PropertiesDialog extends JDialog
         setVisible(true);
     }
 
-    void buildPropertiesAndDispose() {
+    protected void buildPropertiesAndDispose() {
         // Make sure there is no active cell editor anymore
         TableCellEditor editor = propertiesTable.getCellEditor();
         if (editor != null) {

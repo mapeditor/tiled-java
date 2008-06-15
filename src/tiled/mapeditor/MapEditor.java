@@ -903,7 +903,7 @@ public class MapEditor implements ActionListener, MouseListener,
                         event.getX(), event.getY());
                 MapObject obj = group.getObjectAt(pos.x, pos.y);
                 if (obj != null) {
-                    ObjectDialog od = new ObjectDialog(appFrame, obj);
+                    ObjectDialog od = new ObjectDialog(appFrame, obj, undoSupport);
                     od.getProps();
                 }
             }

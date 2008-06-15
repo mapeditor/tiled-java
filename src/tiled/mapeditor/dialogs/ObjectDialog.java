@@ -16,9 +16,11 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import javax.swing.*;
+import javax.swing.undo.UndoableEditSupport;
 
 import tiled.core.MapObject;
 import tiled.mapeditor.Resources;
+import tiled.mapeditor.undo.ChangeObjectEdit;
 import tiled.mapeditor.widget.IntegerSpinner;
 import tiled.mapeditor.widget.VerticalStaticJPanel;
 
@@ -31,7 +33,8 @@ public class ObjectDialog extends PropertiesDialog
 {
     private JTextField objectName, objectType;
     private IntegerSpinner objectWidth, objectHeight;
-    private MapObject object;
+    private final MapObject object;
+    private final UndoableEditSupport undoSupport;
 
     /* LANGUAGE PACK */
     private static final String DIALOG_TITLE = Resources.getString("dialog.object.title");
@@ -41,9 +44,10 @@ public class ObjectDialog extends PropertiesDialog
     private static final String HEIGHT_LABEL = Resources.getString("dialog.object.height.label");
     private static final String UNTITLED_OBJECT = Resources.getString("general.object.object");
 
-    public ObjectDialog(JFrame parent, MapObject object) {
+    public ObjectDialog(JFrame parent, MapObject object, UndoableEditSupport undoSupport) {
         super(parent, object.getProperties());
         this.object = object;
+        this.undoSupport = undoSupport;
         setTitle(DIALOG_TITLE);
         pack();
         setLocationRelativeTo(parent);
@@ -101,7 +105,10 @@ public class ObjectDialog extends PropertiesDialog
         objectHeight.setValue(object.getHeight());
     }
 
-    void buildPropertiesAndDispose() {
+    protected void buildPropertiesAndDispose() {
+        // Make sure the changes to the object can be undone
+        undoSupport.postEdit(new ChangeObjectEdit(object));
+
         object.setName(objectName.getText());
         object.setType(objectType.getText());
         object.setWidth(objectWidth.intValue());
