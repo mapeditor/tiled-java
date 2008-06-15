@@ -20,7 +20,8 @@ Take the following steps to build Tiled from source:
 - From the command line, you can run the following from the directory where you
   placed Tiled:
 
-  java -jar dist/tiled.jar
+  cd dist (if you have compiled Tiled yourself)
+  java -jar tiled.jar
 
 - You can also use the Java webstart link on the website, see "Start Now!"
 

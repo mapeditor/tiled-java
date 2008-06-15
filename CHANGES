@@ -1,4 +1,4 @@
-trunk
+0.7.0 - June X, 2008
 
 * Added support for arbitrary objects and zones placement (by ElvenProgrammer)
 * Added ability to create stamp brushes from the tile palette
@@ -8,6 +8,8 @@ trunk
 * Tiles and layers panels are now both floatable and dockable
 * Report out of memory error when saving map as image
 * Properties table now displays the properties in alphabetical order
+* Properties are now saved in the .tmx format in alphabetical order
+* Multiline properties are now saved as character data instead of as attribute
 * Fixed properties dialog to also save values that were still being edited
 * Fixed automatically adding the file extension when not given
 * Worked around an issue with the open file dialog on GNU classpath
