@@ -89,11 +89,14 @@ public class ShapeBrush extends AbstractBrush
     }
 
     public Shape getShape() {
-    	return shape;
+        return shape;
     }
 
     public void drawPreview(Graphics2D g2d, Dimension dimension, MapView mv) {
-    	g2d.fill(shape);
+        g2d.fill(shape);
+    }
+
+    public void drawPreview(Graphics2D g2d, MapView mv) {
     }
 
     public boolean equals(Brush brush) {
