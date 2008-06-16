@@ -100,15 +100,15 @@ public class Tile
      * @param set
      */
     public void setTileSet(TileSet set) {
-    	if(tileset != null && tileset != set) {
-    		setImage(set.addImage(getImage()));
-    	} else {
-    		if (internalImage != null) {
-	            setImage(set.addImage(internalImage));
-	            internalImage = null;
-	        }
-    	}
-    	tileset = set;
+        if (tileset != null && tileset != set) {
+            setImage(set.addImage(getImage()));
+        } else {
+            if (internalImage != null) {
+                setImage(set.addImage(internalImage));
+                internalImage = null;
+            }
+        }
+        tileset = set;
     }
 
     public void setProperties(Properties p) {

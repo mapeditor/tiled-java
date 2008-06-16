@@ -368,6 +368,7 @@ public class ConfigurationDialog extends JDialog
             }
         }
 
+        cbUsefulComments.setSelected(savingPrefs.getBoolean("usefulComments", false));
         cbBinaryEncode.setSelected(savingPrefs.getBoolean("encodeLayerData", true));
         cbCompressLayerData.setSelected(savingPrefs.getBoolean("layerCompression", true));
         cbGridAA.setSelected(displayPrefs.getBoolean("gridAntialias", true));

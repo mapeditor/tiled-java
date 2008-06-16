@@ -1,5 +1,5 @@
 /*
- *  Tiled Map Editor, (c) 2004-2006
+ *  Tiled Map Editor, (c) 2004-2008
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -133,7 +133,7 @@ public class XMLMapWriter implements MapWriter
             firstgid += tileset.getMaxTileId() + 1;
         }
 
-        if (prefs.getBoolean("encodeLayerData", true) && prefs.getBoolean("usefulComments", true))
+        if (prefs.getBoolean("encodeLayerData", true) && prefs.getBoolean("usefulComments", false))
         	w.writeComment("Layer data is " + (prefs.getBoolean("layerCompression", true) ? "compressed (GZip)" : "") + " binary data, encoded in Base64");
         Iterator ml = map.getLayers();
         while (ml.hasNext()) {
@@ -426,13 +426,17 @@ public class XMLMapWriter implements MapWriter
             }
             w.endElement();
 
-            w.startElement("tileproperties");
+            boolean tilePropertiesElementStarted = false;
 
             for (int y = 0; y < l.getHeight(); y++) {
                 for (int x = 0; x < l.getWidth(); x++) {
                     Properties tip = ((TileLayer) l).getTileInstancePropertiesAt(x, y);
 
                     if (tip != null && !tip.isEmpty()) {
+                        if (!tilePropertiesElementStarted) {
+                            w.startElement("tileproperties");
+                            tilePropertiesElementStarted = true;
+                        }
                         w.startElement("tile");
 
                         w.writeAttribute("x", x);
@@ -445,7 +449,8 @@ public class XMLMapWriter implements MapWriter
                 }
             }
 
-            w.endElement();
+            if (tilePropertiesElementStarted)
+                w.endElement();
         }
         w.endElement();
     }
@@ -636,7 +641,7 @@ public class XMLMapWriter implements MapWriter
         return
             "The core Tiled TMX format writer\n" +
             "\n" +
-            "Tiled Map Editor, (c) 2004-2006\n" +
+            "Tiled Map Editor, (c) 2004-2008\n" +
             "Adam Turk\n" +
             "Bjorn Lindeijer";
     }
