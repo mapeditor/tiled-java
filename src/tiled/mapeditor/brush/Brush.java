@@ -68,17 +68,6 @@ public interface Brush
     public void endPaint();
 
     /**
-     * Draws a preview of the editing operation when applicable. This version
-     * will draw the preview at the specified location.
-     *
-     * @param g2d The graphics context to draw to.
-     * @param x The x-coord to draw the preview at
-     * @param y The y-coord to draw the preview at
-     * @param mv
-     */
-    public void drawPreview(Graphics2D g2d, int x, int y, MapView mv);
-
-    /**
      * Draws a preview of the editing operation when applicable.
      *
      * @param g2d The graphics context to draw to.
@@ -87,11 +76,15 @@ public interface Brush
     public void drawPreview(Graphics2D g2d, MapView mv);
 
     /**
-     * Draws a preview of the editing operation when applicable. This is meant for off-map brush preview.
+     * Draws a preview of the editing operation when applicable. This is meant
+     * for off-map brush preview. The map view is provided for drawing map-view
+     * dependant previews.
+     *
      * @param g2d The graphics context to draw to.
-     * @param dimension
+     * @param dimension The dimension within which the preview should be drawn
+     * @param mv The active map view.
      */
-    public void drawPreview(Graphics2D g2d, Dimension dimension);
+    public void drawPreview(Graphics2D g2d, Dimension dimension, MapView mv);
 
     /**
      * Returns wether this brush equals another brush.

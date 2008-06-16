@@ -1984,11 +1984,11 @@ public class MapEditor implements ActionListener, MouseListener,
         // Resize and select the region
         cursorHighlight.resize(brushRedraw.width, brushRedraw.height, 0, 0);
         cursorHighlight.selectRegion(currentBrush.getShape());
-        /*if (currentBrush instanceof CustomBrush) {
-            cursorHighlight.setVisible(false);
-        } else {
-            cursorHighlight.setVisible(true);
-        }*/
+        //cursorHighlight.setVisible(!(currentBrush instanceof CustomBrush));
+        if (mapView != null) {
+            // todo: fix the positioning of this brush preview
+            mapView.setBrush(currentBrush);
+        }
     }
 
     public void updateTitle() {

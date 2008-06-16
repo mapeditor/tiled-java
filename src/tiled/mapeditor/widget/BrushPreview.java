@@ -12,7 +12,6 @@
 
 package tiled.mapeditor.widget;
 
-import tiled.mapeditor.Resources;
 import tiled.mapeditor.brush.AbstractBrush;
 
 import javax.swing.*;
@@ -35,7 +34,7 @@ public class BrushPreview extends JPanel
 
     public void paint(Graphics graphics) {
         if (brush != null) {
-            brush.drawPreview((Graphics2D) graphics, getSize());
+            brush.drawPreview((Graphics2D) graphics, getSize(), null);
         }
     }
 }

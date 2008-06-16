@@ -69,6 +69,7 @@ public class ObjectDialog extends PropertiesDialog
         miscPropPanel.setLayout(new GridBagLayout());
         miscPropPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
         GridBagConstraints c = new GridBagConstraints();
+        c.anchor = GridBagConstraints.EAST;
         c.gridx = 0;
         c.gridy = 0;
         c.weightx = 0;

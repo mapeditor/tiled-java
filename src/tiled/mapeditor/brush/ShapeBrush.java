@@ -92,19 +92,8 @@ public class ShapeBrush extends AbstractBrush
     	return shape;
     }
 
-    public boolean isRectangular() {
-        return shape.isRectangular();
-    }
-
-    public void drawPreview(Graphics2D g2d, MapView mv) {
+    public void drawPreview(Graphics2D g2d, Dimension dimension, MapView mv) {
     	g2d.fill(shape);
-        /*if (shape.isRectangular()) {
-            Rectangle bounds = shape.getBounds();
-            g2d.fillRect(sx, sy, bounds.width, bounds.height);
-        } else if (!shape.isPolygonal()) {
-            Rectangle bounds = shape.getBounds();
-            g2d.fillOval(sx, sy, bounds.width, bounds.height);
-        }*/
     }
 
     public boolean equals(Brush brush) {

@@ -47,7 +47,7 @@ public class BrushBrowser extends JPanel
 
                 if (selectedIndex >= 0 && selectedIndex < brushes.size()) {
                     Brush previousBrush = selectedBrush;
-                    selectedBrush = (Brush)brushes.get(selectedIndex);
+                    selectedBrush = (Brush) brushes.get(selectedIndex);
                     firePropertyChange("selectedbrush", previousBrush, selectedBrush);
                     repaint();
                 }
@@ -93,8 +93,8 @@ public class BrushBrowser extends JPanel
         g.setColor(Color.white);
         g.fillRect(clipRect.x, clipRect.y, clipRect.width, clipRect.height);
 
-        ((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                                         RenderingHints.VALUE_ANTIALIAS_ON);
+        ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                                          RenderingHints.VALUE_ANTIALIAS_ON);
         g.setColor(Color.black);
 
         // Draw the brushes
@@ -103,10 +103,10 @@ public class BrushBrowser extends JPanel
         while (itr.hasNext()) {
             Brush brush = (Brush) itr.next();
             Rectangle bb = brush.getBounds();
-            float o = maxWidth/2.0f - bb.width/2.0f;
-            g.translate((int)o, (int)o);
-            brush.drawPreview((Graphics2D) g, new Dimension(maxWidth, maxWidth));
-            g.translate((int)-o, (int)-o);
+            float o = maxWidth / 2.0f - bb.width / 2.0f;
+            g.translate((int) o, (int) o);
+            brush.drawPreview((Graphics2D) g, new Dimension(maxWidth, maxWidth), null);
+            g.translate((int) -o, (int) -o);
 
             if (brush == selectedBrush) {
                 g.drawRect(0, 0, maxWidth, maxWidth);

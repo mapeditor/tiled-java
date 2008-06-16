@@ -22,7 +22,6 @@ public abstract class AbstractBrush extends MultilayerPlane implements Brush
 {
     protected int numLayers = 1;
     protected MultilayerPlane affectedMp;
-    protected int sx, sy;
     protected boolean paintingStarted = false;
     protected int initLayer;
 
@@ -37,7 +36,7 @@ public abstract class AbstractBrush extends MultilayerPlane implements Brush
      * This will set the number of layers to affect, the default is 1 - the
      * layer specified in commitPaint.
      *
-     * @see Brush#commitPaint(MultilayerPlane, int, int, int)
+     * @see Brush#doPaint(int, int)
      * @param num   the number of layers to affect.
      */
     public void setAffectedLayers(int num) {
@@ -63,13 +62,8 @@ public abstract class AbstractBrush extends MultilayerPlane implements Brush
         paintingStarted = false;
     }
 
-    public void drawPreview(Graphics2D g2d, int x, int y, MapView mv) {
-        sx = x;
-        sy = y;
-        drawPreview(g2d, mv);
-    }
-
-    public void drawPreview(Graphics2D g2d, Dimension dimension) {
+    public void drawPreview(Graphics2D g2d, Dimension dimension, MapView mv) {
+        // todo: draw an off-map preview here
     }
 
     public abstract Shape getShape();

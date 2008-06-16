@@ -52,7 +52,7 @@ public class CustomBrush extends AbstractBrush
      */
     public boolean equals(Brush b) {
         if (b instanceof CustomBrush) {
-            if(b == this) return true;
+            if (b == this) return true;
             else {
                 //TODO: THIS
             }
