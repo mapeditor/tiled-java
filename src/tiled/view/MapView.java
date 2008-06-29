@@ -42,8 +42,6 @@ public abstract class MapView extends JPanel implements Scrollable
     protected double zoom = 1.0;
     protected int zoomLevel = ZOOM_NORMALSIZE;
 
-    protected Polygon propPoly;
-    
     // Grid properties
     protected boolean showGrid;
     protected boolean antialiasGrid;
@@ -469,6 +467,15 @@ public abstract class MapView extends JPanel implements Scrollable
 
     public abstract Point screenToTileCoords(int x, int y);
 
+    /**
+     * Returns the pixel coordinates on the map based on the given screen
+     * coordinates. The map pixel coordinates may be different in more ways
+     * than the zoom level, depending on the projection the view implements.
+     *
+     * @param x x in screen coordinates
+     * @param y y in screen coordinates
+     * @return the position in map pixel coordinates
+     */
     public abstract Point screenToPixelCoords(int x, int y);
 
     /**

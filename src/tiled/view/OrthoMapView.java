@@ -27,6 +27,8 @@ import tiled.mapeditor.selection.SelectionLayer;
  */
 public class OrthoMapView extends MapView
 {
+    private Polygon propPoly;
+
     /**
      * Creates a new orthographic map view that displays the specified map.
      *
@@ -119,9 +121,18 @@ public class OrthoMapView extends MapView
             double oy = mo.getY() * zoom;
 
             if (mo.getWidth() == 0 || mo.getHeight() == 0) {
+                g.setRenderingHint(
+                        RenderingHints.KEY_ANTIALIASING,
+                        RenderingHints.VALUE_ANTIALIAS_ON);
+                g.setColor(Color.black);
+                g.fillOval((int) ox + 1, (int) oy + 1,
+                        (int) (10 * zoom), (int) (10 * zoom));
                 g.setColor(Color.orange);
                 g.fillOval((int) ox, (int) oy,
                         (int) (10 * zoom), (int) (10 * zoom));                
+                g.setRenderingHint(
+                        RenderingHints.KEY_ANTIALIASING,
+                        RenderingHints.VALUE_ANTIALIAS_OFF);
             } else {
                 g.setColor(Color.black);
                 g.drawRect((int) ox + 1, (int) oy + 1,
@@ -238,9 +249,7 @@ public class OrthoMapView extends MapView
             for (int i = startX; i <= endX; i++) {
                 try {
                     Properties p = layer.getTileInstancePropertiesAt(i, j);
-                    if (p == null || p.isEmpty()) {
-                    }
-                    else {
+                    if (p != null && !p.isEmpty()) {
                         //g2d.drawString( "PROP", x, y );
                         //g2d.drawImage(MapView.propertyFlagImage, x + (tsize.width - 12), y, null);
                     	g2d.translate(x + (tsize.width - 13), y+1);

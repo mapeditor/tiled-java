@@ -15,6 +15,7 @@ package tiled.view;
 // for console logging
 
 import java.awt.*;
+import java.util.Iterator;
 
 import javax.swing.SwingConstants;
 
@@ -461,8 +462,8 @@ public class HexMapView extends MapView
         Point [] fourPoints = new Point [4];
         Point [] fourTiles = new Point [4];
 
-        int x = screenX;
-        int y = screenY;
+        final int x = screenX;
+        final int y = screenY;
 
         // determine the two columns of hexes we are between
         // we are between col and col+1.
@@ -533,21 +534,11 @@ public class HexMapView extends MapView
     }
 
     /**
-     * Get the height of a tile of the map.
-     * I do not know why this function is here.
-     *
-     * @return The tile height as double.
-     */
-    private double getTileHeight() {
-        return map.getTileHeight();
-    }
-
-    /**
      * Repaint a region of the viewport.
      * This function has been disabled. I have tried it
      * but it seems to repaint with some offset.
      *
-     * @param The rectangle of the viewport to be repainted.
+     * @param region The rectangle of the viewport to be repainted.
      */
     public void repaintRegion(Rectangle region) {
         super.repaintRegion(region);
@@ -685,15 +676,53 @@ public class HexMapView extends MapView
     }
 
     public Point screenToPixelCoords(int x, int y) {
-        // TODO: add proper implementation
-        return new Point();
+        return new Point(
+                (int) (x / zoom), (int) (y / zoom));
     }
 
     protected void paintPropertyFlags(Graphics2D g2d, TileLayer layer) {
-        throw new RuntimeException("Not yet implemented");    // todo
+        // TODO: Implement property flags painting for HexMapView
     }
 
-    protected void paintObjectGroup(Graphics2D g2d, ObjectGroup og) {
-        // TODO: Implement objectgroup painting for HexMapView
+    protected void paintObjectGroup(Graphics2D g, ObjectGroup og) {
+        // NOTE: Direct copy from OrthoMapView (candidate for generalization)
+        Iterator itr = og.getObjects();
+
+        while (itr.hasNext()) {
+            MapObject mo = (MapObject) itr.next();
+            double ox = mo.getX() * zoom;
+            double oy = mo.getY() * zoom;
+
+            if (mo.getWidth() == 0 || mo.getHeight() == 0) {
+                g.setRenderingHint(
+                        RenderingHints.KEY_ANTIALIASING,
+                        RenderingHints.VALUE_ANTIALIAS_ON);
+                g.setColor(Color.black);
+                g.fillOval((int) ox + 1, (int) oy + 1,
+                        (int) (10 * zoom), (int) (10 * zoom));
+                g.setColor(Color.orange);
+                g.fillOval((int) ox, (int) oy,
+                        (int) (10 * zoom), (int) (10 * zoom));
+                g.setRenderingHint(
+                        RenderingHints.KEY_ANTIALIASING,
+                        RenderingHints.VALUE_ANTIALIAS_OFF);
+            } else {
+                g.setColor(Color.black);
+                g.drawRect((int) ox + 1, (int) oy + 1,
+                    (int) (mo.getWidth() * zoom),
+                    (int) (mo.getHeight() * zoom));
+                g.setColor(Color.orange);
+                g.drawRect((int) ox, (int) oy,
+                    (int) (mo.getWidth() * zoom),
+                    (int) (mo.getHeight() * zoom));
+            }
+            if (zoom > 0.0625) {
+                final String s = mo.getName() != null ? mo.getName() : "(null)";
+                g.setColor(Color.black);
+                g.drawString(s, (int) (ox - 5) + 1, (int) (oy - 5) + 1);
+                g.setColor(Color.white);
+                g.drawString(s, (int) (ox - 5), (int) (oy - 5));
+            }
+        }
     }
 }
