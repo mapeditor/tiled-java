@@ -69,7 +69,8 @@ public class TilePalettePanel extends JPanel implements Scrollable,
                     setSelection(select);
                     scrollTileToVisible(point);
                 }
-                fireTileRegionSelectionEvent(selection);
+                if (selection.getWidth() > 0 || selection.getHeight() > 0)
+                    fireTileRegionSelectionEvent(selection);
             }
         };
         addMouseListener(mouseInputAdapter);

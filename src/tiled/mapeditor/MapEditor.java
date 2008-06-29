@@ -1205,6 +1205,8 @@ public class MapEditor implements ActionListener, MouseListener,
                 // Right mouse button dragged: create and set custom brush
                 TileLayer brushLayer = new TileLayer(bounds);
                 brushLayer.copyFrom(getCurrentLayer());
+                brushLayer.setOffset(tile.x - (int) bounds.getWidth() / 2,
+                                     tile.y - (int) bounds.getHeight() / 2);
 
                 // Do a quick check to make sure the selection is not empty
                 if (brushLayer.isEmpty()) {
@@ -1214,6 +1216,9 @@ public class MapEditor implements ActionListener, MouseListener,
                             JOptionPane.WARNING_MESSAGE);
                 } else {
                     setBrush(new CustomBrush(brushLayer));
+                    cursorHighlight.setOffset(
+                            tile.x - (int) bounds.getWidth() / 2,
+                            tile.y - (int) bounds.getHeight() / 2);
                 }
             }
             else if (mouseButton == MouseEvent.BUTTON1 &&
@@ -1268,12 +1273,7 @@ public class MapEditor implements ActionListener, MouseListener,
         }
 
         Point tile = mapView.screenToTileCoords(e.getX(), e.getY());
-        if (currentMap.inBounds(tile.x, tile.y)) {
-            tileCoordsLabel.setText(String.valueOf(tile.x) + ", " + tile.y);
-        } else {
-            tileCoordsLabel.setText(" ");
-        }
-
+        updateTileCoordsLabel(tile);
         updateCursorHighlight(tile);
     }
 
@@ -1285,13 +1285,16 @@ public class MapEditor implements ActionListener, MouseListener,
         mousePressLocation = mapView.screenToTileCoords(e.getX(), e.getY());
         Point tile = mapView.screenToTileCoords(e.getX(), e.getY());
 
+        updateTileCoordsLabel(tile);
+        updateCursorHighlight(tile);
+    }
+
+    private void updateTileCoordsLabel(Point tile) {
         if (currentMap.inBounds(tile.x, tile.y)) {
             tileCoordsLabel.setText(String.valueOf(tile.x) + ", " + tile.y);
         } else {
             tileCoordsLabel.setText(" ");
         }
-
-        updateCursorHighlight(tile);
     }
 
     private void updateCursorHighlight(Point tile) {
@@ -1303,13 +1306,18 @@ public class MapEditor implements ActionListener, MouseListener,
             brushRedraw.y = tile.y - brushRedraw.height / 2;
 
             if (!redraw.equals(brushRedraw)) {
+                if (currentBrush instanceof CustomBrush) {
+                    CustomBrush customBrush = (CustomBrush) currentBrush;
+                    ListIterator layers = customBrush.getLayers();
+                    while (layers.hasNext()) {
+                        MapLayer layer = (MapLayer) layers.next();
+                        layer.setOffset(brushRedraw.x, brushRedraw.y);
+                    }
+                }
                 mapView.repaintRegion(redraw);
                 cursorHighlight.setOffset(brushRedraw.x, brushRedraw.y);
                 //cursorHighlight.selectRegion(currentBrush.getShape());
                 mapView.repaintRegion(brushRedraw);
-                /*if(currentBrush instanceof CustomBrush) {
-                    mapView.paintSubMap(currentBrush, null, 0.5f);
-                }*/
             }
         }
     }
@@ -1962,10 +1970,6 @@ public class MapEditor implements ActionListener, MouseListener,
         //       of custom brush mode
         //(reset the brush if necessary)
         if (currentBrush instanceof CustomBrush) {
-            if (prefs.getBoolean("cursorhighlight", true)) {
-                Rectangle redraw = cursorHighlight.getBounds();
-                mapView.repaintRegion(redraw);
-            }
             ShapeBrush sb = new ShapeBrush();
             sb.makeQuadBrush(new Rectangle(0, 0, 1, 1));
             sb.setTile(currentTile);
@@ -1974,19 +1978,19 @@ public class MapEditor implements ActionListener, MouseListener,
     }
 
     public void setBrush(AbstractBrush brush) {
+        // Make sure a possible current highlight gets erased from screen
+        if (mapView != null && prefs.getBoolean("cursorhighlight", true)) {
+            Rectangle redraw = cursorHighlight.getBounds();
+            mapView.repaintRegion(redraw);
+        }
+
         currentBrush = brush;
 
-        Rectangle brushRedraw = currentBrush.getBounds();
-
-        // Make sure it's clean
-        cursorHighlight.setOffset(0, 0);
-
         // Resize and select the region
+        Rectangle brushRedraw = currentBrush.getBounds();
         cursorHighlight.resize(brushRedraw.width, brushRedraw.height, 0, 0);
         cursorHighlight.selectRegion(currentBrush.getShape());
-        //cursorHighlight.setVisible(!(currentBrush instanceof CustomBrush));
         if (mapView != null) {
-            // todo: fix the positioning of this brush preview
             mapView.setBrush(currentBrush);
         }
     }
@@ -2146,9 +2150,8 @@ public class MapEditor implements ActionListener, MouseListener,
                     + ", " + (currentMap.getHeight() - 1));
             tileCoordsLabel.setPreferredSize(null);
             Dimension size = tileCoordsLabel.getPreferredSize();
-            //Dimension size = new Dimension(20,50);
             tileCoordsLabel.setText(" ");
-            tileCoordsLabel.setMinimumSize(new Dimension(20,50));
+            tileCoordsLabel.setMinimumSize(new Dimension(20, 50));
             tileCoordsLabel.setPreferredSize(size);
             zoomLabel.setText(
                     String.valueOf((int) (mapView.getZoom() * 100)) + "%");
@@ -2222,7 +2225,7 @@ public class MapEditor implements ActionListener, MouseListener,
 
         if (currentTile != tile) {
             currentTile = tile;
-            if (!(currentBrush instanceof CustomBrush)) {
+            if (currentBrush instanceof ShapeBrush) {
                 ((ShapeBrush) currentBrush).setTile(tile);
             }
             brushPreview.setBrush(currentBrush);
