@@ -144,7 +144,7 @@ public class ShiftedMapView extends MapView
         return new Polygon();
     }
 
-    public Point tileToScreenCoords(double x, double y) {
+    public Point tileToScreenCoords(int x, int y) {
         return new Point(0, 0);
     }
 }

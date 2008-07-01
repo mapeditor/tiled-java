@@ -289,11 +289,11 @@ public class IsoMapView extends MapView
     /**
      * Returns the location on the screen of the top corner of a tile.
      */
-    public Point tileToScreenCoords(double x, double y) {
+    public Point tileToScreenCoords(int x, int y) {
         Dimension tileSize = getTileSize();
         int originX = (map.getHeight() * tileSize.width) / 2;
         return new Point(
-                (int)((x - y) * tileSize.width / 2) + originX,
-                (int)((x + y) * tileSize.height / 2));
+                ((x - y) * tileSize.width / 2) + originX,
+                ((x + y) * tileSize.height / 2));
     }
 }

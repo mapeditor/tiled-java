@@ -315,8 +315,8 @@ public class OrthoMapView extends MapView
         return poly;
     }
 
-    public Point tileToScreenCoords(double x, double y) {
+    public Point tileToScreenCoords(int x, int y) {
         Dimension tsize = getTileSize();
-        return new Point((int) x * tsize.width, (int) y * tsize.height);
+        return new Point(x * tsize.width, y * tsize.height);
     }
 }

@@ -667,8 +667,8 @@ public class HexMapView extends MapView
      *
      * @return The point at the centre of the Hex as Point.
      */
-    public Point tileToScreenCoords(double x, double y) {
-        Point p = getTopLeftCornerOfTile((int)x, (int)y);
+    public Point tileToScreenCoords(int x, int y) {
+        Point p = getTopLeftCornerOfTile(x, y);
         Dimension tileSize = getEffectiveTileSize();
         return new Point(
             (int)(p.getX()) + (int)(tileSize.width / 2 + 0.49),

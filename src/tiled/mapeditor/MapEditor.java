@@ -76,7 +76,7 @@ public class MapEditor implements ActionListener, MouseListener,
     private Cursor curEyed;
 
     /** Current release version. */
-    public static final String version = "0.7.0 WIP";
+    public static final String version = "0.7.0 rc1";
 
     private Map currentMap;
     private MapView mapView;
@@ -236,7 +236,11 @@ public class MapEditor implements ActionListener, MouseListener,
         appFrame.setContentPane(createContentPane());
         createMenuBar();
         appFrame.setJMenuBar(menuBar);
-        appFrame.setSize(APP_WIDTH, APP_HEIGHT);
+
+        final Preferences mainDialogPrefs = prefs.node("dialog/main");
+        final int width = mainDialogPrefs.getInt("width", APP_WIDTH);
+        final int height = mainDialogPrefs.getInt("width", APP_HEIGHT);
+        appFrame.setSize(width, height);
 
         setCurrentMap(null);
         updateRecent(null);
@@ -247,8 +251,7 @@ public class MapEditor implements ActionListener, MouseListener,
 
         // Restore the state of the main frame. This needs to happen after
         // making the frame visible, otherwise it has no effect (in Linux).
-        Preferences mainDialogPrefs = prefs.node("dialog/main");
-        int state = mainDialogPrefs.getInt("state", Frame.NORMAL);
+        final int state = mainDialogPrefs.getInt("state", Frame.NORMAL);
         if (state != Frame.ICONIFIED) {
             appFrame.setExtendedState(state);
         }
@@ -1223,6 +1226,8 @@ public class MapEditor implements ActionListener, MouseListener,
             }
             else if (mouseButton == MouseEvent.BUTTON1 &&
                     layer instanceof ObjectGroup) {
+                // TODO: Fix this to use pixels in the first place
+                // (with optional snap to grid)
                 int w = currentMap.getTileWidth();
                 int h = currentMap.getTileHeight();
                 MapObject object = new MapObject(
@@ -1568,8 +1573,13 @@ public class MapEditor implements ActionListener, MouseListener,
      */
     public void shutdown() {
         // Save the extended window state if the window isn't minimized
-        int extendedState = appFrame.getExtendedState();
-        prefs.node("dialog/main").putInt("state", extendedState);
+        final int extendedState = appFrame.getExtendedState();
+        final Preferences mainDialogPrefs = prefs.node("dialog/main");
+        mainDialogPrefs.putInt("state", extendedState);
+        if (extendedState == Frame.NORMAL) {
+            mainDialogPrefs.putInt("width", appFrame.getWidth());
+            mainDialogPrefs.putInt("height", appFrame.getHeight());
+        }
 
         // Allow the floatable panels to save their position and size
         layersPanel.save();
