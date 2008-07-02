@@ -1,6 +1,6 @@
 <!DOCTYPE TiledMap [
 
-<!ELEMENT map (property+, tileset+, layer+, object+)>
+<!ELEMENT map (property+, tileset*, (layer | objectgroup)*)>
 <!ATTLIST map
     id          ID     #IMPLIED
     orientation (orthogonal | isometric | hexagonal | oblique)  #REQUIRED
@@ -38,6 +38,9 @@
     opacity CDATA #IMPLIED
 >
 
+<!ELEMENT objectgroup (object*) >
+<!ELEMENT object (properties?)>
+
 <!ELEMENT image (data | EMPTY)>
 <!ATTLIST image
     format   CDATA #IMPLIED
@@ -45,6 +48,7 @@
     trans    CDATA #IMPLIED
 >
 
+<!ELEMENT properties (property*) >
 <!ELEMENT property EMPTY>
 <!ATTLIST property
     name  CDATA #REQUIRED
