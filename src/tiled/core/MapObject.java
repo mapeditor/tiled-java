@@ -26,11 +26,9 @@ public class MapObject
     protected Rectangle bounds = new Rectangle();
     protected boolean bVisible = true;
     protected String name = "Object";
-    protected String source, type;
+    protected String source;
+    protected String type = "";
     protected int width, height;
-
-    public MapObject() {
-    }
 
     public MapObject(int x, int y, int width, int height) {
         this.x = x;
