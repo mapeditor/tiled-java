@@ -56,8 +56,33 @@ public class XMLWriter
     }
 
     public void startDocument(String version) throws IOException {
-        w.write("<?xml version=\"" + version + "\" encoding=\"UTF-8\"?>" + newLine);
+        w.write("<?xml version=\"" + version + "\" encoding=\"UTF-8\"?>"
+                + newLine);
         bDocumentOpen = true;
+    }
+
+    public void writeDocType(String name, String pubId, String sysId)
+            throws IOException, XMLWriterException {
+        if (!bDocumentOpen) {
+            throw new XMLWriterException(
+                    "Can't write DocType, no open document.");
+        } else if (!openElements.isEmpty()) {
+            throw new XMLWriterException(
+                    "Can't write DocType, open elements exist.");
+        }
+
+        w.write("<!DOCTYPE " + name + " ");
+
+        if (pubId != null) {
+            w.write("PUBLIC \"" + pubId + "\"");
+            if (sysId != null) {
+                w.write(" \"" + sysId + "\"");
+            }
+        } else if (sysId != null) {
+            w.write("SYSTEM \"" + sysId + "\"");
+        }
+
+        w.write(">" + newLine);
     }
 
     public void startElement(String name)

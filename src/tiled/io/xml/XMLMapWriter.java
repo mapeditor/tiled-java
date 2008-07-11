@@ -102,9 +102,10 @@ public class XMLMapWriter implements MapWriter
 
     private static void writeMap(Map map, XMLWriter w, String wp) throws IOException {
     	Preferences prefs = TiledConfiguration.node("saving");
+        w.writeDocType("map", null, "http://mapeditor.org/dtd/1.0/map.dtd");
         w.startElement("map");
 
-        w.writeAttribute("version", "0.99c");
+        w.writeAttribute("version", "1.0");
 
         switch (map.getOrientation()) {
             case Map.MDO_ORTHO:
