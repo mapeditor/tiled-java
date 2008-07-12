@@ -32,11 +32,13 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.EntityResolver;
 import tiled.core.*;
 import tiled.io.ImageHelper;
 import tiled.io.MapReader;
 import tiled.io.PluginLogger;
 import tiled.mapeditor.util.cutter.BasicTileCutter;
+import tiled.mapeditor.Resources;
 import tiled.util.Base64;
 import tiled.util.Util;
 
@@ -48,6 +50,7 @@ public class XMLMapTransformer implements MapReader
     private Map map;
     private String xmlPath;
     private PluginLogger logger;
+    private final EntityResolver entityResolver = new MapEntityResolver();
 
     public XMLMapTransformer() {
         logger = new PluginLogger();
@@ -737,6 +740,7 @@ public class XMLMapTransformer implements MapReader
             factory.setIgnoringElementContentWhitespace(true);
             factory.setExpandEntityReferences(false);
             DocumentBuilder builder = factory.newDocumentBuilder();
+            builder.setEntityResolver(entityResolver);
             InputSource insrc = new InputSource(in);
             insrc.setSystemId(xmlPath);
             insrc.setEncoding("UTF8");
@@ -844,5 +848,16 @@ public class XMLMapTransformer implements MapReader
 
     public void setLogger(PluginLogger logger) {
         this.logger = logger;
+    }
+
+    private class MapEntityResolver implements EntityResolver
+    {
+        public InputSource resolveEntity(String publicId, String systemId) {
+            if (systemId.equals("http://mapeditor.org/dtd/1.0/map.dtd")) {
+                return new InputSource(Resources.class.getResourceAsStream(
+                        "resources/map.dtd"));
+            }
+            return null;
+        }
     }
 }
