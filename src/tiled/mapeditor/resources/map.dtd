@@ -1,4 +1,4 @@
-<?xml encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 
 <!-- 
   format 0.7.0 by
@@ -13,8 +13,11 @@
 
 <!ELEMENT map (properties?, tileset*, (layer | objectgroup)*)>
 <!ATTLIST map
+  xmlns       CDATA   #IMPLIED
+  xmlns:xsi   CDATA   #IMPLIED
+  xsi:schemaLocation  CDATA #IMPLIED
   version     CDATA   #REQUIRED
-  orientation (orthogonal | isometric | hexagonal | oblique)  #REQUIRED
+  orientation (orthogonal | isometric | hexagonal | shifted)  #REQUIRED
   width       CDATA   #REQUIRED
   height      CDATA   #REQUIRED
   tilewidth   CDATA   #REQUIRED

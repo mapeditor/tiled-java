@@ -61,3 +61,4 @@ TRANSLATORS
 - Nader Akhres for the JSON map writer plugin
 - William C. Bubel for the Lua map writer plugin
 - Matthias Kievernagel for a nice HexMapView
+- Olivier Beaton for the DTD and Schema files describing the TMX format
