@@ -30,15 +30,15 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.EntityResolver;
 import tiled.core.*;
 import tiled.io.ImageHelper;
 import tiled.io.MapReader;
 import tiled.io.PluginLogger;
-import tiled.mapeditor.util.cutter.BasicTileCutter;
 import tiled.mapeditor.Resources;
+import tiled.mapeditor.util.cutter.BasicTileCutter;
 import tiled.util.Base64;
 import tiled.util.Util;
 
@@ -775,7 +775,7 @@ public class XMLMapTransformer implements MapReader
 
         Map unmarshalledMap = unmarshal(is);
         unmarshalledMap.setFilename(filename);
-        
+
         map = null;
 
         return unmarshalledMap;
@@ -826,7 +826,7 @@ public class XMLMapTransformer implements MapReader
     public String getDescription() {
         return "This is the core Tiled TMX format reader\n" +
             "\n" +
-            "Tiled Map Editor, (c) 2004-2006\n" +
+            "Tiled Map Editor, (c) 2004-2008\n" +
             "Adam Turk\n" +
             "Bjorn Lindeijer";
     }

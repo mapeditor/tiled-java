@@ -24,16 +24,20 @@ import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
+import javax.swing.filechooser.FileFilter;
 
 import tiled.core.Map;
 import tiled.mapeditor.MapEditor;
 import tiled.mapeditor.Resources;
+import tiled.mapeditor.util.ConfirmableFileFilter;
+import tiled.mapeditor.util.ConfirmingFileChooser;
 import tiled.view.MapView;
 
 /**
  * Saves the map to an image.
  *
  * @version $Id$
+ * @noinspection serial
  */
 public class SaveAsImageAction extends AbstractAction
 {
@@ -42,6 +46,7 @@ public class SaveAsImageAction extends AbstractAction
 
     private static final String ACTION_NAME = Resources.getString("action.map.saveasimage.name");
     private static final String ACTION_TOOLTIP = Resources.getString("action.map.saveasimage.tooltip");
+    private static final String DIALOG_TITLE = Resources.getString("dialog.saveasimage.title");
 
     public SaveAsImageAction(MapEditor editor) {
         super(ACTION_NAME);
@@ -57,8 +62,19 @@ public class SaveAsImageAction extends AbstractAction
         if (editor.getCurrentMap() == null)
             return;
 
-        JFileChooser chooser = new JFileChooser();
-        chooser.setDialogTitle("Save as image");
+        JFileChooser chooser = new ConfirmingFileChooser();
+        chooser.setDialogTitle(DIALOG_TITLE);
+        final FileFilter defaultFilter = chooser.getFileFilter();
+
+        final String[] list = ImageIO.getWriterFormatNames();
+        for (int i = 0; i < list.length; i++) {
+            if (list[i].matches("[A-Z].*"))
+                chooser.addChoosableFileFilter(
+                        new BasicFileFilter(list[i], list[i].toLowerCase()));
+        }
+
+        // Make sure the "All Files" filter is selected by default
+        chooser.setFileFilter(defaultFilter);
 
         if (chooser.showSaveDialog(appFrame) ==
                 JFileChooser.APPROVE_OPTION) {
@@ -84,15 +100,22 @@ public class SaveAsImageAction extends AbstractAction
 
         final Dimension imgSize = myView.getPreferredSize();
 
+        final int lastDot = filename.lastIndexOf('.');
+        if (lastDot == -1) {
+            JOptionPane.showMessageDialog(appFrame,
+                    "No file format specified.",
+                    "Error while saving map image",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        final String format = filename.substring(lastDot + 1);
+
         try {
             BufferedImage img = new BufferedImage(
-                    imgSize.width, imgSize.height, BufferedImage.TYPE_INT_ARGB);
+                    imgSize.width, imgSize.height, BufferedImage.TYPE_INT_RGB);
             Graphics2D g = img.createGraphics();
             g.setClip(0, 0, imgSize.width, imgSize.height);
             myView.paint(g);
-
-            int lastDot = filename.lastIndexOf('.');
-            String format = filename.substring(lastDot + 1);
 
             try {
                 ImageIO.write(img, format, new File(filename));
@@ -109,6 +132,30 @@ public class SaveAsImageAction extends AbstractAction
                             "your maximum heap size or zooming out a bit.",
                     "Out of memory",
                     JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public class BasicFileFilter extends ConfirmableFileFilter
+    {
+        private final String extension;
+        private final String description;
+
+        public BasicFileFilter(String description, String extension) {
+            this.description = description;
+            this.extension = extension;
+        }
+
+        public String getDefaultExtension() {
+            return extension;
+        }
+
+        public boolean accept(File file) {
+            String fileName = file.getPath().toLowerCase();
+            return file.isDirectory() || fileName.endsWith("." + extension);
+        }
+
+        public String getDescription() {
+            return description + " (*."+ extension +")";
         }
     }
 }

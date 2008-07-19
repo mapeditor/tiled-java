@@ -12,7 +12,9 @@
 
 package tiled.io.xml;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Image;
+import java.awt.Rectangle;
 import java.io.*;
 import java.util.*;
 import java.util.prefs.Preferences;
@@ -170,9 +172,9 @@ public class XMLMapWriter implements MapWriter
     }
 
     /**
-     * Writes a reference to an external tileset into a XML document.  In the
-     * degenerate case where the tileset is not stored in an external file,
-     * writes the contents of the tileset instead.
+     * Writes a reference to an external tileset into a XML document. In the
+     * case where the tileset is not stored in an external file, writes the
+     * contents of the tileset instead.
      */
     private static void writeTilesetReference(TileSet set, XMLWriter w, String wp)
         throws IOException {

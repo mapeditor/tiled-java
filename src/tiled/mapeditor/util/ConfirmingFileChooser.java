@@ -12,9 +12,9 @@
 
 package tiled.mapeditor.util;
 
-import java.io.File;
 import java.awt.Component;
 import java.awt.HeadlessException;
+import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
@@ -32,7 +32,7 @@ import tiled.mapeditor.Resources;
  *       plugin to load the file.</li>
  *   <li>Confirms before overwriting an existing file.</li>
  * </ul>
- * This file chooser can only be used with
+ * Automatic adding of file extension only works with
  * {@link tiled.mapeditor.util.ConfirmableFileFilter}.
  */
 public final class ConfirmingFileChooser extends JFileChooser
@@ -60,21 +60,22 @@ public final class ConfirmingFileChooser extends JFileChooser
     {
         // When it's an open dialog, we don't need the extension or overwrite
         // checks. Probably you should just be using JFileChooser.
-        if (getDialogType() == JFileChooser.OPEN_DIALOG) {
+        if (getDialogType() == OPEN_DIALOG) {
             super.approveSelection();
             return;
         }
 
         File file = new File(getSelectedFile().getAbsolutePath());
-        ConfirmableFileFilter filter =
-                (ConfirmableFileFilter) getFileFilter();
 
         // If the file does not have an extention, append the default
         // extension specified by the file filter.
         String filename = file.getName();
         int lastDot = filename.lastIndexOf('.');
 
-        if (lastDot == -1 || lastDot == filename.length() - 1) {
+        if ((lastDot == -1 || lastDot == filename.length() - 1) &&
+                getFileFilter() instanceof ConfirmableFileFilter) {
+            ConfirmableFileFilter filter =
+                    (ConfirmableFileFilter) getFileFilter();
             String extension = filter.getDefaultExtension();
 
             if (extension == null) {
@@ -97,7 +98,7 @@ public final class ConfirmingFileChooser extends JFileChooser
         // Check that chosen plugin accepts the file. It is a good idea to
         // warn the user when this is not the case, because loading the map
         // becomes a problem.
-        if (!filter.accept(file)) {
+        if (!getFileFilter().accept(file)) {
             int result = JOptionPane.showConfirmDialog(
                     this,
                     CONFIRM_MISMATCH, CONFIRM_MISMATCH_TITLE,

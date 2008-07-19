@@ -1,5 +1,5 @@
 /*
- *  Tiled Map Editor, (c) 2004-2006
+ *  Tiled Map Editor, (c) 2004-2008
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -128,13 +128,11 @@ public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionList
         public void mapChanged(MapChangedEvent e) {
         }
 
-        public void tilesetAdded(MapChangedEvent e, TileSet tileset)
-        {
+        public void tilesetAdded(MapChangedEvent e, TileSet tileset) {
             addTabForTileset(tileset);
         }
 
-        public void tilesetRemoved(MapChangedEvent e, int index)
-        {
+        public void tilesetRemoved(MapChangedEvent e, int index) {
             removeTabAt(index);
         }
     }
