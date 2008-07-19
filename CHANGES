@@ -1,4 +1,4 @@
-0.7.0 - July X, 2008
+0.7.0 - July 19, 2008
 
 * Added support for arbitrary objects and zones placement (by ElvenProgrammer)
 * Added ability to create stamp brushes from the tile palette
@@ -7,6 +7,9 @@
 * Added option to include comments in .tmx map files when saving
 * Added refresh tilesets action (by Pedro Miller)
 * Added remembering of the main window size
+* Added saving of DOCTYPE declaration in .tmx files
+* Added live brush preview for the stamp brush
+* Updated the DTD and added it to the website (by Olivier Beaton)
 * Reanabled the hexagonal map view (by Matthias Kievernagel)
 * Tiles and layers panels are now both floatable and dockable
 * Report out of memory error when saving map as image
