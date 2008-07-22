@@ -19,7 +19,7 @@ import java.util.LinkedList;
  */
 public class PluginLogger
 {
-    private LinkedList messages = new LinkedList();
+    private final LinkedList messages = new LinkedList();
 
     public void error(Object message) {
     }

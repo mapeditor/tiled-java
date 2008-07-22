@@ -1,4 +1,6 @@
-0.7.0 - July 19, 2008
+* Fixed automatically adding extension to tileset Save As... dialog
+
+0.7.0 - July 19th, 2008
 
 * Added support for arbitrary objects and zones placement (by ElvenProgrammer)
 * Added ability to create stamp brushes from the tile palette
