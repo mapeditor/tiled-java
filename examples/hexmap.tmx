@@ -1,6 +1,7 @@
-<?xml version="1.0" ?>
-<map orientation="hexagonal" width="32" height="32" tilewidth="48" tileheight="43">
- <tileset firstgid="1" name="Untitled">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE map SYSTEM "http://mapeditor.org/dtd/1.0/map.dtd">
+<map version="1.0" orientation="hexagonal" width="32" height="32" tilewidth="48" tileheight="43">
+ <tileset name="Untitled" firstgid="1">
   <tile id="0">
    <image format="png">
     <data encoding="base64">
@@ -9,7 +10,8 @@
    </image>
   </tile>
  </tileset>
- <layer name="Layer 0">
+ <!-- Layer data is compressed (GZip) binary data, encoded in Base64 -->
+ <layer name="Layer 0" width="32" height="32">
   <data encoding="base64" compression="gzip">
    H4sIAAAAAAAAAO3DAQkAAAwEofv+pddjKLhqqqqq6usHHB1pSAAQAAA=
   </data>

@@ -1,7 +1,7 @@
-<?xml version="1.0" ?>
-<map orientation="isometric" tilewidth="64" tileheight="32">
- <dimensions width="64" height="64"/>
- <tileset firstgid="1" name="Transparent Squares">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE map SYSTEM "http://mapeditor.org/dtd/1.0/map.dtd">
+<map version="1.0" orientation="isometric" width="64" height="64" tilewidth="64" tileheight="32">
+ <tileset name="Transparent Squares" firstgid="1">
   <tile id="1">
    <image format="png">
     <data encoding="base64">
@@ -17,12 +17,13 @@
    </image>
   </tile>
  </tileset>
- <layer id="1" name="Layer 1" opacity="0.48">
+ <!-- Layer data is compressed (GZip) binary data, encoded in Base64 -->
+ <layer name="Layer 1" width="64" height="64" opacity="0.48">
   <data encoding="base64" compression="gzip">
    H4sIAAAAAAAAAO3DwQkAAAwDoSP7D90x+lFw1VRVVVVVVVVVVVVVVVVVVdXXB2sNXEYAQAAA
   </data>
  </layer>
- <layer id="0" name="Layer 0">
+ <layer name="Layer 0" width="64" height="64">
   <data encoding="base64" compression="gzip">
    H4sIAAAAAAAAAO3WQQrAIBAEQWH//+ccIxIfELoKFs/jOuBawGxTc2au3cF8DB1zOSvk139e9f3X8ut/m/9v+/3X919X37f+AwAAAAAAAAAAAMA/PMMCaKAAQAAA
   </data>

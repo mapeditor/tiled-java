@@ -1,5 +1,6 @@
-<?xml version="1.0"?>
-<map version="0.99b" orientation="orthogonal" width="64" height="64" tilewidth="24" tileheight="24">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE map SYSTEM "http://mapeditor.org/dtd/1.0/map.dtd">
+<map version="1.0" orientation="orthogonal" width="64" height="64" tilewidth="24" tileheight="24">
  <properties>
   <property name="test" value="value"/>
  </properties>
@@ -11,6 +12,7 @@
    </properties>
   </tile>
  </tileset>
+ <!-- Layer data is compressed (GZip) binary data, encoded in Base64 -->
  <layer name="Layer 0" width="64" height="64">
   <properties>
    <property name="test2" value="value2"/>
