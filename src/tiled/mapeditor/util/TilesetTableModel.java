@@ -25,7 +25,9 @@ import tiled.mapeditor.Resources;
 public class TilesetTableModel extends AbstractTableModel
 {
     private Map map;
-    private String[] columnNames = { "Tileset name", "Source" };
+    private static final String[] columnNames = { "Tileset name", "Source" };
+
+    private static final String EMBEDDED = Resources.getString("dialog.tilesetmanager.embedded");
 
     public TilesetTableModel(Map map) {
         this.map = map;
@@ -62,7 +64,7 @@ public class TilesetTableModel extends AbstractTableModel
                 String ret = tileset.getSource();
 
                 if (ret == null) {
-                    ret = Resources.getString("dialog.tilesetmanager.embedded");
+                    ret = EMBEDDED;
                 }
 
                 return ret;
@@ -78,7 +80,7 @@ public class TilesetTableModel extends AbstractTableModel
 
     public void setValueAt(Object value, int row, int col) {
         if (col != 0) return;
-        
+
         Vector tilesets = map.getTilesets();
         if (row >= 0 && row < tilesets.size()) {
             TileSet tileset = (TileSet)tilesets.get(row);

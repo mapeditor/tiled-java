@@ -106,8 +106,8 @@ public class TilesetManager extends JDialog implements ActionListener,
         removeButton.setToolTipText(REMOVE_BUTTON);
         editButton.setToolTipText(EDIT_BUTTON);
 
-        saveAsButton.addActionListener(this);
         saveButton.addActionListener(this);
+        saveAsButton.addActionListener(this);
         embedButton.addActionListener(this);
         removeButton.addActionListener(this);
         editButton.addActionListener(this);
@@ -285,7 +285,7 @@ public class TilesetManager extends JDialog implements ActionListener,
         } else {
             moveUpButton.setEnabled(true);
         }
-        
+
         if (selectedRow == tilesetTable.getRowCount() - 1) {
             moveDownButton.setEnabled(false);
         } else {
@@ -302,6 +302,7 @@ public class TilesetManager extends JDialog implements ActionListener,
         editButton.setEnabled(set != null);
         removeButton.setEnabled(set != null);
         saveButton.setEnabled(set != null && set.getSource() != null);
+        saveAsButton.setEnabled(set != null);
         embedButton.setEnabled(set != null && set.getSource() != null);
     }
 }
