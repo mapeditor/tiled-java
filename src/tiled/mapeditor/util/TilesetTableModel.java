@@ -17,6 +17,7 @@ import java.util.Vector;
 import javax.swing.table.AbstractTableModel;
 
 import tiled.core.*;
+import tiled.mapeditor.Resources;
 
 /**
  * @version $Id$
@@ -24,8 +25,7 @@ import tiled.core.*;
 public class TilesetTableModel extends AbstractTableModel
 {
     private Map map;
-    //private String[] columnNames = { "Tileset name", "Usage count" };
-    private String[] columnNames = { "Tileset name" };
+    private String[] columnNames = { "Tileset name", "Source" };
 
     public TilesetTableModel(Map map) {
         this.map = map;
@@ -59,7 +59,13 @@ public class TilesetTableModel extends AbstractTableModel
             if (col == 0) {
                 return tileset.getName();
             } else {
-                return String.valueOf(checkSetUsage(tileset));
+                String ret = tileset.getSource();
+
+                if (ret == null) {
+                    ret = Resources.getString("dialog.tilesetmanager.embedded");
+                }
+
+                return ret;
             }
         } else {
             return null;
@@ -71,6 +77,8 @@ public class TilesetTableModel extends AbstractTableModel
     }
 
     public void setValueAt(Object value, int row, int col) {
+        if (col != 0) return;
+        
         Vector tilesets = map.getTilesets();
         if (row >= 0 && row < tilesets.size()) {
             TileSet tileset = (TileSet)tilesets.get(row);

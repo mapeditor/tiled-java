@@ -42,17 +42,25 @@ public class TilesetManager extends JDialog implements ActionListener,
 {
     private final Map map;
 
-    private JButton saveAsButton, saveButton, embedButton;
-    private JButton removeButton, editButton, closeButton;
+    private JButton saveButton, saveAsButton, embedButton, removeButton, editButton;
+    private JButton moveUpButton, moveDownButton, closeButton;
     private JTable tilesetTable;
 
     private static final String DIALOG_TITLE = Resources.getString("dialog.tilesetmanager.title");
     private static final String CLOSE_BUTTON = Resources.getString("general.button.close");
+    private static final String MOVE_UP_BUTTON = Resources.getString("dialog.tilesetmanager.button.moveup");
+    private static final String MOVE_DOWN_BUTTON = Resources.getString("dialog.tilesetmanager.button.movedown");
     private static final String REMOVE_BUTTON = Resources.getString("general.button.remove");
     private static final String EMBED_BUTTON = Resources.getString("dialog.tilesetmanager.embed.button");
     private static final String SAVE_AS_BUTTON = Resources.getString("action.map.saveas.name");
     private static final String EDIT_BUTTON = Resources.getString("dialog.tilesetmanager.edit.button");
     private static final String SAVE_BUTTON = Resources.getString("action.map.save.name");
+
+    private static final Icon REMOVE_BUTTON_ICON = Resources.getIcon("gnome-delete.png");
+    private static final Icon EMBED_BUTTON_ICON = Resources.getIcon("insert-object.png");
+    private static final Icon SAVE_AS_BUTTON_ICON = Resources.getIcon("document-save-as.png");
+    private static final Icon EDIT_BUTTON_ICON = Resources.getIcon("gtk-edit.png");
+    private static final Icon SAVE_BUTTON_ICON = Resources.getIcon("document-save.png");
 
     public TilesetManager(JFrame parent, Map map) {
         super(parent, DIALOG_TITLE, true);
@@ -71,18 +79,40 @@ public class TilesetManager extends JDialog implements ActionListener,
         tilesetScrollPane.setPreferredSize(new Dimension(360, 150));
 
         // Create the buttons
-        saveButton = new JButton(SAVE_BUTTON);
-        editButton = new JButton(EDIT_BUTTON);
-        saveAsButton = new JButton(SAVE_AS_BUTTON);
-        embedButton = new JButton(EMBED_BUTTON);
-        removeButton = new JButton(REMOVE_BUTTON);
+        saveButton = new JButton(SAVE_BUTTON_ICON);
+        editButton = new JButton(EDIT_BUTTON_ICON);
+        saveAsButton = new JButton(SAVE_AS_BUTTON_ICON);
+        embedButton = new JButton(EMBED_BUTTON_ICON);
+        removeButton = new JButton(REMOVE_BUTTON_ICON);
+        moveUpButton = new JButton(MOVE_UP_BUTTON);
+        moveDownButton = new JButton(MOVE_DOWN_BUTTON);
         closeButton = new JButton(CLOSE_BUTTON);
+
+        saveButton.setActionCommand(SAVE_BUTTON);
+        saveAsButton.setActionCommand(SAVE_AS_BUTTON);
+        embedButton.setActionCommand(EMBED_BUTTON);
+        removeButton.setActionCommand(REMOVE_BUTTON);
+        editButton.setActionCommand(EDIT_BUTTON);
+
+        saveButton.setMargin(new Insets(0, 0, 0, 0));
+        saveAsButton.setMargin(new Insets(0, 0, 0, 0));
+        embedButton.setMargin(new Insets(0, 0, 0, 0));
+        removeButton.setMargin(new Insets(0, 0, 0, 0));
+        editButton.setMargin(new Insets(0, 0, 0, 0));
+
+        saveButton.setToolTipText(SAVE_BUTTON);
+        saveAsButton.setToolTipText(SAVE_AS_BUTTON);
+        embedButton.setToolTipText(EMBED_BUTTON);
+        removeButton.setToolTipText(REMOVE_BUTTON);
+        editButton.setToolTipText(EDIT_BUTTON);
 
         saveAsButton.addActionListener(this);
         saveButton.addActionListener(this);
         embedButton.addActionListener(this);
         removeButton.addActionListener(this);
         editButton.addActionListener(this);
+        moveUpButton.addActionListener(this);
+        moveDownButton.addActionListener(this);
         closeButton.addActionListener(this);
 
         // Create the main panel
@@ -91,27 +121,42 @@ public class TilesetManager extends JDialog implements ActionListener,
         GridBagConstraints c = new GridBagConstraints();
         c.fill = GridBagConstraints.BOTH;
         c.gridy = 0;
-        c.gridwidth = 7;
-        c.gridheight = 1;
+        c.gridwidth = 3;
+        c.gridheight = 6;
         c.weightx = 1;
         c.weighty = 1;
         mainPanel.add(tilesetScrollPane, c);
-        c.insets = new Insets(5, 0, 0, 5);
-        c.gridy = 1;
+        c.insets = new Insets(5, 5, 5, 5);
         c.weighty = 0;
         c.weightx = 0;
         c.gridwidth = 1;
+        c.gridheight = 1;
         mainPanel.add(saveButton, c);
+        c.gridy = 1;
         mainPanel.add(saveAsButton, c);
+        c.gridy = 2;
         mainPanel.add(embedButton, c);
+        c.gridy = 3;
         mainPanel.add(removeButton, c);
+        c.gridy = 4;
         mainPanel.add(editButton, c);
-        c.weightx = 1;
+        c.gridy = 5;
+        c.weighty = 1;
         mainPanel.add(Box.createGlue(), c);
-        c.weightx = 0;
+        c.gridy = 6;
+        c.insets = new Insets(5, 0, 0, 5);
+        c.weighty = 0;
+        mainPanel.add(moveUpButton, c);
+        mainPanel.add(moveDownButton, c);
+        c.weightx = 1;
         c.insets = new Insets(5, 0, 0, 0);
-        mainPanel.add(closeButton, c);
-
+        c.gridwidth = 2;
+        c.anchor = GridBagConstraints.SOUTHEAST;
+        JPanel temp = new JPanel();
+        temp.setLayout(new BoxLayout(temp, BoxLayout.LINE_AXIS));
+        temp.add(Box.createGlue());
+        temp.add(closeButton);
+        mainPanel.add(temp, c);
         getContentPane().add(mainPanel);
         getRootPane().setDefaultButton(closeButton);
 
@@ -191,6 +236,14 @@ public class TilesetManager extends JDialog implements ActionListener,
             set.setSource(null);
             embedButton.setEnabled(false);
             saveButton.setEnabled(false);
+        } else if (command.equals(MOVE_UP_BUTTON)) {
+            set = null;
+            map.swapTileSets(selectedRow, --selectedRow);
+            updateTilesetTable();
+        } else if (command.equals(MOVE_DOWN_BUTTON)) {
+            set = null;
+            map.swapTileSets(selectedRow, ++selectedRow);
+            updateTilesetTable();
         }
     }
 
@@ -227,6 +280,18 @@ public class TilesetManager extends JDialog implements ActionListener,
 
     private void updateButtons() {
         int selectedRow = tilesetTable.getSelectedRow();
+        if (selectedRow == 0) {
+            moveUpButton.setEnabled(false);
+        } else {
+            moveUpButton.setEnabled(true);
+        }
+        
+        if (selectedRow == tilesetTable.getRowCount() - 1) {
+            moveDownButton.setEnabled(false);
+        } else {
+            moveDownButton.setEnabled(true);
+        }
+
         Vector tilesets = map.getTilesets();
         TileSet set = null;
         try {
