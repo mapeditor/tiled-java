@@ -237,13 +237,17 @@ public class TilesetManager extends JDialog implements ActionListener,
             embedButton.setEnabled(false);
             saveButton.setEnabled(false);
         } else if (command.equals(MOVE_UP_BUTTON)) {
-            set = null;
-            map.swapTileSets(selectedRow, --selectedRow);
-            updateTilesetTable();
+            if (selectedRow > 0) {
+                map.swapTileSets(selectedRow, --selectedRow);
+                updateTilesetTable();
+                tilesetTable.getSelectionModel().setSelectionInterval(selectedRow, selectedRow);
+            }
         } else if (command.equals(MOVE_DOWN_BUTTON)) {
-            set = null;
-            map.swapTileSets(selectedRow, ++selectedRow);
-            updateTilesetTable();
+            if (selectedRow > -1 && selectedRow < tilesetTable.getRowCount() - 1) {
+                map.swapTileSets(selectedRow, ++selectedRow);
+                updateTilesetTable();
+                tilesetTable.getSelectionModel().setSelectionInterval(selectedRow, selectedRow);
+            }
         }
     }
 
@@ -280,17 +284,10 @@ public class TilesetManager extends JDialog implements ActionListener,
 
     private void updateButtons() {
         int selectedRow = tilesetTable.getSelectedRow();
-        if (selectedRow == 0) {
-            moveUpButton.setEnabled(false);
-        } else {
-            moveUpButton.setEnabled(true);
-        }
 
-        if (selectedRow == tilesetTable.getRowCount() - 1) {
-            moveDownButton.setEnabled(false);
-        } else {
-            moveDownButton.setEnabled(true);
-        }
+        moveUpButton.setEnabled(selectedRow > 0);
+
+        moveDownButton.setEnabled(selectedRow > -1 && selectedRow < tilesetTable.getRowCount() - 1);
 
         Vector tilesets = map.getTilesets();
         TileSet set = null;

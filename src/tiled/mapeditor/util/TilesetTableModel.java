@@ -25,7 +25,8 @@ import tiled.mapeditor.Resources;
 public class TilesetTableModel extends AbstractTableModel
 {
     private Map map;
-    private static final String[] columnNames = { "Tileset name", "Source" };
+    private static final String[] columnNames = { Resources.getString("dialog.tilesetmanager.table.name"),
+		Resources.getString("dialog.tilesetmanager.table.source") };
 
     private static final String EMBEDDED = Resources.getString("dialog.tilesetmanager.embedded");
 

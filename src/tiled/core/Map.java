@@ -481,24 +481,9 @@ public class Map extends MultilayerPlane
      * for them and all tile sets in between.
      */
     public void swapTileSets(int index1, int index2) {
-        if (index1 == index2) {
-            return;
-        } else if (index1 > index2) {
-            int i = index1;
-            index1 = index2;
-            index2 = i;
-        }
-
-        TileSet set1 = (TileSet) tilesets.get(index1);
-        TileSet set2 = (TileSet) tilesets.get(index2);
-        tilesets.set(index1, set2);
-        tilesets.set(index2, set1);
-        set2.setFirstGid(set1.getFirstGid());
-        for (int i = index1 + 1; i <= index2; i++) {
-            set1 = set2;
-            set2 = (TileSet) tilesets.get(i);
-            set2.setFirstGid(set1.getFirstGid() + set1.size());
-        }
+        TileSet set = (TileSet) tilesets.get(index1);
+        tilesets.set(index1, tilesets.get(index2));
+        tilesets.set(index2, set);
     }
 
     /**
