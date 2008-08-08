@@ -477,8 +477,7 @@ public class Map extends MultilayerPlane
     }
 
     /**
-     * Swaps the tile sets at the given indices and updates the first GIDs
-     * for them and all tile sets in between.
+     * Swaps the tile sets at the given indices.
      */
     public void swapTileSets(int index1, int index2) {
         TileSet set = (TileSet) tilesets.get(index1);

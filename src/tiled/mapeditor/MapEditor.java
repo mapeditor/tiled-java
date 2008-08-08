@@ -1975,6 +1975,10 @@ public class MapEditor implements ActionListener, MouseListener,
         undoSupport.postEdit(mle);
     }
 
+    public AbstractBrush getBrush() {
+        return currentBrush;
+    }
+
     public void resetBrush() {
         //FIXME: this is an in-elegant hack, but it gets the user out
         //       of custom brush mode

@@ -238,15 +238,17 @@ public class TilesetManager extends JDialog implements ActionListener,
             saveButton.setEnabled(false);
         } else if (command.equals(MOVE_UP_BUTTON)) {
             if (selectedRow > 0) {
-                map.swapTileSets(selectedRow, --selectedRow);
+		int newRow = selectedRow - 1;
+                map.swapTileSets(selectedRow, newRow);
                 updateTilesetTable();
-                tilesetTable.getSelectionModel().setSelectionInterval(selectedRow, selectedRow);
+                tilesetTable.getSelectionModel().setSelectionInterval(newRow, newRow);
             }
         } else if (command.equals(MOVE_DOWN_BUTTON)) {
             if (selectedRow > -1 && selectedRow < tilesetTable.getRowCount() - 1) {
-                map.swapTileSets(selectedRow, ++selectedRow);
+		int newRow = selectedRow + 1;
+                map.swapTileSets(selectedRow, newRow);
                 updateTilesetTable();
-                tilesetTable.getSelectionModel().setSelectionInterval(selectedRow, selectedRow);
+                tilesetTable.getSelectionModel().setSelectionInterval(newRow, newRow);
             }
         }
     }
