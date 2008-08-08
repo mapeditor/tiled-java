@@ -223,7 +223,7 @@ public class TileDialog extends JDialog
         // Create actionlisteners
         okButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
-            	tileset.setName(tilesetNameEntry.getText());
+                tileset.setName(tilesetNameEntry.getText());
                 applyTileProperties();
                 dispose();
             }
@@ -320,9 +320,9 @@ public class TileDialog extends JDialog
 
         Enumeration ids = tileset.getImageIds();
         while(ids.hasMoreElements()) {
-        	Image img = tileset.getImageById(Integer.parseInt((String) ids.nextElement()));
-        	if(img != null)
-        		listData.add(img);
+            Image img = tileset.getImageById(Integer.parseInt((String) ids.nextElement()));
+            if (img != null)
+                listData.add(img);
         }
 
         imageList.setListData(listData);
@@ -458,7 +458,7 @@ public class TileDialog extends JDialog
         }
         */
         else if (source == createTileButton) {
-        	Image img = (Image) imageList.getSelectedValue();
+            Image img = (Image) imageList.getSelectedValue();
 
             if (img != null) {
                 Tile newTile = new Tile(tileset);

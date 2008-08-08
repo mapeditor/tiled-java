@@ -2105,7 +2105,7 @@ public class MapEditor implements ActionListener, MouseListener,
 
     public void setCurrentMap(Map newMap) {
         // Cancel any active selection
-        if (marqueeSelection != null) {
+        if (marqueeSelection != null && currentMap != null) {
             currentMap.removeLayerSpecial(marqueeSelection);
         }
         marqueeSelection = null;
@@ -2154,7 +2154,6 @@ public class MapEditor implements ActionListener, MouseListener,
             gridMenuItem.setState(mapView.getShowGrid());
             coordinatesMenuItem.setState(
                     mapView.getMode(MapView.PF_COORDINATES));
-
 
             tileCoordsLabel.setText(String.valueOf(currentMap.getWidth() - 1)
                     + ", " + (currentMap.getHeight() - 1));

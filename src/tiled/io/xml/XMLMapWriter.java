@@ -103,7 +103,7 @@ public class XMLMapWriter implements MapWriter
     }
 
     private static void writeMap(Map map, XMLWriter w, String wp) throws IOException {
-    	Preferences prefs = TiledConfiguration.node("saving");
+        Preferences prefs = TiledConfiguration.node("saving");
         w.writeDocType("map", null, "http://mapeditor.org/dtd/1.0/map.dtd");
         w.startElement("map");
 
@@ -137,7 +137,7 @@ public class XMLMapWriter implements MapWriter
         }
 
         if (prefs.getBoolean("encodeLayerData", true) && prefs.getBoolean("usefulComments", false))
-        	w.writeComment("Layer data is " + (prefs.getBoolean("layerCompression", true) ? "compressed (GZip)" : "") + " binary data, encoded in Base64");
+            w.writeComment("Layer data is " + (prefs.getBoolean("layerCompression", true) ? "compressed (GZip)" : "") + " binary data, encoded in Base64");
         Iterator ml = map.getLayers();
         while (ml.hasNext()) {
             MapLayer layer = (MapLayer)ml.next();
