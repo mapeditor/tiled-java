@@ -15,14 +15,14 @@
 
 package tiled.mapeditor.widget;
 
-import java.util.ArrayList;
+import java.awt.Component;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
-import tiled.core.Map;
-import tiled.core.TileSet;
+import tiled.core.*;
 import tiled.mapeditor.MapEditor;
 import tiled.mapeditor.brush.CustomBrush;
 import tiled.mapeditor.util.*;
@@ -35,10 +35,10 @@ import tiled.mapeditor.util.*;
 public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionListener
 {
     /**
-     * List of the tile palette panels (one for each tileset).
+     * Map of tile sets to tile palette panels
      */
-    private final List tilePanels = new ArrayList();
-    private final MapChangeListener listener = new MyMapChangeListener();
+    private final HashMap tilePanels = new HashMap();
+    private final MyChangeListener listener = new MyChangeListener();
     private final MapEditor mapEditor;
     private Map map;
 
@@ -72,7 +72,7 @@ public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionList
      */
     private void recreateTabs(List tilesets) {
         // Stop listening to the tile palette panels
-        for (Iterator it = tilePanels.iterator(); it.hasNext();) {
+        for (Iterator it = tilePanels.keySet().iterator(); it.hasNext();) {
             TilePalettePanel panel = (TilePalettePanel) it.next();
             panel.removeTileSelectionListener(this);
         }
@@ -99,6 +99,7 @@ public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionList
      * @param tileset the given tileset
      */
     private void addTabForTileset(TileSet tileset) {
+        tileset.addTilesetChangeListener(listener);
         TilePalettePanel tilePanel = new TilePalettePanel();
         tilePanel.setTileset(tileset);
         tilePanel.addTileSelectionListener(this);
@@ -106,6 +107,7 @@ public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionList
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         addTab(tileset.getName(), paletteScrollPane);
+        tilePanels.put(tileset, tilePanel);
     }
 
     /**
@@ -123,7 +125,7 @@ public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionList
         mapEditor.setBrush(new CustomBrush(e.getTileRegion()));
     }
 
-    private class MyMapChangeListener implements MapChangeListener
+    private class MyChangeListener implements MapChangeListener, TilesetChangeListener
     {
         public void mapChanged(MapChangedEvent e) {
         }
@@ -133,7 +135,47 @@ public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionList
         }
 
         public void tilesetRemoved(MapChangedEvent e, int index) {
+            JScrollPane scroll = (JScrollPane) getComponentAt(index);
+            TilePalettePanel panel = (TilePalettePanel) scroll.getViewport().getView();
+            tilePanels.remove(panel.getTileset());
             removeTabAt(index);
+        }
+
+        public void tilesetsSwapped(MapChangedEvent e, int index0, int index1) {
+            int sIndex = getSelectedIndex();
+
+            String title0 = getTitleAt(index0);
+            String title1 = getTitleAt(index1);
+
+            Component comp0 = getComponentAt(index0);
+            Component comp1 = getComponentAt(index1);
+
+            removeTabAt(index1);
+            removeTabAt(index0);
+
+            insertTab(title1, null, comp1, null, index0);
+            insertTab(title0, null, comp0, null, index1);
+
+            if (sIndex == index0) {
+                sIndex = index1;
+            } else if (sIndex == index1) {
+                sIndex = index0;
+            }
+
+            setSelectedIndex(sIndex);
+        }
+
+        public void tilesetChanged(TilesetChangedEvent event) {
+        }
+        
+        public void nameChanged(TilesetChangedEvent event, String oldName, String newName) {
+            TileSet set = event.getTileset();
+            int index = map.getTilesets().indexOf(set);
+            
+            setTitleAt(index, newName);
+        }
+
+        public void sourceChanged(TilesetChangedEvent event, String oldSource, String newSource) {
         }
     }
 }

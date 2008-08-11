@@ -21,4 +21,8 @@ package tiled.core;
 public interface TilesetChangeListener
 {
     void tilesetChanged(TilesetChangedEvent event);
+
+    void nameChanged(TilesetChangedEvent event, String oldName, String newName);
+
+    void sourceChanged(TilesetChangedEvent event, String oldSource, String newSource);
 }

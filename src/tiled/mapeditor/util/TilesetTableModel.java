@@ -22,7 +22,7 @@ import tiled.mapeditor.Resources;
 /**
  * @version $Id$
  */
-public class TilesetTableModel extends AbstractTableModel
+public class TilesetTableModel extends AbstractTableModel implements MapChangeListener, TilesetChangeListener
 {
     private Map map;
     private static final String[] columnNames = { Resources.getString("dialog.tilesetmanager.table.name"),
@@ -113,5 +113,34 @@ public class TilesetTableModel extends AbstractTableModel
         }
 
         return used;
+    }
+
+    public void mapChanged(MapChangedEvent e) {
+    }
+
+    public void tilesetAdded(MapChangedEvent e, TileSet tileset) {
+        int index = map.getTilesets().size() - 1;
+        fireTableRowsInserted(index, index);
+    }
+
+    public void tilesetRemoved(MapChangedEvent e, int index) {
+        fireTableRowsDeleted(index - 1, index);
+    }
+
+    public void tilesetsSwapped(MapChangedEvent e, int index0, int index1) {
+        fireTableRowsUpdated(index0, index1);
+    }
+    
+    public void tilesetChanged(TilesetChangedEvent event) {
+    }
+
+    public void nameChanged(TilesetChangedEvent event, String oldName, String newName) {
+        int index = map.getTilesets().indexOf(event.getTileset());
+        fireTableCellUpdated(index, 0);
+    }
+
+    public void sourceChanged(TilesetChangedEvent event, String oldSource, String newSource) {
+        int index = map.getTilesets().indexOf(event.getTileset());
+        fireTableCellUpdated(index, 1);
     }
 }

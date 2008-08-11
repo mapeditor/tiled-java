@@ -240,14 +240,12 @@ public class TilesetManager extends JDialog implements ActionListener,
             if (selectedRow > 0) {
 		int newRow = selectedRow - 1;
                 map.swapTileSets(selectedRow, newRow);
-                updateTilesetTable();
                 tilesetTable.getSelectionModel().setSelectionInterval(newRow, newRow);
             }
         } else if (command.equals(MOVE_DOWN_BUTTON)) {
             if (selectedRow > -1 && selectedRow < tilesetTable.getRowCount() - 1) {
 		int newRow = selectedRow + 1;
                 map.swapTileSets(selectedRow, newRow);
-                updateTilesetTable();
                 tilesetTable.getSelectionModel().setSelectionInterval(newRow, newRow);
             }
         }
