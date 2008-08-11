@@ -14,8 +14,7 @@
 package tiled.mapeditor.dialogs;
 
 import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.BorderLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -116,47 +115,36 @@ public class TilesetManager extends JDialog implements ActionListener,
         closeButton.addActionListener(this);
 
         // Create the main panel
-        JPanel mainPanel = new JPanel(new GridBagLayout());
+        JPanel mainPanel = new JPanel(new BorderLayout(5, 5));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        GridBagConstraints c = new GridBagConstraints();
-        c.fill = GridBagConstraints.BOTH;
-        c.gridy = 0;
-        c.gridwidth = 3;
-        c.gridheight = 6;
-        c.weightx = 1;
-        c.weighty = 1;
-        mainPanel.add(tilesetScrollPane, c);
-        c.insets = new Insets(5, 5, 5, 5);
-        c.weighty = 0;
-        c.weightx = 0;
-        c.gridwidth = 1;
-        c.gridheight = 1;
-        mainPanel.add(saveButton, c);
-        c.gridy = 1;
-        mainPanel.add(saveAsButton, c);
-        c.gridy = 2;
-        mainPanel.add(embedButton, c);
-        c.gridy = 3;
-        mainPanel.add(removeButton, c);
-        c.gridy = 4;
-        mainPanel.add(editButton, c);
-        c.gridy = 5;
-        c.weighty = 1;
-        mainPanel.add(Box.createGlue(), c);
-        c.gridy = 6;
-        c.insets = new Insets(5, 0, 0, 5);
-        c.weighty = 0;
-        mainPanel.add(moveUpButton, c);
-        mainPanel.add(moveDownButton, c);
-        c.weightx = 1;
-        c.insets = new Insets(5, 0, 0, 0);
-        c.gridwidth = 2;
-        c.anchor = GridBagConstraints.SOUTHEAST;
-        JPanel temp = new JPanel();
-        temp.setLayout(new BoxLayout(temp, BoxLayout.LINE_AXIS));
-        temp.add(Box.createGlue());
-        temp.add(closeButton);
-        mainPanel.add(temp, c);
+        mainPanel.add(tilesetScrollPane, BorderLayout.CENTER);
+
+        Dimension spacing = new Dimension(5, 5);
+
+        JPanel iconPanel = new JPanel();
+        iconPanel.setLayout(new BoxLayout(iconPanel, BoxLayout.PAGE_AXIS));
+        iconPanel.add(saveButton);
+        iconPanel.add(Box.createRigidArea(spacing));
+        iconPanel.add(saveAsButton);
+        iconPanel.add(Box.createRigidArea(spacing));
+        iconPanel.add(embedButton);
+        iconPanel.add(Box.createRigidArea(spacing));
+        iconPanel.add(removeButton);
+        iconPanel.add(Box.createRigidArea(spacing));
+        iconPanel.add(editButton);
+        iconPanel.add(Box.createGlue());
+        mainPanel.add(iconPanel, BorderLayout.LINE_END);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.LINE_AXIS));
+        buttonPanel.add(moveUpButton);
+        buttonPanel.add(Box.createRigidArea(spacing));
+        buttonPanel.add(moveDownButton);
+        buttonPanel.add(Box.createRigidArea(spacing));
+        buttonPanel.add(Box.createGlue());
+        buttonPanel.add(closeButton);
+        mainPanel.add(buttonPanel, BorderLayout.PAGE_END);
+
         getContentPane().add(mainPanel);
         getRootPane().setDefaultButton(closeButton);
 

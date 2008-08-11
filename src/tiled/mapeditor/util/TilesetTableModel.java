@@ -32,6 +32,10 @@ public class TilesetTableModel extends AbstractTableModel implements MapChangeLi
 
     public TilesetTableModel(Map map) {
         this.map = map;
+
+        for (Iterator it = map.getTilesets().iterator(); it.hasNext();) {
+            ((TileSet) it.next()).addTilesetChangeListener(this);
+        }
     }
 
     public void setMap(Map map) {
@@ -115,19 +119,24 @@ public class TilesetTableModel extends AbstractTableModel implements MapChangeLi
         return used;
     }
 
-    public void mapChanged(MapChangedEvent e) {
+    public void mapChanged(MapChangedEvent event) {
     }
 
-    public void tilesetAdded(MapChangedEvent e, TileSet tileset) {
-        int index = map.getTilesets().size() - 1;
+    public void tilesetAdded(MapChangedEvent event, TileSet tileset) {
+        int index = map.getTilesets().indexOf(tileset);
+
+        if (index == -1) return;
+
+        tileset.addTilesetChangeListener(this);
+
         fireTableRowsInserted(index, index);
     }
 
-    public void tilesetRemoved(MapChangedEvent e, int index) {
+    public void tilesetRemoved(MapChangedEvent event, int index) {
         fireTableRowsDeleted(index - 1, index);
     }
 
-    public void tilesetsSwapped(MapChangedEvent e, int index0, int index1) {
+    public void tilesetsSwapped(MapChangedEvent event, int index0, int index1) {
         fireTableRowsUpdated(index0, index1);
     }
     
@@ -136,11 +145,17 @@ public class TilesetTableModel extends AbstractTableModel implements MapChangeLi
 
     public void nameChanged(TilesetChangedEvent event, String oldName, String newName) {
         int index = map.getTilesets().indexOf(event.getTileset());
+
+        if (index == -1) return;
+
         fireTableCellUpdated(index, 0);
     }
 
     public void sourceChanged(TilesetChangedEvent event, String oldSource, String newSource) {
         int index = map.getTilesets().indexOf(event.getTileset());
+
+        if (index == -1) return;
+
         fireTableCellUpdated(index, 1);
     }
 }
