@@ -23,4 +23,8 @@ import java.util.EventListener;
 public interface TilesetChangeListener extends EventListener
 {
     void tilesetChanged(TilesetChangedEvent event);
+
+    void nameChanged(TilesetChangedEvent event, String oldName, String newName);
+
+    void sourceChanged(TilesetChangedEvent event, String oldSource, String newSource);
 }

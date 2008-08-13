@@ -17,18 +17,25 @@ import java.util.Vector;
 import javax.swing.table.AbstractTableModel;
 
 import tiled.core.*;
+import tiled.mapeditor.Resources;
 
 /**
  * @version $Id$
  */
-public class TilesetTableModel extends AbstractTableModel
+public class TilesetTableModel extends AbstractTableModel implements MapChangeListener, TilesetChangeListener
 {
     private Map map;
-    //private String[] columnNames = { "Tileset name", "Usage count" };
-    private String[] columnNames = { "Tileset name" };
+    private static final String[] columnNames = { Resources.getString("dialog.tilesetmanager.table.name"),
+		Resources.getString("dialog.tilesetmanager.table.source") };
+
+    private static final String EMBEDDED = Resources.getString("dialog.tilesetmanager.embedded");
 
     public TilesetTableModel(Map map) {
         this.map = map;
+
+        for (Iterator it = map.getTilesets().iterator(); it.hasNext();) {
+            ((TileSet) it.next()).addTilesetChangeListener(this);
+        }
     }
 
     public void setMap(Map map) {
@@ -59,7 +66,13 @@ public class TilesetTableModel extends AbstractTableModel
             if (col == 0) {
                 return tileset.getName();
             } else {
-                return String.valueOf(checkSetUsage(tileset));
+                String ret = tileset.getSource();
+
+                if (ret == null) {
+                    ret = EMBEDDED;
+                }
+
+                return ret;
             }
         } else {
             return null;
@@ -71,6 +84,8 @@ public class TilesetTableModel extends AbstractTableModel
     }
 
     public void setValueAt(Object value, int row, int col) {
+        if (col != 0) return;
+
         Vector tilesets = map.getTilesets();
         if (row >= 0 && row < tilesets.size()) {
             TileSet tileset = (TileSet)tilesets.get(row);
@@ -102,5 +117,45 @@ public class TilesetTableModel extends AbstractTableModel
         }
 
         return used;
+    }
+
+    public void mapChanged(MapChangedEvent event) {
+    }
+
+    public void tilesetAdded(MapChangedEvent event, TileSet tileset) {
+        int index = map.getTilesets().indexOf(tileset);
+
+        if (index == -1) return;
+
+        tileset.addTilesetChangeListener(this);
+
+        fireTableRowsInserted(index, index);
+    }
+
+    public void tilesetRemoved(MapChangedEvent event, int index) {
+        fireTableRowsDeleted(index - 1, index);
+    }
+
+    public void tilesetsSwapped(MapChangedEvent event, int index0, int index1) {
+        fireTableRowsUpdated(index0, index1);
+    }
+    
+    public void tilesetChanged(TilesetChangedEvent event) {
+    }
+
+    public void nameChanged(TilesetChangedEvent event, String oldName, String newName) {
+        int index = map.getTilesets().indexOf(event.getTileset());
+
+        if (index == -1) return;
+
+        fireTableCellUpdated(index, 0);
+    }
+
+    public void sourceChanged(TilesetChangedEvent event, String oldSource, String newSource) {
+        int index = map.getTilesets().indexOf(event.getTileset());
+
+        if (index == -1) return;
+
+        fireTableCellUpdated(index, 1);
     }
 }

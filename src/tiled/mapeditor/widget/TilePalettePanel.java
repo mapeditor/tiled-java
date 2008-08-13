@@ -156,11 +156,21 @@ public class TilePalettePanel extends JPanel implements Scrollable,
         revalidate();
         repaint();
     }
+    
+    public TileSet getTileset() {
+        return tileset;
+    }
 
     public void tilesetChanged(TilesetChangedEvent event) {
         tilesetMap = tileset.generateGaplessVector();
         revalidate();
         repaint();
+    }
+
+    public void nameChanged(TilesetChangedEvent event, String oldName, String newName) {
+    }
+
+    public void sourceChanged(TilesetChangedEvent event, String oldSource, String newSource) {
     }
 
     /**

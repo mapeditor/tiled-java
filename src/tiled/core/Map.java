@@ -125,6 +125,22 @@ public class Map extends MultilayerPlane
     }
 
     /**
+     * Notifies all registered map change listeners about the reorder of the
+     * tilesets.
+     *
+     * @param tileset the new tileset
+     */
+    protected void fireTilesetsSwapped(int index0, int index1) {
+        Iterator iterator = mapChangeListeners.iterator();
+        MapChangedEvent event = null;
+
+        while (iterator.hasNext()) {
+            if (event == null) event = new MapChangedEvent(this);
+            ((MapChangeListener) iterator.next()).tilesetsSwapped(event, index0, index1);
+        }
+    }
+
+    /**
      * Causes a MapChangedEvent to be fired.
      */
     public void touch() {
@@ -474,6 +490,24 @@ public class Map extends MultilayerPlane
         }
 
         return maxHeight;
+    }
+
+    /**
+     * Swaps the tile sets at the given indices.
+     */
+    public void swapTileSets(int index0, int index1) {
+        if (index0 == index1) return;
+        TileSet set = (TileSet) tilesets.get(index0);
+        tilesets.set(index0, tilesets.get(index1));
+        tilesets.set(index1, set);
+
+        if (index0 > index1) {
+            int temp = index1;
+            index1 = index0;
+            index0 = temp;
+        }
+        
+        fireTilesetsSwapped(index0, index1);
     }
 
     /**
