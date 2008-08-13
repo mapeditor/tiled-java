@@ -10,11 +10,9 @@
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
 
-package tiled.mapeditor.util;
+package tiled.core;
 
 import java.util.EventListener;
-
-import tiled.core.TileSet;
 
 /**
  * Gets notified about changes made to a map. This includes events relating to

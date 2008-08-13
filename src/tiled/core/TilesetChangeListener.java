@@ -12,13 +12,15 @@
 
 package tiled.core;
 
+import java.util.EventListener;
+
 /**
  * A tileset listener can get notified about changes to a tileset through
  * receiving {@link TilesetChangedEvent}s.
  *
  * @version $Id$
  */
-public interface TilesetChangeListener
+public interface TilesetChangeListener extends EventListener
 {
     void tilesetChanged(TilesetChangedEvent event);
 }

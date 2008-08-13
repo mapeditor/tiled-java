@@ -64,21 +64,21 @@ public abstract class MapLayer implements Cloneable
     }
 
     /**
-     * @param m the map this layer is part of
+     * @param map the map this layer is part of
      */
-    MapLayer(Map m) {
+    MapLayer(Map map) {
         this();
-        setMap(m);
+        setMap(map);
     }
 
     /**
-     * @param m the map this layer is part of
+     * @param map the map this layer is part of
      * @param w width in tiles
      * @param h height in tiles
      */
-    public MapLayer(Map m, int w, int h) {
+    public MapLayer(Map map, int w, int h) {
         this(w, h);
-        setMap(m);
+        setMap(map);
     }
 
     /**
@@ -117,10 +117,10 @@ public abstract class MapLayer implements Cloneable
     /**
      * Sets the map this layer is part of.
      *
-     * @param m the Map object
+     * @param map the Map object
      */
-    public void setMap(Map m) {
-        myMap = m;
+    public void setMap(Map map) {
+        myMap = map;
     }
 
     /**
@@ -169,8 +169,7 @@ public abstract class MapLayer implements Cloneable
 
     /**
      * Returns the name of this layer.
-     *
-     * @return a java.lang.String of the name of the layer
+     * @return the name of the layer
      */
     public String getName() {
         return name;
@@ -178,6 +177,7 @@ public abstract class MapLayer implements Cloneable
 
     /**
      * Returns layer width in tiles.
+     * @return layer width in tiles.
      */
     public int getWidth() {
         return bounds.width;
@@ -185,6 +185,7 @@ public abstract class MapLayer implements Cloneable
 
     /**
      * Returns layer height in tiles.
+     * @return layer height in tiles.
      */
     public int getHeight() {
         return bounds.height;
@@ -249,7 +250,7 @@ public abstract class MapLayer implements Cloneable
     public abstract void mergeOnto(MapLayer other);
 
     public abstract void maskedMergeOnto(MapLayer other, Area mask);
-    
+
     public abstract void copyFrom(MapLayer other);
 
     public abstract void maskedCopyFrom(MapLayer other, Area mask);
@@ -297,6 +298,7 @@ public abstract class MapLayer implements Cloneable
     /**
      * Get the locked status of the layer.
      *
+     * @return whether the layer is locked
      * @see MapLayer#setLocked(boolean)
      */
     public boolean getLocked() {

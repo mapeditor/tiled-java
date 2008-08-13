@@ -23,6 +23,8 @@ import javax.swing.JTabbedPane;
 
 import tiled.core.Map;
 import tiled.core.TileSet;
+import tiled.core.MapChangedEvent;
+import tiled.core.MapChangeListener;
 import tiled.mapeditor.MapEditor;
 import tiled.mapeditor.brush.CustomBrush;
 import tiled.mapeditor.util.*;

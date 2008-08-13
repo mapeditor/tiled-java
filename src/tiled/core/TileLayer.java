@@ -180,14 +180,15 @@ public class TileLayer extends MapLayer
     }
 
     public boolean isEmpty() {
-    	for(int p=0;p<2;p++) {
-    		for (int y = 0; y < bounds.height; y++) {
-    			for (int x = p; x < bounds.width; x+=2) {
-    				if(map[y][x] != null) return false;
-    			}
-    		}
-    	}
-    	return true;
+        for (int p = 0; p < 2; p++) {
+            for (int y = 0; y < bounds.height; y++) {
+                for (int x = p; x < bounds.width; x += 2) {
+                    if (map[y][x] != null)
+                        return false;
+                }
+            }
+        }
+        return true;
     }
 
     /**
@@ -368,14 +369,14 @@ public class TileLayer extends MapLayer
 
         for (int y = boundBox.y; y < boundBox.y + boundBox.height; y++) {
             for (int x = boundBox.x; x < boundBox.x + boundBox.width; x++) {
-            	Tile tile = ((TileLayer) other).getTileAt(x, y);
-                if (mask.contains(x,y) && tile != null) {
+                Tile tile = ((TileLayer) other).getTileAt(x, y);
+                if (mask.contains(x, y) && tile != null) {
                     setTileAt(x, y, tile);
                 }
             }
         }
     }
-    
+
     /**
      * Copy data from another layer onto this layer. Unlike mergeOnto,
      * copyFrom() copies the empty cells as well.

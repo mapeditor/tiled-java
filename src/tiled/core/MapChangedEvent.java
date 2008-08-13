@@ -10,11 +10,9 @@
  *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
  */
 
-package tiled.mapeditor.util;
+package tiled.core;
 
 import java.util.EventObject;
-
-import tiled.core.Map;
 
 /**
  * @version $Id$

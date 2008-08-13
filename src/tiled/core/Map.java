@@ -15,8 +15,8 @@ package tiled.core;
 import java.util.*;
 
 import tiled.mapeditor.Resources;
-import tiled.mapeditor.util.MapChangeListener;
-import tiled.mapeditor.util.MapChangedEvent;
+import tiled.core.MapChangeListener;
+import tiled.core.MapChangedEvent;
 
 /**
  * The Map class is the focal point of the <code>tiled.core</code> package.
