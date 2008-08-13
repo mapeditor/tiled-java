@@ -1,7 +1,6 @@
 ROADMAP TO FUTURE RELEASES
 
 0.7.1
-! Fix restoring of object group properties
 ! Fix cloning of object groups
 * Check that tile palette panel doesn't keep listening after being replaced
 * Update translations for dialog.saveas.confirm.mismatch

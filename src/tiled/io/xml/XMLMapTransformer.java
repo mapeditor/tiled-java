@@ -522,6 +522,10 @@ public class XMLMapTransformer implements MapReader
             }
         }
 
+        Properties props = new Properties();
+        readProperties(children, props);
+        og.setProperties(props);
+
         return og;
     }
 
