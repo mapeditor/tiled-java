@@ -211,7 +211,10 @@ public class TileSet
      * @param source a URI of the tileset image file
      */
     public void setSource(String source) {
+        String oldSource = externalSource;
         externalSource = source;
+
+        fireSourceChanged(oldSource, source);
     }
 
     /**
@@ -254,7 +257,9 @@ public class TileSet
      * @param name the new name for this tileset
      */
     public void setName(String name) {
+        String oldName = this.name;
         this.name = name;
+        fireNameChanged(oldName, name);
     }
 
     /**
@@ -672,6 +677,26 @@ public class TileSet
         while (iterator.hasNext()) {
             TilesetChangeListener l = (TilesetChangeListener) iterator.next();
             l.tilesetChanged(event);
+        }
+    }
+
+    private void fireNameChanged(String oldName, String newName) {
+        TilesetChangedEvent event = new TilesetChangedEvent(this);
+
+        Iterator iterator = tilesetChangeListeners.iterator();
+        while (iterator.hasNext()) {
+            TilesetChangeListener l = (TilesetChangeListener) iterator.next();
+            l.nameChanged(event, oldName, newName);
+        }
+    }
+
+    private void fireSourceChanged(String oldSource, String newSource) {
+        TilesetChangedEvent event = new TilesetChangedEvent(this);
+
+        Iterator iterator = tilesetChangeListeners.iterator();
+        while (iterator.hasNext()) {
+            TilesetChangeListener l = (TilesetChangeListener) iterator.next();
+            l.sourceChanged(event, oldSource, newSource);
         }
     }
 }

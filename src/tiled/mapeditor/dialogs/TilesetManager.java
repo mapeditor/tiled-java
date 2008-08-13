@@ -14,8 +14,7 @@
 package tiled.mapeditor.dialogs;
 
 import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.BorderLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -42,17 +41,25 @@ public class TilesetManager extends JDialog implements ActionListener,
 {
     private final Map map;
 
-    private JButton saveAsButton, saveButton, embedButton;
-    private JButton removeButton, editButton, closeButton;
+    private JButton saveButton, saveAsButton, embedButton, removeButton, editButton;
+    private JButton moveUpButton, moveDownButton, closeButton;
     private JTable tilesetTable;
 
     private static final String DIALOG_TITLE = Resources.getString("dialog.tilesetmanager.title");
     private static final String CLOSE_BUTTON = Resources.getString("general.button.close");
+    private static final String MOVE_UP_BUTTON = Resources.getString("dialog.tilesetmanager.button.moveup");
+    private static final String MOVE_DOWN_BUTTON = Resources.getString("dialog.tilesetmanager.button.movedown");
     private static final String REMOVE_BUTTON = Resources.getString("general.button.remove");
     private static final String EMBED_BUTTON = Resources.getString("dialog.tilesetmanager.embed.button");
     private static final String SAVE_AS_BUTTON = Resources.getString("action.map.saveas.name");
     private static final String EDIT_BUTTON = Resources.getString("dialog.tilesetmanager.edit.button");
     private static final String SAVE_BUTTON = Resources.getString("action.map.save.name");
+
+    private static final Icon REMOVE_BUTTON_ICON = Resources.getIcon("gnome-delete.png");
+    private static final Icon EMBED_BUTTON_ICON = Resources.getIcon("insert-object.png");
+    private static final Icon SAVE_AS_BUTTON_ICON = Resources.getIcon("document-save-as.png");
+    private static final Icon EDIT_BUTTON_ICON = Resources.getIcon("gtk-edit.png");
+    private static final Icon SAVE_BUTTON_ICON = Resources.getIcon("document-save.png");
 
     public TilesetManager(JFrame parent, Map map) {
         super(parent, DIALOG_TITLE, true);
@@ -71,46 +78,72 @@ public class TilesetManager extends JDialog implements ActionListener,
         tilesetScrollPane.setPreferredSize(new Dimension(360, 150));
 
         // Create the buttons
-        saveButton = new JButton(SAVE_BUTTON);
-        editButton = new JButton(EDIT_BUTTON);
-        saveAsButton = new JButton(SAVE_AS_BUTTON);
-        embedButton = new JButton(EMBED_BUTTON);
-        removeButton = new JButton(REMOVE_BUTTON);
+        saveButton = new JButton(SAVE_BUTTON_ICON);
+        editButton = new JButton(EDIT_BUTTON_ICON);
+        saveAsButton = new JButton(SAVE_AS_BUTTON_ICON);
+        embedButton = new JButton(EMBED_BUTTON_ICON);
+        removeButton = new JButton(REMOVE_BUTTON_ICON);
+        moveUpButton = new JButton(MOVE_UP_BUTTON);
+        moveDownButton = new JButton(MOVE_DOWN_BUTTON);
         closeButton = new JButton(CLOSE_BUTTON);
 
-        saveAsButton.addActionListener(this);
+        saveButton.setActionCommand(SAVE_BUTTON);
+        saveAsButton.setActionCommand(SAVE_AS_BUTTON);
+        embedButton.setActionCommand(EMBED_BUTTON);
+        removeButton.setActionCommand(REMOVE_BUTTON);
+        editButton.setActionCommand(EDIT_BUTTON);
+
+        saveButton.setMargin(new Insets(0, 0, 0, 0));
+        saveAsButton.setMargin(new Insets(0, 0, 0, 0));
+        embedButton.setMargin(new Insets(0, 0, 0, 0));
+        removeButton.setMargin(new Insets(0, 0, 0, 0));
+        editButton.setMargin(new Insets(0, 0, 0, 0));
+
+        saveButton.setToolTipText(SAVE_BUTTON);
+        saveAsButton.setToolTipText(SAVE_AS_BUTTON);
+        embedButton.setToolTipText(EMBED_BUTTON);
+        removeButton.setToolTipText(REMOVE_BUTTON);
+        editButton.setToolTipText(EDIT_BUTTON);
+
         saveButton.addActionListener(this);
+        saveAsButton.addActionListener(this);
         embedButton.addActionListener(this);
         removeButton.addActionListener(this);
         editButton.addActionListener(this);
+        moveUpButton.addActionListener(this);
+        moveDownButton.addActionListener(this);
         closeButton.addActionListener(this);
 
         // Create the main panel
-        JPanel mainPanel = new JPanel(new GridBagLayout());
+        JPanel mainPanel = new JPanel(new BorderLayout(5, 5));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        GridBagConstraints c = new GridBagConstraints();
-        c.fill = GridBagConstraints.BOTH;
-        c.gridy = 0;
-        c.gridwidth = 7;
-        c.gridheight = 1;
-        c.weightx = 1;
-        c.weighty = 1;
-        mainPanel.add(tilesetScrollPane, c);
-        c.insets = new Insets(5, 0, 0, 5);
-        c.gridy = 1;
-        c.weighty = 0;
-        c.weightx = 0;
-        c.gridwidth = 1;
-        mainPanel.add(saveButton, c);
-        mainPanel.add(saveAsButton, c);
-        mainPanel.add(embedButton, c);
-        mainPanel.add(removeButton, c);
-        mainPanel.add(editButton, c);
-        c.weightx = 1;
-        mainPanel.add(Box.createGlue(), c);
-        c.weightx = 0;
-        c.insets = new Insets(5, 0, 0, 0);
-        mainPanel.add(closeButton, c);
+        mainPanel.add(tilesetScrollPane, BorderLayout.CENTER);
+
+        Dimension spacing = new Dimension(5, 5);
+
+        JPanel iconPanel = new JPanel();
+        iconPanel.setLayout(new BoxLayout(iconPanel, BoxLayout.PAGE_AXIS));
+        iconPanel.add(saveButton);
+        iconPanel.add(Box.createRigidArea(spacing));
+        iconPanel.add(saveAsButton);
+        iconPanel.add(Box.createRigidArea(spacing));
+        iconPanel.add(embedButton);
+        iconPanel.add(Box.createRigidArea(spacing));
+        iconPanel.add(removeButton);
+        iconPanel.add(Box.createRigidArea(spacing));
+        iconPanel.add(editButton);
+        iconPanel.add(Box.createGlue());
+        mainPanel.add(iconPanel, BorderLayout.LINE_END);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.LINE_AXIS));
+        buttonPanel.add(moveUpButton);
+        buttonPanel.add(Box.createRigidArea(spacing));
+        buttonPanel.add(moveDownButton);
+        buttonPanel.add(Box.createRigidArea(spacing));
+        buttonPanel.add(Box.createGlue());
+        buttonPanel.add(closeButton);
+        mainPanel.add(buttonPanel, BorderLayout.PAGE_END);
 
         getContentPane().add(mainPanel);
         getRootPane().setDefaultButton(closeButton);
@@ -191,6 +224,18 @@ public class TilesetManager extends JDialog implements ActionListener,
             set.setSource(null);
             embedButton.setEnabled(false);
             saveButton.setEnabled(false);
+        } else if (command.equals(MOVE_UP_BUTTON)) {
+            if (selectedRow > 0) {
+		int newRow = selectedRow - 1;
+                map.swapTileSets(selectedRow, newRow);
+                tilesetTable.getSelectionModel().setSelectionInterval(newRow, newRow);
+            }
+        } else if (command.equals(MOVE_DOWN_BUTTON)) {
+            if (selectedRow > -1 && selectedRow < tilesetTable.getRowCount() - 1) {
+		int newRow = selectedRow + 1;
+                map.swapTileSets(selectedRow, newRow);
+                tilesetTable.getSelectionModel().setSelectionInterval(newRow, newRow);
+            }
         }
     }
 
@@ -227,6 +272,11 @@ public class TilesetManager extends JDialog implements ActionListener,
 
     private void updateButtons() {
         int selectedRow = tilesetTable.getSelectedRow();
+
+        moveUpButton.setEnabled(selectedRow > 0);
+
+        moveDownButton.setEnabled(selectedRow > -1 && selectedRow < tilesetTable.getRowCount() - 1);
+
         Vector tilesets = map.getTilesets();
         TileSet set = null;
         try {
@@ -237,6 +287,7 @@ public class TilesetManager extends JDialog implements ActionListener,
         editButton.setEnabled(set != null);
         removeButton.setEnabled(set != null);
         saveButton.setEnabled(set != null && set.getSource() != null);
+        saveAsButton.setEnabled(set != null);
         embedButton.setEnabled(set != null && set.getSource() != null);
     }
 }

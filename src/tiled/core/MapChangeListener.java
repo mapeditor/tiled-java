@@ -27,4 +27,6 @@ public interface MapChangeListener extends EventListener
     public void tilesetAdded(MapChangedEvent e, TileSet tileset);
 
     public void tilesetRemoved(MapChangedEvent e, int index);
+
+    public void tilesetsSwapped(MapChangedEvent e, int index0, int index1);
 }
