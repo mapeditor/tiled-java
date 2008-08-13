@@ -106,10 +106,11 @@ public class ObjectGroup extends MapLayer
     }
 
     public Object clone() throws CloneNotSupportedException {
-        // TODO: Fix this, as this clone operation will cause the actual map
-        // objects to be shared between two layers
         ObjectGroup clone = (ObjectGroup) super.clone();
-        clone.objects = new LinkedList(objects);
+        clone.objects = new LinkedList();
+        for (MapObject object : objects) {
+            clone.objects.add((MapObject) object.clone());
+        }
         return clone;
     }
 

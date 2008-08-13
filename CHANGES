@@ -2,6 +2,7 @@
 * Fixed saving/loading of layers with an origin other than 0,0
 * Fixed map resize to apply the offset to layers not matching the map bounds
 * Fixed loading of object group properties
+* Fixed duplicates of object groups to not share the objects
 
 0.7.0 - July 19th, 2008
 

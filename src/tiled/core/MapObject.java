@@ -18,7 +18,7 @@ import java.util.Properties;
 /**
  * @version $Id$
  */
-public class MapObject
+public class MapObject implements Cloneable
 {
     private Properties properties = new Properties();
 
@@ -37,6 +37,13 @@ public class MapObject
         this.height = height;
     }
 
+    public Object clone() throws CloneNotSupportedException {
+        MapObject clone = (MapObject) super.clone();
+        clone.bounds = new Rectangle(bounds);
+        clone.properties = (Properties) properties.clone();
+        return clone;
+    }
+
     public void setX(int x) {
         this.x = x;
     }
@@ -44,11 +51,11 @@ public class MapObject
     public void setY(int y) {
         this.y = y;
     }
-    
+
     public void setName(String s) {
         name = s;
     }
-    
+
     public void setSource(String s) {
         source = s;
     }
@@ -60,11 +67,11 @@ public class MapObject
     public void setWidth(int w) {
         width = w;
     }
-    
+
     public void setHeight(int h) {
         height = h;
     }
-    
+
     public void setProperties(Properties p) {
         properties = p;
     }
@@ -81,11 +88,11 @@ public class MapObject
     public int getY() {
         return (int) y;
     }
-    
+
     public String getName() {
         return name;
     }
-    
+
     public String getSource() {
         return source;
     }
@@ -93,11 +100,11 @@ public class MapObject
     public String getType() {
         return type;
     }
-    
+
     public int getWidth() {
         return width;
     }
-    
+
     public int getHeight() {
         return height;
     }
