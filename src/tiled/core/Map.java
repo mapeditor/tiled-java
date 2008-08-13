@@ -15,8 +15,6 @@ package tiled.core;
 import java.util.*;
 
 import tiled.mapeditor.Resources;
-import tiled.core.MapChangeListener;
-import tiled.core.MapChangedEvent;
 
 /**
  * The Map class is the focal point of the <code>tiled.core</code> package.
@@ -36,9 +34,9 @@ public class Map extends MultilayerPlane
     /** Shifted (used for iso and hex). */
     public static final int MDO_SHIFTED = 5;
 
-    private Vector specialLayers;
-    private Vector tilesets;
-    private LinkedList objects;
+    private Vector<MapLayer> specialLayers;
+    private Vector<TileSet> tilesets;
+    private LinkedList<MapObject> objects;
 
     private int tileWidth, tileHeight;
     private int orientation = MDO_ORTHO;
@@ -54,9 +52,9 @@ public class Map extends MultilayerPlane
         super(width, height);
 
         properties = new Properties();
-        tilesets = new Vector();
-        specialLayers = new Vector();
-        objects = new LinkedList();
+        tilesets = new Vector<TileSet>();
+        specialLayers = new Vector<MapLayer>();
+        objects = new LinkedList<MapObject>();
     }
 
     /**
@@ -127,8 +125,6 @@ public class Map extends MultilayerPlane
     /**
      * Notifies all registered map change listeners about the reorder of the
      * tilesets.
-     *
-     * @param tileset the new tileset
      */
     protected void fireTilesetsSwapped(int index0, int index1) {
         Iterator iterator = mapChangeListeners.iterator();
@@ -354,7 +350,7 @@ public class Map extends MultilayerPlane
     /**
      * Sets a new tile width.
      *
-     * @param width
+     * @param width the new tile width
      */
     public void setTileWidth(int width) {
         tileWidth = width;
@@ -364,7 +360,7 @@ public class Map extends MultilayerPlane
     /**
      * Sets a new tile height.
      *
-     * @param height
+     * @param height the new tile height
      */
     public void setTileHeight(int height) {
         tileHeight = height;
@@ -399,7 +395,7 @@ public class Map extends MultilayerPlane
      *
      * @return Vector
      */
-    public Vector getTilesets() {
+    public Vector<TileSet> getTilesets() {
         return tilesets;
     }
 
@@ -506,7 +502,7 @@ public class Map extends MultilayerPlane
             index1 = index0;
             index0 = temp;
         }
-        
+
         fireTilesetsSwapped(index0, index1);
     }
 
