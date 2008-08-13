@@ -36,7 +36,7 @@ public class OrthoMapView extends MapView
      */
     public OrthoMapView(Map map) {
         super(map);
-        
+
         propPoly = new Polygon();
         propPoly.addPoint(0, 0);
         propPoly.addPoint(12, 0);
@@ -112,45 +112,54 @@ public class OrthoMapView extends MapView
         }
     }
 
-    protected void paintObjectGroup(Graphics2D g, ObjectGroup og) {
-        Iterator itr = og.getObjects();
+    protected void paintObjectGroup(Graphics2D g2d, ObjectGroup og) {
+        final Dimension tsize = getTileSize();
+        final Rectangle bounds = og.getBounds();
+        Iterator<MapObject> itr = og.getObjects();
+        g2d.translate(
+                bounds.x * tsize.width,
+                bounds.y * tsize.height);
 
         while (itr.hasNext()) {
-            MapObject mo = (MapObject) itr.next();
+            MapObject mo = itr.next();
             double ox = mo.getX() * zoom;
             double oy = mo.getY() * zoom;
 
             if (mo.getWidth() == 0 || mo.getHeight() == 0) {
-                g.setRenderingHint(
+                g2d.setRenderingHint(
                         RenderingHints.KEY_ANTIALIASING,
                         RenderingHints.VALUE_ANTIALIAS_ON);
-                g.setColor(Color.black);
-                g.fillOval((int) ox + 1, (int) oy + 1,
+                g2d.setColor(Color.black);
+                g2d.fillOval((int) ox + 1, (int) oy + 1,
                         (int) (10 * zoom), (int) (10 * zoom));
-                g.setColor(Color.orange);
-                g.fillOval((int) ox, (int) oy,
-                        (int) (10 * zoom), (int) (10 * zoom));                
-                g.setRenderingHint(
+                g2d.setColor(Color.orange);
+                g2d.fillOval((int) ox, (int) oy,
+                        (int) (10 * zoom), (int) (10 * zoom));
+                g2d.setRenderingHint(
                         RenderingHints.KEY_ANTIALIASING,
                         RenderingHints.VALUE_ANTIALIAS_OFF);
             } else {
-                g.setColor(Color.black);
-                g.drawRect((int) ox + 1, (int) oy + 1,
+                g2d.setColor(Color.black);
+                g2d.drawRect((int) ox + 1, (int) oy + 1,
                     (int) (mo.getWidth() * zoom),
                     (int) (mo.getHeight() * zoom));
-                g.setColor(Color.orange);
-                g.drawRect((int) ox, (int) oy,
+                g2d.setColor(Color.orange);
+                g2d.drawRect((int) ox, (int) oy,
                     (int) (mo.getWidth() * zoom),
                     (int) (mo.getHeight() * zoom));
             }
             if (zoom > 0.0625) {
                 final String s = mo.getName() != null ? mo.getName() : "(null)";
-                g.setColor(Color.black);
-                g.drawString(s, (int) (ox - 5) + 1, (int) (oy - 5) + 1);
-                g.setColor(Color.white);
-                g.drawString(s, (int) (ox - 5), (int) (oy - 5));
+                g2d.setColor(Color.black);
+                g2d.drawString(s, (int) (ox - 5) + 1, (int) (oy - 5) + 1);
+                g2d.setColor(Color.white);
+                g2d.drawString(s, (int) (ox - 5), (int) (oy - 5));
             }
         }
+
+        g2d.translate(
+                -bounds.x * tsize.width,
+                -bounds.y * tsize.height);
     }
 
     protected void paintGrid(Graphics2D g2d) {
@@ -216,7 +225,6 @@ public class OrthoMapView extends MapView
 
 
     protected void paintPropertyFlags(Graphics2D g2d, TileLayer layer) {
-
         Dimension tsize = getTileSize();
         if (tsize.width <= 0 || tsize.height <= 0) {
             return;
@@ -224,14 +232,14 @@ public class OrthoMapView extends MapView
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
                              RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, 
+        g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
 				RenderingHints.VALUE_RENDER_QUALITY);
 
         g2d.setComposite(AlphaComposite.SrcAtop);
-        
+
         //g2d.setColor(new Color(0.1f, 0.1f, 0.5f, 0.5f));
     	g2d.setXORMode(new Color(0.9f, 0.9f, 0.9f, 0.5f));
-        
+
         // Determine tile size and offset
 
         // Determine area to draw from clipping rectangle

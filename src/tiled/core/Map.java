@@ -172,7 +172,7 @@ public class Map extends MultilayerPlane
      * @return The new ObjectGroup instance.
      */
     public MapLayer addObjectGroup() {
-        MapLayer layer = new ObjectGroup();
+        MapLayer layer = new ObjectGroup(this);
         layer.setName(Resources.getString("general.objectgroup.objectgroup") +
                       " " + super.getTotalLayers());
         super.addLayer(layer);

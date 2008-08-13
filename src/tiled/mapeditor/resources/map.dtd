@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!-- 
-  format 0.7.0 by
+<!--
+  format 0.7.1 by
     Tiled Developers (mapeditor.org)
   documented in dtd form originally by
     Olivier.Beaton@quadir.net
     Creative Commons Attribution 3.0
     http://creativecommons.org/licenses/by/3.0/
   last updated on
-    2008-06-25
+    2008-08-05
 -->
 
 <!ELEMENT map (properties?, tileset*, (layer | objectgroup)*)>
@@ -94,7 +94,10 @@
   name        CDATA   #REQUIRED
   width       CDATA   #REQUIRED
   height      CDATA   #REQUIRED
+  x           CDATA   #IMPLIED
+  y           CDATA   #IMPLIED
   opacity     CDATA   #IMPLIED
+  visible     (0 | 1) #IMPLIED
 >
 
 <!ELEMENT objectgroup (object*)>
@@ -102,6 +105,8 @@
   name        CDATA   #REQUIRED
   width       CDATA   #IMPLIED
   height      CDATA   #IMPLIED
+  x           CDATA   #IMPLIED
+  y           CDATA   #IMPLIED
 >
 
 <!ELEMENT object (properties?)>

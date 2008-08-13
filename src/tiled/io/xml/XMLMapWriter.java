@@ -325,9 +325,9 @@ public class XMLMapWriter implements MapWriter
     private static void writeObjectGroup(ObjectGroup o, XMLWriter w)
         throws IOException
     {
-        Iterator itr = o.getObjects();
+        Iterator<MapObject> itr = o.getObjects();
         while (itr.hasNext()) {
-            writeObject((MapObject)itr.next(), w);
+            writeObject(itr.next(), w);
         }
     }
 
@@ -358,10 +358,10 @@ public class XMLMapWriter implements MapWriter
         w.writeAttribute("width", bounds.width);
         w.writeAttribute("height", bounds.height);
         if (bounds.x != 0) {
-            w.writeAttribute("xoffset", bounds.x);
+            w.writeAttribute("x", bounds.x);
         }
         if (bounds.y != 0) {
-            w.writeAttribute("yoffset", bounds.y);
+            w.writeAttribute("y", bounds.y);
         }
 
         if (!l.isVisible()) {
@@ -374,8 +374,9 @@ public class XMLMapWriter implements MapWriter
         writeProperties(l.getProperties(), w);
 
         if (l instanceof ObjectGroup){
-            writeObjectGroup((ObjectGroup)l, w);
-        } else {
+            writeObjectGroup((ObjectGroup) l, w);
+        } else if (l instanceof TileLayer) {
+            final TileLayer tl = (TileLayer) l;
             w.startElement("data");
             if (encodeLayerData) {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -392,7 +393,8 @@ public class XMLMapWriter implements MapWriter
 
                 for (int y = 0; y < l.getHeight(); y++) {
                     for (int x = 0; x < l.getWidth(); x++) {
-                        Tile tile = ((TileLayer)l).getTileAt(x, y);
+                        Tile tile = tl.getTileAt(x + bounds.x,
+                                                 y + bounds.y);
                         int gid = 0;
 
                         if (tile != null) {
@@ -414,7 +416,7 @@ public class XMLMapWriter implements MapWriter
             } else {
                 for (int y = 0; y < l.getHeight(); y++) {
                     for (int x = 0; x < l.getWidth(); x++) {
-                        Tile tile = ((TileLayer)l).getTileAt(x, y);
+                        Tile tile = tl.getTileAt(x + bounds.x, y + bounds.y);
                         int gid = 0;
 
                         if (tile != null) {
@@ -433,7 +435,7 @@ public class XMLMapWriter implements MapWriter
 
             for (int y = 0; y < l.getHeight(); y++) {
                 for (int x = 0; x < l.getWidth(); x++) {
-                    Properties tip = ((TileLayer) l).getTileInstancePropertiesAt(x, y);
+                    Properties tip = tl.getTileInstancePropertiesAt(x, y);
 
                     if (tip != null && !tip.isEmpty()) {
                         if (!tilePropertiesElementStarted) {

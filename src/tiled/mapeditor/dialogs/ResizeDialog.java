@@ -208,8 +208,8 @@ public class ResizeDialog extends JDialog implements ActionListener,
             double zoom = orient.getZoom();
 
             orient.moveMap(
-                    (int)(dx * (currentMap.getTileWidth() * zoom)),
-                    (int)(dy * (currentMap.getTileHeight() * zoom)));
+                    (int)(dx * currentMap.getTileWidth() * zoom),
+                    (int)(dy * currentMap.getTileHeight() * zoom));
         }
     }
 }

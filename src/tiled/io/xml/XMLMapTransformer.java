@@ -141,19 +141,6 @@ public class XMLMapTransformer implements MapReader
         }
     }
 
-    private static Node findChild(Node node, String childName) {
-        NodeList children = node.getChildNodes();
-
-        for (int i = 0; i < children.getLength(); i++) {
-            Node child = children.item(i);
-            if (child.getNodeName().equalsIgnoreCase(childName)) {
-                return child;
-            }
-        }
-
-        return null;
-    }
-
     private Object unmarshalClass(Class reflector, Node node)
         throws InstantiationException, IllegalAccessException,
                InvocationTargetException {
@@ -521,6 +508,10 @@ public class XMLMapTransformer implements MapReader
             return og;
         }
 
+        final int offsetX = getAttribute(t, "x", 0);
+        final int offsetY = getAttribute(t, "y", 0);
+        og.setOffset(offsetX, offsetY);
+
         // Add all objects from the objects group
         NodeList children = t.getChildNodes();
 
@@ -536,19 +527,21 @@ public class XMLMapTransformer implements MapReader
 
     /**
      * Loads a map layer from a layer node.
+     * @param t the node representing the "layer" element
+     * @return the loaded map layer
+     * @throws Exception
      */
     private MapLayer readLayer(Node t) throws Exception {
-        int layerWidth = getAttribute(t, "width", map.getWidth());
-        int layerHeight = getAttribute(t, "height", map.getHeight());
+        final int layerWidth = getAttribute(t, "width", map.getWidth());
+        final int layerHeight = getAttribute(t, "height", map.getHeight());
 
         TileLayer ml = new TileLayer(layerWidth, layerHeight);
 
-        int offsetX = getAttribute(t, "x", 0);
-        int offsetY = getAttribute(t, "y", 0);
-        int visible = getAttribute(t, "visible", 1);
+        final int offsetX = getAttribute(t, "x", 0);
+        final int offsetY = getAttribute(t, "y", 0);
+        final int visible = getAttribute(t, "visible", 1);
         String opacity = getAttributeValue(t, "opacity");
 
-        ml.setOffset(offsetX, offsetY);
         ml.setName(getAttributeValue(t, "name"));
 
         if (opacity != null) {
@@ -641,6 +634,10 @@ public class XMLMapTransformer implements MapReader
                 }
             }
         }
+
+        // This is done at the end, otherwise the offset is applied during
+        // the loading of the tiles.
+        ml.setOffset(offsetX, offsetY);
 
         // Invisible layers are automatically locked, so it is important to
         // set the layer to potentially invisible _after_ the layer data is

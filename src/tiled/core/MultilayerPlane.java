@@ -250,8 +250,9 @@ public class MultilayerPlane
 
     /**
      * Resizes this plane. The (dx, dy) pair determines where the original
-     * plane should be positioned on the new area. It only affects layers with
-     * dimensions equal to that of the MutlilayerPlane.
+     * plane should be positioned on the new area. Only layers that exactly
+     * match the bounds of the map are resized, any other layers are moved by
+     * the given shift.
      *
      * @see MapLayer#resize
      *
@@ -263,9 +264,11 @@ public class MultilayerPlane
     public void resize(int width, int height, int dx, int dy) {
         ListIterator itr = getLayers();
         while (itr.hasNext()) {
-            MapLayer l = (MapLayer)itr.next();
-            if (l.bounds.equals(bounds)) {
-                l.resize(width, height, dx, dy);
+            MapLayer layer = (MapLayer)itr.next();
+            if (layer.bounds.equals(bounds)) {
+                layer.resize(width, height, dx, dy);
+            } else {
+                layer.setOffset(layer.bounds.x + dx, layer.bounds.y + dy);
             }
         }
 

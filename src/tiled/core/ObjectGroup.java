@@ -15,33 +15,38 @@ package tiled.core;
 import java.awt.Rectangle;
 import java.awt.geom.Area;
 import java.util.LinkedList;
-import java.util.ListIterator;
+import java.util.Iterator;
 
 /**
  * @version $Id$
  */
 public class ObjectGroup extends MapLayer
 {
-    private LinkedList objects;
+    private LinkedList<MapObject> objects = new LinkedList<MapObject>();
 
     /**
      * Default constructor.
      */
     public ObjectGroup() {
-        objects = new LinkedList();
+    }
+
+    /**
+     * @param map    the map this object group is part of
+     */
+    public ObjectGroup(Map map) {
+        super(map);
     }
 
     /**
      * Creates an object group that is part of the given map and has the given
      * origin.
      *
-     * @param map    the map this layer is part of
+     * @param map    the map this object group is part of
      * @param origx  the x origin of this layer
      * @param origy  the y origin of this layer
      */
     public ObjectGroup(Map map, int origx, int origy) {
         super(map);
-        objects = new LinkedList();
         setBounds(new Rectangle(origx, origy, 0, 0));
     }
 
@@ -53,7 +58,6 @@ public class ObjectGroup extends MapLayer
      */
     public ObjectGroup(Rectangle area) {
         super(area);
-        objects = new LinkedList();
     }
 
     /**
@@ -77,7 +81,7 @@ public class ObjectGroup extends MapLayer
     public void maskedMergeOnto(MapLayer other, Area mask) {
         // TODO: Figure out what object group should do with this method
     }
-    
+
     public void copyFrom(MapLayer other) {
         // TODO: Implement copying from another object group (same as merging)
     }
@@ -102,6 +106,8 @@ public class ObjectGroup extends MapLayer
     }
 
     public Object clone() throws CloneNotSupportedException {
+        // TODO: Fix this, as this clone operation will cause the actual map
+        // objects to be shared between two layers
         ObjectGroup clone = (ObjectGroup) super.clone();
         clone.objects = new LinkedList(objects);
         return clone;
@@ -122,15 +128,17 @@ public class ObjectGroup extends MapLayer
         objects.remove(o);
     }
 
-    public ListIterator getObjects() {
-        return (ListIterator) objects.iterator();
+    public Iterator<MapObject> getObjects() {
+        return objects.iterator();
     }
 
     public MapObject getObjectAt(int x, int y) {
-        ListIterator iterator = getObjects();
+        Iterator<MapObject> iterator = getObjects();
         while (iterator.hasNext()) {
-            MapObject obj = (MapObject) iterator.next();
-            Rectangle rect = new Rectangle(obj.getX(), obj.getY(),
+            MapObject obj = iterator.next();
+            Rectangle rect = new Rectangle(
+                    obj.getX() + bounds.x * myMap.getTileWidth(),
+                    obj.getY() + bounds.y * myMap.getTileHeight(),
                     obj.getWidth(), obj.getHeight());
             if (rect.contains(x, y)) {
                 return obj;
