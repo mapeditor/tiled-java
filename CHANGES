@@ -1,8 +1,10 @@
+* Improved the tileset manager and allow tileset reorganizing (by Jared Adams)
 * Fixed automatically adding extension to tileset Save As... dialog
 * Fixed saving/loading of layers with an origin other than 0,0
 * Fixed map resize to apply the offset to layers not matching the map bounds
 * Fixed loading of object group properties
 * Fixed duplicates of object groups to not share the objects
+* Fixed Lua export to increase firstgid of tilesets properly (by Jelle Geerts)
 
 0.7.0 - July 19th, 2008
 

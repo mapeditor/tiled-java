@@ -313,10 +313,10 @@ public class LuaMapWriter implements MapWriter
         writelnKeyAndValue("width", bounds.width);
         writelnKeyAndValue("height", bounds.height);
         if (bounds.x != 0) {
-            writelnKeyAndValue("xoffset", bounds.x);
+            writelnKeyAndValue("x", bounds.x);
         }
         if (bounds.y != 0) {
-            writelnKeyAndValue("yoffset", bounds.y);
+            writelnKeyAndValue("y", bounds.y);
         }
 
         if (!l.isVisible()) {
@@ -347,7 +347,8 @@ public class LuaMapWriter implements MapWriter
 
                 for (int y = 0; y < l.getHeight(); y++) {
                     for (int x = 0; x < l.getWidth(); x++) {
-                        Tile tile = ((TileLayer)l).getTileAt(x, y);
+                        Tile tile = ((TileLayer) l).getTileAt(x + bounds.x,
+                                                              y + bounds.y);
                         int gid = 0;
 
                         if (tile != null) {
@@ -437,7 +438,7 @@ public class LuaMapWriter implements MapWriter
         writelnKeyAndValue("tileheight", map.getTileHeight());
 
         writeProperties(map.getProperties());
-        
+
         startTable("tilesets");
         int firstgid = 1;
         Iterator itr = map.getTilesets().iterator();
@@ -445,7 +446,7 @@ public class LuaMapWriter implements MapWriter
             TileSet tileset = (TileSet)itr.next();
             tileset.setFirstGid(firstgid);
             writeTilesetReference(tileset);
-            firstgid += tileset.getMaxTileId();
+            firstgid += tileset.getMaxTileId() + 1;
         }
         endTable();
 
@@ -463,7 +464,7 @@ public class LuaMapWriter implements MapWriter
         writer.flush();
         writer = null;
     }
-    
+
     /**
      * Overload this to write a tileset to an open stream. Tilesets are not
      * supported by this writer.
