@@ -76,8 +76,8 @@ public class TileDialog extends JDialog
     private static final String IMAGES_TAB = "Images";
     private static final String NAME_LABEL = Resources.getString("dialog.newtileset.name.label");
     private static final String ERROR_LOADING_IMAGE = Resources.getString("dialog.tile.image.load.error");
-    private static final String TILE_CREATED_MESSAGE = Resources.getString("action.tile.create.done.message");
-    private static final String TILE_CREATED_TITLE = Resources.getString("action.tile.create.done.title");
+    private static final String TILES_CREATED_MESSAGE = Resources.getString("action.tile.create.done.message");
+    private static final String TILES_CREATED_TITLE = Resources.getString("action.tile.create.done.title");
 
 
     public TileDialog(Dialog parent, TileSet tileset, Map map) {
@@ -379,7 +379,7 @@ public class TileDialog extends JDialog
             && tileSelected);
         duplicateTileButton.setEnabled(!tilebmp && tileSelected);
         //animationButton.setEnabled(!tilebmp && tileSelected &&
-        //		currentTile instanceof AnimatedTile);
+        //        currentTile instanceof AnimatedTile);
         tileProperties.setEnabled(tileSelected);
         addImagesButton.setEnabled(!tilebmp);
         createTileButton.setEnabled(!tilebmp && imageSelected);
@@ -458,25 +458,27 @@ public class TileDialog extends JDialog
         }
         */
         else if (source == createTileButton) {
-            Image img = (Image) imageList.getSelectedValue();
+            Object[] imgs = imageList.getSelectedValues();
+            if (imgs.length == 0)
+                return;
 
-            if (img != null) {
+            for (int i = 0; i < imgs.length; i++) {
                 Tile newTile = new Tile(tileset);
-
-                newTile.setImage(tileset.getIdByImage(img));
+                newTile.setImage(tileset.getIdByImage((Image) imgs[i]));
                 tileset.addNewTile(newTile);
-                queryTiles();
-                // Select the last (cloned) tile
-                tileList.setSelectedIndex(tileset.size() - 1);
-                tileList.ensureIndexIsVisible(tileset.size() - 1);
-                JOptionPane.showMessageDialog(
-                        this,
-                        MessageFormat.format(
-                                TILE_CREATED_MESSAGE,
-                                new Object[]{new Integer(newTile.getId())}),
-                        TILE_CREATED_TITLE,
-                        JOptionPane.INFORMATION_MESSAGE);
             }
+
+            queryTiles();
+            // Select the last (cloned) tile
+            tileList.setSelectedIndex(tileset.size() - 1);
+            tileList.ensureIndexIsVisible(tileset.size() - 1);
+            JOptionPane.showMessageDialog(
+                    this,
+                    MessageFormat.format(
+                        TILES_CREATED_MESSAGE,
+                        new Object[]{new Integer(imgs.length)}),
+                    TILES_CREATED_TITLE,
+                    JOptionPane.INFORMATION_MESSAGE);
         }
 
         repaint();
