@@ -135,8 +135,9 @@ public class XMLWriter
     public void writeAttribute(String name, String content)
         throws IOException, XMLWriterException {
         if (bStartTagOpen) {
-            w.write(" " + name + "=\"" + (content != null ? content : "")
-                    + "\"");
+            String escapedContent = (content != null) ?
+                    content.replaceAll("\"", "&quot;") : "";
+            w.write(" " + name + "=\"" + escapedContent + "\"");
         } else {
             throw new XMLWriterException(
                     "Can't write attribute without open start tag.");

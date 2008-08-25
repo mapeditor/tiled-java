@@ -5,6 +5,7 @@
 * Fixed loading of object group properties
 * Fixed duplicates of object groups to not share the objects
 * Fixed Lua export to increase firstgid of tilesets properly (by Jelle Geerts)
+* Fixed saving of property values that contain quotes
 
 0.7.0 - July 19th, 2008
 
