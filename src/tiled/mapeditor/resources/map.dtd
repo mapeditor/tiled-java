@@ -71,6 +71,7 @@
   tilewidth   CDATA   #IMPLIED
   tileheight  CDATA   #IMPLIED
   spacing     CDATA   #IMPLIED
+  margin      CDATA   #IMPLIED
 >
 
 <!--

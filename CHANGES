@@ -1,3 +1,4 @@
+* Added support for a margin around a tileset image
 * Improved the tileset manager and allow tileset reorganizing (by Jared Adams)
 * Fixed automatically adding extension to tileset Save As... dialog
 * Fixed saving/loading of layers with an origin other than 0,0

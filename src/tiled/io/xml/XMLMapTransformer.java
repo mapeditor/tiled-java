@@ -322,9 +322,10 @@ public class XMLMapTransformer implements MapReader
             return ext;
         }
         else {
-            int tileWidth = getAttribute(t, "tilewidth", map != null ? map.getTileWidth() : 0);
-            int tileHeight = getAttribute(t, "tileheight", map != null ? map.getTileHeight() : 0);
-            int tileSpacing = getAttribute(t, "spacing", 0);
+            final int tileWidth = getAttribute(t, "tilewidth", map != null ? map.getTileWidth() : 0);
+            final int tileHeight = getAttribute(t, "tileheight", map != null ? map.getTileHeight() : 0);
+            final int tileSpacing = getAttribute(t, "spacing", 0);
+            final int tileMargin = getAttribute(t, "margin", 0);
 
             TileSet set = new TileSet();
 
@@ -369,7 +370,7 @@ public class XMLMapTransformer implements MapReader
                         }
 
                         set.importTileBitmap(sourcePath, new BasicTileCutter(
-                                tileWidth, tileHeight, tileSpacing, 0));
+                                tileWidth, tileHeight, tileSpacing, tileMargin));
                     } else {
                         Image image = unmarshalImage(child, tilesetBaseDir);
                         String idValue = getAttributeValue(child, "id");
