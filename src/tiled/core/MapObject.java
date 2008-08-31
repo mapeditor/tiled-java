@@ -22,7 +22,7 @@ public class MapObject implements Cloneable
 {
     private Properties properties = new Properties();
 
-    protected float x, y;
+    protected int x, y;
     protected Rectangle bounds = new Rectangle();
     protected boolean bVisible = true;
     protected String name = "Object";
@@ -82,11 +82,11 @@ public class MapObject implements Cloneable
     }
 
     public int getX() {
-        return (int) x;
+        return x;
     }
 
     public int getY() {
-        return (int) y;
+        return y;
     }
 
     public String getName() {

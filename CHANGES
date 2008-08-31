@@ -1,3 +1,4 @@
+* Added support for a margin around a tileset image
 * Fixed automatically adding extension to tileset Save As... dialog
 * Fixed saving/loading of layers with an origin other than 0,0
 * Fixed map resize to apply the offset to layers not matching the map bounds

@@ -216,9 +216,13 @@ public class XMLMapWriter implements MapWriter
             w.writeAttribute("tilewidth", set.getTileWidth());
             w.writeAttribute("tileheight", set.getTileHeight());
 
-            int tileSpacing = set.getTileSpacing();
+            final int tileSpacing = set.getTileSpacing();
+            final int tileMargin = set.getTileMargin();
             if (tileSpacing != 0) {
                 w.writeAttribute("spacing", tileSpacing);
+            }
+            if (tileMargin != 0) {
+                w.writeAttribute("margin", tileMargin);
             }
         }
 

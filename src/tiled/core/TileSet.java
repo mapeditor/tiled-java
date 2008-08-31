@@ -46,6 +46,7 @@ public class TileSet
     private TileCutter tileCutter;
     private Rectangle tileDimensions;
     private int tileSpacing;
+    private int tileMargin;
     private int tilesPerRow;
     private String externalSource;
     private File tilebmpFile;
@@ -110,8 +111,8 @@ public class TileSet
      */
     private void importTileBitmap(BufferedImage tilebmp, TileCutter cutter)
     {
-        assert(tilebmp != null);
-        assert(cutter != null);
+        assert tilebmp != null;
+        assert cutter != null;
 
         tileCutter = cutter;
         tileSetImage = tilebmp;
@@ -122,6 +123,7 @@ public class TileSet
         if (cutter instanceof BasicTileCutter) {
             BasicTileCutter basicTileCutter = (BasicTileCutter) cutter;
             tileSpacing = basicTileCutter.getTileSpacing();
+            tileMargin = basicTileCutter.getTileMargin();
             tilesPerRow = basicTileCutter.getTilesPerRow();
         }
 
@@ -407,6 +409,14 @@ public class TileSet
      */
     public int getTileSpacing() {
         return tileSpacing;
+    }
+
+    /**
+     * Returns the margin around the tiles on the tileset image.
+     * @return the margin in pixels around the tiles on the tileset image
+     */
+    public int getTileMargin() {
+        return tileMargin;
     }
 
     /**

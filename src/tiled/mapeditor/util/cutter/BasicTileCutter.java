@@ -18,7 +18,7 @@ import java.awt.image.BufferedImage;
 
 /**
  * Cuts tiles from a tileset image according to a regular rectangular pattern.
- * Supports a variable spacing between tiles and an offset from the origin.
+ * Supports a variable spacing between tiles and a margin around them.
  *
  * @version $Id$
  */
@@ -29,15 +29,15 @@ public class BasicTileCutter implements TileCutter
     private final int tileWidth;
     private final int tileHeight;
     private final int tileSpacing;
-    private final int offset;
+    private final int tileMargin;
 
     public BasicTileCutter(int tileWidth, int tileHeight, int tileSpacing,
-                           int offset)
+                           int tileMargin)
     {
         this.tileWidth = tileWidth;
         this.tileHeight = tileHeight;
         this.tileSpacing = tileSpacing;
-        this.offset = offset;
+        this.tileMargin = tileMargin;
 
         reset();
     }
@@ -51,13 +51,13 @@ public class BasicTileCutter implements TileCutter
     }
 
     public Image getNextTile() {
-        if (nextY + tileHeight <= image.getHeight()) {
+        if (nextY + tileHeight + tileMargin <= image.getHeight()) {
             BufferedImage tile =
                 image.getSubimage(nextX, nextY, tileWidth, tileHeight);
             nextX += tileWidth + tileSpacing;
 
-            if (nextX + tileWidth > image.getWidth()) {
-                nextX = offset;
+            if (nextX + tileWidth + tileMargin > image.getWidth()) {
+                nextX = tileMargin;
                 nextY += tileHeight + tileSpacing;
             }
 
@@ -68,8 +68,8 @@ public class BasicTileCutter implements TileCutter
     }
 
     public void reset() {
-        nextX = offset;
-        nextY = offset;
+        nextX = tileMargin;
+        nextY = tileMargin;
     }
 
     public Dimension getTileDimensions() {
@@ -85,10 +85,19 @@ public class BasicTileCutter implements TileCutter
     }
 
     /**
+     * Returns the margin around the tile images.
+     * @return the margin around the tile images.
+     */
+    public int getTileMargin() {
+        return tileMargin;
+    }
+
+    /**
      * Returns the number of tiles per row in the tileset image.
      * @return the number of tiles per row in the tileset image.
      */
     public int getTilesPerRow() {
-        return (image.getWidth() + tileSpacing) / (tileWidth + tileSpacing);
+        return (image.getWidth() - 2 * tileMargin + tileSpacing) /
+                (tileWidth + tileSpacing);
     }
 }

@@ -19,13 +19,6 @@ State:      To be discussed
 Problems:   The engine the user is using will still need to understand the
             way Tiled uses the coordinates.
 
-- 04 --------------------------------------------------------------------------
-Suggestor:  Ahmed Mohombe <amohombe@yahoo.com>
-Date:       08/04/04
-Summary:    Allow tilesets with a border to be used by Tiled. Borders around
-            the tileset image are used by FreeCiv for example.
-State:      To be implemented (offset attributes, task #79)
-
 - 06 --------------------------------------------------------------------------
 Suggestor:  Ahmed Mohombe <amohombe@yahoo.com>
 Date:       08/04/04

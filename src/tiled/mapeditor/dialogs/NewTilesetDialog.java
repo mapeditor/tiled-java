@@ -42,9 +42,11 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
     private TileSet newTileset;
     private IntegerSpinner tileWidth, tileHeight;
     private IntegerSpinner tileSpacing;
+    private IntegerSpinner tileMargin;
     private JTextField tilesetName;
     private JTextField tilebmpFile;
     private JLabel spacingLabel;
+    private JLabel marginLabel;
     private JLabel tilebmpFileLabel, cutterLabel;
     private JCheckBox tilebmpCheck;
     private JCheckBox transCheck;
@@ -63,6 +65,7 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
     private static final String TILE_WIDTH_LABEL = Resources.getString("dialog.newtileset.tilewidth.label");
     private static final String TILE_HEIGHT_LABEL = Resources.getString("dialog.newtileset.tileheight.label");
     private static final String TILE_SPACING_LABEL = Resources.getString("dialog.newtileset.tilespacing.label");
+    private static final String TILE_MARGIN_LABEL = Resources.getString("dialog.newtileset.tilemargin.label");
     private static final String IMAGE_LABEL = Resources.getString("dialog.newtileset.image.label");
     private static final String UNTITLED_FILE = Resources.getString("general.file.untitled");
     private static final String TILESET_IMG_LABEL = Resources.getString("dialog.newtileset.tilesetimgref.label");
@@ -96,6 +99,7 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
         JLabel tileWidthLabel = new JLabel(TILE_WIDTH_LABEL);
         JLabel tileHeightLabel = new JLabel(TILE_HEIGHT_LABEL);
         spacingLabel = new JLabel(TILE_SPACING_LABEL);
+        marginLabel = new JLabel(TILE_MARGIN_LABEL);
         tilebmpFileLabel = new JLabel(IMAGE_LABEL);
         cutterLabel = new JLabel("Tile Cutter: ");
 
@@ -103,6 +107,7 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
         tileWidth = new IntegerSpinner(map.getTileWidth(), 1, 1024);
         tileHeight = new IntegerSpinner(map.getTileHeight(), 1, 1024);
         tileSpacing = new IntegerSpinner(0, 0);
+        tileMargin = new IntegerSpinner(0, 0);
         tilebmpFile = new JTextField(10);
         tilebmpFile.setEnabled(false);
 
@@ -110,6 +115,7 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
         tileWidthLabel.setLabelFor(tileWidth);
         tileHeightLabel.setLabelFor(tileHeight);
         spacingLabel.setLabelFor(tileSpacing);
+        marginLabel.setLabelFor(tileMargin);
         tilebmpFileLabel.setLabelFor(tilebmpFile);
 
         tileWidthLabel.setEnabled(false);
@@ -173,7 +179,7 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
         c.insets = new Insets(5, 0, 0, 0);
         c.anchor = GridBagConstraints.EAST;
         c.fill = GridBagConstraints.HORIZONTAL;
-        c.gridwidth = 2;
+        c.gridwidth = 4;
         tilebmpPanel.add(tilebmpCheck, c);
         c.gridy = 1;
         c.gridwidth = 1;
@@ -191,7 +197,9 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
         c.weightx = 1;
         c.insets = new Insets(5, 0, 0, 0);
         c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridwidth = 3;
         tilebmpPanel.add(tilebmpPathPanel, c);
+        c.gridwidth = 1;
         c.gridy = 2;
         tilebmpPanel.add(tileSpacing, c);
         /*
@@ -200,8 +208,17 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
         */
         c.gridx = 0;
         c.gridy = 4;
-        c.gridwidth = 2;
+        c.gridwidth = 4;
         tilebmpPanel.add(tileColorPanel, c);
+        c.gridx = 2;
+        c.gridy = 2;
+        c.gridwidth = 1;
+        c.weightx = 0;
+        c.insets = new Insets(5, 5, 0, 0);
+        tilebmpPanel.add(marginLabel, c);
+        c.gridx = 3;
+        c.weightx = 1;
+        tilebmpPanel.add(tileMargin, c);
         c.gridx = 1;
         c.gridwidth = 1;
 
@@ -313,10 +330,10 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
         return newTileset;
     }
 
-    public TileCutter getCutter(int w, int h, int s) {
+    public TileCutter getCutter(int w, int h, int spacing, int margin) {
         final String selectedItem = (String) cutterBox.getSelectedItem();
         if (selectedItem.equalsIgnoreCase("basic")) {
-            return new BasicTileCutter(w, h, s, 0);
+            return new BasicTileCutter(w, h, spacing, margin);
         } else if (selectedItem.equalsIgnoreCase("border")) {
             return new BorderTileCutter();
         }
@@ -330,10 +347,11 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
         newTileset.setDefaultProperties(defaultSetProperties);
 
         if (tilebmpCheck.isSelected()) {
-            String file = tilebmpFile.getText();
-            int spacing = tileSpacing.intValue();
-            int width = tileWidth.intValue();
-            int height = tileHeight.intValue();
+            final String file = tilebmpFile.getText();
+            final int spacing = tileSpacing.intValue();
+            final int margin = tileMargin.intValue();
+            final int width = tileWidth.intValue();
+            final int height = tileHeight.intValue();
 
             try {
                 if (transCheck.isSelected()) {
@@ -342,7 +360,7 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
                 }
 
                 newTileset.importTileBitmap(file,
-                        getCutter(width, height, spacing));
+                        getCutter(width, height, spacing, margin));
             }
             catch (IOException e) {
                 JOptionPane.showMessageDialog(this, e.getLocalizedMessage(),
@@ -386,7 +404,9 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
         tilebmpFileLabel.setEnabled(value);
         browseButton.setEnabled(value);
         tileSpacing.setEnabled(value);
+        tileMargin.setEnabled(value);
         spacingLabel.setEnabled(value);
+        marginLabel.setEnabled(value);
         transCheck.setEnabled(value);
         colorButton.setEnabled(value && transCheck.isSelected());
         /*
