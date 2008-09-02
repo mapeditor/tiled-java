@@ -9,7 +9,7 @@ most people at the moment. We need your feedback!
 
 Website:     http://mapeditor.org/
 Bugtracker:  http://bugs.mapeditor.org/
-Subversion:  svn://svn.mapeditor.org/
+Mercurial:   http://hg.mapeditor.org/
 
 -----------------
  CURRENT FEATURES
@@ -17,6 +17,8 @@ Subversion:  svn://svn.mapeditor.org/
 
 - Multilayer, layers can be changed around dynamically
 - Multiple orientations (orthographic and isometric at the moment)
+- Objects can be placed anywhere on the map
+- Arbitrary custom properties can be set on the maps, layers, objects and tiles
 - Tiles can be taller than the default tile height
 - Easy to use drawing operations
 - Universal XML-based map and tileset file formats

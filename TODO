@@ -1,6 +1,6 @@
 ROADMAP TO FUTURE RELEASES
 
-0.7.1
+0.7.2
 * Check that tile palette panel doesn't keep listening after being replaced
 * Update translations for dialog.saveas.confirm.mismatch
 * Make continuous layout and tiles per row behaviour configurable

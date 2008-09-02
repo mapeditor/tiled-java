@@ -1,3 +1,5 @@
+0.7.1 - September 2nd, 2008
+
 * Added support for a margin around a tileset image
 * Improved the tileset manager and allow tileset reorganizing (by Jared Adams)
 * Fixed automatically adding extension to tileset Save As... dialog
@@ -7,6 +9,7 @@
 * Fixed duplicates of object groups to not share the objects
 * Fixed Lua export to increase firstgid of tilesets properly (by Jelle Geerts)
 * Fixed saving of property values that contain quotes
+* Fixed the state of menu actions when starting up without a map
 
 0.7.0 - July 19th, 2008
 
