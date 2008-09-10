@@ -33,8 +33,8 @@ public class TilesetTableModel extends AbstractTableModel implements MapChangeLi
     public TilesetTableModel(Map map) {
         this.map = map;
 
-        for (Iterator it = map.getTilesets().iterator(); it.hasNext();) {
-            ((TileSet) it.next()).addTilesetChangeListener(this);
+        for (TileSet tileset : map.getTilesets()) {
+            tileset.addTilesetChangeListener(this);
         }
     }
 

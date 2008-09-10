@@ -66,11 +66,11 @@ public class SaveAsImageAction extends AbstractAction
         chooser.setDialogTitle(DIALOG_TITLE);
         final FileFilter defaultFilter = chooser.getFileFilter();
 
-        final String[] list = ImageIO.getWriterFormatNames();
-        for (int i = 0; i < list.length; i++) {
-            if (list[i].matches("[A-Z].*"))
+        final String[] names = ImageIO.getWriterFormatNames();
+        for (String name : names) {
+            if (name.matches("[A-Z].*"))
                 chooser.addChoosableFileFilter(
-                        new BasicFileFilter(list[i], list[i].toLowerCase()));
+                        new BasicFileFilter(name, name.toLowerCase()));
         }
 
         // Make sure the "All Files" filter is selected by default

@@ -13,7 +13,6 @@
 package tiled.mapeditor.util;
 
 import java.awt.*;
-import java.io.IOException;
 import java.util.HashMap;
 import javax.swing.*;
 
@@ -36,7 +35,7 @@ public class MultisetListRenderer extends DefaultListCellRenderer
     private final Icon setIcon = Resources.getIcon("source.png");
 
     /** The hash map used to match indexes to icons. */
-    private final HashMap tileImages = new HashMap();
+    private final HashMap<Integer, Icon> tileImages = new HashMap<Integer, Icon>();
 
     /** The zoom level used for the tile image icons. */
     private final double zoom;
@@ -65,13 +64,12 @@ public class MultisetListRenderer extends DefaultListCellRenderer
             Tile tile = (Tile) value;
             if (!isSelected || zoom == 1) {
                 // Use cached ImageIcon instance
-                final Integer key = new Integer(index);
-                if (tileImages.containsKey(key)) {
-                    setIcon((Icon) tileImages.get(key));
+                if (tileImages.containsKey(index)) {
+                    setIcon(tileImages.get(index));
                 } else {
                     Icon icon = new ImageIcon(tile.getScaledImage(zoom));
                     setIcon(icon);
-                    tileImages.put(key, icon);
+                    tileImages.put(index, icon);
                 }
             } else {
                 // Selected entry always uses unscaled image

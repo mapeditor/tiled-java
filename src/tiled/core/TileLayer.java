@@ -457,7 +457,7 @@ public class TileLayer extends MapLayer
                 Properties p = getTileInstancePropertiesAt(i, j);
 
                 if (p != null) {
-                    Integer key = new Integer(i + j * bounds.width);
+                    Integer key = i + j * bounds.width;
                     clone.tileInstanceProperties.put(key, p.clone());
                 }
             }

@@ -48,9 +48,9 @@ public class OpenMapAction extends AbstractFileAction
 
         try {
             MapReader[] readers = editor.getPluginLoader().getReaders();
-            for(int i = 0; i < readers.length; i++) {
+            for (MapReader reader : readers) {
                 chooser.addChoosableFileFilter(new TiledFileFilter(
-                            readers[i].getFilter(), readers[i].getName()));
+                        reader.getFilter(), reader.getName()));
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(editor.getAppFrame(),

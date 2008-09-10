@@ -39,10 +39,6 @@ public class IntegerSpinner extends JSpinner
         this(val, min, Integer.MAX_VALUE);
     }
 
-    public void setValue(int value) {
-        setValue(new Integer(value));
-    }
-
     public int intValue() {
         return ((Number)getValue()).intValue();
     }

@@ -25,14 +25,14 @@ import java.util.Vector;
  */
 public class MultilayerPlane
 {
-    private Vector layers;
+    private Vector<MapLayer> layers;
     protected Rectangle bounds;          //in tiles
 
     /**
      * Default constructor.
      */
     public MultilayerPlane() {
-        layers = new Vector();
+        layers = new Vector<MapLayer>();
         bounds = new Rectangle();
     }
 
@@ -126,7 +126,7 @@ public class MultilayerPlane
      *
      * @param layers a collection of layers to add
      */
-    public void addAllLayers(Collection layers) {
+    public void addAllLayers(Collection<MapLayer> layers) {
         this.layers.addAll(layers);
     }
 
@@ -138,7 +138,7 @@ public class MultilayerPlane
      * @return the layer that was removed from the list
      */
     public MapLayer removeLayer(int index) {
-        return (MapLayer)layers.remove(index);
+        return layers.remove(index);
     }
 
     /**
@@ -162,7 +162,7 @@ public class MultilayerPlane
      *
      * @param layers the new set of layers
      */
-    public void setLayerVector(Vector layers) {
+    public void setLayerVector(Vector<MapLayer> layers) {
         this.layers = layers;
     }
 
@@ -177,7 +177,7 @@ public class MultilayerPlane
                     "Can't swap up when already at the top.");
         }
 
-        MapLayer hold = (MapLayer)layers.get(index + 1);
+        MapLayer hold = layers.get(index + 1);
         layers.set(index + 1, getLayer(index));
         layers.set(index, hold);
     }
@@ -193,7 +193,7 @@ public class MultilayerPlane
                     "Can't swap down when already at the bottom.");
         }
 
-        MapLayer hold = (MapLayer)layers.get(index - 1);
+        MapLayer hold = layers.get(index - 1);
         layers.set(index - 1, getLayer(index));
         layers.set(index, hold);
     }
@@ -233,7 +233,7 @@ public class MultilayerPlane
      */
     public MapLayer getLayer(int i) {
         try {
-            return (MapLayer)layers.get(i);
+            return layers.get(i);
         } catch (ArrayIndexOutOfBoundsException e) {
         }
         return null;

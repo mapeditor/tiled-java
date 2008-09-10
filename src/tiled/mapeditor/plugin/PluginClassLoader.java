@@ -76,8 +76,8 @@ public final class PluginClassLoader extends URLClassLoader
 
         int total = 0;
         File[] files = dir.listFiles();
-        for (int i = 0; i < files.length; i++) {
-            String aPath = files[i].getAbsolutePath();
+        for (File file : files) {
+            String aPath = file.getAbsolutePath();
             if (aPath.endsWith(".jar")) {
                 total++;
             }
@@ -231,8 +231,8 @@ public final class PluginClassLoader extends URLClassLoader
         }
 
         Class[] interfaces = klass.getInterfaces();
-        for (int i = 0; i < interfaces.length; i++) {
-            String name = interfaces[i].toString();
+        for (Class anInterface : interfaces) {
+            String name = anInterface.toString();
             if (name.substring(name.indexOf(' ') + 1).equals(interfaceName)) {
                 return true;
             }
@@ -254,16 +254,16 @@ public final class PluginClassLoader extends URLClassLoader
             String clname = klass.toString();
             clname = clname.substring(clname.indexOf(' ') + 1);
             String filter = p.getFilter();
-            String[] ext = filter.split(",");
+            String[] extensions = filter.split(",");
 
             if (isReader(klass)) {
-                for (int i = 0; i < ext.length; i++) {
-                    readerFormats.put(ext[i], clname);
+                for (String extension : extensions) {
+                    readerFormats.put(extension, clname);
                 }
                 readers.add(p);
             } else if (isWriter(klass)) {
-                for (int i = 0; i < ext.length; i++){
-                    writerFormats.put(ext[i], clname);
+                for (String extension : extensions) {
+                    writerFormats.put(extension, clname);
                 }
                 writers.add(p);
             }

@@ -154,8 +154,8 @@ public class XMLMapWriter implements MapWriter
             final SortedSet propertyKeys = new TreeSet();
             propertyKeys.addAll(props.keySet());
             w.startElement("properties");
-            for (Iterator keys = propertyKeys.iterator(); keys.hasNext();) {
-                final String key = (String) keys.next();
+            for (Object propertyKey : propertyKeys) {
+                final String key = (String) propertyKey;
                 final String property = props.getProperty(key);
                 w.startElement("property");
                 w.writeAttribute("name", key);
@@ -583,8 +583,8 @@ public class XMLMapWriter implements MapWriter
 
         File fromFile = new File(from);
         File toFile = new File(to);
-        Vector fromParents = new Vector();
-        Vector toParents = new Vector();
+        Vector<String> fromParents = new Vector<String>();
+        Vector<String> toParents = new Vector<String>();
 
         // Iterate to find both parent lists
         while (fromFile != null) {
@@ -600,8 +600,8 @@ public class XMLMapWriter implements MapWriter
         int shared = 0;
         int maxShared = Math.min(fromParents.size(), toParents.size());
         for (shared = 0; shared < maxShared; shared++) {
-            String fromParent = (String)fromParents.get(shared);
-            String toParent = (String)toParents.get(shared);
+            String fromParent = fromParents.get(shared);
+            String toParent = toParents.get(shared);
             if (!fromParent.equals(toParent)) {
                 break;
             }

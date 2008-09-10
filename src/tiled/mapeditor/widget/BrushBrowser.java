@@ -81,9 +81,9 @@ public class BrushBrowser extends JPanel
             brushes.add(brush);
         }
 
-        for (int n = 0; n < dimensions.length; n++) {
+        for (int dimension : dimensions) {
             ShapeBrush brush = new ShapeBrush();
-            brush.makeQuadBrush(new Rectangle(0, 0, dimensions[n], dimensions[n]));
+            brush.makeQuadBrush(new Rectangle(0, 0, dimension, dimension));
             brushes.add(brush);
         }
     }

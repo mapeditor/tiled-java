@@ -1389,11 +1389,11 @@ public class MapEditor implements ActionListener, MouseListener,
             if (currentMap != null) {
                 JFileChooser chooser = new JFileChooser(currentMap.getFilename());
                 MapReader[] readers = pluginLoader.getReaders();
-                for (int i = 0; i < readers.length; i++) {
+                for (MapReader reader : readers) {
                     try {
                         chooser.addChoosableFileFilter(new TiledFileFilter(
-                                    readers[i].getFilter(),
-                                    readers[i].getName()));
+                                reader.getFilter(),
+                                reader.getName()));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -1932,12 +1932,12 @@ public class MapEditor implements ActionListener, MouseListener,
 
         if (marqueeSelection == null) {
             area = new Rectangle(new Point(x, y));
-            Stack stack = new Stack();
+            Stack<Point> stack = new Stack<Point>();
 
             stack.push(new Point(x, y));
             while (!stack.empty()) {
                 // Remove the next tile from the stack
-                Point p = (Point)stack.pop();
+                Point p = stack.pop();
 
                 // If the tile it meets the requirements, set it and push its
                 // neighbouring tiles on the stack.
@@ -2100,13 +2100,12 @@ public class MapEditor implements ActionListener, MouseListener,
             TiledConfiguration.addToRecentFiles(filename);
         }
 
-        java.util.List files = TiledConfiguration.getRecentFiles();
+        java.util.List<String> files = TiledConfiguration.getRecentFiles();
 
         recentMenu.removeAll();
 
-        for (int i = 0; i < files.size(); i++) {
-            String path = (String) files.get(i);
-            recentMenu.add(new TMenuItem(new OpenRecentAction(this, saveAction, path)));
+        for (String file : files) {
+            recentMenu.add(new TMenuItem(new OpenRecentAction(this, saveAction, file)));
         }
     }
 

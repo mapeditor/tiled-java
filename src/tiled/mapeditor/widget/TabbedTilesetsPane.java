@@ -80,9 +80,7 @@ public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionList
      */
     private void recreateTabs(List<TileSet> tilesets) {
         // Stop listening to the tile palette panels and their tilesets
-        for (Iterator<TilePalettePanel> it = tilePanels.values().iterator();
-             it.hasNext();) {
-            TilePalettePanel panel = it.next();
+        for (TilePalettePanel panel : tilePanels.values()) {
             panel.removeTileSelectionListener(this);
             panel.getTileset().removeTilesetChangeListener(listener);
         }
@@ -93,9 +91,7 @@ public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionList
 
         if (tilesets != null) {
             // Add a new tab for each tileset of the map
-            for (Iterator<TileSet> it = tilesets.iterator(); it.hasNext();)
-            {
-                TileSet tileset = it.next();
+            for (TileSet tileset : tilesets) {
                 if (tileset != null) {
                     addTabForTileset(tileset);
                 }

@@ -192,10 +192,10 @@ public class TilesetManager extends JDialog implements ActionListener,
             JFileChooser ch = new ConfirmingFileChooser(map.getFilename());
 
             MapWriter[] writers = PluginClassLoader.getInstance().getWriters();
-            for (int i = 0; i < writers.length; i++) {
+            for (MapWriter writer : writers) {
                 try {
                     ch.addChoosableFileFilter(new TiledFileFilter(
-                                writers[i].getFilter(), writers[i].getName()));
+                            writer.getFilter(), writer.getName()));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

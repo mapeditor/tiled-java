@@ -81,9 +81,9 @@ public class LayerTableModel extends AbstractTableModel
 
         if (layer != null) {
             if (col == 0) {
-                return Boolean.valueOf(layer.getLocked() || !layer.isVisible());
+                return layer.getLocked() || !layer.isVisible();
             } else if (col == 1) {
-                return Boolean.valueOf(layer.isVisible());
+                return layer.isVisible();
             } else if (col == 2) {
                 return layer.getName();
             } else {
@@ -104,11 +104,9 @@ public class LayerTableModel extends AbstractTableModel
         MapLayer layer = map.getLayer(getRowCount() - row - 1);
         if (layer != null) {
             if (col == 0) {
-                Boolean bool = (Boolean)value;
-                layer.setLocked(bool.booleanValue());
+                layer.setLocked((Boolean)value);
             } else if (col == 1) {
-                Boolean bool = (Boolean)value;
-                layer.setVisible(bool.booleanValue());
+                layer.setVisible((Boolean)value);
             } else if (col == 2) {
                 layer.setName(value.toString());
             }

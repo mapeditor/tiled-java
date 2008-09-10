@@ -32,7 +32,7 @@ public class TiledFileFilter extends ConfirmableFileFilter
     public static final int FILTER_PLUG = 4;
 
     private String desc;
-    private LinkedList exts;
+    private LinkedList<String> exts;
     private PluggableMapIO pmio;
     private int type = FILTER_EXT;
 
@@ -43,7 +43,7 @@ public class TiledFileFilter extends ConfirmableFileFilter
 
     public TiledFileFilter() {
         desc = FILETYPE_TILED;
-        exts = new LinkedList();
+        exts = new LinkedList<String>();
         exts.add("tmx");
         exts.add("tmx.gz");
         exts.add("tsx");
@@ -51,7 +51,7 @@ public class TiledFileFilter extends ConfirmableFileFilter
     }
 
     public TiledFileFilter(int filter) {
-        exts = new LinkedList();
+        exts = new LinkedList<String>();
         desc = "";
         type = filter;
 
@@ -76,21 +76,21 @@ public class TiledFileFilter extends ConfirmableFileFilter
     }
 
     public TiledFileFilter(PluggableMapIO p) throws Exception {
-        exts = new LinkedList();
+        exts = new LinkedList<String>();
         pmio = p;
         buildFilter(p.getFilter(), p.getName());
     }
 
     public TiledFileFilter(String filter, String desc) {
-        exts = new LinkedList();
+        exts = new LinkedList<String>();
         buildFilter(filter, desc);
     }
 
     private void buildFilter(String filter, String desc) {
         this.desc = desc;
-        String[] ext = filter.split(",");
-        for (int i = 0; i < ext.length; i++) {
-            exts.add(ext[i].substring(ext[i].indexOf('.') + 1));
+        String[] extensions = filter.split(",");
+        for (String extension : extensions) {
+            exts.add(extension.substring(extension.indexOf('.') + 1));
         }
     }
 
@@ -108,7 +108,7 @@ public class TiledFileFilter extends ConfirmableFileFilter
 
     public String getDefaultExtension() {
         if (!exts.isEmpty()) {
-            return (String) exts.getFirst();
+            return exts.getFirst();
         }
         else {
             return null;
@@ -124,9 +124,7 @@ public class TiledFileFilter extends ConfirmableFileFilter
         if (type != FILTER_EXT && (file.isFile() || !file.exists())) {
             String fileName = file.getPath().toLowerCase();
 
-            Iterator itr = exts.iterator();
-            while (itr.hasNext()) {
-                String ext = (String) itr.next();
+            for (String ext : exts) {
                 if (fileName.endsWith("." + ext)) {
                     return true;
                 }

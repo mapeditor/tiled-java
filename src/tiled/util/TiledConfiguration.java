@@ -64,7 +64,7 @@ public final class TiledConfiguration
         assert (mapFile != null);
 
         // Get the existing recent file list
-        List recent = getRecentFiles();
+        List<String> recent = getRecentFiles();
 
         // Remove all existing occurences of the file
         Iterator iterator = recent.iterator();
@@ -92,8 +92,8 @@ public final class TiledConfiguration
      *
      * @return the list of recently used files
      */
-    public static List getRecentFiles() {
-        List recent = new ArrayList(RECENT_FILE_COUNT);
+    public static List<String> getRecentFiles() {
+        List<String> recent = new ArrayList<String>(RECENT_FILE_COUNT);
         Preferences recentNode = prefs.node("recent");
         for (int i = 0; i < RECENT_FILE_COUNT; i++)
         {

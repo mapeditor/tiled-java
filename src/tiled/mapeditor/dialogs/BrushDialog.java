@@ -236,25 +236,24 @@ public class BrushDialog extends JDialog implements ActionListener,
         Tile t = null;
 
         if (myBrush instanceof ShapeBrush) {
-            t = ((ShapeBrush)myBrush).getTile();
+            t = ((ShapeBrush) myBrush).getTile();
         }
 
         ShapeBrush sel = (ShapeBrush) brushes.getSelectedBrush();
-        sel.setSize(((Integer) brushSize.getValue()).intValue());
+        sel.setSize((Integer) brushSize.getValue());
 
         if (cbRandomBrush.isSelected()) {
             RandomBrush randomBrush = new RandomBrush(sel);
             randomBrush.setRatio(
                     sRandomAmount.getValue() /
-                    (double)sRandomAmount.getMaximum());
+                    (double) sRandomAmount.getMaximum());
             myBrush = randomBrush;
         } else {
             myBrush = new ShapeBrush(sel);
         }
 
         ((ShapeBrush)myBrush).setTile(t);
-        myBrush.setAffectedLayers(
-                ((Integer)affectLayers.getValue()).intValue());
+        myBrush.setAffectedLayers((Integer) affectLayers.getValue());
 
         update();
     }
@@ -341,9 +340,9 @@ public class BrushDialog extends JDialog implements ActionListener,
 
         try {
             MapReader[] readers = PluginClassLoader.getInstance().getReaders();
-            for(int i = 0; i < readers.length; i++) {
+            for (MapReader reader : readers) {
                 ch.addChoosableFileFilter(new TiledFileFilter(
-                            readers[i].getFilter(), readers[i].getName()));
+                        reader.getFilter(), reader.getName()));
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this,

@@ -50,7 +50,7 @@ public class TileInstancePropertiesDialog extends JDialog
 
     private final MapEditor editor;
     /** Holds all currently selected Properties. */
-    private final LinkedList propertiesCoordinates = new LinkedList();
+    private final LinkedList<Point> propertiesCoordinates = new LinkedList<Point>();
     private final Properties mergedProperties = new Properties();
 
     public TileInstancePropertiesDialog(MapEditor editor) {
@@ -158,7 +158,7 @@ public class TileInstancePropertiesDialog extends JDialog
 
             if (!propertiesCoordinates.isEmpty()) {
                 // Start with properties of first tile instance
-                Point point = (Point) propertiesCoordinates.get(0);
+                Point point = propertiesCoordinates.get(0);
                 Properties p = tl.getTileInstancePropertiesAt(point.x, point.y);
 
                 if (p != null) {
@@ -166,7 +166,7 @@ public class TileInstancePropertiesDialog extends JDialog
 
                     for (int i = 1; i < propertiesCoordinates.size(); i++) {
                         // Merge the other properties...
-                        point = (Point) propertiesCoordinates.get(i);
+                        point = propertiesCoordinates.get(i);
                         p = tl.getTileInstancePropertiesAt(point.x, point.y);
 
                         if (p != null) {
@@ -210,8 +210,7 @@ public class TileInstancePropertiesDialog extends JDialog
 
 
     private void deleteFromSelectedTiles(String key) {
-        for (int i = 0; i < propertiesCoordinates.size(); i++) {
-            Point point = (Point) propertiesCoordinates.get(i);
+        for (Point point : propertiesCoordinates) {
             Properties p = getPropertiesAt(point);
             if (p != null) p.remove(key);
         }
@@ -238,9 +237,8 @@ public class TileInstancePropertiesDialog extends JDialog
         Properties properties = tableModel.getProperties();
 
         // First delete all Properties that were previously selected
-        for( int i = 0; i < propertiesCoordinates.size(); i++ ) {
-            Point point = (Point) propertiesCoordinates.get( i );
-            Properties tp = getPropertiesAt( point );
+        for (Point point : propertiesCoordinates) {
+            Properties tp = getPropertiesAt(point);
             if (tp != null) {
                 for (Enumeration e = mergedProperties.keys();
                      e.hasMoreElements();) {
@@ -258,12 +256,11 @@ public class TileInstancePropertiesDialog extends JDialog
 
         // Now update all selected Properties with the
         // new data
-        for (int i = 0; i < propertiesCoordinates.size(); i++) {
-            Point point = (Point) propertiesCoordinates.get(i);
+        for (Point point : propertiesCoordinates) {
             Properties tp = getPropertiesAt(point);
             if (tp == null) {
                 tp = new Properties();
-                setPropertiesAt( point, tp );
+                setPropertiesAt(point, tp);
             }
 
             for (Enumeration e = properties.keys(); e.hasMoreElements();) {

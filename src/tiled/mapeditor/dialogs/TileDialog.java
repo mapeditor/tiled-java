@@ -252,10 +252,10 @@ public class TileDialog extends JDialog
         if (ret == JFileChooser.APPROVE_OPTION) {
             files = fc.getSelectedFiles();
 
-            for (int i = 0; i < files.length; i++) {
+            for (File file : files) {
                 BufferedImage image;
                 try {
-                    image = ImageIO.read(files[i]);
+                    image = ImageIO.read(file);
                     // TODO: Support for a transparent color
                 } catch (IOException e) {
                     JOptionPane.showMessageDialog(
@@ -295,14 +295,14 @@ public class TileDialog extends JDialog
     }
 
     public void queryTiles() {
-        Vector listData;
+        Vector<Tile> listData;
 
         if (tileset != null && tileset.size() > 0) {
-            listData = new Vector();
+            listData = new Vector<Tile>();
             Iterator tileIterator = tileset.iterator();
 
             while (tileIterator.hasNext()) {
-                Tile tile = (Tile)tileIterator.next();
+                Tile tile = (Tile) tileIterator.next();
                 listData.add(tile);
             }
 
@@ -316,7 +316,7 @@ public class TileDialog extends JDialog
     }
 
     public void queryImages() {
-        Vector listData = new Vector();
+        Vector<Image> listData = new Vector<Image>();
 
         Enumeration ids = tileset.getImageIds();
         while(ids.hasMoreElements()) {
@@ -462,9 +462,9 @@ public class TileDialog extends JDialog
             if (imgs.length == 0)
                 return;
 
-            for (int i = 0; i < imgs.length; i++) {
+            for (Object img : imgs) {
                 Tile newTile = new Tile(tileset);
-                newTile.setImage(tileset.getIdByImage((Image) imgs[i]));
+                newTile.setImage(tileset.getIdByImage((Image) img));
                 tileset.addNewTile(newTile);
             }
 
@@ -474,9 +474,7 @@ public class TileDialog extends JDialog
             tileList.ensureIndexIsVisible(tileset.size() - 1);
             JOptionPane.showMessageDialog(
                     this,
-                    MessageFormat.format(
-                        TILES_CREATED_MESSAGE,
-                        new Object[]{new Integer(imgs.length)}),
+                    MessageFormat.format(TILES_CREATED_MESSAGE, imgs.length),
                     TILES_CREATED_TITLE,
                     JOptionPane.INFORMATION_MESSAGE);
         }

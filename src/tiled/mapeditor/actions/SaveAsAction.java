@@ -73,9 +73,9 @@ public class SaveAsAction extends AbstractAction
         chooser.addChoosableFileFilter(tmxFilter);
 
         MapWriter[] writers = editor.getPluginLoader().getWriters();
-        for (int i = 0; i < writers.length; i++) {
+        for (MapWriter writer : writers) {
             try {
-                chooser.addChoosableFileFilter(new TiledFileFilter(writers[i]));
+                chooser.addChoosableFileFilter(new TiledFileFilter(writer));
             } catch (Exception e) {
                 e.printStackTrace();
             }

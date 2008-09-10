@@ -59,10 +59,10 @@ public class Util
     public static boolean checkRoot(String filename) {
         File[] roots = File.listRoots();
 
-        for (int i = 0; i < roots.length; i++) {
+        for (File root : roots) {
             try {
-                String root = roots[i].getCanonicalPath().toLowerCase();
-                if (filename.toLowerCase().startsWith(root)) {
+                String canonicalRoot = root.getCanonicalPath().toLowerCase();
+                if (filename.toLowerCase().startsWith(canonicalRoot)) {
                     return true;
                 }
             } catch (IOException e) {
