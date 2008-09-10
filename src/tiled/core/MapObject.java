@@ -22,19 +22,14 @@ public class MapObject implements Cloneable
 {
     private Properties properties = new Properties();
 
-    protected int x, y;
     protected Rectangle bounds = new Rectangle();
     protected boolean bVisible = true;
     protected String name = "Object";
     protected String source;
     protected String type = "";
-    protected int width, height;
 
     public MapObject(int x, int y, int width, int height) {
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
+        bounds = new Rectangle(x, y, width, height);
     }
 
     public Object clone() throws CloneNotSupportedException {
@@ -44,76 +39,83 @@ public class MapObject implements Cloneable
         return clone;
     }
 
-    public void setX(int x) {
-        this.x = x;
+    public Rectangle getBounds() {
+        return bounds;
     }
 
-    public void setY(int y) {
-        this.y = y;
-    }
-
-    public void setName(String s) {
-        name = s;
-    }
-
-    public void setSource(String s) {
-        source = s;
-    }
-
-    public void setType(String s) {
-        type = s;
-    }
-
-    public void setWidth(int w) {
-        width = w;
-    }
-
-    public void setHeight(int h) {
-        height = h;
-    }
-
-    public void setProperties(Properties p) {
-        properties = p;
-    }
-
-    public void translate(int x, int y) {
-        this.x += x;
-        this.y += y;
+    public void setBounds(Rectangle bounds) {
+        this.bounds = bounds;
     }
 
     public int getX() {
-        return x;
+        return bounds.x;
+    }
+
+    public void setX(int x) {
+        bounds.setLocation(x, getY());
     }
 
     public int getY() {
-        return y;
+        return bounds.y;
+    }
+
+    public void setY(int y) {
+        bounds.setLocation(getX(), y);
     }
 
     public String getName() {
         return name;
     }
 
+    public void setName(String s) {
+        name = s;
+    }
+
     public String getSource() {
         return source;
+    }
+
+    public void setSource(String s) {
+        source = s;
     }
 
     public String getType() {
         return type;
     }
 
-    public int getWidth() {
-        return width;
+     public void setType(String s) {
+        type = s;
+    }
+
+     public int getWidth() {
+        return bounds.width;
+    }
+
+    public void setWidth(int w) {
+        bounds.setSize(w, getHeight());
+    }
+ 
+    public void setHeight(int h) {
+        bounds.setSize(getWidth(), h);
     }
 
     public int getHeight() {
-        return height;
+        return bounds.height;
     }
 
     public Properties getProperties() {
         return properties;
     }
 
+    public void setProperties(Properties p) {
+        properties = p;
+    }
+
+    public void translate(int dx, int dy) {
+        bounds.translate(dx, dy);
+    }
+
     public String toString() {
-        return type + " (" + x + "," + y + ")";
+        return type + " (" + getX() + "," + getY() + ")";
     }
 }

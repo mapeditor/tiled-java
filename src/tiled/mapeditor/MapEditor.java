@@ -904,7 +904,7 @@ public class MapEditor implements ActionListener, MouseListener,
                 ObjectGroup group = (ObjectGroup) layer;
                 Point pos = mapView.screenToPixelCoords(
                         event.getX(), event.getY());
-                MapObject obj = group.getObjectAt(pos.x, pos.y);
+                MapObject obj = group.getObjectNear(pos.x, pos.y, mapView.getZoom());
                 if (obj != null) {
                     ObjectDialog od = new ObjectDialog(appFrame, obj, undoSupport);
                     od.getProps();
@@ -1044,7 +1044,7 @@ public class MapEditor implements ActionListener, MouseListener,
                         ObjectGroup group = (ObjectGroup) layer;
                         Point pos = mapView.screenToPixelCoords(
                                 event.getX(), event.getY());
-                        MapObject obj = group.getObjectAt(pos.x, pos.y);
+                        MapObject obj = group.getObjectNear(pos.x, pos.y, mapView.getZoom());
                         if (obj != null) {
                             undoSupport.postEdit(new RemoveObjectEdit(group, obj));
                             group.removeObject(obj);
@@ -1059,7 +1059,7 @@ public class MapEditor implements ActionListener, MouseListener,
                                 event.getX(), event.getY());
                         if (currentObject == null) {
                             ObjectGroup group = (ObjectGroup) layer;
-                            currentObject = group.getObjectAt(pos.x, pos.y);
+                            currentObject = group.getObjectNear(pos.x, pos.y, mapView.getZoom());
                             if (currentObject == null) { // No object to move
                                 break;
                             }
