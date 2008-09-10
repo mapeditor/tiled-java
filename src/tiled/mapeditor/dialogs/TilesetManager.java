@@ -43,6 +43,7 @@ public class TilesetManager extends JDialog implements ActionListener,
 
     private JButton saveButton, saveAsButton, embedButton, removeButton, editButton;
     private JButton moveUpButton, moveDownButton, closeButton;
+    private TilesetTableModel tilesetTableModel;
     private JTable tilesetTable;
 
     private static final String DIALOG_TITLE = Resources.getString("dialog.tilesetmanager.title");
@@ -71,7 +72,8 @@ public class TilesetManager extends JDialog implements ActionListener,
 
     private void init() {
         // Create the tileset table
-        tilesetTable = new JTable(new TilesetTableModel(map));
+        tilesetTableModel = new TilesetTableModel(map);
+        tilesetTable = new JTable(tilesetTableModel);
         tilesetTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tilesetTable.getSelectionModel().addListSelectionListener(this);
         JScrollPane tilesetScrollPane = new JScrollPane(tilesetTable);
@@ -240,7 +242,6 @@ public class TilesetManager extends JDialog implements ActionListener,
     }
 
     private void updateTilesetTable() {
-        ((TilesetTableModel)tilesetTable.getModel()).setMap(map);
         tilesetTable.repaint();
     }
 
@@ -289,5 +290,10 @@ public class TilesetManager extends JDialog implements ActionListener,
         saveButton.setEnabled(set != null && set.getSource() != null);
         saveAsButton.setEnabled(set != null);
         embedButton.setEnabled(set != null && set.getSource() != null);
+    }
+
+    public void setVisible(boolean visible) {
+    	super.setVisible(visible);
+    	tilesetTableModel.clearListeners();
     }
 }

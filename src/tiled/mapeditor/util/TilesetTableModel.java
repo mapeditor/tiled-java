@@ -38,11 +38,6 @@ public class TilesetTableModel extends AbstractTableModel implements MapChangeLi
         }
     }
 
-    public void setMap(Map map) {
-        this.map = map;
-        fireTableDataChanged();
-    }
-
     public String getColumnName(int col) {
         return columnNames[col];
     }
@@ -157,5 +152,11 @@ public class TilesetTableModel extends AbstractTableModel implements MapChangeLi
         if (index == -1) return;
 
         fireTableCellUpdated(index, 1);
+    }
+
+    public void clearListeners() {
+        for (Iterator it = map.getTilesets().iterator(); it.hasNext();) {
+            ((TileSet) it.next()).removeTilesetChangeListener(this);
+        }
     }
 }
