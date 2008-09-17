@@ -247,7 +247,7 @@ public class MappyMapReader implements MapReader
      * @throws IOException
      */
     private void readBODYChunk(Map m, InputStream in) throws IOException {
-        TileSet set = (TileSet)m.getTilesets().get(0);
+        TileSet set = m.getTilesets().get(0);
         TileLayer bg = (TileLayer)m.getLayer(0),
                   fg0 = (TileLayer)m.getLayer(7),
                   fg1 = (TileLayer)m.getLayer(8),
@@ -277,7 +277,7 @@ public class MappyMapReader implements MapReader
      * @throws IOException
      */
     private void readBGFXChunk(Map m, InputStream in, int num) throws IOException {
-        TileSet set = (TileSet)m.getTilesets().get(0);
+        TileSet set = m.getTilesets().get(0);
         set.addTile(new Tile());
         Util.readRawImage(in, twidth, theight);   // skip the null-tile
         for (int i = 1; i < num; i++) {

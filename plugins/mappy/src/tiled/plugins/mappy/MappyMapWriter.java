@@ -23,7 +23,7 @@ import tiled.core.Map;
 import tiled.core.TileSet;
 
 /**
- * @version $Id$
+ * A writer for the Mappy map format. Unfinished!
  */
 public class MappyMapWriter implements MapWriter
 {
@@ -110,7 +110,7 @@ public class MappyMapWriter implements MapWriter
         if (ver == null || ver.length() < 3) {
             ver = "0.3";                            // default the value
         }
-        TileSet set = (TileSet) map.getTilesets().get(0);
+        TileSet set = map.getTilesets().get(0);
 
         //FIXME
         //out.write(Integer.parseInt(ver.substring(0,ver.indexOf('.')-1)));

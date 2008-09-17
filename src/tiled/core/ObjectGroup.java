@@ -1,5 +1,5 @@
 /*
- *  Tiled Map Editor, (c) 2004-2006
+ *  Tiled Map Editor, (c) 2004-2008
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@ import java.util.LinkedList;
 import java.util.Iterator;
 
 /**
- * @version $Id$
+ * A layer containing {@link MapObject map objects}.
  */
 public class ObjectGroup extends MapLayer
 {
@@ -160,18 +160,18 @@ public class ObjectGroup extends MapLayer
 
     // This method will work at any zoom level, provided you provide the correct zoom factor. It also adds a one pixel buffer (that doesn't change with zoom).
     public MapObject getObjectNear(int x, int y, double zoom) {
-            Rectangle2D mouse = new Rectangle2D.Double(x - zoom - 1, y - zoom - 1, 2 * zoom + 1, 2 * zoom + 1);
-            Shape shape;
+        Rectangle2D mouse = new Rectangle2D.Double(x - zoom - 1, y - zoom - 1, 2 * zoom + 1, 2 * zoom + 1);
+        Shape shape;
 
         for (MapObject obj : objects) {
-                    if (obj.getWidth() == 0 && obj.getHeight() == 0) {
-                            shape = new Ellipse2D.Double(obj.getX() * zoom, obj.getY() * zoom, 10 * zoom, 10 * zoom);
-                        } else {
-                    shape = new Rectangle2D.Double(obj.getX() + bounds.x * myMap.getTileWidth(),
-                                                   obj.getY() + bounds.y * myMap.getTileHeight(),
-                                                   obj.getWidth() > 0 ? obj.getWidth() : zoom,
-                                                   obj.getHeight() > 0 ? obj.getHeight() : zoom);
-                    }
+            if (obj.getWidth() == 0 && obj.getHeight() == 0) {
+                shape = new Ellipse2D.Double(obj.getX() * zoom, obj.getY() * zoom, 10 * zoom, 10 * zoom);
+            } else {
+                shape = new Rectangle2D.Double(obj.getX() + bounds.x * myMap.getTileWidth(),
+                        obj.getY() + bounds.y * myMap.getTileHeight(),
+                        obj.getWidth() > 0 ? obj.getWidth() : zoom,
+                        obj.getHeight() > 0 ? obj.getHeight() : zoom);
+            }
 
             if (shape.intersects(mouse)) {
                 return obj;

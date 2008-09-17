@@ -22,8 +22,6 @@ import tiled.mapeditor.Resources;
 
 /**
  * Moves an object.
- *
- * @version $Id$
  */
 public class MoveObjectEdit extends AbstractUndoableEdit
 {

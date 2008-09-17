@@ -139,20 +139,20 @@ public class HexMapView extends MapView
 
         if (orientation == SwingConstants.VERTICAL ) {
             if ( hexEdgesToTheLeft ) {
-                return (int)((visibleRect.height - hHeight)
-                    / (tsize.height + border))
+                return (visibleRect.height - hHeight)
+                    / (tsize.height + border)
                     * (tsize.height + border);
             } else {
-                return (int)((visibleRect.height -hHeight) / (tq + border))
+                return (visibleRect.height -hHeight) / (tq + border)
                     * (tq + border);
             }
         } else {
             if ( hexEdgesToTheLeft ) {
-                return (int)((visibleRect.width - hWidth) / (tq + border))
+                return (visibleRect.width - hWidth) / (tq + border)
                     * (tq + border);
             } else {
-                return (int)((visibleRect.width - hWidth)
-                    / (tsize.width + border))
+                return (visibleRect.width - hWidth)
+                    / (tsize.width + border)
                     * (tsize.width + border);
             }
         }
@@ -553,14 +553,14 @@ public class HexMapView extends MapView
         // // Point2D bottomRight=getTopLeftCornerOfTile((int) region.getMaxX(),(int) region.getMaxY(),zoom);
         // Point2D topLeft=getTopLeftCornerOfTile((int) region.getMinX(),(int) region.getMinY());
         // Point2D bottomRight=getTopLeftCornerOfTile((int) region.getMaxX(),(int) region.getMaxY());
-        // 
+        //
         // // Dimension tileSize=getTileSize(zoom);
         // Dimension tileSize=getTileSize();
         // int width=(int) (bottomRight.getX()-topLeft.getX()+tileSize.getWidth());
         // int height=(int) (bottomRight.getY()-topLeft.getY()+tileSize.getHeight());
-        // 
+        //
         // Rectangle dirty=new Rectangle((int) topLeft.getX(),(int) topLeft.getY(),width,height);
-        // 
+        //
         // repaint(dirty);
     }
 

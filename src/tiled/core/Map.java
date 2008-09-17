@@ -493,7 +493,7 @@ public class Map extends MultilayerPlane
      */
     public void swapTileSets(int index0, int index1) {
         if (index0 == index1) return;
-        TileSet set = (TileSet) tilesets.get(index0);
+        TileSet set = tilesets.get(index0);
         tilesets.set(index0, tilesets.get(index1));
         tilesets.set(index1, set);
 
