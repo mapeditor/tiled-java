@@ -110,7 +110,7 @@
   y           CDATA   #IMPLIED
 >
 
-<!ELEMENT object (properties?)>
+<!ELEMENT object (properties? image?)>
 <!ATTLIST object
   name        CDATA   #REQUIRED
   type        CDATA   #REQUIRED

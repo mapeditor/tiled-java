@@ -40,9 +40,8 @@ public class OpenMapAction extends AbstractFileAction
     }
 
     protected void doPerformAction() {
-        //Start at the location of the most recently loaded map file
-        String startLocation = TiledConfiguration.node("recent").get("file0",
-                null);
+        // Start at the location of the most recently loaded map file
+        String startLocation = TiledConfiguration.fileDialogStartLocation();
 
         JFileChooser chooser = new JFileChooser(startLocation);
 

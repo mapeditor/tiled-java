@@ -125,6 +125,11 @@ public class OrthoMapView extends MapView
             double ox = mo.getX() * zoom;
             double oy = mo.getY() * zoom;
 
+            Image objectImage = mo.getImage(zoom);
+            if (objectImage != null) {
+                g2d.drawImage(objectImage, (int) ox, (int) oy, null);
+            }
+
             if (mo.getWidth() == 0 || mo.getHeight() == 0) {
                 g2d.setRenderingHint(
                         RenderingHints.KEY_ANTIALIASING,

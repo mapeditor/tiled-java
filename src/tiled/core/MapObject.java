@@ -1,5 +1,5 @@
 /*
- *  Tiled Map Editor, (c) 2004-2006
+ *  Tiled Map Editor, (c) 2004-2008
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -12,21 +12,25 @@
 
 package tiled.core;
 
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.Properties;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 
 /**
- * @version $Id$
+ * An object occupying an {@link ObjectGroup}.
  */
 public class MapObject implements Cloneable
 {
     private Properties properties = new Properties();
 
-    protected Rectangle bounds = new Rectangle();
-    protected boolean bVisible = true;
-    protected String name = "Object";
-    protected String source;
-    protected String type = "";
+    private Rectangle bounds = new Rectangle();
+    private String name = "Object";
+    private String type = "";
+    private String imageSource = "";
+    private Image image;
+    private Image scaledImage;
 
     public MapObject(int x, int y, int width, int height) {
         bounds = new Rectangle(x, y, width, height);
@@ -47,12 +51,60 @@ public class MapObject implements Cloneable
         this.bounds = bounds;
     }
 
+    public String getImageSource() {
+        return imageSource;
+    }
+
+    public void setImageSource(String source) {
+        if (imageSource.equals(source))
+            return;
+
+        imageSource = source;
+
+        // Attempt to read the image
+        if (imageSource.length() > 0) {
+            try {
+                image = ImageIO.read(new File(imageSource));
+            } catch (IOException e) {
+                image = null;
+            }
+        } else {
+            image = null;
+        }
+
+        scaledImage = null;
+    }
+
+    /**
+     * Returns the image to be used when drawing this object. This image is
+     * scaled to the size of the object.
+     *
+     * @param zoom the requested zoom level of the image
+     * @return the image to be used when drawing this object
+     */
+    public Image getImage(double zoom) {
+        if (image == null)
+            return null;
+
+        final int zoomedWidth = (int) (getWidth() * zoom);
+        final int zoomedHeight = (int) (getHeight() * zoom);
+
+        if (scaledImage == null || scaledImage.getWidth(null) != zoomedWidth
+                || scaledImage.getHeight(null) != zoomedHeight)
+        {
+            scaledImage = image.getScaledInstance(zoomedWidth, zoomedHeight,
+                    Image.SCALE_SMOOTH);
+        }
+
+        return scaledImage;
+    }
+
     public int getX() {
         return bounds.x;
     }
 
     public void setX(int x) {
-        bounds.setLocation(x, getY());
+        bounds.x = x;
     }
 
     public int getY() {
@@ -60,43 +112,39 @@ public class MapObject implements Cloneable
     }
 
     public void setY(int y) {
-        bounds.setLocation(getX(), y);
+        bounds.y = y;
+    }
+
+    public void translate(int dx, int dy) {
+        bounds.translate(dx, dy);
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String s) {
-        name = s;
-    }
-
-    public String getSource() {
-        return source;
-    }
-
-    public void setSource(String s) {
-        source = s;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getType() {
         return type;
     }
 
-     public void setType(String s) {
-        type = s;
+    public void setType(String type) {
+        this.type = type;
     }
 
-     public int getWidth() {
+    public int getWidth() {
         return bounds.width;
     }
 
-    public void setWidth(int w) {
-        bounds.setSize(w, getHeight());
+    public void setWidth(int width) {
+        bounds.width = width;
     }
- 
-    public void setHeight(int h) {
-        bounds.setSize(getWidth(), h);
+
+    public void setHeight(int height) {
+        bounds.height = height;
     }
 
     public int getHeight() {
@@ -109,10 +157,6 @@ public class MapObject implements Cloneable
 
     public void setProperties(Properties p) {
         properties = p;
-    }
-
-    public void translate(int dx, int dy) {
-        bounds.translate(dx, dy);
     }
 
     public String toString() {

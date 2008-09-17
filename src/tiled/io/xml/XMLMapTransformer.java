@@ -357,7 +357,7 @@ public class XMLMapTransformer implements MapReader
 
                         // FIXME: importTileBitmap does not fully support URLs
                         String sourcePath = imgSource;
-                        if (!Util.checkRoot(imgSource)) {
+                        if (! new File(imgSource).isAbsolute()) {
                             sourcePath = tilesetBaseDir + imgSource;
                         }
 
@@ -395,7 +395,7 @@ public class XMLMapTransformer implements MapReader
         }
     }
 
-    private MapObject unmarshalObject(Node t) throws Exception {
+    private MapObject readMapObject(Node t) throws Exception {
         final String name = getAttributeValue(t, "name");
         final String type = getAttributeValue(t, "type");
         final int x = getAttribute(t, "x", 0);
@@ -410,6 +410,20 @@ public class XMLMapTransformer implements MapReader
             obj.setType(type);
 
         NodeList children = t.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            Node child = children.item(i);
+            if ("image".equalsIgnoreCase(child.getNodeName())) {
+                String source = getAttributeValue(child, "source");
+                if (source != null) {
+                    if (! new File(source).isAbsolute()) {
+                        source = xmlPath + source;
+                    }
+                    obj.setImageSource(source);
+                }
+                break;
+            }
+        }
+
         Properties props = new Properties();
         readProperties(children, props);
 
@@ -519,7 +533,7 @@ public class XMLMapTransformer implements MapReader
         for (int i = 0; i < children.getLength(); i++) {
             Node child = children.item(i);
             if ("object".equalsIgnoreCase(child.getNodeName())) {
-                og.addObject(unmarshalObject(child));
+                og.addObject(readMapObject(child));
             }
         }
 

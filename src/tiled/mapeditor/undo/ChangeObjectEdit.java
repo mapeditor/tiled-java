@@ -22,8 +22,6 @@ import tiled.mapeditor.Resources;
 
 /**
  * Changes the attributes and properties of an object.
- *
- * @version $Id$
  */
 public class ChangeObjectEdit extends AbstractUndoableEdit
 {
@@ -31,12 +29,14 @@ public class ChangeObjectEdit extends AbstractUndoableEdit
 
     private final String prevName;
     private final String prevType;
+    private final String prevImageSource;
     private final int prevWidth;
     private final int prevHeight;
     private final Properties prevProperties = new Properties();
 
     private String newName;
     private String newType;
+    private String newImageSource;
     private int newWidth;
     private int newHeight;
     private final Properties newProperties = new Properties();
@@ -47,6 +47,7 @@ public class ChangeObjectEdit extends AbstractUndoableEdit
         // Store the previous state so we can undo changes
         prevName = mapObject.getName();
         prevType = mapObject.getType();
+        prevImageSource = mapObject.getImageSource();
         prevWidth = mapObject.getWidth();
         prevHeight = mapObject.getHeight();
         prevProperties.putAll(mapObject.getProperties());
@@ -58,6 +59,7 @@ public class ChangeObjectEdit extends AbstractUndoableEdit
         // Store the current state so we can redo changes
         newName = mapObject.getName();
         newType = mapObject.getType();
+        newImageSource = mapObject.getImageSource();
         newWidth = mapObject.getWidth();
         newHeight = mapObject.getHeight();
         newProperties.clear();
@@ -65,6 +67,7 @@ public class ChangeObjectEdit extends AbstractUndoableEdit
 
         mapObject.setName(prevName);
         mapObject.setType(prevType);
+        mapObject.setImageSource(prevImageSource);
         mapObject.setWidth(prevWidth);
         mapObject.setHeight(prevHeight);
         mapObject.getProperties().clear();
@@ -76,6 +79,7 @@ public class ChangeObjectEdit extends AbstractUndoableEdit
 
         mapObject.setName(newName);
         mapObject.setType(newType);
+        mapObject.setImageSource(newImageSource);
         mapObject.setWidth(newWidth);
         mapObject.setHeight(newHeight);
         mapObject.getProperties().clear();

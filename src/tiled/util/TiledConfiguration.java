@@ -61,7 +61,7 @@ public final class TiledConfiguration
      *                <code>null</code>
      */
     public static void addToRecentFiles(String mapFile) {
-        assert (mapFile != null);
+        assert mapFile != null;
 
         // Get the existing recent file list
         List<String> recent = getRecentFiles();
@@ -82,7 +82,7 @@ public final class TiledConfiguration
         Preferences recentNode = prefs.node("recent");
         for (int i = 0; i < RECENT_FILE_COUNT && i < recent.size(); i++)
         {
-            String recentFile = (String) recent.get(i);
+            String recentFile = recent.get(i);
             recentNode.put("file" + i, recentFile);
         }
     }
@@ -103,5 +103,9 @@ public final class TiledConfiguration
             }
         }
         return recent;
+    }
+
+    public static String fileDialogStartLocation() {
+        return node("recent").get("file0", null);
     }
 }

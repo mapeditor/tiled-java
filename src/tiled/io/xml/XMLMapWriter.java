@@ -141,7 +141,7 @@ public class XMLMapWriter implements MapWriter
         Iterator ml = map.getLayers();
         while (ml.hasNext()) {
             MapLayer layer = (MapLayer)ml.next();
-            writeMapLayer(layer, w);
+            writeMapLayer(layer, w, wp);
         }
 
         w.endElement();
@@ -326,12 +326,12 @@ public class XMLMapWriter implements MapWriter
         w.endElement();
     }
 
-    private static void writeObjectGroup(ObjectGroup o, XMLWriter w)
+    private static void writeObjectGroup(ObjectGroup o, XMLWriter w, String wp)
         throws IOException
     {
         Iterator<MapObject> itr = o.getObjects();
         while (itr.hasNext()) {
-            writeObject(itr.next(), w);
+            writeMapObject(itr.next(), w, wp);
         }
     }
 
@@ -340,7 +340,7 @@ public class XMLMapWriter implements MapWriter
      * first global ids for the tilesets are determined, in order for the right
      * gids to be written to the layer data.
      */
-    private static void writeMapLayer(MapLayer l, XMLWriter w) throws IOException {
+    private static void writeMapLayer(MapLayer l, XMLWriter w, String wp) throws IOException {
         Preferences prefs = TiledConfiguration.node("saving");
         boolean encodeLayerData =
                 prefs.getBoolean("encodeLayerData", true);
@@ -378,7 +378,7 @@ public class XMLMapWriter implements MapWriter
         writeProperties(l.getProperties(), w);
 
         if (l instanceof ObjectGroup){
-            writeObjectGroup((ObjectGroup) l, w);
+            writeObjectGroup((ObjectGroup) l, w, wp);
         } else if (l instanceof TileLayer) {
             final TileLayer tl = (TileLayer) l;
             w.startElement("data");
@@ -539,7 +539,7 @@ public class XMLMapWriter implements MapWriter
         w.endElement();
     }
 
-    private static void writeObject(MapObject mapObject, XMLWriter w)
+    private static void writeMapObject(MapObject mapObject, XMLWriter w, String wp)
         throws IOException
     {
         w.startElement("object");
@@ -556,10 +556,14 @@ public class XMLMapWriter implements MapWriter
         if (mapObject.getHeight() != 0)
             w.writeAttribute("height", mapObject.getHeight());
 
-        if (mapObject.getSource() != null)
-            w.writeAttribute("source", mapObject.getSource());
-
         writeProperties(mapObject.getProperties(), w);
+
+        if (mapObject.getImageSource().length() > 0) {
+            w.startElement("image");
+            w.writeAttribute("source",
+                    getRelativePath(wp, mapObject.getImageSource()));
+            w.endElement();
+        }
 
         w.endElement();
     }
