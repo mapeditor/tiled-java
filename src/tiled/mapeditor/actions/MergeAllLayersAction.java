@@ -7,7 +7,7 @@
  *  (at your option) any later version.
  *
  *  Adam Turk <aturk@biggeruniverse.com>
- *  Bjorn Lindeijer <b.lindeijer@xs4all.nl>
+ *  Bjorn Lindeijer <bjorn@lindeijer.nl>
  */
 
 package tiled.mapeditor.actions;
