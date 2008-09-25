@@ -43,7 +43,7 @@ import tiled.util.Base64;
 import tiled.util.Util;
 
 /**
- * @version $Id$
+ * The standard map reader for TMX files.
  */
 public class XMLMapTransformer implements MapReader
 {

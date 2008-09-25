@@ -19,7 +19,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Vector;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -32,13 +31,15 @@ import tiled.io.PluggableMapIO;
 import tiled.util.TiledConfiguration;
 
 /**
- * @version $Id$
+ * The plugin class loader searches and loads available reader and writer
+ * plugins.
  */
 public final class PluginClassLoader extends URLClassLoader
 {
     private final Vector plugins;
     private final Vector readers, writers;
-    private final Hashtable readerFormats, writerFormats;
+    private final Hashtable<String, String> readerFormats;
+    private final Hashtable<String, String> writerFormats;
     private static PluginClassLoader instance;
 
     private PluginClassLoader() {
@@ -116,7 +117,8 @@ public final class PluginClassLoader extends URLClassLoader
                     jf.getManifest().getMainAttributes().getValue(
                             "Writer-Class");
 
-                Class readerClass = null, writerClass = null;
+                Class readerClass = null;
+                Class writerClass = null;
 
                 // Verify that the jar has the necessary files to be a
                 // plugin
@@ -176,12 +178,10 @@ public final class PluginClassLoader extends URLClassLoader
     }
 
     public Object getReaderFor(String file) throws Exception {
-        Iterator itr = readerFormats.keySet().iterator();
-        while (itr.hasNext()){
-            String key = (String)itr.next();
+        for (String key : readerFormats.keySet()) {
             String ext = key.substring(1);
             if (file.toLowerCase().endsWith(ext)) {
-                return loadClass((String)readerFormats.get(key)).newInstance();
+                return loadClass(readerFormats.get(key)).newInstance();
             }
         }
         throw new Exception(
@@ -189,12 +189,10 @@ public final class PluginClassLoader extends URLClassLoader
     }
 
     public Object getWriterFor(String file) throws Exception {
-        Iterator itr = writerFormats.keySet().iterator();
-        while (itr.hasNext()) {
-            String key = (String)itr.next();
+        for (String key : writerFormats.keySet()) {
             String ext = key.substring(1);
             if (file.toLowerCase().endsWith(ext)) {
-                return loadClass((String)writerFormats.get(key)).newInstance();
+                return loadClass(writerFormats.get(key)).newInstance();
             }
         }
         throw new Exception(

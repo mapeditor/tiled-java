@@ -24,17 +24,15 @@ import tiled.mapeditor.brush.ShapeBrush;
 
 /**
  * A panel that allows selecting a brush from a set of presets.
- *
- * @version $Id$
  */
 public class BrushBrowser extends JPanel
 {
     private int maxWidth = 25;
     private Brush selectedBrush;
-    private final LinkedList brushes;
+    private final LinkedList<Brush> brushes;
 
     public BrushBrowser() {
-        brushes = new LinkedList();
+        brushes = new LinkedList<Brush>();
         initPresets();
 
         MouseInputAdapter listener = new MouseInputAdapter() {
@@ -47,7 +45,7 @@ public class BrushBrowser extends JPanel
 
                 if (selectedIndex >= 0 && selectedIndex < brushes.size()) {
                     Brush previousBrush = selectedBrush;
-                    selectedBrush = (Brush) brushes.get(selectedIndex);
+                    selectedBrush = brushes.get(selectedIndex);
                     firePropertyChange("selectedbrush", previousBrush, selectedBrush);
                     repaint();
                 }
@@ -98,10 +96,10 @@ public class BrushBrowser extends JPanel
         g.setColor(Color.black);
 
         // Draw the brushes
-        Iterator itr = brushes.iterator();
+        Iterator<Brush> itr = brushes.iterator();
         int x = 0;
         while (itr.hasNext()) {
-            Brush brush = (Brush) itr.next();
+            Brush brush = itr.next();
             Rectangle bb = brush.getBounds();
             float o = maxWidth / 2.0f - bb.width / 2.0f;
             g.translate((int) o, (int) o);
@@ -121,12 +119,10 @@ public class BrushBrowser extends JPanel
         }
     }
 
-    public void setSelectedBrush(Brush brush) {
-        Iterator itr = brushes.iterator();
-        while (itr.hasNext()) {
-            Brush br = (Brush) itr.next();
-            if (br.equals(brush)) {
-                selectedBrush = br;
+    public void setSelectedBrush(Brush selectedBrush) {
+        for (Brush brush : brushes) {
+            if (brush.equals(selectedBrush)) {
+                this.selectedBrush = brush;
                 break;
             }
         }

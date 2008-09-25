@@ -14,7 +14,6 @@ package tiled.mapeditor.widget;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
@@ -30,16 +29,14 @@ import tiled.mapeditor.util.TileSelectionListener;
 /**
  * Displays a tileset and allows selecting a specific tile as well as
  * selecting several tiles for the creation of a stamp brush.
- *
- * @version $Id$
  */
 public class TilePalettePanel extends JPanel implements Scrollable,
        TilesetChangeListener
 {
     private static final int TILES_PER_ROW = 4;
     private TileSet tileset;
-    private List tileSelectionListeners;
-    private Vector tilesetMap;
+    private List<TileSelectionListener> tileSelectionListeners;
+    private Vector<Tile> tilesetMap;
     private Rectangle selection;
 
     /**
@@ -98,20 +95,16 @@ public class TilePalettePanel extends JPanel implements Scrollable,
 
     private void fireTileSelectionEvent(Tile selectedTile) {
         TileSelectionEvent event = new TileSelectionEvent(this, selectedTile);
-        Iterator iterator = tileSelectionListeners.iterator();
-
-        while (iterator.hasNext()) {
-            ((TileSelectionListener) iterator.next()).tileSelected(event);
+        for (TileSelectionListener listener : tileSelectionListeners) {
+            listener.tileSelected(event);
         }
     }
 
     private void fireTileRegionSelectionEvent(Rectangle selection) {
         TileLayer region = createTileLayerFromRegion(selection);
         TileRegionSelectionEvent event = new TileRegionSelectionEvent(this, region);
-        Iterator iterator = tileSelectionListeners.iterator();
-
-        while (iterator.hasNext()) {
-            ((TileSelectionListener) iterator.next()).tileRegionSelected(event);
+        for (TileSelectionListener listener : tileSelectionListeners) {
+            listener.tileRegionSelected(event);
         }
     }
 
@@ -156,7 +149,7 @@ public class TilePalettePanel extends JPanel implements Scrollable,
         revalidate();
         repaint();
     }
-    
+
     public TileSet getTileset() {
         return tileset;
     }
@@ -212,7 +205,7 @@ public class TilePalettePanel extends JPanel implements Scrollable,
         if (tileAt >= tilesetMap.size()) {
             return null;
         } else {
-            return (Tile) tilesetMap.get(tileAt);
+            return tilesetMap.get(tileAt);
         }
     }
 
@@ -284,7 +277,7 @@ public class TilePalettePanel extends JPanel implements Scrollable,
                      x < tilesPerRow && tileAt < tilesetMap.size();
                      x++, tileAt++)
                 {
-                    Tile tile = (Tile) tilesetMap.get(tileAt);
+                    Tile tile = tilesetMap.get(tileAt);
 
                     if (tile != null) {
                         tile.drawRaw(g, gx, gy + theight, 1.0);

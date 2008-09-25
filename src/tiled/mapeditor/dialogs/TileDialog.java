@@ -318,9 +318,9 @@ public class TileDialog extends JDialog
     public void queryImages() {
         Vector<Image> listData = new Vector<Image>();
 
-        Enumeration ids = tileset.getImageIds();
+        Enumeration<String> ids = tileset.getImageIds();
         while(ids.hasMoreElements()) {
-            Image img = tileset.getImageById(Integer.parseInt((String) ids.nextElement()));
+            Image img = tileset.getImageById(Integer.parseInt(ids.nextElement()));
             if (img != null)
                 listData.add(img);
         }

@@ -153,7 +153,7 @@ public class MultilayerPlane
      *
      * @return Vector the layer vector
      */
-    public Vector getLayerVector() {
+    public Vector<MapLayer> getLayerVector() {
         return layers;
     }
 
@@ -244,7 +244,7 @@ public class MultilayerPlane
      *
      * @return a listIterator
      */
-    public ListIterator getLayers() {
+    public ListIterator<MapLayer> getLayers() {
         return layers.listIterator();
     }
 

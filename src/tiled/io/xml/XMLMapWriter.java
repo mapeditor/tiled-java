@@ -128,9 +128,7 @@ public class XMLMapWriter implements MapWriter
         writeProperties(map.getProperties(), w);
 
         int firstgid = 1;
-        Iterator itr = map.getTilesets().iterator();
-        while (itr.hasNext()) {
-            TileSet tileset = (TileSet)itr.next();
+        for (TileSet tileset : map.getTilesets()) {
             tileset.setFirstGid(firstgid);
             writeTilesetReference(tileset, w, wp);
             firstgid += tileset.getMaxTileId() + 1;
@@ -138,9 +136,9 @@ public class XMLMapWriter implements MapWriter
 
         if (prefs.getBoolean("encodeLayerData", true) && prefs.getBoolean("usefulComments", false))
             w.writeComment("Layer data is " + (prefs.getBoolean("layerCompression", true) ? "compressed (GZip)" : "") + " binary data, encoded in Base64");
-        Iterator ml = map.getLayers();
+        Iterator<MapLayer> ml = map.getLayers();
         while (ml.hasNext()) {
-            MapLayer layer = (MapLayer)ml.next();
+            MapLayer layer = ml.next();
             writeMapLayer(layer, w, wp);
         }
 
@@ -262,9 +260,9 @@ public class XMLMapWriter implements MapWriter
             boolean tileSetImages = prefs.getBoolean("tileSetImages", false);
 
             if (tileSetImages) {
-                Enumeration ids = set.getImageIds();
+                Enumeration<String> ids = set.getImageIds();
                 while (ids.hasMoreElements()) {
-                    String id = (String)ids.nextElement();
+                    String id = ids.nextElement();
                     w.startElement("image");
                     w.writeAttribute("format", "png");
                     w.writeAttribute("id", id);

@@ -256,7 +256,7 @@ public class Map extends MultilayerPlane
         objects.add(o);
     }
 
-    public Iterator getObjects() {
+    public Iterator<MapObject> getObjects() {
         return objects.iterator();
     }
 
@@ -308,7 +308,7 @@ public class Map extends MultilayerPlane
      *
      * @see MultilayerPlane#setLayerVector
      */
-    public void setLayerVector(Vector layers) {
+    public void setLayerVector(Vector<MapLayer> layers) {
         super.setLayerVector(layers);
         fireMapChanged();
     }
@@ -408,12 +408,10 @@ public class Map extends MultilayerPlane
      *         or <code>null</code> when no such tileset exists
      */
     public TileSet findTileSetForTileGID(int gid) {
-        Iterator itr = tilesets.iterator();
         TileSet has = null;
-        while (itr.hasNext()) {
-            TileSet ts = (TileSet) itr.next();
-            if (ts.getFirstGid() <= gid) {
-                has = ts;
+        for (TileSet tileset : tilesets) {
+            if (tileset.getFirstGid() <= gid) {
+                has = tileset;
             }
         }
         return has;
@@ -476,10 +474,9 @@ public class Map extends MultilayerPlane
      */
     public int getTileHeightMax() {
         int maxHeight = tileHeight;
-        Iterator itr = tilesets.iterator();
 
-        while (itr.hasNext()) {
-            int height = ((TileSet)itr.next()).getTileHeight();
+        for (TileSet tileset : tilesets) {
+            int height = tileset.getTileHeight();
             if (height > maxHeight) {
                 maxHeight = height;
             }

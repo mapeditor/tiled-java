@@ -34,8 +34,6 @@ import tiled.util.NumberedSet;
  * a {@link Vector}.</p>
  *
  * <p>The other is the tile image.</p>
- *
- * @version $Id$
  */
 public class TileSet
 {
@@ -54,7 +52,7 @@ public class TileSet
     private Color transparentColor;
     private Properties defaultTileProperties;
     private Image tileSetImage;
-    private LinkedList tilesetChangeListeners = new LinkedList();
+    private LinkedList<TilesetChangeListener> tilesetChangeListeners;
 
     /**
      * Default constructor
@@ -64,6 +62,7 @@ public class TileSet
         images = new NumberedSet();
         tileDimensions = new Rectangle();
         defaultTileProperties = new Properties();
+        tilesetChangeListeners = new LinkedList();
     }
 
     /**
@@ -368,8 +367,8 @@ public class TileSet
      * @return a {@link Vector} mapping ordered set location to the next
      *         non-null tile
      */
-    public Vector generateGaplessVector() {
-        Vector gapless = new Vector();
+    public Vector<Tile> generateGaplessVector() {
+        Vector<Tile> gapless = new Vector<Tile>();
 
         for (int i = 0; i <= getMaxTileId(); i++) {
             if (getTile(i) != null) gapless.add(getTile(i));
@@ -539,10 +538,12 @@ public class TileSet
     /**
      * @return an Enumeration of the image ids
      */
-    public Enumeration getImageIds() {
-        Vector v = new Vector();
+    public Enumeration<String> getImageIds() {
+        Vector<String> v = new Vector();
         for (int id = 0; id <= images.getMaxId(); ++id) {
-            if (images.containsId(id)) v.add(Integer.toString(id));
+            if (images.containsId(id)) {
+                v.add(Integer.toString(id));
+            }
         }
         return v.elements();
     }
@@ -682,31 +683,22 @@ public class TileSet
 
     private void fireTilesetChanged() {
         TilesetChangedEvent event = new TilesetChangedEvent(this);
-
-        Iterator iterator = tilesetChangeListeners.iterator();
-        while (iterator.hasNext()) {
-            TilesetChangeListener l = (TilesetChangeListener) iterator.next();
-            l.tilesetChanged(event);
+        for (TilesetChangeListener listener : tilesetChangeListeners) {
+            listener.tilesetChanged(event);
         }
     }
 
     private void fireNameChanged(String oldName, String newName) {
         TilesetChangedEvent event = new TilesetChangedEvent(this);
-
-        Iterator iterator = tilesetChangeListeners.iterator();
-        while (iterator.hasNext()) {
-            TilesetChangeListener l = (TilesetChangeListener) iterator.next();
-            l.nameChanged(event, oldName, newName);
+        for (TilesetChangeListener listener : tilesetChangeListeners) {
+            listener.nameChanged(event, oldName, newName);
         }
     }
 
     private void fireSourceChanged(String oldSource, String newSource) {
         TilesetChangedEvent event = new TilesetChangedEvent(this);
-
-        Iterator iterator = tilesetChangeListeners.iterator();
-        while (iterator.hasNext()) {
-            TilesetChangeListener l = (TilesetChangeListener) iterator.next();
-            l.sourceChanged(event, oldSource, newSource);
+        for (TilesetChangeListener listener : tilesetChangeListeners) {
+            listener.sourceChanged(event, oldSource, newSource);
         }
     }
 }

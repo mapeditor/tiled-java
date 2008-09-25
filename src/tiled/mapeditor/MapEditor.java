@@ -1313,9 +1313,9 @@ public class MapEditor implements ActionListener, MouseListener,
             if (!redraw.equals(brushRedraw)) {
                 if (currentBrush instanceof CustomBrush) {
                     CustomBrush customBrush = (CustomBrush) currentBrush;
-                    ListIterator layers = customBrush.getLayers();
+                    ListIterator<MapLayer> layers = customBrush.getLayers();
                     while (layers.hasNext()) {
-                        MapLayer layer = (MapLayer) layers.next();
+                        MapLayer layer = layers.next();
                         layer.setOffset(brushRedraw.x, brushRedraw.y);
                     }
                 }
@@ -1415,20 +1415,18 @@ public class MapEditor implements ActionListener, MouseListener,
             }
         } else if (command.equals(Resources.getString("menu.tilesets.refresh"))) {
             if (currentMap != null) {
-               Vector tilesets = currentMap.getTilesets();
-               Iterator iter = tilesets.iterator();
-               while (iter.hasNext()) {
-                       TileSet tileset = (TileSet) iter.next();
-                   try {
-                       tileset.checkUpdate();
-                   } catch (IOException e) {
-                       JOptionPane.showMessageDialog(appFrame,
-                               e.getLocalizedMessage(),
-                               IMPORT_ERROR_MSG, JOptionPane.WARNING_MESSAGE);
-                   }
-               }
-               mapView.repaint();
-               brushPreview.setBrush(currentBrush);
+                Vector<TileSet> tilesets = currentMap.getTilesets();
+                for (TileSet tileset : tilesets) {
+                    try {
+                        tileset.checkUpdate();
+                    } catch (IOException e) {
+                        JOptionPane.showMessageDialog(appFrame,
+                                e.getLocalizedMessage(),
+                                IMPORT_ERROR_MSG, JOptionPane.WARNING_MESSAGE);
+                    }
+                }
+                mapView.repaint();
+                brushPreview.setBrush(currentBrush);
             }
         } else if (command.equals(Resources.getString("menu.tilesets.manager"))) {
             if (currentMap != null) {
@@ -1905,7 +1903,7 @@ public class MapEditor implements ActionListener, MouseListener,
         }
         public void actionPerformed(ActionEvent evt) {
             if (currentMap != null && clipboardLayer != null) {
-                Vector layersBefore = currentMap.getLayerVector();
+                Vector<MapLayer> layersBefore = currentMap.getLayerVector();
                 MapLayer ml = createLayerCopy(clipboardLayer);
                 ml.setName(Resources.getString("general.layer.layer")+" " + currentMap.getTotalLayers());
                 currentMap.addLayer(ml);
@@ -2172,12 +2170,12 @@ public class MapEditor implements ActionListener, MouseListener,
 
             // Get the first non-null tile from the first tileset containing
             // non-null tiles.
-            Vector tilesets = currentMap.getTilesets();
+            Vector<TileSet> tilesets = currentMap.getTilesets();
             Tile firstTile = null;
             if (!tilesets.isEmpty()) {
-                Iterator it = tilesets.iterator();
+                Iterator<TileSet> it = tilesets.iterator();
                 while (it.hasNext() && firstTile == null) {
-                    firstTile = ((TileSet) it.next()).getFirstTile();
+                    firstTile = it.next().getFirstTile();
                 }
             }
             setCurrentTile(firstTile);
@@ -2307,9 +2305,9 @@ public class MapEditor implements ActionListener, MouseListener,
         }
         else if (prefs.node("io").getBoolean("autoOpenLast", false)) {
             // Load last map if it still exists
-            java.util.List recent = TiledConfiguration.getRecentFiles();
+            java.util.List<String> recent = TiledConfiguration.getRecentFiles();
             if (!recent.isEmpty()) {
-                String filename = (String) recent.get(0);
+                String filename = recent.get(0);
                 if (new File(filename).exists()) {
                     editor.loadMap(filename);
                 }

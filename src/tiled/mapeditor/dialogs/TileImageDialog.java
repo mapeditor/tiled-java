@@ -122,10 +122,10 @@ public class TileImageDialog extends JDialog implements ListSelectionListener
         Vector listData = new Vector();
         int initialIndex = 0;
 
-        Enumeration ids = tileset.getImageIds();
+        Enumeration<String> ids = tileset.getImageIds();
         imageIds = new int[tileset.getTotalImages()];
         for (int i = 0; i < imageIds.length; ++i) {
-            imageIds[i] = Integer.parseInt((String)ids.nextElement());
+            imageIds[i] = Integer.parseInt(ids.nextElement());
         }
 
         Arrays.sort(imageIds);
