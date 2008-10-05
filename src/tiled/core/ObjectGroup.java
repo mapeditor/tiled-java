@@ -110,9 +110,11 @@ public class ObjectGroup extends MapLayer
 
     public Object clone() throws CloneNotSupportedException {
         ObjectGroup clone = (ObjectGroup) super.clone();
-        clone.objects = new LinkedList();
+        clone.objects = new LinkedList<MapObject>();
         for (MapObject object : objects) {
-            clone.objects.add((MapObject) object.clone());
+            final MapObject objectClone = (MapObject) object.clone();
+            clone.objects.add(objectClone);
+            objectClone.setObjectGroup(clone);
         }
         return clone;
     }
@@ -126,10 +128,12 @@ public class ObjectGroup extends MapLayer
 
     public void addObject(MapObject o) {
         objects.add(o);
+        o.setObjectGroup(this);
     }
 
     public void removeObject(MapObject o) {
         objects.remove(o);
+        o.setObjectGroup(null);
     }
 
     public Iterator<MapObject> getObjects() {
@@ -139,18 +143,18 @@ public class ObjectGroup extends MapLayer
     public MapObject getObjectAt(int x, int y) {
         for (MapObject obj : objects) {
             // Attempt to get an object bordering the point that has no width
-            if (obj.getWidth() == 0 && (obj.getX() + bounds.x) == x) {
-                        return obj;
-                }
+            if (obj.getWidth() == 0 && obj.getX() + bounds.x == x) {
+                return obj;
+            }
 
             // Attempt to get an object bordering the point that has no height
-            if (obj.getHeight() == 0 && (obj.getY() + bounds.y) == y) {
-                    return obj;
+            if (obj.getHeight() == 0 && obj.getY() + bounds.y == y) {
+                return obj;
             }
 
             Rectangle rect = new Rectangle(obj.getX() + bounds.x * myMap.getTileWidth(),
-                                           obj.getY() + bounds.y * myMap.getTileHeight(),
-                                           obj.getWidth(), obj.getHeight());
+                    obj.getY() + bounds.y * myMap.getTileHeight(),
+                    obj.getWidth(), obj.getHeight());
             if (rect.contains(x, y)) {
                 return obj;
             }

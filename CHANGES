@@ -1,3 +1,6 @@
+* Added support for associating an image with a map object
+* Fixed not being able to move an object group
+
 0.7.1 - September 2nd, 2008
 
 * Added support for a margin around a tileset image

@@ -18,6 +18,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Icon;
 
 import tiled.core.Map;
+import tiled.core.MapLayer;
 import tiled.mapeditor.MapEditor;
 import tiled.mapeditor.undo.MapLayerStateEdit;
 
@@ -60,13 +61,13 @@ public abstract class AbstractLayerAction extends AbstractAction
     public final void actionPerformed(ActionEvent e) {
         // Capture the layers before the operation is executed.
         Map map = editor.getCurrentMap();
-        Vector layersBefore = new Vector(map.getLayerVector());
+        Vector<MapLayer> layersBefore = new Vector(map.getLayerVector());
 
         doPerformAction();
 
         // Capture the layers after the operation is executed and create the
         // layer state edit instance.
-        Vector layersAfter = new Vector(map.getLayerVector());
+        Vector<MapLayer> layersAfter = new Vector(map.getLayerVector());
         MapLayerStateEdit mapLayerStateEdit =
                 new MapLayerStateEdit(map, layersBefore, layersAfter,
                                       e.getActionCommand());

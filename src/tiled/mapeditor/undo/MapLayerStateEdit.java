@@ -18,18 +18,23 @@ import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
 import tiled.core.Map;
+import tiled.core.MapLayer;
 
 /**
- * @version $Id$
+ * A change in the layer state. Used for adding, removing and rearranging
+ * the layer stack of a map.
  */
 public class MapLayerStateEdit extends AbstractUndoableEdit
 {
     private final Map map;
-    private final Vector layersBefore;
-    private final Vector layersAfter;
+    private final Vector<MapLayer> layersBefore;
+    private final Vector<MapLayer> layersAfter;
     private final String name;
 
-    public MapLayerStateEdit(Map m, Vector before, Vector after, String name) {
+    public MapLayerStateEdit(Map m,
+                             Vector<MapLayer> before,
+                             Vector<MapLayer> after,
+                             String name) {
         map = m;
         layersBefore = before;
         layersAfter = after;

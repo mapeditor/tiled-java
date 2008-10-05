@@ -1906,7 +1906,7 @@ public class MapEditor implements ActionListener, MouseListener,
                 currentMap.addLayer(ml);
                 undoSupport.postEdit(
                         new MapLayerStateEdit(currentMap, layersBefore,
-                            new Vector(currentMap.getLayerVector()),
+                            new Vector<MapLayer>(currentMap.getLayerVector()),
                             "Paste Selection"));
             }
         }

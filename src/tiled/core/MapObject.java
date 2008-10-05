@@ -24,7 +24,7 @@ import javax.imageio.ImageIO;
 public class MapObject implements Cloneable
 {
     private Properties properties = new Properties();
-
+    private ObjectGroup objectGroup;
     private Rectangle bounds = new Rectangle();
     private String name = "Object";
     private String type = "";
@@ -41,6 +41,23 @@ public class MapObject implements Cloneable
         clone.bounds = new Rectangle(bounds);
         clone.properties = (Properties) properties.clone();
         return clone;
+    }
+
+    /**
+     * @return the object group this object is part of
+     */
+    public ObjectGroup getObjectGroup() {
+        return objectGroup;
+    }
+
+    /**
+     * Sets the object group this object is part of. Should only be called by
+     * the object group.
+     *
+     * @param objectGroup the object group this object is part of
+     */
+    public void setObjectGroup(ObjectGroup objectGroup) {
+        this.objectGroup = objectGroup;
     }
 
     public Rectangle getBounds() {
