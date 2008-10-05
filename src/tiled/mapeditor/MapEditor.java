@@ -50,8 +50,6 @@ import tiled.view.MapView;
 
 /**
  * The main class for the Tiled Map Editor.
- *
- * @version $Id$
  */
 public class MapEditor implements ActionListener, MouseListener,
         MouseMotionListener, MapChangeListener, ListSelectionListener,
@@ -739,7 +737,7 @@ public class MapEditor implements ActionListener, MouseListener,
         pourButton.setEnabled(tileLayer);
         eyedButton.setEnabled(tileLayer);
         marqueeButton.setEnabled(tileLayer);
-        moveButton.setEnabled(tileLayer);
+        moveButton.setEnabled(validSelection);
         objectAddButton.setEnabled(objectGroup);
         objectRemoveButton.setEnabled(objectGroup);
         objectMoveButton.setEnabled(objectGroup);
@@ -971,17 +969,16 @@ public class MapEditor implements ActionListener, MouseListener,
                         setCurrentTile(newTile);
                     }
                     break;
-                case PS_MOVE:
-                    if (layer instanceof TileLayer) {
-                        Point translation = new Point(
-                                tile.x - mousePressLocation.x,
-                                tile.y - mousePressLocation.y);
+                case PS_MOVE: {
+                    Point translation = new Point(
+                            tile.x - mousePressLocation.x,
+                            tile.y - mousePressLocation.y);
 
-                        layer.translate(translation.x, translation.y);
-                        moveDist.translate(translation.x, translation.y);
-                        mapView.repaint();
-                    }
+                    layer.translate(translation.x, translation.y);
+                    moveDist.translate(translation.x, translation.y);
+                    mapView.repaint();
                     break;
+                }
                 case PS_MARQUEE:
                     if (!(layer instanceof TileLayer)) {
                         break;

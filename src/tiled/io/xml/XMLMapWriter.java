@@ -30,7 +30,7 @@ import tiled.util.Base64;
 import tiled.util.TiledConfiguration;
 
 /**
- * @version $Id$
+ * A writer for Tiled's TMX map format.
  */
 public class XMLMapWriter implements MapWriter
 {
