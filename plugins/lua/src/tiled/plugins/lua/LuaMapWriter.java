@@ -1,4 +1,4 @@
-/* 
+/*
  *  Lua MapWriter plugin for Tiled.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -28,8 +28,6 @@ import tiled.mapeditor.selection.SelectionLayer;
 /**
  * Exporter for writing maps to a Lua file. Loading maps in Lua could
  * barely be easier!
- *
- * @version $Id$
  */
 public class LuaMapWriter implements MapWriter
 {
@@ -158,20 +156,31 @@ public class LuaMapWriter implements MapWriter
 
     /**
      * Writes an object.
-     * @param m
-     * @param o
+     * @param m the object to write
      * @throws java.io.IOException
      */
-    private void writeObject(MapObject m, ObjectGroup o) throws IOException
+    private void writeObject(MapObject m) throws IOException
     {
-        Rectangle b = o.getBounds();
+        final ObjectGroup o = m.getObjectGroup();
+        final Rectangle b = o.getBounds();
         startTable();
         writelnKeyAndValue("label", "object");
+
+        // TODO: The object groups coordinates are in tiles, not pixels
         writelnKeyAndValue("x", m.getX() + b.x);
         writelnKeyAndValue("y", m.getY() + b.y);
         writelnKeyAndValue("type", m.getType());
-        if (m.getSource() != null) {
-            writelnKeyAndValue("source", m.getSource());
+
+        if (m.getImageSource().length() > 0) {
+            startTable();
+            writelnKeyAndValue("label", "image");
+
+            // Relative Path feature put on hold.
+            // Works out the Filename part only.
+            String imageFilepart = m.getImageSource().substring(
+                    m.getImageSource().replace("/","\\").lastIndexOf("\\") + 1);
+            writelnKeyAndValue("source", imageFilepart);
+            endTable();
         }
         writeProperties(m.getProperties());
         endTable();
@@ -184,9 +193,9 @@ public class LuaMapWriter implements MapWriter
      */
     private void writeObjectGroup(ObjectGroup o) throws IOException
     {
-        Iterator itr = o.getObjects();
+        Iterator<MapObject> itr = o.getObjects();
         while (itr.hasNext()) {
-            writeObject((MapObject)itr.next(), o);
+            writeObject(itr.next());
         }
     }
 
@@ -250,11 +259,11 @@ public class LuaMapWriter implements MapWriter
         if (tilebmpFile != null) {
             startTable();
             writelnKeyAndValue("label", "image");
-            
+
             // Relative Path feature put on hold.
             // Works out the Filename part only.
             String tilebmpFilepart = tilebmpFile.substring( tilebmpFile.replace("/","\\").lastIndexOf("\\") +1 );
-            writelnKeyAndValue("source", tilebmpFilepart); 
+            writelnKeyAndValue("source", tilebmpFilepart);
 
             Color trans = set.getTransparentColor();
             if (trans != null) {
@@ -392,7 +401,7 @@ public class LuaMapWriter implements MapWriter
 
     /**
      * Saves a map to a file.
-     * 
+     *
      * @param map the map to be saved
      * @param filename the filename of the map file
      * @throws java.io.IOException
@@ -405,7 +414,7 @@ public class LuaMapWriter implements MapWriter
     /**
      * Writes a map to an already opened stream. Useful
      * for maps which are part of a larger binary dataset
-     * 
+     *
      * @param map the Map to be written
      * @param out the output stream to write to
      * @throws java.io.IOException
@@ -441,9 +450,9 @@ public class LuaMapWriter implements MapWriter
 
         startTable("tilesets");
         int firstgid = 1;
-        Iterator itr = map.getTilesets().iterator();
+        Iterator<TileSet> itr = map.getTilesets().iterator();
         while (itr.hasNext()) {
-            TileSet tileset = (TileSet)itr.next();
+            TileSet tileset = itr.next();
             tileset.setFirstGid(firstgid);
             writeTilesetReference(tileset);
             firstgid += tileset.getMaxTileId() + 1;
@@ -451,9 +460,9 @@ public class LuaMapWriter implements MapWriter
         endTable();
 
         startTable("layers");
-        Iterator ml = map.getLayers();
+        Iterator<MapLayer> ml = map.getLayers();
         while (ml.hasNext()) {
-            MapLayer layer = (MapLayer)ml.next();
+            MapLayer layer = ml.next();
             writeMapLayer(layer);
         }
         endTable();
@@ -468,7 +477,7 @@ public class LuaMapWriter implements MapWriter
     /**
      * Overload this to write a tileset to an open stream. Tilesets are not
      * supported by this writer.
-     * 
+     *
      * @param set
      * @param out
      * @throws Exception
@@ -479,7 +488,7 @@ public class LuaMapWriter implements MapWriter
 
     /**
      * Saves a tileset to a file. Tilesets are not supported by this writer.
-     * 
+     *
      * @param set
      * @param filename the filename of the tileset file
      * @throws Exception
