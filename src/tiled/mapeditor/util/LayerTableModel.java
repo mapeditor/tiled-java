@@ -19,7 +19,7 @@ import tiled.core.MultilayerPlane;
 import tiled.mapeditor.Resources;
 
 /**
- * @version $Id$
+ * The model used to display the layer stack.
  */
 public class LayerTableModel extends AbstractTableModel
 {
@@ -29,6 +29,9 @@ public class LayerTableModel extends AbstractTableModel
             Resources.getString("dialog.main.show.column"),
             Resources.getString("dialog.main.layername.column")
     };
+
+    public LayerTableModel() {
+    }
 
     public LayerTableModel(MultilayerPlane map) {
         this.map = map;
@@ -44,23 +47,22 @@ public class LayerTableModel extends AbstractTableModel
     }
 
     public int getRowCount() {
-        if (map != null) {
-            int totalLayers = map.getTotalLayers();
-            /*
-            for (int j = 0; j < map.getTotalLayers(); j++) {
-                if (map.getLayer(j).getClass() == SelectionLayer.class) {
-                    if (TiledConfiguration.root().getBoolean("layer.showselection", true)) {
-                        totalLayers++;
-                    }
-                } else {
+        if (map == null)
+            return 0;
+
+        int totalLayers = map.getTotalLayers();
+        /*
+        for (int j = 0; j < map.getTotalLayers(); j++) {
+            if (map.getLayer(j).getClass() == SelectionLayer.class) {
+                if (TiledConfiguration.root().getBoolean("layer.showselection", true)) {
                     totalLayers++;
                 }
+            } else {
+                totalLayers++;
             }
-            */
-            return totalLayers;
-        } else {
-            return 0;
         }
+        */
+        return totalLayers;
     }
 
     public int getColumnCount() {

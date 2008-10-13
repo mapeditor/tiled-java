@@ -593,7 +593,7 @@ public class MapEditor implements ActionListener, MouseListener,
         miniMapSp.setMinimumSize(new Dimension(0, 120));
 
         // Layer table
-        layerTable = new JTable(new LayerTableModel(currentMap));
+        layerTable = new JTable(new LayerTableModel());
         layerTable.getColumnModel().getColumn(0).setPreferredWidth(32);
         layerTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         layerTable.getSelectionModel().addListSelectionListener(this);

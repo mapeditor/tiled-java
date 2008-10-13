@@ -94,11 +94,11 @@ public class UndoHandler extends UndoManager
 
     public String[] getEdits() {
         String[] list = new String[edits.size()];
-        Iterator itr = edits.iterator();
+        Iterator<UndoableEdit> itr = edits.iterator();
         int i = 0;
 
         while (itr.hasNext()) {
-            UndoableEdit e = (UndoableEdit)itr.next();
+            UndoableEdit e = itr.next();
             list[i++] = e.getPresentationName();
         }
 

@@ -173,6 +173,11 @@ public class XMLMapWriter implements MapWriter
      * Writes a reference to an external tileset into a XML document. In the
      * case where the tileset is not stored in an external file, writes the
      * contents of the tileset instead.
+     *
+     * @param set the tileset to write a reference to
+     * @param w   the XML writer to write to
+     * @param wp  the working directory of the map
+     * @throws java.io.IOException
      */
     private static void writeTilesetReference(TileSet set, XMLWriter w, String wp)
         throws IOException {
@@ -183,16 +188,12 @@ public class XMLMapWriter implements MapWriter
             writeTileset(set, w, wp);
         } else {
             w.startElement("tileset");
-            try {
-                w.writeAttribute("firstgid", set.getFirstGid());
-                w.writeAttribute("source", source.substring(
-                            source.lastIndexOf(File.separatorChar) + 1));
-                if (set.getBaseDir() != null) {
-                    w.writeAttribute("basedir", set.getBaseDir());
-                }
-            } finally {
-                w.endElement();
+            w.writeAttribute("firstgid", set.getFirstGid());
+            w.writeAttribute("source", getRelativePath(wp, source));
+            if (set.getBaseDir() != null) {
+                w.writeAttribute("basedir", set.getBaseDir());
             }
+            w.endElement();
         }
     }
 
