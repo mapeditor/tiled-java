@@ -45,7 +45,7 @@ public class OrthoMapView extends MapView
 
     public int getScrollableBlockIncrement(Rectangle visibleRect,
             int orientation, int direction) {
-        Dimension tsize = getTileSize();
+        Dimension tsize = getMapTileSize();
 
         if (orientation == SwingConstants.VERTICAL) {
             return (visibleRect.height / tsize.height) * tsize.height;
@@ -57,7 +57,7 @@ public class OrthoMapView extends MapView
 
     public int getScrollableUnitIncrement(Rectangle visibleRect,
             int orientation, int direction) {
-        Dimension tsize = getTileSize();
+        Dimension tsize = getMapTileSize();
         if (orientation == SwingConstants.VERTICAL) {
             return tsize.height;
         }
@@ -67,53 +67,68 @@ public class OrthoMapView extends MapView
     }
 
     public Dimension getPreferredSize() {
-        Dimension tsize = getTileSize();
+        Dimension tsize = getMapTileSize();
 
         return new Dimension(
                 map.getWidth() * tsize.width,
                 map.getHeight() * tsize.height);
     }
-
+	
     protected void paintLayer(Graphics2D g2d, TileLayer layer) {
         // Determine tile size and offset
-        Dimension tsize = getTileSize();
+        Dimension tsize = getLayerTileSize(layer);
         if (tsize.width <= 0 || tsize.height <= 0) {
             return;
         }
-        Polygon gridPoly = createGridPolygon(0, -tsize.height, 0);
-
+		
+		
+        Polygon gridPoly = createGridPolygon(tsize, 0, -tsize.height, 0);
+		
+		Point poffset = calculateParallaxOffsetZoomed(layer);
+		
         // Determine area to draw from clipping rectangle
         Rectangle clipRect = g2d.getClipBounds();
+/*		clipRect.x -= poffset.x;
+		clipRect.y -= poffset.y;
         int startX = clipRect.x / tsize.width;
         int startY = clipRect.y / tsize.height;
         int endX = (clipRect.x + clipRect.width) / tsize.width + 1;
         int endY = (clipRect.y + clipRect.height) / tsize.height + 3;
         // (endY +2 for high tiles, could be done more properly)
-
+*/
+		Point start = this.screenToTileCoords(layer, clipRect.x, clipRect.y);
+		Point end = this.screenToTileCoords(layer, (clipRect.x + clipRect.width), (clipRect.y + clipRect.height));
+		end.x += 1;
+		end.y += 3;
+		
+		boolean isSelectionLayer = layer instanceof SelectionLayer;
+		
         // Draw this map layer
-        for (int y = startY, gy = (startY + 1) * tsize.height;
-                y < endY; y++, gy += tsize.height) {
-            for (int x = startX, gx = startX * tsize.width;
-                    x < endX; x++, gx += tsize.width) {
+        for (int y = start.y, gy = (start.y + 1) * tsize.height + poffset.y;
+                y < end.y; y++, gy += tsize.height) {
+            for (int x = start.x, gx = start.x * tsize.width + poffset.x;
+                    x < end.x; x++, gx += tsize.width) {
                 Tile tile = layer.getTileAt(x, y);
 
-                if (tile != null) {
-                    if (layer instanceof SelectionLayer) {
-                        gridPoly.translate(gx, gy);
-                        g2d.fillPolygon(gridPoly);
-                        gridPoly.translate(-gx, -gy);
-                        //paintEdge(g, layer, gx, gy);
-                    }
-                    else {
-                        tile.draw(g2d, gx, gy, zoom);
-                    }
-                }
+                if (tile == null)
+					continue;
+				
+				if (isSelectionLayer) {
+					gridPoly.translate(gx, gy);
+					g2d.fillPolygon(gridPoly);
+					gridPoly.translate(-gx, -gy);
+					//paintEdge(g, layer, gx, gy);
+				}
+				else {
+					tile.draw(g2d, gx, gy, zoom);
+				}
             }
         }
     }
 
     protected void paintObjectGroup(Graphics2D g2d, ObjectGroup og) {
-        final Dimension tsize = getTileSize();
+        final Dimension tsize = getLayerTileSize(og);
+		assert tsize.width != 0 && tsize.height != 0;
         final Rectangle bounds = og.getBounds();
         Iterator<MapObject> itr = og.getObjects();
         g2d.translate(
@@ -168,32 +183,50 @@ public class OrthoMapView extends MapView
     }
 
     protected void paintGrid(Graphics2D g2d) {
+		MapLayer currentLayer = getCurrentLayer();
+		// the grid size is dependent on the current layer - no current layer, no grid.
+		if(currentLayer == null)
+			return;
+		
         // Determine tile size
-        Dimension tsize = getTileSize();
+        Dimension tsize = getLayerTileSize(currentLayer);
         if (tsize.width <= 0 || tsize.height <= 0) {
             return;
         }
-
+		Point offset = calculateParallaxOffsetZoomed(currentLayer);
+		
         // Determine lines to draw from clipping rectangle
         Rectangle clipRect = g2d.getClipBounds();
-        int startX = clipRect.x / tsize.width * tsize.width;
-        int startY = clipRect.y / tsize.height * tsize.height;
-        int endX = clipRect.x + clipRect.width;
-        int endY = clipRect.y + clipRect.height;
-
-        for (int x = startX; x < endX; x += tsize.width) {
+		
+		// transforming coordinates back and forth between screen and tile 
+		// coordinates to quantise the given screen rectangle to coordinates bla 
+		// that match the grid lines
+		Point startTile = screenToTileCoords(currentLayer, clipRect.x, clipRect.y);
+		
+		Point start = tileToScreenCoords(offset, tsize, startTile.x, startTile.y);
+		Point end = new Point(clipRect.x + clipRect.width, clipRect.y + clipRect.height);
+		
+		for (int x = start.x; x < end.x; x += tsize.width) {
             g2d.drawLine(x, clipRect.y, x, clipRect.y + clipRect.height - 1);
         }
-        for (int y = startY; y < endY; y += tsize.height) {
+        for (int y = start.y; y < end.y; y += tsize.height) {
             g2d.drawLine(clipRect.x, y, clipRect.x + clipRect.width - 1, y);
         }
     }
 
     protected void paintCoordinates(Graphics2D g2d) {
-        Dimension tsize = getTileSize();
+		// like the grid, the coordinates are dependent on the current layer
+		// (since the tile size can be different from layer to layer
+		MapLayer currentLayer = getCurrentLayer();
+		if(currentLayer == null)
+			return;
+		
+        Dimension tsize = getMapTileSize();
         if (tsize.width <= 0 || tsize.height <= 0) {
             return;
         }
+		Point offset = calculateParallaxOffsetZoomed(currentLayer);
+		
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
                              RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
@@ -204,33 +237,30 @@ public class OrthoMapView extends MapView
 
         // Determine area to draw from clipping rectangle
         Rectangle clipRect = g2d.getClipBounds();
-        int startX = clipRect.x / tsize.width;
-        int startY = clipRect.y / tsize.height;
-        int endX = (clipRect.x + clipRect.width) / tsize.width + 1;
-        int endY = (clipRect.y + clipRect.height) / tsize.height + 1;
+		Point start = screenToTileCoords(currentLayer, clipRect.x, clipRect.y);
+		Point end = screenToTileCoords(currentLayer, clipRect.x+clipRect.width, clipRect.y+clipRect.height);
+		end.x += 1;
+		end.y += 1;
 
         // Draw the coordinates
-        int gy = startY * tsize.height;
-        for (int y = startY; y < endY; y++) {
-            int gx = startX * tsize.width;
-            for (int x = startX; x < endX; x++) {
+        for (int y = start.y; y < end.y; y++) {
+	        Point g = tileToScreenCoords(offset, tsize, start.x, y);
+            for (int x = start.x; x < end.x; x++) {
                 String coords = "(" + x + "," + y + ")";
                 Rectangle2D textSize =
                         font.getStringBounds(coords, fontRenderContext);
 
-                int fx = gx + (int) ((tsize.width - textSize.getWidth()) / 2);
-                int fy = gy + (int) ((tsize.height + textSize.getHeight()) / 2);
+                int fx = g.x + (int) ((tsize.width - textSize.getWidth()) / 2);
+                int fy = g.y + (int) ((tsize.height + textSize.getHeight()) / 2);
 
                 g2d.drawString(coords, fx, fy);
-                gx += tsize.width;
+                g.x += tsize.width;
             }
-            gy += tsize.height;
         }
     }
 
-
     protected void paintPropertyFlags(Graphics2D g2d, TileLayer layer) {
-        Dimension tsize = getTileSize();
+        Dimension tsize = getLayerTileSize(layer);
         if (tsize.width <= 0 || tsize.height <= 0) {
             return;
         }
@@ -279,9 +309,9 @@ public class OrthoMapView extends MapView
             y += tsize.height;
         }
     }
-
-    public void repaintRegion(Rectangle region) {
-        Dimension tsize = getTileSize();
+	
+    public void repaintRegion(MapLayer layer,Rectangle region) {
+        Dimension tsize = getLayerTileSize(layer);
         if (tsize.width <= 0 || tsize.height <= 0) {
             return;
         }
@@ -289,47 +319,52 @@ public class OrthoMapView extends MapView
                 (int) (map.getTileHeightMax() * zoom - tsize.height);
 
         // Calculate the visible corners of the region
-        int startX = region.x * tsize.width;
-        int startY = region.y * tsize.height - maxExtraHeight;
-        int endX = (region.x + region.width) * tsize.width;
-        int endY = (region.y + region.height) * tsize.height;
-
+        Point start = tileToScreenCoords(layer, region.x, region.y);
+		Point end =   tileToScreenCoords(layer, (region.x + region.width), (region.y + region.height));
+		
+		start.x -= maxExtraHeight;
+		
         Rectangle dirty =
-            new Rectangle(startX, startY, endX - startX, endY - startY);
+            new Rectangle(start.x, start.y, end.x - start.x, end.y - start.y);
 
         repaint(dirty);
     }
 
-    public Point screenToTileCoords(int x, int y) {
-        Dimension tsize = getTileSize();
-        return new Point(x / tsize.width, y / tsize.height);
+    public Point screenToTileCoords(MapLayer layer,int x, int y) {
+        Dimension tsize = getLayerTileSize(layer);
+		Point poffset = calculateParallaxOffsetZoomed(layer);
+        return new Point((x-poffset.x) / tsize.width, (y-poffset.y) / tsize.height);
     }
 
+    public Point tileToScreenCoords(Point offset,Dimension tileDimension,int x, int y) {
+        return new Point(offset.x + x * tileDimension.width, offset.y + y * tileDimension.height);
+    }
+	
     public Point screenToPixelCoords(int x, int y) {
         return new Point(
                 (int) (x / zoom), (int) (y / zoom));
     }
 
-    protected Dimension getTileSize() {
+	protected Dimension getLayerTileSize(MapLayer layer) {
+        return new Dimension(
+                (int) (layer.getTileWidth() * zoom),
+                (int) (layer.getTileHeight() * zoom));
+	}
+
+    protected Dimension getMapTileSize() {
         return new Dimension(
                 (int) (map.getTileWidth() * zoom),
                 (int) (map.getTileHeight() * zoom));
     }
 
-    protected Polygon createGridPolygon(int tx, int ty, int border) {
-        Dimension tsize = getTileSize();
-
+    protected Polygon createGridPolygon(Dimension tileDimension, int tx, int ty, int border) {
         Polygon poly = new Polygon();
         poly.addPoint(tx - border, ty - border);
-        poly.addPoint(tx + tsize.width + border, ty - border);
-        poly.addPoint(tx + tsize.width + border, ty + tsize.height + border);
-        poly.addPoint(tx - border, ty + tsize.height + border);
+        poly.addPoint(tx + tileDimension.width + border, ty - border);
+        poly.addPoint(tx + tileDimension.width + border, ty + tileDimension.height + border);
+        poly.addPoint(tx - border, ty + tileDimension.height + border);
 
         return poly;
     }
 
-    public Point tileToScreenCoords(int x, int y) {
-        Dimension tsize = getTileSize();
-        return new Point(x * tsize.width, y * tsize.height);
-    }
 }

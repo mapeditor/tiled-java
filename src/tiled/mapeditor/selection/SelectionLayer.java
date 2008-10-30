@@ -38,8 +38,8 @@ public class SelectionLayer extends TileLayer
         init();
     }
 
-    public SelectionLayer(int w, int h) {
-        super(w, h);
+    public SelectionLayer(int w, int h, int tileWidth, int tileHeight) {
+        super(w, h, tileWidth, tileHeight);
         init();
     }
 

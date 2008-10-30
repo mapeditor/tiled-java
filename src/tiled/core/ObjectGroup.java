@@ -93,7 +93,9 @@ public class ObjectGroup extends MapLayer
         // TODO: Figure out what object group should do with this method
     }
 
+	@Override
     public void copyTo(MapLayer other) {
+		super.copyTo(other);
         // TODO: Implement copying to another object group (same as merging)
     }
 
@@ -152,8 +154,8 @@ public class ObjectGroup extends MapLayer
                 return obj;
             }
 
-            Rectangle rect = new Rectangle(obj.getX() + bounds.x * myMap.getTileWidth(),
-                    obj.getY() + bounds.y * myMap.getTileHeight(),
+            Rectangle rect = new Rectangle(obj.getX() + bounds.x * getMap().getTileWidth(),
+                    obj.getY() + bounds.y * getMap().getTileHeight(),
                     obj.getWidth(), obj.getHeight());
             if (rect.contains(x, y)) {
                 return obj;
@@ -171,8 +173,8 @@ public class ObjectGroup extends MapLayer
             if (obj.getWidth() == 0 && obj.getHeight() == 0) {
                 shape = new Ellipse2D.Double(obj.getX() * zoom, obj.getY() * zoom, 10 * zoom, 10 * zoom);
             } else {
-                shape = new Rectangle2D.Double(obj.getX() + bounds.x * myMap.getTileWidth(),
-                        obj.getY() + bounds.y * myMap.getTileHeight(),
+                shape = new Rectangle2D.Double(obj.getX() + bounds.x * getMap().getTileWidth(),
+                        obj.getY() + bounds.y * getMap().getTileHeight(),
                         obj.getWidth() > 0 ? obj.getWidth() : zoom,
                         obj.getHeight() > 0 ? obj.getHeight() : zoom);
             }

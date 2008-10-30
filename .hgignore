@@ -3,3 +3,8 @@ syntax: glob
 *.jar
 build/*
 intellij/*
+\.orig\..*$
+\.orig$
+\.chg\..*$
+\.rej$
+\.conflict\~$

@@ -27,6 +27,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -141,6 +142,15 @@ public class XMLMapTransformer implements MapReader
         }
     }
 
+    private static boolean getAttribute(Node node, String attribname, boolean def) {
+        final String attr = getAttributeValue(node, attribname);
+        if (attr != null) {
+            return Boolean.parseBoolean(attr);
+        } else {
+            return def;
+        }
+    }
+
     private Object unmarshalClass(Class reflector, Node node)
         throws InstantiationException, IllegalAccessException,
                InvocationTargetException {
@@ -184,9 +194,11 @@ public class XMLMapTransformer implements MapReader
 
     private Image unmarshalImage(Node t, String baseDir) throws IOException
     {
+		Element e = ((Element)t);
+		ImageHelper.ImageFormat imageFormat = ImageHelper.ImageFormat.valueOf(e.getAttribute("format").toUpperCase(), ImageHelper.ImageFormat.PNG);
         Image img = null;
 
-        String source = getAttributeValue(t, "source");
+		String source = getAttributeValue(t, "source");
 
         if (source != null) {
             if (Util.checkRoot(source)) {
@@ -211,7 +223,19 @@ public class XMLMapTransformer implements MapReader
                         String sdata = cdata.getNodeValue();
                         char[] charArray = sdata.trim().toCharArray();
                         byte[] imageData = Base64.decode(charArray);
-                        img = ImageHelper.bytesToImage(imageData);
+												
+						switch(imageFormat){
+							case PNG:{
+		                        img = ImageHelper.pngToImage(imageData);
+							}	break;
+							case RAW:{
+								int width = Integer.parseInt(e.getAttribute("width"));
+								int height = Integer.parseInt(e.getAttribute("height"));
+								ImageHelper.PixelFormat pixelFormat = ImageHelper.PixelFormat.valueOf(e.getAttribute("pixelFormat"));
+								boolean bigEndian = e.getAttribute("byteOrder").equals("bigEndian");
+								img = ImageHelper.rawToImage(imageData, pixelFormat, bigEndian, width, height);
+							}	break;
+						}
 
                         // Deriving a scaled instance, even if it has the same
                         // size, somehow makes drawing of the tiles a lot
@@ -553,12 +577,15 @@ public class XMLMapTransformer implements MapReader
     private MapLayer readLayer(Node t) throws Exception {
         final int layerWidth = getAttribute(t, "width", map.getWidth());
         final int layerHeight = getAttribute(t, "height", map.getHeight());
-
-        TileLayer ml = new TileLayer(layerWidth, layerHeight);
+        final int layerTileWidth = getAttribute(t, "tileWidth", map.getTileWidth());
+        final int layerTileHeight = getAttribute(t, "tileHeight", map.getTileHeight());
+		
+        TileLayer ml = new TileLayer(layerWidth, layerHeight, layerTileWidth, layerTileHeight);
 
         final int offsetX = getAttribute(t, "x", 0);
         final int offsetY = getAttribute(t, "y", 0);
         final int visible = getAttribute(t, "visible", 1);
+		final boolean parallaxEnabled = getAttribute(t, "parallaxEnabled", false);
         String opacity = getAttributeValue(t, "opacity");
 
         ml.setName(getAttributeValue(t, "name"));
@@ -664,7 +691,9 @@ public class XMLMapTransformer implements MapReader
         // todo: Shouldn't this be just a user interface feature, rather than
         // todo: something to keep in mind at this level?
         ml.setVisible(visible == 1);
-
+		
+		ml.setParallaxEnabled(parallaxEnabled);
+		
         return ml;
     }
 

@@ -28,7 +28,10 @@ public class TileLayer extends MapLayer
 {
     protected Tile[][] map;
     protected HashMap tileInstanceProperties = new HashMap();
-
+	
+	private int tileWidth;
+	private int tileHeight;
+	
     public Properties getTileInstancePropertiesAt(int x, int y) {
         if (!bounds.contains(x, y)) {
             return null;
@@ -56,8 +59,9 @@ public class TileLayer extends MapLayer
      * @param w width in tiles
      * @param h height in tiles
      */
-    public TileLayer(int w, int h) {
+    public TileLayer(int w, int h, int tileWidth, int tileHeight) {
         super(w, h);
+		setTileDimensions(tileWidth, tileHeight);
     }
 
     /**
@@ -65,15 +69,8 @@ public class TileLayer extends MapLayer
      *
      * @param r the bounds of the tile layer.
      */
-    public TileLayer(Rectangle r) {
+    public TileLayer(Rectangle r, int tileWidth, int tileHeight) {
         super(r);
-    }
-
-    /**
-     * @param m the map this layer is part of
-     */
-    TileLayer(Map m) {
-        super(m);
     }
 
     /**
@@ -83,6 +80,7 @@ public class TileLayer extends MapLayer
      */
     public TileLayer(Map m, int w, int h) {
         super(w, h);
+		setTileDimensions(m.getTileWidth(), m.getTileHeight());
         setMap(m);
     }
 
@@ -209,7 +207,7 @@ public class TileLayer extends MapLayer
             tileInstanceProperties.clear();
         }
     }
-
+	
     /**
      * Creates a diff of the two layers, <code>ml</code> is considered the
      * significant difference.
@@ -238,7 +236,7 @@ public class TileLayer extends MapLayer
 
             if (r != null) {
                 MapLayer diff = new TileLayer(
-                        new Rectangle(r.x, r.y, r.width + 1, r.height + 1));
+                        new Rectangle(r.x, r.y, r.width + 1, r.height + 1), ml.getTileWidth(), ml.getTileHeight());
                 diff.copyFrom(ml);
                 return diff;
             } else {
@@ -248,6 +246,26 @@ public class TileLayer extends MapLayer
             return null;
         }
     }
+	
+	/// gets the tile width specific for this layer. The tile width and height
+	/// can be specified individually for layers of this type using
+	/// setTileDimensions().
+	/// @see setTileDimensions();
+	/// @return tile height that this layer uses
+	@Override
+	public int getTileHeight() {
+		return tileHeight;
+	}
+
+	/// gets the tile height specific for this layer. The tile width and height
+	/// can be specified individually for layers of this type using
+	/// setTileDimensions().
+	/// @see setTileDimensions();
+	/// @return tile width that this layer uses
+	@Override
+	public int getTileWidth() {
+		return tileWidth;
+	}
 
     /**
      * Removes any occurences of the given tile from this map layer. If layer
@@ -387,7 +405,7 @@ public class TileLayer extends MapLayer
     public void copyFrom(MapLayer other) {
         if (!canEdit())
             return;
-
+			
         for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
             for (int x = bounds.x; x < bounds.x + bounds.width; x++) {
                 setTileAt(x, y, ((TileLayer) other).getTileAt(x, y));
@@ -427,12 +445,22 @@ public class TileLayer extends MapLayer
     public void copyTo(MapLayer other) {
         if (!other.canEdit())
             return;
-
+		
+		TileLayer tl;
+		try{
+			tl = (TileLayer)other;
+		}catch(ClassCastException ccx){
+			return;	// can't copy to this layer
+		}
+		
+		super.copyTo(other);
+		
         for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
             for (int x = bounds.x; x < bounds.x + bounds.width; x++) {
-                ((TileLayer) other).setTileAt(x, y, getTileAt(x, y));
+                tl.setTileAt(x, y, getTileAt(x, y));
             }
         }
+		
     }
 
     /**
@@ -500,4 +528,19 @@ public class TileLayer extends MapLayer
         bounds.width = width;
         bounds.height = height;
     }
+	
+	/// sets both tile width and tile height for this layer. Equivalent to
+	/// calling setTileWidth() and setTileHeight()
+	public void setTileDimensions(int tileWidth, int tileHeight) {
+		this.tileWidth = tileWidth;
+		this.tileHeight = tileHeight;
+	}
+	
+	public void setTileWidth(int tileWidth){
+		this.tileWidth = tileWidth;
+	}
+
+	public void setTileHeight(int tileHeight) {
+		this.tileHeight = tileHeight;
+	}	
 }
