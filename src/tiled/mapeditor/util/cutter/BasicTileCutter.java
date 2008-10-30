@@ -19,8 +19,6 @@ import java.awt.image.BufferedImage;
 /**
  * Cuts tiles from a tileset image according to a regular rectangular pattern.
  * Supports a variable spacing between tiles and a margin around them.
- *
- * @version $Id$
  */
 public class BasicTileCutter implements TileCutter
 {
@@ -43,7 +41,7 @@ public class BasicTileCutter implements TileCutter
     }
 
     public String getName() {
-    	return "Basic";
+        return "Basic";
     }
 
     public void setImage(BufferedImage image) {

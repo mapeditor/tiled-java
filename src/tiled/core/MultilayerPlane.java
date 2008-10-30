@@ -20,8 +20,6 @@ import java.util.Vector;
 /**
  * MultilayerPlane makes up the core functionality of both Maps and Brushes.
  * This class handles the order of layers as a group.
- *
- * @version $Id$
  */
 public class MultilayerPlane
 {
@@ -82,7 +80,7 @@ public class MultilayerPlane
      * @return a new rectangle containing the maximum bounds of this plane
      */
     public Rectangle getBounds() {
-    	return new Rectangle(bounds);
+        return new Rectangle(bounds);
     }
 
     /**
@@ -118,7 +116,7 @@ public class MultilayerPlane
     }
 
     public void setLayer(int index, MapLayer layer) {
-    	layers.set(index, layer);
+        layers.set(index, layer);
     }
 
     /**

@@ -43,7 +43,7 @@ public class TileMergeHelper
     }
 
     public TileLayer merge(int start, int len, boolean all) {
-    	Rectangle r = myMap.getBounds();
+        Rectangle r = myMap.getBounds();
         TileLayer mergedLayer = new TileLayer(r);
 
         for (int i = 0; i < r.height; i++) {
@@ -133,7 +133,7 @@ public class TileMergeHelper
                 } else if (m != null && t != null && t != m) {
                     return false;
                 } else if ((m != null && t == null) || (m == null && t != null)) {
-                	return false;
+                    return false;
                 }
             }
             return true;

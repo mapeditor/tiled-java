@@ -30,7 +30,7 @@ public class MiniMapViewer extends JPanel
     private JScrollPane mainPanel;
     private double scale = 0.0625;
     private BufferedImage renderedMap;
-    
+
     public MiniMapViewer() {
         setSize(MAX_HEIGHT, MAX_HEIGHT);
     }
@@ -50,18 +50,18 @@ public class MiniMapViewer extends JPanel
         g.setClip(0, 0, d.width, d.height);
         myView.paint(g);
     }
-    
+
     public Dimension getPreferredSize() {
         if(myView != null) {
             return myView.getPreferredSize();
         }
         return new Dimension(0, 0);
     }
-    
+
     public Dimension getPreferredScrollableViewportSize() {
         return getPreferredSize();
     }
-    
+
     public void setMainPanel(JScrollPane main) {
         mainPanel = main;
     }
@@ -69,12 +69,12 @@ public class MiniMapViewer extends JPanel
     public void refresh() {
         if(renderedMap != null && myView != null) {
             Dimension d = myView.getPreferredSize();
-	        Graphics2D g = renderedMap.createGraphics();
-	        g.setClip(0, 0, d.width, d.height);
-	        myView.paint(g);
+            Graphics2D g = renderedMap.createGraphics();
+            g.setClip(0, 0, d.width, d.height);
+            myView.paint(g);
         }
     }
-    
+
     public void paint(Graphics g) {
         /*if (myView != null) {
             myView.paint(g);
@@ -82,7 +82,7 @@ public class MiniMapViewer extends JPanel
         if(renderedMap != null) {
             g.drawImage(renderedMap, 0, 0, null);
         }
-        
+
         if (mainPanel != null) {
             g.setColor(Color.yellow);
             Rectangle viewArea = mainPanel.getViewport().getBounds();

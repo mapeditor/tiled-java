@@ -14,9 +14,6 @@ package tiled.plugins.mappy;
 
 import java.io.*;
 
-/**
- * @version $Id$
- */
 public class Chunk
 {
     private String headerTag;
@@ -25,58 +22,58 @@ public class Chunk
     private ByteArrayOutputStream out;
 
     public Chunk(InputStream in) throws IOException {
-		byte[] header = new byte[4];
-		byte[] data;
-		int readSize;
+        byte[] header = new byte[4];
+        byte[] data;
+        int readSize;
 
-	    in.read(header);
-		headerTag = new String(header);
-		chunkSize = (int)Util.readLongReverse(in);
-		if (chunkSize > 0) {
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			data = new byte[chunkSize];
-			readSize = in.read(data, 0, chunkSize);
-			if(readSize!=chunkSize)
-				throw new IOException("Incomplete read!");
-			baos.write(data);
-			bais = new ByteArrayInputStream(baos.toByteArray());
-		}
+        in.read(header);
+        headerTag = new String(header);
+        chunkSize = (int)Util.readLongReverse(in);
+        if (chunkSize > 0) {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            data = new byte[chunkSize];
+            readSize = in.read(data, 0, chunkSize);
+            if(readSize!=chunkSize)
+                throw new IOException("Incomplete read!");
+            baos.write(data);
+            bais = new ByteArrayInputStream(baos.toByteArray());
+        }
     }
 
     public Chunk(String header) {
-    	headerTag = header;
-    	out = new ByteArrayOutputStream();
+        headerTag = header;
+        out = new ByteArrayOutputStream();
     }
 
     public boolean isGood() {
-    	return chunkSize > 0;
+        return chunkSize > 0;
     }
 
     public boolean equals(Object o) {
-		if(o instanceof String) {
-			return o.equals(headerTag);
-		}else if(o instanceof Chunk) {
-			return ((Chunk)o).headerTag.equals(headerTag);
-		}
-		return false;
+        if (o instanceof String) {
+            return o.equals(headerTag);
+        } else if (o instanceof Chunk) {
+            return ((Chunk)o).headerTag.equals(headerTag);
+        }
+        return false;
     }
 
     public int size() {
-    	return headerTag.length()+out.size()+4;
+        return headerTag.length()+out.size()+4;
     }
 
     public void write(OutputStream out) throws IOException {
-    	byte [] data = this.out.toByteArray();
-    	out.write(headerTag.getBytes());
-    	Util.writeLongReverse((long)(data.length-(headerTag.length()+4)), out);
-    	out.write(data);
+        byte [] data = this.out.toByteArray();
+        out.write(headerTag.getBytes());
+        Util.writeLongReverse((long)(data.length-(headerTag.length()+4)), out);
+        out.write(data);
     }
 
     public InputStream getInputStream() {
-    	return bais;
+        return bais;
     }
 
     public OutputStream getOutputStream() {
-    	return out;
+        return out;
     }
 }

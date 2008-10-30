@@ -19,14 +19,11 @@ import javax.swing.table.AbstractTableModel;
 import tiled.core.*;
 import tiled.mapeditor.Resources;
 
-/**
- * @version $Id$
- */
 public class TilesetTableModel extends AbstractTableModel implements MapChangeListener, TilesetChangeListener
 {
     private Map map;
     private static final String[] columnNames = { Resources.getString("dialog.tilesetmanager.table.name"),
-		Resources.getString("dialog.tilesetmanager.table.source") };
+        Resources.getString("dialog.tilesetmanager.table.source") };
 
     private static final String EMBEDDED = Resources.getString("dialog.tilesetmanager.embedded");
 
@@ -134,7 +131,7 @@ public class TilesetTableModel extends AbstractTableModel implements MapChangeLi
     public void tilesetsSwapped(MapChangedEvent event, int index0, int index1) {
         fireTableRowsUpdated(index0, index1);
     }
-    
+
     public void tilesetChanged(TilesetChangedEvent event) {
     }
 

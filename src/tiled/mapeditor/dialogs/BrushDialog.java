@@ -41,9 +41,6 @@ import tiled.mapeditor.widget.MiniMapViewer;
 import tiled.mapeditor.widget.VerticalStaticJPanel;
 import tiled.util.TiledConfiguration;
 
-/**
- * @version $Id$
- */
 public class BrushDialog extends JDialog implements ActionListener,
        ItemListener, ChangeListener, PropertyChangeListener,
        ListSelectionListener
@@ -106,7 +103,7 @@ public class BrushDialog extends JDialog implements ActionListener,
         // Brush size
         brushSize = new IntegerSpinner(1, 1);
         if (myBrush != null) {
-        	Rectangle r = myBrush.getBounds();
+            Rectangle r = myBrush.getBounds();
             brushSize.setValue(r.width);
         }
         brushSize.addChangeListener(this);
@@ -198,7 +195,7 @@ public class BrushDialog extends JDialog implements ActionListener,
     }
 
     private void init() {
-    	JTabbedPane tabs = new JTabbedPane(JTabbedPane.TOP);
+        JTabbedPane tabs = new JTabbedPane(JTabbedPane.TOP);
         tabs.addTab(SHAPE_TAB, createShapePanel());
         tabs.addTab(CUSTOM_TAB, createCustomPanel());
         tabs.setEnabledAt(1, false);

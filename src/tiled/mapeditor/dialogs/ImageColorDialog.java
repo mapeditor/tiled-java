@@ -25,11 +25,8 @@ import tiled.mapeditor.Resources;
 import tiled.mapeditor.widget.ImageViewPanel;
 import tiled.mapeditor.widget.VerticalStaticJPanel;
 
-/**
- * @version $Id$
- */
 public class ImageColorDialog extends JDialog implements MouseListener,
-		MouseMotionListener
+       MouseMotionListener
 {
     private Image image;
     private JButton cancelButton;
@@ -102,7 +99,7 @@ public class ImageColorDialog extends JDialog implements MouseListener,
         //create actionlisteners
         cancelButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
-            	color = null;
+                color = null;
                 dispose();
             }
         });

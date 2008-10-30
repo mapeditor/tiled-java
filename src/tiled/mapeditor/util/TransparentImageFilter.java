@@ -40,7 +40,7 @@ public class TransparentImageFilter extends RGBImageFilter
         if (rgb == trans) {
             return 0;
         } else {
-            return rgb;			
+            return rgb;
         }
-    }	
+    }
 }

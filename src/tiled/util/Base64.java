@@ -25,8 +25,8 @@
 ////////////////////end license & copyright header///////////////////////
 
 
-package tiled.util;  //Added 10May04 by Adam Turk for distribution as part 
-						//of the Tiled codebase
+package tiled.util;  // Added 10May04 by Adam Turk for distribution as part
+                     // of the Tiled codebase
 
 import java.io.*;       // needed only for main() method.
 

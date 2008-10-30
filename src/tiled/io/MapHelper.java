@@ -27,8 +27,6 @@ import tiled.util.TiledConfiguration;
 
 /**
  * A handler for saving and loading maps.
- *
- * @version $Id$
  */
 public class MapHelper {
     private static PluginClassLoader pluginLoader;
@@ -69,7 +67,7 @@ public class MapHelper {
         }
 
         if (mw != null) {
-        	PluginLogger logger = new PluginLogger();
+            PluginLogger logger = new PluginLogger();
             mw.setLogger(logger);
             mw.writeMap(currentMap, filename);
             currentMap.setFilename(filename);
@@ -101,7 +99,7 @@ public class MapHelper {
         }
 
         if (mw != null) {
-        	PluginLogger logger = new PluginLogger();
+            PluginLogger logger = new PluginLogger();
             mw.setLogger(logger);
             mw.writeTileset(set, filename);
             set.setSource(filename);
@@ -122,10 +120,10 @@ public class MapHelper {
      * @throws Exception
      */
     public static void saveMap(Map currentMap, PluggableMapIO pmio, String filename)
-    	throws Exception {
-    	MapWriter mw = (MapWriter)pmio;
+        throws Exception {
+        MapWriter mw = (MapWriter)pmio;
 
-    	PluginLogger logger = new PluginLogger();
+        PluginLogger logger = new PluginLogger();
         mw.setLogger(logger);
         mw.writeMap(currentMap, filename);
         currentMap.setFilename(filename);
@@ -154,7 +152,7 @@ public class MapHelper {
             }
 
             if (mr != null) {
-            	PluginLogger logger = new PluginLogger();
+                PluginLogger logger = new PluginLogger();
                 mr.setLogger(logger);
                 ret = mr.readMap(file);
                 ret.setFilename(file);
@@ -204,7 +202,7 @@ public class MapHelper {
             }
 
             if (mr != null) {
-            	PluginLogger logger = new PluginLogger();
+                PluginLogger logger = new PluginLogger();
                 mr.setLogger(logger);
                 ret = mr.readTileset(file);
                 ret.setSource(file);
@@ -244,7 +242,7 @@ public class MapHelper {
         Preferences prefs = TiledConfiguration.node("io");
 
         if (prefs.getBoolean("reportWarnings", false)) {
-        	PluginLogDialog pld = new PluginLogDialog();
+            PluginLogDialog pld = new PluginLogDialog();
             /*if (!s.isEmpty()) {
                 Iterator itr = s.iterator();
                 StringBuffer warnings = new StringBuffer();

@@ -27,9 +27,6 @@ import tiled.mapeditor.widget.VerticalStaticJPanel;
 import tiled.mapeditor.Resources;
 import tiled.util.TiledConfiguration;
 
-/**
- * @version $Id$
- */
 public class NewMapDialog extends JDialog implements ActionListener
 {
     private Map newMap;
@@ -89,7 +86,7 @@ public class NewMapDialog extends JDialog implements ActionListener
         mapSize.add(new JLabel(WIDTH_LABEL), c);
         c.gridy = 1;
         mapSize.add(new JLabel(HEIGHT_LABEL), c);
-	    c.insets = new Insets(5, 0, 0, 0);
+        c.insets = new Insets(5, 0, 0, 0);
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 1; c.gridy = 0; c.weightx = 1;
         mapSize.add(mapWidth, c);
@@ -105,11 +102,11 @@ public class NewMapDialog extends JDialog implements ActionListener
                     BorderFactory.createEmptyBorder(0, 5, 5, 5)));
         c.gridx = 0; c.gridy = 0; c.weightx = 0;
         c.fill = GridBagConstraints.NONE;
-	    c.insets = new Insets(5, 0, 0, 5);
+        c.insets = new Insets(5, 0, 0, 5);
         tileSize.add(new JLabel(WIDTH_LABEL), c);
         c.gridy = 1;
         tileSize.add(new JLabel(HEIGHT_LABEL), c);
-	    c.insets = new Insets(5, 0, 0, 0);
+        c.insets = new Insets(5, 0, 0, 0);
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 1; c.gridy = 0; c.weightx = 1;
         tileSize.add(tileWidth, c);
@@ -144,9 +141,9 @@ public class NewMapDialog extends JDialog implements ActionListener
         miscPropPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
         c.gridx = 0; c.gridy = 0; c.weightx = 0;
         c.fill = GridBagConstraints.NONE;
-	    c.insets = new Insets(5, 0, 0, 5);
+        c.insets = new Insets(5, 0, 0, 5);
         miscPropPanel.add(new JLabel(MAPTYPE_LABEL), c);
-	    c.insets = new Insets(5, 0, 0, 0);
+        c.insets = new Insets(5, 0, 0, 0);
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 1; c.gridy = 0; c.weightx = 1;
         miscPropPanel.add(mapTypeChooser, c);

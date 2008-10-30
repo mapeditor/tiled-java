@@ -31,8 +31,6 @@ import tiled.mapeditor.widget.VerticalStaticJPanel;
 /**
  * Dialog for picking a tile image. Used by the edit tileset dialog for
  * changing the image of a tile.
- *
- * @version $Id$
  */
 public class TileImageDialog extends JDialog implements ListSelectionListener
 {
@@ -106,14 +104,14 @@ public class TileImageDialog extends JDialog implements ListSelectionListener
         //create action listeners
         okButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
-            	dispose();
+                dispose();
             }
         });
 
         cancelButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
-            	imageId = -1;
-            	dispose();
+                imageId = -1;
+                dispose();
             }
         });
     }

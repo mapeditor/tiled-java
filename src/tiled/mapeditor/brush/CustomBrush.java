@@ -21,9 +21,6 @@ import tiled.core.MultilayerPlane;
 import tiled.core.TileLayer;
 import tiled.view.MapView;
 
-/**
- * @version $Id$
- */
 public class CustomBrush extends AbstractBrush
 {
     public CustomBrush(MultilayerPlane mlp) {
@@ -44,7 +41,7 @@ public class CustomBrush extends AbstractBrush
     }
 
     public Shape getShape() {
-    	return getBounds();
+        return getBounds();
     }
 
     /**

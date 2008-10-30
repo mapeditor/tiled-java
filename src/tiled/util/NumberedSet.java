@@ -26,80 +26,80 @@ import java.util.Vector;
  */
 public class NumberedSet
 {
-	private Vector data;
+    private Vector data;
 
-	/**
-	 * Constructs a new empty NumberedSet.
-	 */
-	public NumberedSet() {
-		data = new Vector();
-	}
+    /**
+     * Constructs a new empty NumberedSet.
+     */
+    public NumberedSet() {
+        data = new Vector();
+    }
 
-	/**
-	 * Returns the element for a specific element, or null if the id does not
-	 * identify any element in this NumberedSet.
-	 *
-	 * @param id
-	 * @return Object
-	 */
-	public Object get(int id) {
-		try {
-			return data.get(id);
-		} catch (ArrayIndexOutOfBoundsException e) {}
+    /**
+     * Returns the element for a specific element, or null if the id does not
+     * identify any element in this NumberedSet.
+     *
+     * @param id
+     * @return Object
+     */
+    public Object get(int id) {
+        try {
+            return data.get(id);
+        } catch (ArrayIndexOutOfBoundsException e) {}
 
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * Returns true if the NumberedSet contains an element for the specified id.
-	 *
-	 * @param id
-	 * @return boolean
-	 */
-	public boolean containsId(int id) {
-		return get(id) != null;
-	}
+    /**
+     * Returns true if the NumberedSet contains an element for the specified id.
+     *
+     * @param id
+     * @return boolean
+     */
+    public boolean containsId(int id) {
+        return get(id) != null;
+    }
 
-	/**
-	 * Sets the element for the specified id, replacing any previous element that
-	 * was associated with that id.  id should be a relatively small positive
-	 * integer.
-	 *
-	 * @param id
-	 * @param o
-	 * @return int
-	 * @throws IllegalArgumentException
-	 */
-	public int put(int id, Object o) throws IllegalArgumentException {
-		if (id < 0) throw new IllegalArgumentException();
+    /**
+     * Sets the element for the specified id, replacing any previous element that
+     * was associated with that id.  id should be a relatively small positive
+     * integer.
+     *
+     * @param id
+     * @param o
+     * @return int
+     * @throws IllegalArgumentException
+     */
+    public int put(int id, Object o) throws IllegalArgumentException {
+        if (id < 0) throw new IllegalArgumentException();
 
-		// Make sure there is sufficient space to overlay
-		for (int i = id - data.size(); i > 0; i--) {
+        // Make sure there is sufficient space to overlay
+        for (int i = id - data.size(); i > 0; i--) {
             data.add(null);
         }
 
-		data.add(id, o);
-		return id;
-	}
+        data.add(id, o);
+        return id;
+    }
 
-	/**
-	 * Removes the element associated with the given id from the NumberedSet.
+    /**
+     * Removes the element associated with the given id from the NumberedSet.
      *
      * todo: this function shifts the ids of any subsequent elements!
-	 *
-	 * @param id
-	 */
-	public void remove(int id) {
-		data.remove(id);
-	}
+     *
+     * @param id
+     */
+    public void remove(int id) {
+        data.remove(id);
+    }
 
-	/**
-	 * Returns the last id in the NumberedSet that is associated with an
+    /**
+     * Returns the last id in the NumberedSet that is associated with an
      * element, or -1 if the NumberedSet is empty.
-	 *
-	 * @return int
-	 */
-	public int getMaxId() {
+     *
+     * @return int
+     */
+    public int getMaxId() {
         int maxId = data.size() - 1;
 
         while (maxId >= 0) {
@@ -110,64 +110,64 @@ public class NumberedSet
         }
 
         return maxId;
-	}
+    }
 
-	/**
-	 * Returns an iterator to iterate over the elements of the NumberedSet.
-	 *
-	 * @return NumberedSetIterator
-	 */
-	public Iterator iterator() {
-		return data.iterator();
-	}
+    /**
+     * Returns an iterator to iterate over the elements of the NumberedSet.
+     *
+     * @return NumberedSetIterator
+     */
+    public Iterator iterator() {
+        return data.iterator();
+    }
 
-	/**
-	 * Adds a new element to the NumberedSet and returns its id.
-	 *
-	 * @param o
-	 * @return int
-	 */
-	public int add(Object o) {
-	  int id = getMaxId() + 1;
-	  put(id, o);
-	  return id;
-	}
+    /**
+     * Adds a new element to the NumberedSet and returns its id.
+     *
+     * @param o
+     * @return int
+     */
+    public int add(Object o) {
+        int id = getMaxId() + 1;
+        put(id, o);
+        return id;
+    }
 
-	/**
-	 * Returns the id of the first element of the NumberedSet that is euqal to
-	 * the given object, or -1 otherwise.
-	 *
-	 * @param o
-	 */
-	public int indexOf(Object o) {
-		return data.indexOf(o);
-	}
+    /**
+     * Returns the id of the first element of the NumberedSet that is euqal to
+     * the given object, or -1 otherwise.
+     *
+     * @param o
+     */
+    public int indexOf(Object o) {
+        return data.indexOf(o);
+    }
 
-	/**
-	 * Returns true if at least one element of the NumberedSet is equal to the
-	 * given object.
-	 */
-	public boolean contains(Object o) {
-		return data.contains(o);
-	}
+    /**
+     * Returns true if at least one element of the NumberedSet is equal to the
+     * given object.
+     */
+    public boolean contains(Object o) {
+        return data.contains(o);
+    }
 
-	/**
-	 * If this NumberedSet already contains an element equal to the given object,
-	 * return its id.  Otherwise insert the given object into the NumberedSet
-	 * and return its id.
-	 */
-	public int findOrAdd(Object o) {
-		int id = indexOf(o);
-		if (id != -1) return id;
-		return add(o);
-	}
+    /**
+     * If this NumberedSet already contains an element equal to the given object,
+     * return its id.  Otherwise insert the given object into the NumberedSet
+     * and return its id.
+     */
+    public int findOrAdd(Object o) {
+        int id = indexOf(o);
+        if (id != -1) return id;
+        return add(o);
+    }
 
-	/**
-	 * Returns the number of actual elements in the NumberedSet.
-	 *
-	 * @return int
-	 */
-  	public int size() {
-  		return data.size();
-  	}
+    /**
+     * Returns the number of actual elements in the NumberedSet.
+     *
+     * @return int
+     */
+    public int size() {
+        return data.size();
+    }
 }

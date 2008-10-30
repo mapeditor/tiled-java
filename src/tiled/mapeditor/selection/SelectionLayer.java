@@ -25,8 +25,6 @@ import tiled.util.TiledConfiguration;
 
 /**
  * A layer used to keep track of a selected area.
- *
- * @version $Id$
  */
 public class SelectionLayer extends TileLayer
 {
@@ -160,7 +158,7 @@ public class SelectionLayer extends TileLayer
     }
 
     private void clearRegion(Area region) {
-    	fillRegion(region, null);
+        fillRegion(region, null);
     }
 
     /**

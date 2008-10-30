@@ -101,7 +101,7 @@ public class MappyMapReader implements MapReader
     }
 
     public TileSet readTileset(InputStream in) {
-    	logger.error("Tilesets aren't supported!");
+        logger.error("Tilesets aren't supported!");
         return null;
     }
 
@@ -232,7 +232,7 @@ public class MappyMapReader implements MapReader
     }
 
     private void readBKDTChunk(Map m, InputStream in, int num) throws IOException {
-    	logger.debug("Reading " + num + " blocks...");
+        logger.debug("Reading " + num + " blocks...");
         for (int i = 0; i < num; i++) {
             blocks.add(readBLKSTR(in));
         }

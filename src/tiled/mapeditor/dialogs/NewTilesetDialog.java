@@ -33,8 +33,6 @@ import tiled.mapeditor.Resources;
 
 /**
  * A dialog for creating a new tileset.
- *
- * @version $Id$
  */
 public class NewTilesetDialog extends JDialog implements ChangeListener
 {
@@ -316,11 +314,11 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
         });
 
         propsButton.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent actionEvent) {
-        		PropertiesDialog lpd =
+            public void actionPerformed(ActionEvent actionEvent) {
+                PropertiesDialog lpd =
                     new PropertiesDialog(null, defaultSetProperties);
-        		lpd.setTitle(PROPERTIES_TITLE);
-        		lpd.getProps();
+                lpd.setTitle(PROPERTIES_TITLE);
+                lpd.getProps();
             }
         });
     }
@@ -342,7 +340,7 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
     }
 
     private void createSetAndDispose() {
-    	newTileset = new TileSet();
+        newTileset = new TileSet();
         newTileset.setName(tilesetName.getText());
         newTileset.setDefaultProperties(defaultSetProperties);
 

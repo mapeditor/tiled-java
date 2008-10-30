@@ -16,34 +16,31 @@ import java.awt.*;
 
 import javax.swing.JPanel;
 
-/**
- * @version $Id$
- */
 public class ImageViewPanel extends JPanel
 {
-	private final Image image;
+    private final Image image;
 
     public ImageViewPanel(Image image) {
         this.image = image;
     }
 
-	public Dimension getPreferredSize() {
-		return new Dimension(150, 150);
-	}
+    public Dimension getPreferredSize() {
+        return new Dimension(150, 150);
+    }
 
-	public Dimension getPreferredScrollableViewportSize() {
-		return getPreferredSize();
-	}
+    public Dimension getPreferredScrollableViewportSize() {
+        return getPreferredSize();
+    }
 
-	public boolean getScrollableTracksViewportHeight() {
-		return false;
-	}
+    public boolean getScrollableTracksViewportHeight() {
+        return false;
+    }
 
-	public boolean getScrollableTracksViewportWidth() {
-		return false;
-	}
+    public boolean getScrollableTracksViewportWidth() {
+        return false;
+    }
 
-	public void paint(Graphics g) {
-		g.drawImage(image, 0, 0, null);
-	}
+    public void paint(Graphics g) {
+        g.drawImage(image, 0, 0, null);
+    }
 }

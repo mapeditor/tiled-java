@@ -19,50 +19,52 @@ import org.json.JSONObject;
 
 /**
  * Contains utilities to extend JSON capabilities.
- *
- * @version $Id$
  */
 public class JSONUtils
 {
-	/**
-	 * Constructor.
-	 */
-	public JSONUtils() {
-		//nothing
-	}
+    /**
+     * Constructor.
+     */
+    public JSONUtils() {
+        //nothing
+    }
 
+    /**
+     * This method takes an object that is JSONArray already or JSONObject and
+     * convert it into JSONArray this is useful because JSON turn an xml entry
+     * into array or object according to number of entries using this method
+     * will avoid to treat as special cases whether you have one entrie or
+     * several.
+     *
+     * @param obj
+     * @return JSONArray
+     * @throws ParseException
+     */
+    public static JSONArray getAsJSONArray(Object obj) throws ParseException {
+        // We always convert to a json array: json object become a json array
+        // with one item
+        JSONArray result = null;
 
-	/**
-	 * this method takes an object that is JSONArray already or JSONObject and convert it into JSONArray
-	 * this is useful because JSON turn an xml entry into array or object according to number of entries
-	 * using this method will avoid to treat as special cases whether you have one entrie or several
-	 * @param obj
-	 * @return JSONArray
-	 * @throws ParseException
-	 */
-	public static JSONArray getAsJSONArray(Object obj) throws ParseException {
+        if (obj instanceof JSONArray) {
+            result = (JSONArray) obj;
+        } else if (obj instanceof JSONObject) {
+            result = new JSONArray();
+            result.put(obj);
+        } else {
+            throw new ParseException("problem while interpreting "+obj,0);
+        }
 
-		JSONArray result = null; //we always convert to a json array: json object become a json array with one item
+        return result;
+    }
 
-		if (obj instanceof JSONArray) {
-			result = (JSONArray) obj;
-		} else if (obj instanceof JSONObject) {
-			result = new JSONArray();
-			result.put(obj);
-		} else {
-			throw new ParseException("problem while interpreting "+obj,0);
-		}
-
-		return result;
-	}
-
-
-	/** unit test
-	 * @param args*/
-	/*
-	public static void main(String[] args) {
-
-		//test
-	}
-	*/
+    /**
+     * Unit test.
+     *
+     * @param args
+     */
+    /*
+    public static void main(String[] args) {
+        //test
+    }
+    */
 }

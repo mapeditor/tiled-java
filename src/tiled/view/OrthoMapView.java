@@ -23,7 +23,7 @@ import tiled.core.*;
 import tiled.mapeditor.selection.SelectionLayer;
 
 /**
- * @version $Id$
+ * An orthographic map view.
  */
 public class OrthoMapView extends MapView
 {
@@ -238,12 +238,12 @@ public class OrthoMapView extends MapView
                              RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
         g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
-				RenderingHints.VALUE_RENDER_QUALITY);
+                RenderingHints.VALUE_RENDER_QUALITY);
 
         g2d.setComposite(AlphaComposite.SrcAtop);
 
         //g2d.setColor(new Color(0.1f, 0.1f, 0.5f, 0.5f));
-    	g2d.setXORMode(new Color(0.9f, 0.9f, 0.9f, 0.5f));
+        g2d.setXORMode(new Color(0.9f, 0.9f, 0.9f, 0.5f));
 
         // Determine tile size and offset
 
@@ -265,9 +265,9 @@ public class OrthoMapView extends MapView
                     if (p != null && !p.isEmpty()) {
                         //g2d.drawString( "PROP", x, y );
                         //g2d.drawImage(MapView.propertyFlagImage, x + (tsize.width - 12), y, null);
-                    	g2d.translate(x + (tsize.width - 13), y+1);
-                    	g2d.drawPolygon(propPoly);
-                    	g2d.translate(-(x + (tsize.width - 13)), -(y+1));
+                        g2d.translate(x + (tsize.width - 13), y+1);
+                        g2d.drawPolygon(propPoly);
+                        g2d.translate(-(x + (tsize.width - 13)), -(y+1));
                     }
                 }
                 catch (Exception e) {

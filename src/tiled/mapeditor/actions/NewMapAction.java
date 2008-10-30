@@ -22,8 +22,6 @@ import tiled.mapeditor.dialogs.NewMapDialog;
 
 /**
  * Creates a new map.
- *
- * @version $Id$
  */
 public class NewMapAction extends AbstractFileAction
 {
@@ -36,7 +34,7 @@ public class NewMapAction extends AbstractFileAction
     }
 
     protected void doPerformAction() {
-    	NewMapDialog nmd = new NewMapDialog((JFrame)editor.getAppFrame());
+        NewMapDialog nmd = new NewMapDialog((JFrame)editor.getAppFrame());
         Map newMap = nmd.create();
         if (newMap != null) {
             editor.setCurrentMap(newMap);

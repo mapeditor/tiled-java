@@ -24,11 +24,11 @@ import tiled.mapeditor.Resources;
 
 public class TileDialogListRenderer extends DefaultListCellRenderer
 {
-	private static final String TILE = Resources.getString("general.tile.tile");
-	private static final String NOTILE = Resources.getString("general.tile.notile");
-	
+    private static final String TILE = Resources.getString("general.tile.tile");
+    private static final String NOTILE = Resources.getString("general.tile.notile");
+
     private double zoom = 1;
-    
+
     public TileDialogListRenderer() {
         setOpaque(true);
     }

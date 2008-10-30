@@ -34,7 +34,7 @@ import tiled.mapeditor.util.TiledFileFilter;
 import tiled.mapeditor.util.TilesetTableModel;
 
 /**
- * @version $Id$
+ * The tileset manager manages the tilesets of the loaded map.
  */
 public class TilesetManager extends JDialog implements ActionListener,
        ListSelectionListener
@@ -228,13 +228,13 @@ public class TilesetManager extends JDialog implements ActionListener,
             saveButton.setEnabled(false);
         } else if (command.equals(MOVE_UP_BUTTON)) {
             if (selectedRow > 0) {
-		int newRow = selectedRow - 1;
+                int newRow = selectedRow - 1;
                 map.swapTileSets(selectedRow, newRow);
                 tilesetTable.getSelectionModel().setSelectionInterval(newRow, newRow);
             }
         } else if (command.equals(MOVE_DOWN_BUTTON)) {
             if (selectedRow > -1 && selectedRow < tilesetTable.getRowCount() - 1) {
-		int newRow = selectedRow + 1;
+                int newRow = selectedRow + 1;
                 map.swapTileSets(selectedRow, newRow);
                 tilesetTable.getSelectionModel().setSelectionInterval(newRow, newRow);
             }
@@ -293,7 +293,7 @@ public class TilesetManager extends JDialog implements ActionListener,
     }
 
     public void setVisible(boolean visible) {
-    	super.setVisible(visible);
-    	tilesetTableModel.clearListeners();
+        super.setVisible(visible);
+        tilesetTableModel.clearListeners();
     }
 }

@@ -1268,7 +1268,7 @@ public class MapEditor implements ActionListener, MouseListener,
     }
 
     public void mouseMoved(MouseEvent e) {
-	    // Update state of mouse buttons
+        // Update state of mouse buttons
         bMouseIsDown = e.getButton() != MouseEvent.NOBUTTON;
         if (bMouseIsDown) {
             doMouse(e);
@@ -1834,19 +1834,19 @@ public class MapEditor implements ActionListener, MouseListener,
                      Resources.getString("action.copyall.tooltip"));
         }
         public void actionPerformed(ActionEvent evt) {
-        	//FIXME: only works for TileLayers
+            //FIXME: only works for TileLayers
             if (currentMap != null && marqueeSelection != null) {
-            	clipboardLayer = new TileLayer(
+                clipboardLayer = new TileLayer(
                         marqueeSelection.getSelectedAreaBounds());
-            	ListIterator itr = currentMap.getLayers();
-            	while(itr.hasNext()) {
-            		MapLayer layer = (MapLayer) itr.next();
-	                if (layer instanceof TileLayer) {
-	                	clipboardLayer.maskedMergeOnto(
-	                            layer,
-	                            marqueeSelection.getSelectedArea());
-	                }
-            	}
+                ListIterator itr = currentMap.getLayers();
+                while(itr.hasNext()) {
+                    MapLayer layer = (MapLayer) itr.next();
+                    if (layer instanceof TileLayer) {
+                        clipboardLayer.maskedMergeOnto(
+                                layer,
+                                marqueeSelection.getSelectedArea());
+                    }
+                }
             }
         }
     }
