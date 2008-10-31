@@ -251,6 +251,8 @@ public class MultilayerPlane
      * plane should be positioned on the new area. Only layers that exactly
      * match the bounds of the map are resized, any other layers are moved by
      * the given shift.
+	 * This method will resize all layers first (if there are any) and then
+	 * call <code>resize(width,height)</code>
      *
      * @see MapLayer#resize
      *
@@ -269,11 +271,23 @@ public class MultilayerPlane
                 layer.setOffset(layer.bounds.x + dx, layer.bounds.y + dy);
             }
         }
-
-        bounds.width = width;
-        bounds.height = height;
+		
+		resize(width, height);
     }
 
+    /**
+     * Resizes this plane. The plane's layers will not be affected.
+     *
+     * @see MapLayer#resize
+     *
+     * @param width  The plane's new width
+     * @param height The plane's new height
+     */
+    public void resize(int width, int height) {
+        bounds.width = width;
+        bounds.height = height;
+	}
+	
     /**
      * Determines wether the point (x,y) falls within the plane.
      *

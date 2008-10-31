@@ -60,6 +60,8 @@ public class XMLMapWriter implements MapWriter
         if (os instanceof GZIPOutputStream) {
             ((GZIPOutputStream)os).finish();
         }
+		
+		os.close();
     }
 
     /**
@@ -197,6 +199,44 @@ public class XMLMapWriter implements MapWriter
         }
     }
 
+	private static void writeEmbeddedImage(int id, Image image, XMLWriter w) throws IOException 
+	{
+		Preferences prefs = TiledConfiguration.node("saving");
+		
+		String imageFormatName = prefs.get("imageFormat", "PNG");
+		String pixelFormatName = prefs.get("pixelFormat", "A8R8G8B8");
+		boolean imageIsBigEndian = prefs.getBoolean("imageIsBigEndian", true);
+		
+		ImageHelper.ImageFormat imageFormat = ImageHelper.ImageFormat.valueOf(imageFormatName, ImageHelper.ImageFormat.PNG);
+		ImageHelper.PixelFormat pixelFormat = ImageHelper.PixelFormat.valueOf(pixelFormatName, ImageHelper.PixelFormat.A8R8G8B8);
+
+		w.startElement("image");
+		if(id != -1)
+			w.writeAttribute("id", id);
+		w.writeAttribute("format", imageFormat.toString().toLowerCase());
+
+		switch(imageFormat){
+			default:
+			case PNG:
+				w.startElement("data");
+				w.writeAttribute("encoding", "base64");
+				w.writeCDATA(new String(Base64.encode(ImageHelper.imageToPNG(image))));
+				w.endElement();
+				break;
+			case RAW:
+				w.writeAttribute("pixelFormat", pixelFormat.toString());
+				w.writeAttribute("byteOrder", imageIsBigEndian ? "bigEndian" : "littleEndian");
+				w.writeAttribute("width", ImageHelper.getImageWidth(image));
+				w.writeAttribute("height", ImageHelper.getImageHeight(image));
+				w.startElement("data");
+				w.writeAttribute("encoding", "base64");
+				w.writeCDATA(new String(Base64.encode(ImageHelper.imageToRAW(image, pixelFormat, imageIsBigEndian))));
+				w.endElement();
+				break;
+		}
+		w.endElement();
+	}
+	
     private static void writeTileset(TileSet set, XMLWriter w, String wp)
         throws IOException {
 
@@ -259,21 +299,14 @@ public class XMLMapWriter implements MapWriter
 
             boolean embedImages = prefs.getBoolean("embedImages", true);
             boolean tileSetImages = prefs.getBoolean("tileSetImages", false);
-
+			
             if (tileSetImages) {
                 Enumeration<String> ids = set.getImageIds();
                 while (ids.hasMoreElements()) {
-                    String id = ids.nextElement();
-                    w.startElement("image");
-                    w.writeAttribute("format", "png");
-                    w.writeAttribute("id", id);
-                    w.startElement("data");
-                    w.writeAttribute("encoding", "base64");
-                    w.writeCDATA(new String(Base64.encode(
-                                    ImageHelper.imageToPNG(
-                                        set.getImageById(Integer.parseInt(id))))));
-                    w.endElement();
-                    w.endElement();
+                    String idString = ids.nextElement();
+					int id = Integer.parseInt(idString);
+					Image image = set.getImageById(id);
+					writeEmbeddedImage(id, image, w);
                 }
             } else if (!embedImages) {
                 String imgSource =
@@ -360,6 +393,7 @@ public class XMLMapWriter implements MapWriter
         w.writeAttribute("name", l.getName());
         w.writeAttribute("width", bounds.width);
         w.writeAttribute("height", bounds.height);
+		w.writeAttribute("parallaxEnabled", l.isParallaxEnabled());
         if (bounds.x != 0) {
             w.writeAttribute("x", bounds.x);
         }
@@ -380,6 +414,8 @@ public class XMLMapWriter implements MapWriter
             writeObjectGroup((ObjectGroup) l, w, wp);
         } else if (l instanceof TileLayer) {
             final TileLayer tl = (TileLayer) l;
+			w.writeAttribute("tileWidth", tl.getTileWidth());
+			w.writeAttribute("tileHeight", tl.getTileHeight());
             w.startElement("data");
             if (encodeLayerData) {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -488,15 +524,8 @@ public class XMLMapWriter implements MapWriter
         // Write encoded data
         if (tileImage != null) {
             if (embedImages && !tileSetImages) {
-                w.startElement("image");
-                w.writeAttribute("format", "png");
-                w.startElement("data");
-                w.writeAttribute("encoding", "base64");
-                w.writeCDATA(new String(Base64.encode(
-                                ImageHelper.imageToPNG(tileImage))));
-                w.endElement();
-                w.endElement();
-            } else if (embedImages && tileSetImages) {
+				writeEmbeddedImage(-1, tileImage, w);
+			} else if (embedImages && tileSetImages) {
                 w.startElement("image");
                 w.writeAttribute("id", tile.getImageId());
                 w.endElement();

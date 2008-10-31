@@ -22,6 +22,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.*;
 
+import javax.swing.undo.UndoableEditSupport;
 import tiled.core.*;
 import tiled.mapeditor.util.cutter.BasicTileCutter;
 import tiled.mapeditor.util.cutter.BorderTileCutter;
@@ -36,7 +37,7 @@ import tiled.mapeditor.Resources;
  */
 public class NewTilesetDialog extends JDialog implements ChangeListener
 {
-    private final Map map;
+    private final MapLayer layer;
     private TileSet newTileset;
     private IntegerSpinner tileWidth, tileHeight;
     private IntegerSpinner tileSpacing;
@@ -54,9 +55,11 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
     private JButton propsButton;
     private ColorButton colorButton;
     private String path;
-
+	
     private Properties defaultSetProperties;
 
+	private UndoableEditSupport undoSupport;
+		
     /* LANGUAGE PACK */
     private static final String DIALOG_TITLE = Resources.getString("dialog.newtileset.title");
     private static final String NAME_LABEL = Resources.getString("dialog.newtileset.name.label");
@@ -80,10 +83,11 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
     private static final String PROPERTIES_BUTTON = Resources.getString("dialog.newtileset.button.properties");
     /* -- */
 
-    public NewTilesetDialog(JFrame parent, Map map) {
+    public NewTilesetDialog(JFrame parent, MapLayer layer, UndoableEditSupport undoSupport) {
         super(parent, DIALOG_TITLE, true);
-        this.map = map;
-        path = map.getFilename();
+		this.undoSupport = undoSupport;
+        this.layer = layer;
+        path = layer.getMap().getFilename();
         defaultSetProperties = new Properties();
         init();
         pack();
@@ -102,8 +106,8 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
         cutterLabel = new JLabel("Tile Cutter: ");
 
         tilesetName = new JTextField(UNTITLED_FILE);
-        tileWidth = new IntegerSpinner(map.getTileWidth(), 1, 1024);
-        tileHeight = new IntegerSpinner(map.getTileHeight(), 1, 1024);
+        tileWidth = new IntegerSpinner(layer.getTileWidth(), 1, 1024);
+        tileHeight = new IntegerSpinner(layer.getTileHeight(), 1, 1024);
         tileSpacing = new IntegerSpinner(0, 0);
         tileMargin = new IntegerSpinner(0, 0);
         tilebmpFile = new JTextField(10);
@@ -316,7 +320,7 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
         propsButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
                 PropertiesDialog lpd =
-                    new PropertiesDialog(null, defaultSetProperties);
+                    new PropertiesDialog(null, defaultSetProperties, undoSupport);
                 lpd.setTitle(PROPERTIES_TITLE);
                 lpd.getProps();
             }

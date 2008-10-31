@@ -34,9 +34,10 @@ public class ResizeDialog extends JDialog implements ActionListener,
 {
     private final Map currentMap;
     private IntegerSpinner width, height, offsetX, offsetY;
+	private JCheckBox resizeLayersCheckBox;
     private JButton bOk, bCancel;
     private ResizePanel orient;
-
+		
     private static final String DIALOG_TITLE = Resources.getString("dialog.resizemap.title");
     private static final String OK_BUTTON = Resources.getString("general.button.ok");
     private static final String CANCEL_BUTTON = Resources.getString("general.button.cancel");
@@ -47,7 +48,8 @@ public class ResizeDialog extends JDialog implements ActionListener,
     private static final String WIDTH_LABEL = Resources.getString("dialog.resizemap.width.label");
     private static final String HEIGHT_LABEL = Resources.getString("dialog.resizemap.height.label");
     private static final String CURRENT_SIZE_TITLE = Resources.getString("dialog.resizemap.currentsize.title");
-
+	private static final String RESIZE_LAYERS_TITLE = Resources.getString("dialog.resizemap.resizelayers.title");
+	
     public ResizeDialog(JFrame parent, MapEditor m) {
         super(parent, DIALOG_TITLE, true);
         currentMap = m.getCurrentMap();
@@ -64,11 +66,13 @@ public class ResizeDialog extends JDialog implements ActionListener,
         width = new IntegerSpinner(currentMap.getWidth(), 1);
         height = new IntegerSpinner(currentMap.getHeight(), 1);
         offsetX = new IntegerSpinner();
-        offsetY = new IntegerSpinner();
+        offsetY = new IntegerSpinner();		
+		resizeLayersCheckBox = new JCheckBox(RESIZE_LAYERS_TITLE, true);;
 
         offsetX.addChangeListener(this);
         offsetY.addChangeListener(this);
-
+		resizeLayersCheckBox.addActionListener(this);
+		
         orient = new ResizePanel(currentMap);
         orient.addPropertyChangeListener(this);
 
@@ -159,6 +163,7 @@ public class ResizeDialog extends JDialog implements ActionListener,
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         mainPanel.add(sizePanels);
+		mainPanel.add(resizeLayersCheckBox);
         mainPanel.add(offsetPanel);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         mainPanel.add(Box.createGlue());
@@ -168,20 +173,32 @@ public class ResizeDialog extends JDialog implements ActionListener,
         getRootPane().setDefaultButton(bOk);
         pack();
     }
-
+	
     public void actionPerformed(ActionEvent e) {
         Object src = e.getSource();
 
         if (src == bOk) {
+			
+			
             int nwidth = width.intValue();
             int nheight = height.intValue();
             int dx = offsetX.intValue();
             int dy = offsetY.intValue();
+			boolean resizeLayers = resizeLayersCheckBox.isSelected();
+			
             // Math works out in MapLayer#resize
-            currentMap.resize(nwidth, nheight, dx, dy);
+			if(resizeLayers)
+				currentMap.resize(nwidth, nheight, dx, dy);
+			else
+				currentMap.resize(nwidth, nheight);
+			
             dispose();
         } else if (src == bCancel) {
             dispose();
+		} else if (src == resizeLayersCheckBox){
+			boolean allowResize = resizeLayersCheckBox.isSelected();
+			offsetX.setEnabled(allowResize);
+			offsetY.setEnabled(allowResize);
         } else {
             System.out.println(e.getActionCommand());
         }

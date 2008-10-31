@@ -163,7 +163,7 @@ public class SearchDialog extends JDialog implements ActionListener
                 map.removeLayerSpecial(sl);
             }
 
-            sl = new SelectionLayer(map.getWidth(), map.getHeight());
+            sl = new SelectionLayer(map.getWidth(), map.getHeight(), map.getTileWidth(), map.getTileHeight());
             Rectangle bounds = new Rectangle();
             final Iterator<MapLayer> itr = map.getLayers();
             while (itr.hasNext()) {
@@ -231,7 +231,7 @@ public class SearchDialog extends JDialog implements ActionListener
             map.touch();
         }
 
-        sl = new SelectionLayer(map.getWidth(), map.getHeight());
+        sl = new SelectionLayer(map.getWidth(), map.getHeight(), map.getTileWidth(), map.getTileHeight());
         Rectangle bounds = new Rectangle();
 
         int startx = currentMatch == null ? 0 : currentMatch.x;

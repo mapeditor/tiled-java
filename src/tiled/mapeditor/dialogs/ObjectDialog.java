@@ -18,6 +18,8 @@ import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.*;
+import javax.swing.undo.CompoundEdit;
+import javax.swing.undo.UndoableEdit;
 import javax.swing.undo.UndoableEditSupport;
 
 import tiled.core.MapObject;
@@ -53,7 +55,7 @@ public class ObjectDialog extends PropertiesDialog
     private static final String BROWSE_BUTTON = Resources.getString("general.button.browse");
 
     public ObjectDialog(JFrame parent, MapObject object, UndoableEditSupport undoSupport) {
-        super(parent, object.getProperties());
+        super(parent, object.getProperties(), undoSupport);
         this.object = object;
         this.undoSupport = undoSupport;
         setTitle(DIALOG_TITLE);
@@ -152,15 +154,23 @@ public class ObjectDialog extends PropertiesDialog
         objectHeight.setValue(object.getHeight());
     }
 
-    protected void buildPropertiesAndDispose() {
+    protected UndoableEdit commit() {
+        CompoundEdit ce = new CompoundEdit();
+		UndoableEdit propertyEdit = super.commit();
+		if(propertyEdit!=null)
+			ce.addEdit(propertyEdit);
+		
         // Make sure the changes to the object can be undone
-        undoSupport.postEdit(new ChangeObjectEdit(object));
-
+        ce.addEdit(new ChangeObjectEdit(object));
+		
         object.setName(objectName.getText());
         object.setType(objectType.getText());
         object.setImageSource(objectImageSource.getText());
         object.setWidth(objectWidth.intValue());
         object.setHeight(objectHeight.intValue());
-        super.buildPropertiesAndDispose();
+		
+		ce.end();
+		
+		return ce;
     }
 }

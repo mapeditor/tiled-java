@@ -42,7 +42,7 @@ public class DeleteLayerAction extends AbstractLayerAction
             // after removing that layer. The right thing to do is to reset it
             // to the new topmost layer.
             if (layerIndex == totalLayers - 1) {
-                editor.setCurrentLayer(totalLayers - 2);
+                editor.setCurrentLayerIndex(totalLayers - 2);
             }
         }
     }

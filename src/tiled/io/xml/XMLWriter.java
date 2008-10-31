@@ -149,6 +149,11 @@ public class XMLWriter
         writeAttribute(name, String.valueOf(content));
     }
 
+    public void writeAttribute(String name, boolean content)
+        throws IOException, XMLWriterException {
+        writeAttribute(name, String.valueOf(content));
+    }
+
     public void writeAttribute(String name, float content)
         throws IOException, XMLWriterException {
         writeAttribute(name, String.valueOf(content));
