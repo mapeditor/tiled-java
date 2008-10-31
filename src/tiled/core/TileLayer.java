@@ -71,6 +71,7 @@ public class TileLayer extends MapLayer
      */
     public TileLayer(Rectangle r, int tileWidth, int tileHeight) {
         super(r);
+		setTileDimensions(tileWidth, tileHeight);
     }
 
     /**
@@ -455,6 +456,8 @@ public class TileLayer extends MapLayer
 		
 		super.copyTo(other);
 		
+		tl.tileWidth = tileWidth;
+		tl.tileHeight = tileHeight;
         for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
             for (int x = bounds.x; x < bounds.x + bounds.width; x++) {
                 tl.setTileAt(x, y, getTileAt(x, y));

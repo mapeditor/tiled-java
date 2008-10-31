@@ -103,7 +103,7 @@ public class ObjectGroup extends MapLayer
      * @see MapLayer#resize(int,int,int,int)
      */
     public void resize(int width, int height, int dx, int dy) {
-        // TODO: Translate contained objects by the change of origin
+        setBounds(new Rectangle(dx, dy, width, height));
     }
 
     public boolean isEmpty() {

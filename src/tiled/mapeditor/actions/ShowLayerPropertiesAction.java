@@ -37,5 +37,6 @@ public class ShowLayerPropertiesAction extends AbstractAction {
             lpd.setTitle(layer.getName() + " " + Resources.getString("dialog.properties.title"));
             lpd.getProps();
 			editor.updateLayerOperations();
+			editor.getMapView().repaint();
 		}
 }

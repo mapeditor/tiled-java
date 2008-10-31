@@ -40,7 +40,7 @@ public class MoveLayerDownAction extends AbstractLayerAction
 
         if (layerIndex > 0) {
             map.swapLayerDown(layerIndex);
-            editor.setCurrentLayer(layerIndex - 1);
+            editor.setCurrentLayerIndex(layerIndex - 1);
         }
     }
 }

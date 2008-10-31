@@ -59,13 +59,13 @@ public class MergeAllLayersAction extends AbstractLayerAction
             map.addLayer(newLayer);
             newLayer.setName("Merged Layer");
             map.addTileset(tmh.getSet());
-            editor.setCurrentLayer(0);
+            editor.setCurrentLayerIndex(0);
         }
         else if (ret == JOptionPane.NO_OPTION) {
             while (map.getTotalLayers() > 1) {
                 map.mergeLayerDown(editor.getCurrentLayerIndex());
             }
-            editor.setCurrentLayer(0);
+            editor.setCurrentLayerIndex(0);
         }
     }
 }

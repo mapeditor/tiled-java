@@ -144,7 +144,7 @@ public abstract class MapView extends JPanel implements Scrollable
 		int layerWidthPx = layer.getWidth()*layer.getTileWidth();
 		int layerHeightPx = layer.getHeight()*layer.getTileHeight();
 		int x = (int)(viewCenterX * (mapWidthPx - layerWidthPx));
-		int y = (int)(viewCenterY * (mapHeightPx - layerWidthPx));
+		int y = (int)(viewCenterY * (mapHeightPx - layerHeightPx));
 		
 		return new Point(x,y);
 	}

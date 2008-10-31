@@ -221,7 +221,7 @@ public class OrthoMapView extends MapView
 		if(currentLayer == null)
 			return;
 		
-        Dimension tsize = getMapTileSize();
+        Dimension tsize = getLayerTileSize(currentLayer);
         if (tsize.width <= 0 || tsize.height <= 0) {
             return;
         }
@@ -231,7 +231,8 @@ public class OrthoMapView extends MapView
                              RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
         // Determine tile size and offset
-        Font font = new Font("SansSerif", Font.PLAIN, tsize.height / 4);
+		int minTileExtents = java.lang.Math.min(tsize.width, tsize.height);
+        Font font = new Font("SansSerif", Font.PLAIN, minTileExtents / 4);
         g2d.setFont(font);
         FontRenderContext fontRenderContext = g2d.getFontRenderContext();
 
