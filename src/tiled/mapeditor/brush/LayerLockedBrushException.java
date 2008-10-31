@@ -13,8 +13,8 @@ import tiled.core.MapLayer;
  */
 public class LayerLockedBrushException extends BrushException {
 
-	public LayerLockedBrushException(MapLayer ml) {
-		super(ml);
-	}
+    public LayerLockedBrushException(MapLayer ml) {
+        super(ml);
+    }
 
 }

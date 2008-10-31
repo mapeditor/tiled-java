@@ -34,24 +34,24 @@ public class SelectionLayer extends TileLayer
     private Color highlightColor;
     private Tile selTile;
     private Area selection;
-	private MapLayer parentLayer;
-		
+    private MapLayer parentLayer;
+        
     public SelectionLayer(MapLayer parent) {
         super(parent.getWidth(), parent.getHeight(), parent.getTileWidth(), parent.getTileHeight());
-		parentLayer = parent;
+        parentLayer = parent;
         init();
     }
 
     public SelectionLayer(int width, int height, int tileWidth, int tileHeight) {
         super(width, height, tileWidth, tileHeight);
-		parentLayer = null;
+        parentLayer = null;
         init();
     }
-	
-	public void setParent(MapLayer layer){
-		this.parentLayer = layer;
-	}
-	
+    
+    public void setParent(MapLayer layer){
+        this.parentLayer = layer;
+    }
+    
     private void init() {
         Preferences prefs = TiledConfiguration.root();
         try {
@@ -64,45 +64,45 @@ public class SelectionLayer extends TileLayer
         selection = new Area();
     }
 
-	@Override
-	public boolean isParallaxEnabled() {
-		if(parentLayer == null)
-			return super.isParallaxEnabled();
-		else
-			return parentLayer.isParallaxEnabled();
-	}
+    @Override
+    public boolean isParallaxEnabled() {
+        if(parentLayer == null)
+            return super.isParallaxEnabled();
+        else
+            return parentLayer.isParallaxEnabled();
+    }
 
-	@Override
-	public int getTileHeight() {
-		if(parentLayer == null)
-			return super.getTileHeight();
-		else
-			return parentLayer.getTileHeight();
-	}
+    @Override
+    public int getTileHeight() {
+        if(parentLayer == null)
+            return super.getTileHeight();
+        else
+            return parentLayer.getTileHeight();
+    }
 
-	@Override
-	public int getTileWidth() {
-		if(parentLayer == null)
-			return super.getTileWidth();
-		else
-			return parentLayer.getTileWidth();
-	}
+    @Override
+    public int getTileWidth() {
+        if(parentLayer == null)
+            return super.getTileWidth();
+        else
+            return parentLayer.getTileWidth();
+    }
 
-	@Override
-	public int getHeight() {
-		if(parentLayer == null)
-			return super.getHeight();
-		else
-			return parentLayer.getHeight();
-	}
+    @Override
+    public int getHeight() {
+        if(parentLayer == null)
+            return super.getHeight();
+        else
+            return parentLayer.getHeight();
+    }
 
-	@Override
-	public int getWidth() {
-		if(parentLayer == null)
-			return super.getWidth();
-		else
-			return parentLayer.getWidth();
-	}
+    @Override
+    public int getWidth() {
+        if(parentLayer == null)
+            return super.getWidth();
+        else
+            return parentLayer.getWidth();
+    }
 
     /**
      * Returns the selected area.

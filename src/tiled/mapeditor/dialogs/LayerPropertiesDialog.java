@@ -32,11 +32,11 @@ import tiled.mapeditor.widget.VerticalStaticJPanel;
  */
 public class LayerPropertiesDialog extends PropertiesDialog {
     private JTextField layerName;
-	private JCheckBox layerParallaxEnableCheckBox;
+    private JCheckBox layerParallaxEnableCheckBox;
     private IntegerSpinner layerWidth, layerHeight, layerTileWidth, layerTileHeight;
     private final MapLayer layer;
-	private final boolean isTileLayer;
-	
+    private final boolean isTileLayer;
+    
     /* LANGUAGE PACK */
     private static final String DIALOG_TITLE = Resources.getString("dialog.layerproperites.title");
     private static final String NAME_LABEL = Resources.getString("dialog.layerproperites.name.label");
@@ -45,14 +45,14 @@ public class LayerPropertiesDialog extends PropertiesDialog {
     private static final String TILE_WIDTH_LABEL = Resources.getString("dialog.layerproperties.tilewidth.label");
     private static final String TILE_HEIGHT_LABEL = Resources.getString("dialog.layerproperties.tileheight.label");
     private static final String LAYER_PARALLAX_ENABLE_LABEL = Resources.getString("dialog.layerproperties.parallaxenable.label");
-	private static final String LAYER_PARALLAX_ENABLE_TOOLTIP = Resources.getString("dialog.layerproperties.parallaxenable.tooltip");
-	private static final String UNTITLED_LAYER = "";
+    private static final String LAYER_PARALLAX_ENABLE_TOOLTIP = Resources.getString("dialog.layerproperties.parallaxenable.tooltip");
+    private static final String UNTITLED_LAYER = "";
 
     public LayerPropertiesDialog(JFrame parent, MapLayer layer, UndoableEditSupport undoSupport) {
         super(parent, layer.getProperties(), undoSupport, false);
         this.layer = layer;
-		this.isTileLayer = TileLayer.class.isAssignableFrom(layer.getClass());
-		init();
+        this.isTileLayer = TileLayer.class.isAssignableFrom(layer.getClass());
+        init();
         setTitle(DIALOG_TITLE);
         pack();
         setLocationRelativeTo(parent);
@@ -65,11 +65,11 @@ public class LayerPropertiesDialog extends PropertiesDialog {
         JLabel heightLabel = new JLabel(HEIGHT_LABEL);
         JLabel tileWidthLabel = new JLabel(TILE_WIDTH_LABEL);
         JLabel tileHeightLabel = new JLabel(TILE_HEIGHT_LABEL);
-		
+        
         layerName = new JTextField(UNTITLED_LAYER);
-		layerParallaxEnableCheckBox = new JCheckBox(LAYER_PARALLAX_ENABLE_LABEL);
-		layerParallaxEnableCheckBox.setToolTipText(LAYER_PARALLAX_ENABLE_TOOLTIP);
-		
+        layerParallaxEnableCheckBox = new JCheckBox(LAYER_PARALLAX_ENABLE_LABEL);
+        layerParallaxEnableCheckBox.setToolTipText(LAYER_PARALLAX_ENABLE_TOOLTIP);
+        
         layerWidth = new IntegerSpinner(0, 0, 1024);
         layerHeight = new IntegerSpinner(0, 0, 1024);
         layerTileWidth = new IntegerSpinner(0, 0, 1024);
@@ -87,17 +87,17 @@ public class LayerPropertiesDialog extends PropertiesDialog {
         c.insets = new Insets(5, 0, 0, 5);
         miscPropPanel.add(nameLabel, c);
         c.gridy++;
-		c.gridwidth = 2;
-		miscPropPanel.add(layerParallaxEnableCheckBox, c);
+        c.gridwidth = 2;
+        miscPropPanel.add(layerParallaxEnableCheckBox, c);
         c.gridy++;
-		c.gridwidth = 1;
+        c.gridwidth = 1;
         miscPropPanel.add(widthLabel, c);
         c.gridy++;
         miscPropPanel.add(heightLabel, c);
-		c.gridy++;
-		miscPropPanel.add(tileWidthLabel, c);
-		c.gridy++;
-		miscPropPanel.add(tileHeightLabel, c);
+        c.gridy++;
+        miscPropPanel.add(tileWidthLabel, c);
+        c.gridy++;
+        miscPropPanel.add(tileHeightLabel, c);
         c.insets = new Insets(5, 0, 0, 0);
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 1;
@@ -105,82 +105,82 @@ public class LayerPropertiesDialog extends PropertiesDialog {
         c.weightx = 1;
         miscPropPanel.add(layerName, c);
         c.gridy++;
-        c.gridy++;	// reserve space for parallax enable checkbox
+        c.gridy++;    // reserve space for parallax enable checkbox
         miscPropPanel.add(layerWidth, c);
         c.gridy++;
         miscPropPanel.add(layerHeight, c);
-		c.gridy++;
-		miscPropPanel.add(layerTileWidth, c);
-		c.gridy++;
-		miscPropPanel.add(layerTileHeight, c);
-		
-		// for layers that are not TileLayer instances, the tile width cannot
-		// be set and the controls are therefore disabled
-		if(!isTileLayer){
-			tileWidthLabel.setEnabled(false);
-			tileHeightLabel.setEnabled(false);
-			layerTileWidth.setEnabled(false);
-			layerTileHeight.setEnabled(false);
-		}
-		
+        c.gridy++;
+        miscPropPanel.add(layerTileWidth, c);
+        c.gridy++;
+        miscPropPanel.add(layerTileHeight, c);
+        
+        // for layers that are not TileLayer instances, the tile width cannot
+        // be set and the controls are therefore disabled
+        if(!isTileLayer){
+            tileWidthLabel.setEnabled(false);
+            tileHeightLabel.setEnabled(false);
+            layerTileWidth.setEnabled(false);
+            layerTileHeight.setEnabled(false);
+        }
+        
         mainPanel.add(miscPropPanel, 0);
     }
 
     public void updateInfo() {
         super.updateInfo();
         layerName.setText(layer.getName());
-		layerParallaxEnableCheckBox.setSelected(layer.isParallaxEnabled());
+        layerParallaxEnableCheckBox.setSelected(layer.isParallaxEnabled());
         layerWidth.setValue(layer.getWidth());
         layerHeight.setValue(layer.getHeight());
-		layerTileWidth.setValue(layer.getTileWidth());
-		layerTileHeight.setValue(layer.getTileHeight());
+        layerTileWidth.setValue(layer.getTileWidth());
+        layerTileHeight.setValue(layer.getTileHeight());
     }
 
     protected UndoableEdit commit() {
         // Make sure the changes to the object can be undone
-		
-		UndoableEdit propertyEdit = super.commit();
-		
-		boolean miscLayerSettingsChanged =
-			!layer.getName().equals(layerName.getText())
-		||	layer.isParallaxEnabled() != layerParallaxEnableCheckBox.isSelected()
-		||	layer.getWidth() != layerWidth.intValue()
-		||	layer.getHeight() != layerHeight.intValue()
-		;
-		if(isTileLayer){
-			miscLayerSettingsChanged = miscLayerSettingsChanged
-			||	layer.getTileWidth() != layerTileWidth.intValue()
-			||	layer.getTileHeight() != layerTileHeight.intValue()
-			;
-		}
-		
-		// if nothing changed, here, simply return what the superclass changed
-		if(!miscLayerSettingsChanged)
-			return propertyEdit;
-		
-		CompoundEdit ce = new CompoundEdit();
-		if(propertyEdit != null)
-			ce.addEdit(propertyEdit);
-		
-		try {
-			MapLayer before = (MapLayer) layer.clone();
+        
+        UndoableEdit propertyEdit = super.commit();
+        
+        boolean miscLayerSettingsChanged =
+            !layer.getName().equals(layerName.getText())
+        ||    layer.isParallaxEnabled() != layerParallaxEnableCheckBox.isSelected()
+        ||    layer.getWidth() != layerWidth.intValue()
+        ||    layer.getHeight() != layerHeight.intValue()
+        ;
+        if(isTileLayer){
+            miscLayerSettingsChanged = miscLayerSettingsChanged
+            ||    layer.getTileWidth() != layerTileWidth.intValue()
+            ||    layer.getTileHeight() != layerTileHeight.intValue()
+            ;
+        }
+        
+        // if nothing changed, here, simply return what the superclass changed
+        if(!miscLayerSettingsChanged)
+            return propertyEdit;
+        
+        CompoundEdit ce = new CompoundEdit();
+        if(propertyEdit != null)
+            ce.addEdit(propertyEdit);
+        
+        try {
+            MapLayer before = (MapLayer) layer.clone();
 
-			layer.setName(layerName.getText());			
-			layer.resize(layerWidth.intValue(), layerHeight.intValue(), 0, 0);
-			layer.setParallaxEnabled(layerParallaxEnableCheckBox.isSelected());
-			if (isTileLayer) {
-				((TileLayer) layer).setTileDimensions(layerTileWidth.intValue(), layerTileHeight.intValue());
-			}
-			MapLayer after = (MapLayer) layer.clone();
-			MapLayerEdit mle = new MapLayerEdit(layer, before, after);
-			mle.setPresentationName(Resources.getString("edit.changelayerdimension.name"));
-			ce.addEdit(mle);
-		} catch (CloneNotSupportedException ex) {
-			Logger.getLogger(LayerPropertiesDialog.class.getName()).log(Level.SEVERE, null, ex);
-		}
-		
-		ce.end();
-		
+            layer.setName(layerName.getText());            
+            layer.resize(layerWidth.intValue(), layerHeight.intValue(), 0, 0);
+            layer.setParallaxEnabled(layerParallaxEnableCheckBox.isSelected());
+            if (isTileLayer) {
+                ((TileLayer) layer).setTileDimensions(layerTileWidth.intValue(), layerTileHeight.intValue());
+            }
+            MapLayer after = (MapLayer) layer.clone();
+            MapLayerEdit mle = new MapLayerEdit(layer, before, after);
+            mle.setPresentationName(Resources.getString("edit.changelayerdimension.name"));
+            ce.addEdit(mle);
+        } catch (CloneNotSupportedException ex) {
+            Logger.getLogger(LayerPropertiesDialog.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        ce.end();
+        
         return ce;
     }
 

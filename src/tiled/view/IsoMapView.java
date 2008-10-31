@@ -62,7 +62,7 @@ public class IsoMapView extends MapView
         // Turn anti alias on for selection drawing
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
-		
+        
         Rectangle clipRect = g2d.getClipBounds();
         Dimension tileSize = new Dimension(layer.getTileWidth(), layer.getTileHeight());
         int tileStepY = tileSize.height / 2 == 0 ? 1 : tileSize.height / 2;
@@ -70,7 +70,7 @@ public class IsoMapView extends MapView
 
         Point rowItr = screenToTileCoords(layer, clipRect.x, clipRect.y);
         rowItr.x--;
-		Point offset = calculateParallaxOffsetZoomed(layer);
+        Point offset = calculateParallaxOffsetZoomed(layer);
         Point drawLoc = tileToScreenCoords(offset,tileSize, rowItr.x, rowItr.y);
         drawLoc.x -= tileSize.width / 2;
         drawLoc.y += tileSize.height;
@@ -124,12 +124,12 @@ public class IsoMapView extends MapView
     }
 
     protected void paintGrid(Graphics2D g2d) {
-		MapLayer currentLayer = getCurrentLayer();
-		if(currentLayer == null)
-			return;
-		
+        MapLayer currentLayer = getCurrentLayer();
+        if(currentLayer == null)
+            return;
+        
         Dimension tileSize = getTileSize();
-		Point offset = calculateParallaxOffsetZoomed(currentLayer);
+        Point offset = calculateParallaxOffsetZoomed(currentLayer);
         Rectangle clipRect = g2d.getClipBounds();
 
         clipRect.x -= tileSize.width / 2;
@@ -159,19 +159,19 @@ public class IsoMapView extends MapView
 
     protected void paintCoordinates(Graphics2D g2d) {
         MapLayer currentLayer = getCurrentLayer();
-		if(currentLayer == null)
-			return;
-		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+        if(currentLayer == null)
+            return;
+        g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
         Rectangle clipRect = g2d.getClipBounds();
         Dimension tileSize = getTileSize();
-		Point offset = calculateParallaxOffsetZoomed(currentLayer);
+        Point offset = calculateParallaxOffsetZoomed(currentLayer);
         int tileStepY = tileSize.height / 2 == 0 ? 1 : tileSize.height / 2;
         Font font = new Font("SansSerif", Font.PLAIN, tileSize.height / 4);
         g2d.setFont(font);
         FontRenderContext fontRenderContext = g2d.getFontRenderContext();
-		
+        
         Point rowItr = screenToTileCoords(currentLayer, clipRect.x, clipRect.y);
         rowItr.x--;
         Point drawLoc = tileToScreenCoords(offset,tileSize, rowItr.x, rowItr.y);
@@ -223,9 +223,9 @@ public class IsoMapView extends MapView
 
     public void repaintRegion(MapLayer layer,Rectangle region) {
         Dimension tileSize = getTileSize();
-		Point offset = calculateParallaxOffsetZoomed(layer);
-		if(layer == null)
-			return;
+        Point offset = calculateParallaxOffsetZoomed(layer);
+        if(layer == null)
+            return;
         int maxExtraHeight =
             (int)(map.getTileHeightMax() * zoom) - tileSize.height;
 

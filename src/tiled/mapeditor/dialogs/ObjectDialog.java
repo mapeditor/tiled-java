@@ -156,21 +156,21 @@ public class ObjectDialog extends PropertiesDialog
 
     protected UndoableEdit commit() {
         CompoundEdit ce = new CompoundEdit();
-		UndoableEdit propertyEdit = super.commit();
-		if(propertyEdit!=null)
-			ce.addEdit(propertyEdit);
-		
+        UndoableEdit propertyEdit = super.commit();
+        if(propertyEdit!=null)
+            ce.addEdit(propertyEdit);
+        
         // Make sure the changes to the object can be undone
         ce.addEdit(new ChangeObjectEdit(object));
-		
+        
         object.setName(objectName.getText());
         object.setType(objectType.getText());
         object.setImageSource(objectImageSource.getText());
         object.setWidth(objectWidth.intValue());
         object.setHeight(objectHeight.intValue());
-		
-		ce.end();
-		
-		return ce;
+        
+        ce.end();
+        
+        return ce;
     }
 }

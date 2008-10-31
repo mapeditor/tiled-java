@@ -39,7 +39,7 @@ public abstract class MapLayer implements Cloneable
     protected String name;
     protected boolean isVisible = true;
     protected boolean bLocked = false;
-	private boolean parallaxEnabled = false;
+    private boolean parallaxEnabled = false;
     private Map myMap;
     protected float opacity = 1.0f;
     protected Rectangle bounds;
@@ -64,8 +64,8 @@ public abstract class MapLayer implements Cloneable
     }
 
     /**
-	 * Creates a new MapLayer instance for the given map.
-	 * The width and height are set to the width and height of the map.
+     * Creates a new MapLayer instance for the given map.
+     * The width and height are set to the width and height of the map.
      * @param map the map this layer is part of
      */
     MapLayer(Map map) {
@@ -74,7 +74,7 @@ public abstract class MapLayer implements Cloneable
     }
 
     /**
-	 * Creates a new MapLayer instance for the given map.
+     * Creates a new MapLayer instance for the given map.
      * @param map the map this layer is part of
      * @param w width in tiles
      * @param h height in tiles
@@ -84,9 +84,9 @@ public abstract class MapLayer implements Cloneable
         setMap(map);
     }
 
-	public boolean isParallaxEnabled() {
-		return parallaxEnabled;
-	}
+    public boolean isParallaxEnabled() {
+        return parallaxEnabled;
+    }
 
     /**
      * Performs a linear translation of this layer by (<i>dx, dy</i>).
@@ -130,9 +130,9 @@ public abstract class MapLayer implements Cloneable
         myMap = map;
     }
 
-	public Map getMap() {
-		return myMap;
-	}
+    public Map getMap() {
+        return myMap;
+    }
 
     /**
      * Sets layer opacity. If it is different from the previous value and the
@@ -276,19 +276,19 @@ public abstract class MapLayer implements Cloneable
      * @param other the layer to copy this layer to
      */
     public void copyTo(MapLayer other){
-		// undo/redo is using this, so it better be accurate...
-		other.name = name;
-		other.isVisible = isVisible;
-		other.bLocked = bLocked;
-		other.setParallaxEnabled(isParallaxEnabled());
-		other.myMap = myMap;
-		other.opacity = opacity;
-		other.bounds.setBounds(bounds);
-		if(other.properties != properties){
-			other.properties.clear();
-			other.properties.putAll(properties);
-		}
-	}
+        // undo/redo is using this, so it better be accurate...
+        other.name = name;
+        other.isVisible = isVisible;
+        other.bLocked = bLocked;
+        other.setParallaxEnabled(isParallaxEnabled());
+        other.myMap = myMap;
+        other.opacity = opacity;
+        other.bounds.setBounds(bounds);
+        if(other.properties != properties){
+            other.properties.clear();
+            other.properties.putAll(properties);
+        }
+    }
 
     public abstract boolean isEmpty();
 
@@ -341,7 +341,7 @@ public abstract class MapLayer implements Cloneable
 
     public void setProperties(Properties p) {
         properties.clear();
-		properties.putAll(p);
+        properties.putAll(p);
     }
 
     public Properties getProperties() {
@@ -351,25 +351,25 @@ public abstract class MapLayer implements Cloneable
     public boolean canEdit() {
         return !getLocked() && isVisible();
     }
-	
-	/// returns the tile height that applies to this layer. To layers of this
-	/// type, the map's own tile height will apply. However, subtypes may
-	/// implement their own tile width and tile height settings that differ
-	/// from the one that the map is using.
-	public int getTileHeight() {
-		return getMap().getTileHeight();
-	}
+    
+    /// returns the tile height that applies to this layer. To layers of this
+    /// type, the map's own tile height will apply. However, subtypes may
+    /// implement their own tile width and tile height settings that differ
+    /// from the one that the map is using.
+    public int getTileHeight() {
+        return getMap().getTileHeight();
+    }
 
-	/// returns the tile width that applies to this layer. To layers of this
-	/// type, the map's own tile width will apply. However, subtypes may
-	/// implement their own tile width and tile height settings that differ
-	/// from the one that the map is using.
-	public int getTileWidth() {
-		return getMap().getTileWidth();
-	}
+    /// returns the tile width that applies to this layer. To layers of this
+    /// type, the map's own tile width will apply. However, subtypes may
+    /// implement their own tile width and tile height settings that differ
+    /// from the one that the map is using.
+    public int getTileWidth() {
+        return getMap().getTileWidth();
+    }
 
-	public void setParallaxEnabled(boolean parallaxEnabled) {
-		this.parallaxEnabled = parallaxEnabled;
-	}
+    public void setParallaxEnabled(boolean parallaxEnabled) {
+        this.parallaxEnabled = parallaxEnabled;
+    }
 
 }

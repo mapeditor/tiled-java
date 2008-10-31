@@ -55,11 +55,11 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
     private JButton propsButton;
     private ColorButton colorButton;
     private String path;
-	
+    
     private Properties defaultSetProperties;
 
-	private UndoableEditSupport undoSupport;
-		
+    private UndoableEditSupport undoSupport;
+        
     /* LANGUAGE PACK */
     private static final String DIALOG_TITLE = Resources.getString("dialog.newtileset.title");
     private static final String NAME_LABEL = Resources.getString("dialog.newtileset.name.label");
@@ -85,7 +85,7 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
 
     public NewTilesetDialog(JFrame parent, MapLayer layer, UndoableEditSupport undoSupport) {
         super(parent, DIALOG_TITLE, true);
-		this.undoSupport = undoSupport;
+        this.undoSupport = undoSupport;
         this.layer = layer;
         path = layer.getMap().getFilename();
         defaultSetProperties = new Properties();

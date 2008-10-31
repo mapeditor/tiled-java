@@ -82,10 +82,10 @@ public class ShiftedMapView extends MapView
     }
 
     protected void paintGrid(Graphics2D g2d) {
-		MapLayer currentLayer = getCurrentLayer();
-		if(currentLayer == null)
-			return;
-		
+        MapLayer currentLayer = getCurrentLayer();
+        if(currentLayer == null)
+            return;
+        
         // Determine tile size
         Dimension tsize = getTileSize();
         if (tsize.width <= 0 || tsize.height <= 0) return;

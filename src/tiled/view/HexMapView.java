@@ -377,10 +377,10 @@ public class HexMapView extends MapView
      */
     protected void paintGrid(Graphics2D g2d) {
         g2d.setColor(Color.black);
-		MapLayer currentLayer = getCurrentLayer();
-		if(currentLayer == null)
-			return;
-		Dimension tileSize = getEffectiveTileSize(currentLayer);
+        MapLayer currentLayer = getCurrentLayer();
+        if(currentLayer == null)
+            return;
+        Dimension tileSize = getEffectiveTileSize(currentLayer);
 
         // Determine area to draw from clipping rectangle
         Rectangle clipRect = g2d.getClipBounds();
@@ -469,7 +469,7 @@ public class HexMapView extends MapView
         int ty = 0;
         int border = showGrid ? 1 : 0;
         Dimension tileSize = getEffectiveTileSize(layer);
-		Point offset = calculateParallaxOffsetZoomed(layer);
+        Point offset = calculateParallaxOffsetZoomed(layer);
         int tileWidth = tileSize.width + border;
         int tileHeight = tileSize.height + border;
         int hWidth = (int)(tileWidth / 2 + 0.49) + border;

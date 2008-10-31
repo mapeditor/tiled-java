@@ -93,9 +93,9 @@ public class ObjectGroup extends MapLayer
         // TODO: Figure out what object group should do with this method
     }
 
-	@Override
+    @Override
     public void copyTo(MapLayer other) {
-		super.copyTo(other);
+        super.copyTo(other);
         // TODO: Implement copying to another object group (same as merging)
     }
 

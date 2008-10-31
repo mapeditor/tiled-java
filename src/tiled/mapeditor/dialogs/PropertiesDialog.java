@@ -35,38 +35,38 @@ public class PropertiesDialog extends JDialog
     protected final Properties properties;
     protected final PropertiesTableModel tableModel = new PropertiesTableModel();
     protected JPanel mainPanel;
-	private UndoableEditSupport undoSupport;
-	
+    private UndoableEditSupport undoSupport;
+    
     private static final String DIALOG_TITLE = Resources.getString("dialog.properties.title");
     private static final String OK_BUTTON = Resources.getString("general.button.ok");
     private static final String DELETE_BUTTON = Resources.getString("general.button.delete");
     private static final String CANCEL_BUTTON = Resources.getString("general.button.cancel");
 
 
-	/// Creates a new PropertiesDialog instance
-	/// @param	parent	the parent frame that will become the owner of this
-	///	dialog
-	///	@param	p	the properties to manage
+    /// Creates a new PropertiesDialog instance
+    /// @param    parent    the parent frame that will become the owner of this
+    ///    dialog
+    ///    @param    p    the properties to manage
     public PropertiesDialog(JFrame parent, Properties p, UndoableEditSupport undoSupport) {
-		this(parent, p, undoSupport, true);
+        this(parent, p, undoSupport, true);
     }
-	
-	/// Creates a new PropertiesDialog instance
-	/// @param	parent	the parent frame that will become the owner of this
-	///	dialog
-	///	@param	p	the properties to manage
-	/// @param	doInit	if false, the dialog will not initialise it's UI components,
-	///	but rely on a subclass to to do call init() and pack() eventually after
-	/// the instance has been constructed.
+    
+    /// Creates a new PropertiesDialog instance
+    /// @param    parent    the parent frame that will become the owner of this
+    ///    dialog
+    ///    @param    p    the properties to manage
+    /// @param    doInit    if false, the dialog will not initialise it's UI components,
+    ///    but rely on a subclass to to do call init() and pack() eventually after
+    /// the instance has been constructed.
     protected PropertiesDialog(JFrame parent, Properties p, UndoableEditSupport undoSupport, boolean doInit) {
         super(parent, DIALOG_TITLE, true);
         properties = p;
         this.undoSupport = undoSupport;
         if(doInit){
-			init();
-			pack();
-			setLocationRelativeTo(getOwner());
-		}
+            init();
+            pack();
+            setLocationRelativeTo(getOwner());
+        }
     }
 
     protected void init() {
@@ -108,9 +108,9 @@ public class PropertiesDialog extends JDialog
         okButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
                 UndoableEdit ue = commit();
-				if(ue != null)
-					undoSupport.postEdit(ue);
-				dispose();
+                if(ue != null)
+                    undoSupport.postEdit(ue);
+                dispose();
             }
         });
 
@@ -135,32 +135,32 @@ public class PropertiesDialog extends JDialog
         updateInfo();
         setVisible(true);
     }
-	
-	public boolean havePropertiesChanged(){
+    
+    public boolean havePropertiesChanged(){
         TableCellEditor editor = propertiesTable.getCellEditor();
         if (editor != null)
             editor.stopCellEditing();
-		
+        
         return !properties.equals(tableModel.getProperties());
-	}
-	
+    }
+    
     protected UndoableEdit commit() {
         // Make sure there is no active cell editor anymore
         TableCellEditor editor = propertiesTable.getCellEditor();
         if (editor != null) {
             editor.stopCellEditing();
         }
-		
-		if(havePropertiesChanged()){
-			Properties backup = (Properties)properties.clone();
-			
-			// Apply possibly changed properties.
-			properties.clear();
-			properties.putAll(tableModel.getProperties());
-			
-			return new ChangePropertiesEdit(properties, backup);
-		} else 
-			return null;
+        
+        if(havePropertiesChanged()){
+            Properties backup = (Properties)properties.clone();
+            
+            // Apply possibly changed properties.
+            properties.clear();
+            properties.putAll(tableModel.getProperties());
+            
+            return new ChangePropertiesEdit(properties, backup);
+        } else 
+            return null;
     }
 
     protected void deleteSelected() {

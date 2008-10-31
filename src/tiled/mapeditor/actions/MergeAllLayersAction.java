@@ -37,15 +37,15 @@ public class MergeAllLayersAction extends AbstractLayerAction
 
     protected void doPerformAction() {
         Map map = editor.getCurrentMap();
-		
-		// check if all layer's tiles have the same size as the map (otherwise, merging won't work and will be cancelled)
-		if(!TileMergeHelper.areTileSizesUniform(map))
-		{
-			JOptionPane.showMessageDialog(editor.getAppFrame(), "Layer tile sizes inconsistent", "The tile size of some layers is different to the default tile size of the map. Layers can't be merged.", JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-			
-		
+        
+        // check if all layer's tiles have the same size as the map (otherwise, merging won't work and will be cancelled)
+        if(!TileMergeHelper.areTileSizesUniform(map))
+        {
+            JOptionPane.showMessageDialog(editor.getAppFrame(), "Layer tile sizes inconsistent", "The tile size of some layers is different to the default tile size of the map. Layers can't be merged.", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+            
+        
         int ret = JOptionPane.showConfirmDialog(editor.getAppFrame(),
                 "Do you wish to merge tile images, and create a new tile set?",
                 "Merge Tiles?", JOptionPane.YES_NO_CANCEL_OPTION);

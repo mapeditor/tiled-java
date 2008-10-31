@@ -121,22 +121,22 @@ public class ShapeBrush extends AbstractBrush
         Rectangle shapeBounds = shape.getBounds();
         int centerx = x - shapeBounds.width / 2;
         int centery = y - shapeBounds.height / 2;
-		
-		// check if all layers are editable
+        
+        // check if all layers are editable
         for (int layer = 0; layer < numLayers; layer++) {
             TileLayer tl = (TileLayer) affectedMp.getLayer(initLayer + layer);
-			
-			if(!tl.canEdit()){
-				if(tl.getLocked()){
-					throw new LayerLockedBrushException(tl);
-				} else if(!tl.isVisible()){
-					throw new LayerInvisibleBrushException(tl);
-				} else {
-					throw new BrushException(tl);
-				}
-			}
-		}
-		
+            
+            if(!tl.canEdit()){
+                if(tl.getLocked()){
+                    throw new LayerLockedBrushException(tl);
+                } else if(!tl.isVisible()){
+                    throw new LayerInvisibleBrushException(tl);
+                } else {
+                    throw new BrushException(tl);
+                }
+            }
+        }
+        
         super.doPaint(x, y);
 
         // FIXME: This loop does not take all edges into account

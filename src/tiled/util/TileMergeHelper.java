@@ -41,23 +41,23 @@ public class TileMergeHelper
         myTs = new TileSet();
         myTs.setName("Merged Set");
     }
-	
-	public static boolean areTileSizesUniform(Map map){
-		for(MapLayer l : map.getLayerVector()){
-			if(l.getTileWidth() != map.getTileWidth() || l.getTileHeight() != map.getTileHeight()){
-				return false;
-			}
-		}
-		return true;
-	}
-	
+    
+    public static boolean areTileSizesUniform(Map map){
+        for(MapLayer l : map.getLayerVector()){
+            if(l.getTileWidth() != map.getTileWidth() || l.getTileHeight() != map.getTileHeight()){
+                return false;
+            }
+        }
+        return true;
+    }
+    
     public TileLayer merge(int start, int len, boolean all) {
         Rectangle r = myMap.getBounds();
         TileLayer mergedLayer = new TileLayer(r, myMap.getTileWidth(), myMap.getTileHeight());
-		
-		// make sure all tile sizes are the same as the map's default tile size, otherwise the result will be a large mess..
-		assert areTileSizesUniform(myMap);
-		
+        
+        // make sure all tile sizes are the same as the map's default tile size, otherwise the result will be a large mess..
+        assert areTileSizesUniform(myMap);
+        
         for (int i = 0; i < r.height; i++) {
             for (int j = 0; j < r.width; j++) {
                 mergedLayer.setTileAt(j, i, createCell(j, i, start, len, all));
