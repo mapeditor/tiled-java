@@ -32,7 +32,6 @@ import tiled.mapeditor.widget.VerticalStaticJPanel;
  */
 public class LayerPropertiesDialog extends PropertiesDialog {
     private JTextField layerName;
-    private JCheckBox layerParallaxEnableCheckBox;
     private IntegerSpinner layerWidth, layerHeight, layerTileWidth, layerTileHeight;
     private final MapLayer layer;
     private final boolean isTileLayer;
@@ -67,8 +66,6 @@ public class LayerPropertiesDialog extends PropertiesDialog {
         JLabel tileHeightLabel = new JLabel(TILE_HEIGHT_LABEL);
         
         layerName = new JTextField(UNTITLED_LAYER);
-        layerParallaxEnableCheckBox = new JCheckBox(LAYER_PARALLAX_ENABLE_LABEL);
-        layerParallaxEnableCheckBox.setToolTipText(LAYER_PARALLAX_ENABLE_TOOLTIP);
         
         layerWidth = new IntegerSpinner(0, 0, 1024);
         layerHeight = new IntegerSpinner(0, 0, 1024);
@@ -87,10 +84,6 @@ public class LayerPropertiesDialog extends PropertiesDialog {
         c.insets = new Insets(5, 0, 0, 5);
         miscPropPanel.add(nameLabel, c);
         c.gridy++;
-        c.gridwidth = 2;
-        miscPropPanel.add(layerParallaxEnableCheckBox, c);
-        c.gridy++;
-        c.gridwidth = 1;
         miscPropPanel.add(widthLabel, c);
         c.gridy++;
         miscPropPanel.add(heightLabel, c);
@@ -105,7 +98,6 @@ public class LayerPropertiesDialog extends PropertiesDialog {
         c.weightx = 1;
         miscPropPanel.add(layerName, c);
         c.gridy++;
-        c.gridy++;    // reserve space for parallax enable checkbox
         miscPropPanel.add(layerWidth, c);
         c.gridy++;
         miscPropPanel.add(layerHeight, c);
@@ -129,7 +121,6 @@ public class LayerPropertiesDialog extends PropertiesDialog {
     public void updateInfo() {
         super.updateInfo();
         layerName.setText(layer.getName());
-        layerParallaxEnableCheckBox.setSelected(layer.isParallaxEnabled());
         layerWidth.setValue(layer.getWidth());
         layerHeight.setValue(layer.getHeight());
         layerTileWidth.setValue(layer.getTileWidth());
@@ -143,7 +134,6 @@ public class LayerPropertiesDialog extends PropertiesDialog {
         
         boolean miscLayerSettingsChanged =
             !layer.getName().equals(layerName.getText())
-        ||    layer.isParallaxEnabled() != layerParallaxEnableCheckBox.isSelected()
         ||    layer.getWidth() != layerWidth.intValue()
         ||    layer.getHeight() != layerHeight.intValue()
         ;
@@ -167,7 +157,6 @@ public class LayerPropertiesDialog extends PropertiesDialog {
 
             layer.setName(layerName.getText());            
             layer.resize(layerWidth.intValue(), layerHeight.intValue(), 0, 0);
-            layer.setParallaxEnabled(layerParallaxEnableCheckBox.isSelected());
             if (isTileLayer) {
                 ((TileLayer) layer).setTileDimensions(layerTileWidth.intValue(), layerTileHeight.intValue());
             }

@@ -65,13 +65,20 @@ public class SelectionLayer extends TileLayer
     }
 
     @Override
-    public boolean isParallaxEnabled() {
+    public boolean isViewPlaneInfinitelyFarAway() {
         if(parentLayer == null)
-            return super.isParallaxEnabled();
+            return super.isViewPlaneInfinitelyFarAway();
         else
-            return parentLayer.isParallaxEnabled();
+            return parentLayer.isViewPlaneInfinitelyFarAway();
     }
-
+	
+	public float getViewPlaneDistance(){
+        if(parentLayer == null)
+            return super.getViewPlaneDistance();
+        else
+            return parentLayer.getViewPlaneDistance();
+	}
+	
     @Override
     public int getTileHeight() {
         if(parentLayer == null)

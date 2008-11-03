@@ -39,7 +39,7 @@ public class FloatablePanel extends JPanel
     private final Frame parent;
     private final Preferences prefs;
     private int dividerSize;
-
+	
     /**
      * Constructs a floatable panel with the given title. When the panel is
      * floated, it is placed in a {@link JDialog} with <code>parent</code> as
@@ -78,8 +78,6 @@ public class FloatablePanel extends JPanel
     }
 
     private void setFloating(boolean floating) {
-        final JSplitPane splitPane = (JSplitPane) getParent();
-
         if (frame != null && !floating) {
             // Store the floating frame position and size
             prefs.putInt("width", frame.getWidth());
@@ -97,21 +95,12 @@ public class FloatablePanel extends JPanel
 
             // Restore the old divider location
             final int dividerLocation = prefs.getInt("dividerLocation", 0);
-            splitPane.setDividerSize(dividerSize);
-            splitPane.setDividerLocation(dividerLocation);
         }
         else if (frame == null && floating)
         {
-            // Remember the current divider size
-            dividerSize = splitPane.getDividerSize();
-
-            // Store the divider location in the preferences
-            prefs.putInt("dividerLocation", splitPane.getDividerLocation());
-
             // Hide this panel and remove our child panel
             setVisible(false);
             remove(child);
-            splitPane.setDividerSize(0);
 
             child.setBorder(new EmptyBorder(5, 5, 5, 5));
 
@@ -148,14 +137,10 @@ public class FloatablePanel extends JPanel
      * Restore the state from the preferences.
      */
     public void restore() {
-        final int dividerLocation = prefs.getInt("dividerLocation", 0);
         final boolean floating = prefs.getBoolean("floating", false);
 
         if (floating) {
             setFloating(true);
-        } else if (dividerLocation > 0) {
-            final JSplitPane splitPane = (JSplitPane) getParent();
-            splitPane.setDividerLocation(dividerLocation);
         }
     }
 
@@ -170,9 +155,6 @@ public class FloatablePanel extends JPanel
             prefs.putInt("height", frame.getHeight());
             prefs.putInt("x", frame.getX());
             prefs.putInt("y", frame.getY());
-        } else {
-            final JSplitPane splitPane = (JSplitPane) getParent();
-            prefs.putInt("dividerLocation", splitPane.getDividerLocation());
         }
     }
 

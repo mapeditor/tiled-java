@@ -13,7 +13,6 @@
 package tiled.view;
 
 import java.awt.*;
-import java.awt.geom.Point2D;
 import java.util.Iterator;
 import javax.swing.JPanel;
 import javax.swing.Scrollable;
@@ -85,7 +84,12 @@ public abstract class MapView extends JPanel implements Scrollable
         }
 
         this.map = map;
+		map.addMapParallaxChangeListener(new MapParallaxChangeListener() {
 
+			public void parallaxParameterChanged(MapParallaxChangeEvent e) {
+				repaint();
+			}
+		});
         setOpaque(true);
     }
     
@@ -104,11 +108,11 @@ public abstract class MapView extends JPanel implements Scrollable
         
         // only issue full repaint if we have layers with parallax enabled - 
         // otherwise setting the view center will have no effect.
-        boolean hasLayerWithParallaxEnabled = false;
+        boolean hasLayerWithParallaxOffset = false;
         for(MapLayer l : map.getLayerVector())
-            hasLayerWithParallaxEnabled = hasLayerWithParallaxEnabled || l.isParallaxEnabled();
+            hasLayerWithParallaxOffset = hasLayerWithParallaxOffset || l.getViewPlaneDistance()!=0.0f || l.isViewPlaneInfinitelyFarAway();
         
-        if(hasLayerWithParallaxEnabled)
+        if(hasLayerWithParallaxOffset)
             repaint();
     }
     
@@ -135,18 +139,31 @@ public abstract class MapView extends JPanel implements Scrollable
         // to the map until, when the view center arrives at the right side end
         // of the map, their right borders are aligned to the map's right
         // border.
-        if(!layer.isParallaxEnabled())
-            return new Point(0, 0);
-        
-        // calculate map dimension in pixels
+		
+		// the center of the map is our view origin. When the view center is at this point,
+		// every layer's center will be on this point. When the view moves
+		// away, the layers start to shift from this position depending on their
+		// view plane distance setting.
+		// The map's coordinate system is assumed to be the same as the view
+		// plane's.
         int mapWidthPx = map.getWidth()*map.getTileWidth();
         int mapHeightPx = map.getHeight()*map.getTileHeight();
+		Point originPos = new Point(mapWidthPx/2, mapHeightPx/2);
+		
+		// layer dimensions in pixels
         int layerWidthPx = layer.getWidth()*layer.getTileWidth();
         int layerHeightPx = layer.getHeight()*layer.getTileHeight();
-        int x = (int)(viewCenterX * (mapWidthPx - layerWidthPx));
-        int y = (int)(viewCenterY * (mapHeightPx - layerHeightPx));
-        
-        return new Point(x,y);
+		
+		// parallax offset
+		float viewCenterXPx = (viewCenterX*mapWidthPx-originPos.x);
+		float viewCenterYPx = (viewCenterY*mapHeightPx-originPos.y);
+		float parallaxScale = 1.0f;
+		if(!layer.isViewPlaneInfinitelyFarAway())
+			parallaxScale = layer.getViewPlaneDistance() / (map.getEyeDistance() + layer.getViewPlaneDistance());
+		float x = viewCenterXPx * parallaxScale + originPos.x - layerWidthPx/2;
+		float y = viewCenterYPx * parallaxScale + originPos.y - layerHeightPx/2;
+		
+        return new Point((int)x,(int)y);
     }
     
     /// This function is effectively the same as calculateParallaxOffset(),

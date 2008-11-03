@@ -393,7 +393,9 @@ public class XMLMapWriter implements MapWriter
         w.writeAttribute("name", l.getName());
         w.writeAttribute("width", bounds.width);
         w.writeAttribute("height", bounds.height);
-        w.writeAttribute("parallaxEnabled", l.isParallaxEnabled());
+        w.writeAttribute("viewPlaneDistance", l.getViewPlaneDistance());
+		w.writeAttribute("viewPlaneInfinitelyFarAway", l.isViewPlaneInfinitelyFarAway());
+		
         if (bounds.x != 0) {
             w.writeAttribute("x", bounds.x);
         }

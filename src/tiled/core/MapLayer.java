@@ -39,7 +39,8 @@ public abstract class MapLayer implements Cloneable
     protected String name;
     protected boolean isVisible = true;
     protected boolean bLocked = false;
-    private boolean parallaxEnabled = false;
+    private float viewPlaneDistance = 0.0f;
+	private boolean viewPlaneInfinitelyFarAway = false;
     private Map myMap;
     protected float opacity = 1.0f;
     protected Rectangle bounds;
@@ -82,10 +83,6 @@ public abstract class MapLayer implements Cloneable
     public MapLayer(Map map, int w, int h) {
         this(w, h);
         setMap(map);
-    }
-
-    public boolean isParallaxEnabled() {
-        return parallaxEnabled;
     }
 
     /**
@@ -280,7 +277,8 @@ public abstract class MapLayer implements Cloneable
         other.name = name;
         other.isVisible = isVisible;
         other.bLocked = bLocked;
-        other.setParallaxEnabled(isParallaxEnabled());
+        other.setViewPlaneDistance(getViewPlaneDistance());
+		other.setViewPlaneInfinitelyFarAway(isViewPlaneInfinitelyFarAway());
         other.myMap = myMap;
         other.opacity = opacity;
         other.bounds.setBounds(bounds);
@@ -368,8 +366,30 @@ public abstract class MapLayer implements Cloneable
         return getMap().getTileWidth();
     }
 
-    public void setParallaxEnabled(boolean parallaxEnabled) {
-        this.parallaxEnabled = parallaxEnabled;
+    public void setViewPlaneDistance(float viewPlaneDistance) {
+		if(this.viewPlaneDistance == viewPlaneDistance)
+			return;
+        this.viewPlaneDistance = viewPlaneDistance;
+		if(getMap()==null)
+			return;
+		getMap().fireParallaxChangeEvent(new MapParallaxChangeEvent(getMap(), getMap().getLayerVector().indexOf(this), MapParallaxChangeEvent.ChangeType.LAYER_VIEWPLANE_DISTANCE));
     }
+
+    public float getViewPlaneDistance() {
+        return viewPlaneDistance;
+    }
+	
+	public void setViewPlaneInfinitelyFarAway(boolean inifitelyFarAway){
+		if(inifitelyFarAway == this.viewPlaneInfinitelyFarAway)
+			return;
+		this.viewPlaneInfinitelyFarAway = inifitelyFarAway;
+		if(getMap()==null)
+			return;
+		getMap().fireParallaxChangeEvent(new MapParallaxChangeEvent(getMap(), getMap().getLayerVector().indexOf(this), MapParallaxChangeEvent.ChangeType.LAYER_VIEWPLANE_DISTANCE));
+	}
+
+	public boolean isViewPlaneInfinitelyFarAway(){
+		return this.viewPlaneInfinitelyFarAway;
+	}
 
 }

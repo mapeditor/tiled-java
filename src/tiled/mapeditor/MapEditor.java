@@ -116,6 +116,11 @@ public class MapEditor implements ActionListener, MouseListener,
     //private JList       editHistoryList;
     private MiniMapViewer miniMap;
     private JPopupMenu    layerPopupMenu;
+	private ParallaxEditorPanel parallaxEditorPanel;
+	
+	private SmartSplitPane rightSplit;
+	private SmartSplitPane mainSplit;
+	private SmartSplitPane paletteSplit;
 
     private BrushPreview brushPreview;
     private JFrame      appFrame;
@@ -133,6 +138,7 @@ public class MapEditor implements ActionListener, MouseListener,
     private MapLayerEdit paintEdit;
 
     private FloatablePanel layersPanel;
+	private FloatablePanel parallaxPanel;
     private FloatablePanel tilesetsPanel;
 
     //private TileInstancePropertiesDialog tileInstancePropertiesDialog;
@@ -161,7 +167,8 @@ public class MapEditor implements ActionListener, MouseListener,
 
     private static final String PANEL_TILE_PALETTE = Resources.getString("panel.tilepalette.title");
     private static final String PANEL_LAYERS = Resources.getString("panel.layers.title");
-
+	private static final String PANEL_PARALLAX = Resources.getString("panel.parallax.title");
+	
     private static final String TOOL_PAINT = Resources.getString("tool.paint.name");
     private static final String TOOL_ERASE = Resources.getString("tool.erase.name");
     private static final String TOOL_FILL = Resources.getString("tool.fill.name");
@@ -272,6 +279,10 @@ public class MapEditor implements ActionListener, MouseListener,
         layersPanel.restore();
         tilesetsPanel.restore();
 
+		rightSplit.restore();
+		mainSplit.restore();
+		paletteSplit.restore();
+		
         // Load plugins
         pluginLoader  = PluginClassLoader.getInstance();
         try {
@@ -336,14 +347,23 @@ public class MapEditor implements ActionListener, MouseListener,
         
         createData();
         createStatusBar();
-
+		
+		parallaxEditorPanel = new ParallaxEditorPanel(this);
+		
         // todo: Make continuouslayout an option. Because it can be slow, some
         // todo: people may prefer not to have that.
         layersPanel = new FloatablePanel(
                 getAppFrame(), dataPanel, PANEL_LAYERS, "layers");
-        JSplitPane mainSplit = new JSplitPane(
+		parallaxPanel = new FloatablePanel(getAppFrame(), parallaxEditorPanel, PANEL_PARALLAX, "parallax");
+		
+		rightSplit = new SmartSplitPane(JSplitPane.VERTICAL_SPLIT, true, layersPanel, parallaxPanel, "rightSplit");
+        rightSplit.setOneTouchExpandable(true);
+        rightSplit.setResizeWeight(1.0);
+        rightSplit.setBorder(null);
+        
+        mainSplit = new SmartSplitPane(
                 JSplitPane.HORIZONTAL_SPLIT, true, mapScrollPane,
-                layersPanel);
+                rightSplit, "mainSplit");
         mainSplit.setOneTouchExpandable(true);
         mainSplit.setResizeWeight(1.0);
         mainSplit.setBorder(null);
@@ -352,11 +372,12 @@ public class MapEditor implements ActionListener, MouseListener,
         tilesetsPanel = new FloatablePanel(
                 getAppFrame(), tabbedTilesetsPane, PANEL_TILE_PALETTE,
                 "tilesets");
-        JSplitPane paletteSplit = new JSplitPane(
-                JSplitPane.VERTICAL_SPLIT, true, mainSplit, tilesetsPanel);
+        paletteSplit = new SmartSplitPane(
+                JSplitPane.VERTICAL_SPLIT, true, mainSplit, tilesetsPanel, "paletteSplit");
         paletteSplit.setOneTouchExpandable(true);
         paletteSplit.setResizeWeight(1.0);
-
+		
+		
         mainPanel = new JPanel(new BorderLayout());
         mainPanel.add(createToolBar(), BorderLayout.WEST);
         mainPanel.add(paletteSplit, BorderLayout.CENTER);
@@ -1574,6 +1595,15 @@ public class MapEditor implements ActionListener, MouseListener,
         }
     }
 
+	public void layerAdded(MapChangedEvent e) {
+	}
+
+	public void layerRemoved(MapChangedEvent e) {
+	}
+	
+	public void layerMoved(MapChangedEvent e) {
+	}
+	
     public void tilesetAdded(MapChangedEvent e, TileSet tileset) {
     }
 
@@ -1651,6 +1681,10 @@ public class MapEditor implements ActionListener, MouseListener,
         // Allow the floatable panels to save their position and size
         layersPanel.save();
         tilesetsPanel.save();
+		
+		mainSplit.save();
+		paletteSplit.save();
+		rightSplit.save();		
     }
 
     private void showAboutDialog() {
@@ -2194,7 +2228,8 @@ public class MapEditor implements ActionListener, MouseListener,
         setBrush(sb);
 
         tabbedTilesetsPane.setMap(currentMap);
-
+		parallaxEditorPanel.setCurrentMap(currentMap);
+		
         if (!mapLoaded) {
             mapEventAdapter.fireEvent(MapEventAdapter.ME_MAPINACTIVE);
             mapView = null;
@@ -2413,4 +2448,5 @@ public class MapEditor implements ActionListener, MouseListener,
         mapView.setZoomLevel(mapView.getZoomLevel()-amount);
         zoomNormalAction.setEnabled(mapView.getZoomLevel() != MapView.ZOOM_NORMALSIZE);
     }
+
 }

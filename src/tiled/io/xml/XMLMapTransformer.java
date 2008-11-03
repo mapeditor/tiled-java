@@ -142,6 +142,15 @@ public class XMLMapTransformer implements MapReader
         }
     }
 
+    private static float getAttribute(Node node, String attribname, float def) {
+        final String attr = getAttributeValue(node, attribname);
+        if (attr != null) {
+            return Float.parseFloat(attr);
+        } else {
+            return def;
+        }
+    }
+
     private static boolean getAttribute(Node node, String attribname, boolean def) {
         final String attr = getAttributeValue(node, attribname);
         if (attr != null) {
@@ -585,8 +594,9 @@ public class XMLMapTransformer implements MapReader
         final int offsetX = getAttribute(t, "x", 0);
         final int offsetY = getAttribute(t, "y", 0);
         final int visible = getAttribute(t, "visible", 1);
-        final boolean parallaxEnabled = getAttribute(t, "parallaxEnabled", false);
-        String opacity = getAttributeValue(t, "opacity");
+        final float viewPlaneDistance = getAttribute(t, "viewPlaneDistance", 0.0f);
+		final boolean viewPlaneInfinitelyFarAway = getAttribute(t, "viewPlaneInfinitelyFarAway", false);
+        final String opacity = getAttributeValue(t, "opacity");
 
         ml.setName(getAttributeValue(t, "name"));
 
@@ -692,7 +702,8 @@ public class XMLMapTransformer implements MapReader
         // todo: something to keep in mind at this level?
         ml.setVisible(visible == 1);
         
-        ml.setParallaxEnabled(parallaxEnabled);
+        ml.setViewPlaneDistance(viewPlaneDistance);
+		ml.setViewPlaneInfinitelyFarAway(viewPlaneInfinitelyFarAway);
         
         return ml;
     }

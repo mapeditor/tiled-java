@@ -90,31 +90,13 @@ public class MultilayerPlane
      * @return the layer passed to the function
      */
     public MapLayer addLayer(MapLayer layer) {
-        layers.add(layer);
+        insertLayer(layers.size(), layer);
         return layer;
     }
 
-    /**
-     * Adds the MapLayer <code>l</code> after the MapLayer <code>after</code>.
-     *
-     * @param l the layer to add
-     * @param after specifies the layer to add <code>l</code> after
-     */
-    public void addLayerAfter(MapLayer l, MapLayer after) {
-        layers.add(layers.indexOf(after) + 1, l);
-    }
-
-    /**
-     * Add a layer at the specified index, which should be within
-     * the valid range.
-     *
-     * @param index the position at which to add the layer
-     * @param layer the layer to add
-     */
-    public void addLayer(int index, MapLayer layer) {
-        layers.add(index, layer);
-    }
-
+	void insertLayer(int index, MapLayer layer) {
+		layers.add(index, layer);
+	}
     public void setLayer(int index, MapLayer layer) {
         layers.set(index, layer);
     }
