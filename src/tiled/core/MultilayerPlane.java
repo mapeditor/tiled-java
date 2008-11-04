@@ -13,15 +13,13 @@
 package tiled.core;
 
 import java.awt.Rectangle;
-import java.util.Collection;
-import java.util.ListIterator;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * MultilayerPlane makes up the core functionality of both Maps and Brushes.
  * This class handles the order of layers as a group.
  */
-public class MultilayerPlane
+public class MultilayerPlane implements Iterable<MapLayer>
 {
     private Vector<MapLayer> layers;
     protected Rectangle bounds;          //in tiles
@@ -284,5 +282,9 @@ public class MultilayerPlane
      */
     public boolean inBounds(int x, int y) {
         return x >= 0 && y >= 0 && x < bounds.width && y < bounds.height;
+    }
+
+    public Iterator<MapLayer> iterator() {
+        return layers.iterator();
     }
 }
