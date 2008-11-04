@@ -274,7 +274,7 @@ public class MapEditor implements ActionListener, MouseListener,
         if (state != Frame.ICONIFIED) {
             appFrame.setExtendedState(state);
         }
-
+        
         // Restore the size and position of the layers and tileset panels.
         layersPanel.restore();
         tilesetsPanel.restore();
@@ -358,7 +358,7 @@ public class MapEditor implements ActionListener, MouseListener,
 		
 		rightSplit = new SmartSplitPane(JSplitPane.VERTICAL_SPLIT, true, layersPanel, parallaxPanel, "rightSplit");
         rightSplit.setOneTouchExpandable(true);
-        rightSplit.setResizeWeight(1.0);
+        rightSplit.setResizeWeight(0.5);
         rightSplit.setBorder(null);
         
         mainSplit = new SmartSplitPane(
@@ -367,7 +367,7 @@ public class MapEditor implements ActionListener, MouseListener,
         mainSplit.setOneTouchExpandable(true);
         mainSplit.setResizeWeight(1.0);
         mainSplit.setBorder(null);
-
+        
         tabbedTilesetsPane = new TabbedTilesetsPane(this);
         tilesetsPanel = new FloatablePanel(
                 getAppFrame(), tabbedTilesetsPane, PANEL_TILE_PALETTE,
@@ -376,13 +376,13 @@ public class MapEditor implements ActionListener, MouseListener,
                 JSplitPane.VERTICAL_SPLIT, true, mainSplit, tilesetsPanel, "paletteSplit");
         paletteSplit.setOneTouchExpandable(true);
         paletteSplit.setResizeWeight(1.0);
-		
-		
+
+
         mainPanel = new JPanel(new BorderLayout());
         mainPanel.add(createToolBar(), BorderLayout.WEST);
         mainPanel.add(paletteSplit, BorderLayout.CENTER);
         mainPanel.add(statusBar, BorderLayout.SOUTH);
-
+        
         return mainPanel;
     }
 

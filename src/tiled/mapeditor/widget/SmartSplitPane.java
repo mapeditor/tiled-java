@@ -122,13 +122,13 @@ public class SmartSplitPane extends JSplitPane {
 			}	break;
 			case LEFT_VISIBLE:{
 				save();
-				setDividerLocation(1.0f);
+				setDividerLocation(getMaximumDividerLocation());
 				setDividerSize(0);
 				setVisible(true);
 			}	break;
 			case RIGHT_VISIBLE:{
 				save();
-				setDividerLocation(0.0f);
+				setDividerLocation(getMinimumDividerLocation());
 				setDividerSize(0);
 				setVisible(true);
 			}	break;
