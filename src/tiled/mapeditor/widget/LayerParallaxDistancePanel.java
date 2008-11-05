@@ -42,6 +42,21 @@ public class LayerParallaxDistancePanel extends javax.swing.JPanel {
 		rangeMax = max;
 		updateUIFromLayer();
 	}
+
+	private void updateLayerFromDistanceSlider() {
+		int intMin = distanceSlider.getMinimum();
+		int intMax = distanceSlider.getMaximum();
+		int intValue = distanceSlider.getValue();
+		float epsilon = (rangeMax-rangeMin) / (intMax-intMin);
+
+		float value = layer.getViewPlaneDistance();
+
+		float newValue = (intValue-intMin) * (rangeMax-rangeMin) / (intMax-intMin) + rangeMin;
+		if(java.lang.Math.abs(newValue-value) > epsilon){
+			layer.setViewPlaneDistance(newValue);
+            distanceTextField.setText(Float.toString(newValue));
+		}
+	}
 	
 	private void updateUIFromLayer(){
 		int intMin = distanceSlider.getMinimum();
@@ -56,18 +71,7 @@ public class LayerParallaxDistancePanel extends javax.swing.JPanel {
 	}
 	
 	private void updateLayerFromUI(){
-		int intMin = distanceSlider.getMinimum();
-		int intMax = distanceSlider.getMaximum();
-		int intValue = distanceSlider.getValue();
-		float epsilon = (rangeMax-rangeMin) / (intMax-intMin);
-
-		float value = layer.getViewPlaneDistance();
-
-		float newValue = (intValue-intMin) * (rangeMax-rangeMin) / (intMax-intMin) + rangeMin;
-		if(java.lang.Math.abs(newValue-value) > epsilon){
-			layer.setViewPlaneDistance(newValue);
-            distanceTextField.setText(Float.toString(newValue));
-		}
+		updateLayerFromDistanceSlider();
 		
 		boolean infinity = infinityCheckBox.isSelected();
 		layer.setViewPlaneInfinitelyFarAway(infinity);
@@ -154,7 +158,7 @@ private void zeroButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
 }//GEN-LAST:event_zeroButtonActionPerformed
 
 private void distanceSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_distanceSliderStateChanged
-updateLayerFromUI();
+	updateLayerFromDistanceSlider();
 }//GEN-LAST:event_distanceSliderStateChanged
 
 
