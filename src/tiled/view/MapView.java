@@ -148,20 +148,22 @@ public abstract class MapView extends JPanel implements Scrollable
 		// plane's.
         int mapWidthPx = map.getWidth()*map.getTileWidth();
         int mapHeightPx = map.getHeight()*map.getTileHeight();
-		Point originPos = new Point(mapWidthPx/2, mapHeightPx/2);
+		float originPosX = mapWidthPx/2;
+		float originPosY = mapHeightPx/2;
+		float viewCenterXPx = (viewCenterX*mapWidthPx-originPosX);
+		float viewCenterYPx = (viewCenterY*mapHeightPx-originPosY);
+		
 		
 		// layer dimensions in pixels
         int layerWidthPx = layer.getWidth()*layer.getTileWidth();
         int layerHeightPx = layer.getHeight()*layer.getTileHeight();
 		
 		// parallax offset
-		float viewCenterXPx = (viewCenterX*mapWidthPx-originPos.x);
-		float viewCenterYPx = (viewCenterY*mapHeightPx-originPos.y);
 		float parallaxScale = 1.0f;
 		if(!layer.isViewPlaneInfinitelyFarAway())
 			parallaxScale = layer.getViewPlaneDistance() / (map.getEyeDistance() + layer.getViewPlaneDistance());
-		float x = viewCenterXPx * parallaxScale + originPos.x - layerWidthPx/2;
-		float y = viewCenterYPx * parallaxScale + originPos.y - layerHeightPx/2;
+		float x = viewCenterXPx * parallaxScale + originPosX - layerWidthPx/2;
+		float y = viewCenterYPx * parallaxScale + originPosY - layerHeightPx/2;
 		
         return new Point((int)x,(int)y);
     }
