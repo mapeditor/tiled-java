@@ -16,6 +16,7 @@ import tiled.core.MapParallaxChangeEvent;
 import tiled.core.MapParallaxChangeListener;
 import tiled.core.TileSet;
 import tiled.mapeditor.MapEditor;
+import tiled.mapeditor.undo.MapViewportSettingsEdit;
 
 /**
  *
@@ -325,6 +326,9 @@ private void eyeViewplaneDistanceTextFieldActionPerformed(java.awt.event.ActionE
 			eyeDistance = Float.parseFloat(eyeViewplaneDistanceTextField.getText());
 		} catch(NumberFormatException nfx){
 		}
+        if(currentMap.getEyeDistance() == eyeDistance)
+            return;
+        editor.getUndoSupport().postEdit(new MapViewportSettingsEdit(currentMap));
 		currentMap.setEyeDistance(eyeDistance);
 	}
 

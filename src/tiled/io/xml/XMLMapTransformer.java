@@ -746,16 +746,21 @@ public class XMLMapTransformer implements MapReader
         String orientation = getAttributeValue(mapNode, "orientation");
         int tileWidth = getAttribute(mapNode, "tilewidth", 0);
         int tileHeight = getAttribute(mapNode, "tileheight", 0);
-        
-        float eyeDistance = getAttribute(mapNode, "eyeDistance", 10.f);
-        
+                
         if (tileWidth > 0) {
             map.setTileWidth(tileWidth);
         }
         if (tileHeight > 0) {
             map.setTileHeight(tileHeight);
         }
+
+        float eyeDistance = getAttribute(mapNode, "eyeDistance", 10.f);
         map.setEyeDistance(eyeDistance);
+        
+        int viewportWidth = getAttribute(mapNode, "viewportWidth", 640);
+        map.setViewportWidth(viewportWidth);
+        int viewportHeight = getAttribute(mapNode, "viewportHeight", 480);
+        map.setViewportHeight(viewportHeight);
         
         if (orientation != null) {
             setOrientation(orientation);

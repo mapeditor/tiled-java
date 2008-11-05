@@ -43,8 +43,6 @@ public class LayerPropertiesDialog extends PropertiesDialog {
     private static final String HEIGHT_LABEL = Resources.getString("dialog.layerproperties.height.label");
     private static final String TILE_WIDTH_LABEL = Resources.getString("dialog.layerproperties.tilewidth.label");
     private static final String TILE_HEIGHT_LABEL = Resources.getString("dialog.layerproperties.tileheight.label");
-    private static final String LAYER_PARALLAX_ENABLE_LABEL = Resources.getString("dialog.layerproperties.parallaxenable.label");
-    private static final String LAYER_PARALLAX_ENABLE_TOOLTIP = Resources.getString("dialog.layerproperties.parallaxenable.tooltip");
     private static final String UNTITLED_LAYER = "";
 
     public LayerPropertiesDialog(JFrame parent, MapLayer layer, UndoableEditSupport undoSupport) {

@@ -128,6 +128,8 @@ public class XMLMapWriter implements MapWriter
         w.writeAttribute("tileheight", map.getTileHeight());
         
         w.writeAttribute("eyeDistance", map.getEyeDistance());
+        w.writeAttribute("viewportWidth", map.getViewportWidth());
+        w.writeAttribute("viewportHeight", map.getViewportHeight());
         
         writeProperties(map.getProperties(), w);
 

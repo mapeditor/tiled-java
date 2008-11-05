@@ -162,6 +162,7 @@ public class MapEditor implements ActionListener, MouseListener,
     private final Action mergeLayerDownAction, mergeAllLayersAction;
     private final Action addObjectGroupAction;
     private final Action showLayerPropertiesAction;
+    private final Action toggleViewportFrameVisibleAction;
     
     private static final String IMPORT_ERROR_MSG = Resources.getString("dialog.newtileset.import.error.message");
 
@@ -243,6 +244,7 @@ public class MapEditor implements ActionListener, MouseListener,
         mergeAllLayersAction = new MergeAllLayersAction(this);
         addObjectGroupAction = new AddObjectGroupAction(this);
         showLayerPropertiesAction = new ShowLayerPropertiesAction(this);
+        toggleViewportFrameVisibleAction = new ToggleViewportFrameVisibleAction();
         
         // Create our frame
         appFrame = new JFrame(Resources.getString("dialog.main.title"));
@@ -335,8 +337,19 @@ public class MapEditor implements ActionListener, MouseListener,
                 if(mapView != null){
                     JScrollBar hsb = mapScrollPane.getHorizontalScrollBar();
                     JScrollBar vsb = mapScrollPane.getVerticalScrollBar();
-                    float viewX = (float)(hsb.getValue()) / (float)(hsb.getMaximum()-hsb.getMinimum()-hsb.getVisibleAmount());
-                    float viewY = (float)(vsb.getValue()) / (float)(vsb.getMaximum()-vsb.getMinimum()-vsb.getVisibleAmount());
+                    float wholeX = (float)(hsb.getMaximum()-hsb.getMinimum()-hsb.getVisibleAmount());
+                    float viewX;
+                    if(wholeX != 0.0f)
+                        viewX = (float)(hsb.getValue()) / wholeX;
+                    else
+                        viewX = 0.5f;
+                    
+                    float wholeY = (float)(vsb.getMaximum()-vsb.getMinimum()-vsb.getVisibleAmount());
+                    float viewY;
+                    if(wholeY != 0.0f)
+                        viewY = (float)(vsb.getValue()) / wholeY;
+                    else
+                        viewY = 0.5f;
                     
                     mapView.setViewCenter(viewX, viewY);
                 }
@@ -545,6 +558,7 @@ public class MapEditor implements ActionListener, MouseListener,
         viewMenu.addSeparator();
         viewMenu.add(gridMenuItem);
         viewMenu.add(cursorMenuItem);
+        viewMenu.add(new JCheckBoxMenuItem(toggleViewportFrameVisibleAction));
         //TODO: Enable when boudary drawing code finished.
         //viewMenu.add(boundaryMenuItem);
         viewMenu.add(coordinatesMenuItem);
@@ -1527,8 +1541,8 @@ public class MapEditor implements ActionListener, MouseListener,
                 manager.setVisible(true);
             }
         } else if (command.equals(Resources.getString("menu.map.properties"))) {
-            PropertiesDialog pd = new PropertiesDialog(appFrame,
-                    currentMap.getProperties(), undoSupport);
+            PropertiesDialog pd = new MapPropertiesDialog(appFrame,
+                    currentMap, undoSupport);
             pd.setTitle(Resources.getString("dialog.properties.map.title"));
             pd.getProps();
         } else if (command.equals(Resources.getString("menu.view.boundaries")) ||
@@ -1805,6 +1819,30 @@ public class MapEditor implements ActionListener, MouseListener,
         }
     }
 
+    private class ToggleViewportFrameVisibleAction extends AbstractAction {
+        private boolean retreive(){
+            return MapEditor.this.prefs.node("display").getBoolean("showViewportFrame", false);
+        }
+        private void store(boolean b){
+            MapEditor.this.prefs.node("display").putBoolean("showViewportFrame", b);
+        }
+        public ToggleViewportFrameVisibleAction(){
+            super(Resources.getString("action.viewport.frame.visible.name"));
+            putValue(ACCELERATOR_KEY,
+                    KeyStroke.getKeyStroke("control shift V"));
+            putValue(SHORT_DESCRIPTION,
+                     Resources.getString("action.viewport.frame.visible.description"));
+            putValue(SELECTED_KEY, retreive());
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            boolean b = !retreive();
+            store(b);
+            MapEditor.this.mapView.setViewportFrameVisible(b);
+            putValue(SELECTED_KEY, b);
+        }
+    }
+    
     private class SelectAllAction extends AbstractAction {
         public SelectAllAction() {
             super(Resources.getString("action.select.all.name"));
@@ -1993,7 +2031,7 @@ public class MapEditor implements ActionListener, MouseListener,
             }
         }
     }
-
+    
     private class PasteAction extends AbstractAction {
         public PasteAction() {
             super(Resources.getString("action.paste.name"));
@@ -2253,6 +2291,7 @@ public class MapEditor implements ActionListener, MouseListener,
             mapView.setGridColor(new Color(display.getInt("gridColor",
                     MapView.DEFAULT_GRID_COLOR.getRGB())));
             mapView.setShowGrid(display.getBoolean("showGrid", false));
+            mapView.setViewportFrameVisible(display.getBoolean("showViewportFrame", false));
             JViewport mapViewport = new JViewport();
             mapViewport.setView(mapView);
             mapViewport.addChangeListener(this);

@@ -48,15 +48,19 @@ public abstract class MapView extends JPanel implements Scrollable
     // by the entity controlling the view (like the editor, or the scroll 
     // pane that it holds). The values range from 0.0f to 1.0 for going from
     // the left to the right of the map (up/down respectively)
-    protected float viewCenterX;
-    protected float viewCenterY;
+    protected float viewportCenterX;
+    protected float viewportCenterY;
+    
+    // viewport display properties
+    private boolean viewportFrameVisible;
+    protected Color viewportFrameColor = Color.yellow;
     
     // Grid properties
     protected boolean showGrid;
     protected boolean antialiasGrid;
     protected Color gridColor;
     protected int gridOpacity;
-
+    
     protected static double[] zoomLevels = {
         0.0625, 0.125, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 4.0
     };
@@ -100,11 +104,11 @@ public abstract class MapView extends JPanel implements Scrollable
     /// accordingly).
     /// Setting the ViewCenter to a new value causes the view to be repainted.
     public void setViewCenter(float relativeX, float relativeY){
-        if(viewCenterX == relativeX && viewCenterY == relativeY)
+        if(viewportCenterX == relativeX && viewportCenterY == relativeY)
             return;
         
-        viewCenterX = relativeX;
-        viewCenterY = relativeY;
+        viewportCenterX = relativeX;
+        viewportCenterY = relativeY;
         
         // only issue full repaint if we have layers with parallax enabled - 
         // otherwise setting the view center will have no effect.
@@ -162,8 +166,8 @@ public abstract class MapView extends JPanel implements Scrollable
         int mapHeightPx = map.getHeight()*map.getTileHeight();
 		float originPosX = mapWidthPx/2;
 		float originPosY = mapHeightPx/2;
-		float viewOffsetX = (viewCenterX*mapWidthPx-originPosX);
-		float viewOffsetY = (viewCenterY*mapHeightPx-originPosY);
+		float viewOffsetX = (viewportCenterX*mapWidthPx-originPosX);
+		float viewOffsetY = (viewportCenterY*mapHeightPx-originPosY);
 		
 		
 		// layer dimensions in pixels
@@ -436,6 +440,17 @@ public abstract class MapView extends JPanel implements Scrollable
         //        paintPropertyFlags(g2d, tl);
         //    }
         //}
+        
+        if(isViewportFrameVisible()){
+            g2d.setColor(viewportFrameColor);
+            float viewportCenterXPx = viewportCenterX*map.getWidth()*map.getTileWidth();
+            float viewportCenterYPx = viewportCenterY*map.getHeight()*map.getTileHeight();
+            int x = (int)((viewportCenterXPx - map.getViewportWidth()/2.f) * zoom);
+            int y = (int)((viewportCenterYPx - map.getViewportHeight()/2.f) * zoom);
+            int w = (int)(map.getViewportWidth() * zoom);
+            int h = (int)(map.getViewportHeight() * zoom);
+            g2d.drawRect(x,y,w,h);
+        }
     }
 
     public void paintSubMap(MultilayerPlane m, Graphics2D g2d,
@@ -626,5 +641,16 @@ public abstract class MapView extends JPanel implements Scrollable
         // the old and the new current layer, a redraw might be required.
         if(getMode(PF_COORDINATES) || getShowGrid())
             repaint();
+    }
+
+    public boolean isViewportFrameVisible() {
+        return viewportFrameVisible;
+    }
+
+    public void setViewportFrameVisible(boolean viewportFrameVisible) {
+        if(this.viewportFrameVisible == viewportFrameVisible)
+            return;
+        this.viewportFrameVisible = viewportFrameVisible;
+        repaint();
     }
 }

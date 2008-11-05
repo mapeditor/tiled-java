@@ -45,6 +45,8 @@ public class Map extends MultilayerPlane
     private Properties properties;
     private String filename;
 	private float eyeDistance = 100;
+    private int viewportWidth = 640;
+    private int viewportHeight = 480;
 		
     /**
      * @param width  the map width in tiles.
@@ -69,7 +71,7 @@ public class Map extends MultilayerPlane
     public void addMapChangeListener(MapChangeListener listener) {
         mapChangeListeners.add(listener);
     }
-	
+
     /**
      * Removes a change listener.
      * @param listener the listener to remove
@@ -602,6 +604,22 @@ public class Map extends MultilayerPlane
 		fireParallaxChangeEvent(new MapParallaxChangeEvent(this, -1, MapParallaxChangeEvent.ChangeType.EYE_VIEWPLANE_DISTANCE));
 	}
 
+    public int getViewportWidth() {
+        return viewportWidth;
+    }
+	
+    public int getViewportHeight() {
+        return viewportHeight;
+    }
+	
+    public void setViewportWidth(int w) {
+        viewportWidth = w;
+    }
+	
+    public void setViewportHeight(int h) {
+        viewportHeight = h;
+    }
+	
 	void fireParallaxChangeEvent(MapParallaxChangeEvent mapParallaxChangeEvent) {
 		for(MapParallaxChangeListener l : mapParallaxChangeListeners){
 			l.parallaxParameterChanged(mapParallaxChangeEvent);
