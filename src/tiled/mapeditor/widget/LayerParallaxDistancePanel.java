@@ -23,10 +23,12 @@ public class LayerParallaxDistancePanel extends javax.swing.JPanel {
 	
 	
     /** Creates new form LayerParallaxDistancePanel */
-    public LayerParallaxDistancePanel(MapLayer layer, UndoableEditSupport undoSupport) {
+    public LayerParallaxDistancePanel(MapLayer layer, UndoableEditSupport undoSupport, float rangeMin, float rangeMax) {
         initComponents();
 		this.layer = layer;
 		this.undoSupport = undoSupport;
+        this.rangeMin = rangeMin;
+        this.rangeMax = rangeMax;
 		
 		try {
 			((TitledBorder)getBorder()).setTitle(layer.getName());
@@ -54,7 +56,7 @@ public class LayerParallaxDistancePanel extends javax.swing.JPanel {
 		float newValue = (intValue-intMin) * (rangeMax-rangeMin) / (intMax-intMin) + rangeMin;
 		if(java.lang.Math.abs(newValue-value) > epsilon){
 			layer.setViewPlaneDistance(newValue);
-            distanceTextField.setText(Float.toString(newValue));
+            distanceTextField.setText(String.format("%2.2f", newValue));
 		}
 	}
 	
@@ -65,7 +67,7 @@ public class LayerParallaxDistancePanel extends javax.swing.JPanel {
 		
 		int intValue = intMin + (int)((intMax-intMin) * (value-rangeMin)/(rangeMax-rangeMin));
 		distanceSlider.setValue(intValue);
-		distanceTextField.setText(Float.toString(value));
+		distanceTextField.setText(String.format("%2.2f", value));
 		boolean infinity = layer.isViewPlaneInfinitelyFarAway();
 		infinityCheckBox.setSelected(infinity);
 	}
@@ -152,8 +154,7 @@ private void infinityCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//G
 }//GEN-LAST:event_infinityCheckBoxItemStateChanged
 
 private void zeroButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zeroButtonActionPerformed
-//  layer.setDistanceFromViewPlane(0);
-	updateLayerFromUI();
+    layer.setViewPlaneDistance(0);
 	updateUIFromLayer();
 }//GEN-LAST:event_zeroButtonActionPerformed
 
