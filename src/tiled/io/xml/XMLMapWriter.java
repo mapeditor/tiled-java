@@ -126,7 +126,9 @@ public class XMLMapWriter implements MapWriter
         w.writeAttribute("height", map.getHeight());
         w.writeAttribute("tilewidth", map.getTileWidth());
         w.writeAttribute("tileheight", map.getTileHeight());
-
+        
+        w.writeAttribute("eyeDistance", map.getEyeDistance());
+        
         writeProperties(map.getProperties(), w);
 
         int firstgid = 1;
