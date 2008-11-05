@@ -130,16 +130,28 @@ public abstract class MapView extends JPanel implements Scrollable
     /// @see calculateParallaxOffsetZoomed()
     /// @see setViewCenter()
     protected Point calculateParallaxOffset(MapLayer layer){
-        // this function assumes that the parallax effect orients itself on the
-        // view point and the width (and height) of the map. So if the view
-        // center is at the start of the map (x==0), all layers have an offset
-        // of 0, and therefore are left-aligned to the map's left border. As
-        // the view travels along to the right of the map (x==map width), 
-        // the layers with a width different to the map's width shift relative
-        // to the map until, when the view center arrives at the right side end
-        // of the map, their right borders are aligned to the map's right
-        // border.
-		
+        // the parallax effect imitates a sense of depth by moving layers 
+        // that are 'behind' a base plane (we call it the view plane) slower
+        // than than the base plane. Layers 'above' the base plane are moved
+        // faster.
+        //
+        // To create a more or less correct illusion, the model chosen
+        // here orients itself on the way projection is calculated in 3D
+        // graphics. It requires actual values for the distance between
+        // the eye point and the view plane, and for the distances of each
+        // layer to the view plane. Note that planes further away from the eye
+        // than the view plane have a positive distance value, planes closer
+        // than the view plane have a negative distance.
+        //
+        // To calculate projection and the resulting relative shift between
+        // the view plane and each layer, an origin needs to be chosen for the
+        // view. Here, this is assumed to be the center of the map
+        // (width/2, height/2). Each layer also has a center (also at the
+        // layer's (width/2, heigh/2) ). Note that if the eye point is at
+        // the view plane's center (viewOffset=(0,0), all layer's centers will
+        // also be at this position. If the eye point moves away, the parallax offset (shift)
+        // becomes noticable.
+        
 		// the center of the map is our view origin. When the view center is at this point,
 		// every layer's center will be on this point. When the view moves
 		// away, the layers start to shift from this position depending on their
@@ -150,8 +162,8 @@ public abstract class MapView extends JPanel implements Scrollable
         int mapHeightPx = map.getHeight()*map.getTileHeight();
 		float originPosX = mapWidthPx/2;
 		float originPosY = mapHeightPx/2;
-		float viewCenterXPx = (viewCenterX*mapWidthPx-originPosX);
-		float viewCenterYPx = (viewCenterY*mapHeightPx-originPosY);
+		float viewOffsetX = (viewCenterX*mapWidthPx-originPosX);
+		float viewOffsetY = (viewCenterY*mapHeightPx-originPosY);
 		
 		
 		// layer dimensions in pixels
@@ -162,8 +174,10 @@ public abstract class MapView extends JPanel implements Scrollable
 		float parallaxScale = 1.0f;
 		if(!layer.isViewPlaneInfinitelyFarAway())
 			parallaxScale = layer.getViewPlaneDistance() / (map.getEyeDistance() + layer.getViewPlaneDistance());
-		float x = viewCenterXPx * parallaxScale + originPosX - layerWidthPx/2;
-		float y = viewCenterYPx * parallaxScale + originPosY - layerHeightPx/2;
+        float layerOffsetX = viewOffsetX * parallaxScale;
+        float layerOffsetY = viewOffsetY * parallaxScale;
+		float x = layerOffsetX + originPosX - layerWidthPx/2;
+		float y = layerOffsetY + originPosY - layerHeightPx/2;
 		
         return new Point((int)x,(int)y);
     }
