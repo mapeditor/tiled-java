@@ -111,7 +111,7 @@
     <!-- Generate Javadoc -->
     <javadoc
       packagenames="tiled.*"
-      sourcepath="."
+      sourcepath="src"
       destdir="${javadoc}"
       windowtitle="Tiled"
       />
