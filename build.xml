@@ -77,7 +77,7 @@
     description="Generate a core I/O distribution for use in games, etc.">
     <mkdir dir="${dist}"/>
     <jar jarfile="${dist}/tiled-core.jar"
-      basedir="${build}" includes="tiled/core/**/*.class,tiled/io/**,tiled/mapeditor/util/cutter/**,tiled/util/Util.class,tiled/util/Base64.class,tiled/util/NumberedSet.class,tiled/mapeditor/util/TransparentImageFilter.class"/>
+      basedir="${build}" includes="tiled/core/**/*.class,tiled/io/**,tiled/mapeditor/Resources.class,tiled/mapeditor/util/cutter/**,tiled/util/Util.class,tiled/util/Base64.class,tiled/util/NumberedSet.class,tiled/mapeditor/util/TransparentImageFilter.class,tiled/mapeditor/resources/map.dtd"/>
   </target>
 
   <target name="dist_dep" depends="compile_dep"
