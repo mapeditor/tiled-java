@@ -9,6 +9,8 @@ package tiled.mapeditor.widget;
 import javax.swing.border.TitledBorder;
 import javax.swing.undo.UndoableEditSupport;
 import tiled.core.MapLayer;
+import tiled.core.MapParallaxChangeEvent;
+import tiled.core.MapParallaxChangeListener;
 import tiled.mapeditor.undo.MapLayerViewportSettingsEdit;
 
 /**
@@ -24,6 +26,17 @@ public class LayerParallaxDistancePanel extends javax.swing.JPanel {
     
     private boolean distanceSliderPreviouslyAdjusting = false;
     private boolean nextEditIsSignificant = false;
+    private MapParallaxChangeListener listener = new MapParallaxChangeListener() {
+
+        public void parallaxParameterChanged(MapParallaxChangeEvent e) {
+            switch(e.getChangeType()){
+                case LAYER_VIEWPLANE_DISTANCE:  {
+                    assert layer.getMap().getLayer(e.getLayerIndex()) == layer;
+                    LayerParallaxDistancePanel.this.updateUIFromLayer();
+                }   break;
+            }
+        }
+    };
 	
     /** Creates new form LayerParallaxDistancePanel */
     public LayerParallaxDistancePanel(MapLayer layer, UndoableEditSupport undoSupport, float rangeMin, float rangeMax) {
@@ -33,6 +46,7 @@ public class LayerParallaxDistancePanel extends javax.swing.JPanel {
         this.rangeMin = rangeMin;
         this.rangeMax = rangeMax;
 		
+        layer.getMap().addMapParallaxChangeListener(listener);
 		try {
 			((TitledBorder)getBorder()).setTitle(layer.getName());
 		} catch(ClassCastException ccx){
@@ -47,6 +61,10 @@ public class LayerParallaxDistancePanel extends javax.swing.JPanel {
 		rangeMax = max;
 		updateUIFromLayer();
 	}
+
+    void detachFromMap() {
+        layer.getMap().removeMapParallaxChangeListener(listener);
+    }
 
 	private void updateLayerFromDistanceSlider() {
 		int intMin = distanceSlider.getMinimum();

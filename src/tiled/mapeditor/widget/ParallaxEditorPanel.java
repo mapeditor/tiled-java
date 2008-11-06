@@ -62,11 +62,6 @@ public class ParallaxEditorPanel extends javax.swing.JPanel {
                 case EYE_VIEWPLANE_DISTANCE:  {
         			eyeViewplaneDistanceTextField.setText(Float.toString(e.getMap().getEyeDistance()));
                 }   break;
-                case LAYER_VIEWPLANE_DISTANCE:  {
-                    int index = e.getLayerIndex();
-                    LayerParallaxDistancePanel lpdp = (LayerParallaxDistancePanel)(layerEditPanel.getComponent(index));
-                    lpdp.updateUIFromLayer();
-                }   break;
             }
 		}
 	};
@@ -92,10 +87,13 @@ public class ParallaxEditorPanel extends javax.swing.JPanel {
             maxValue = java.lang.Math.max(maxValue, d);
         }
 		
+        
 		minRangesIndex = lower_bound(minRanges, minValue);
 		maxRangesIndex = lower_bound(maxRanges, maxValue);
 		if(minRanges[minRangesIndex] == maxRanges[maxRangesIndex])
-			++maxRangesIndex;
+			maxRangesIndex = java.lang.Math.min(maxRanges.length-1, maxRangesIndex+1);
+        if(minRanges[minRangesIndex] > minValue)
+            minRangesIndex = java.lang.Math.max(0, minRangesIndex-1);
 		minRangeComboBox.setSelectedIndex(minRangesIndex);
 		maxRangeComboBox.setSelectedIndex(maxRangesIndex);
     }
@@ -343,7 +341,15 @@ private void eyeViewplaneDistanceTextFieldActionPerformed(java.awt.event.ActionE
 	}
 	
 	private void recreateLayerPanelsFromMap(float rangeMin, float rangeMax){
-		layerEditPanel.removeAll();
+		for(Component c : layerEditPanel.getComponents()){
+            try{
+                LayerParallaxDistancePanel lpdp = (LayerParallaxDistancePanel)c;
+                lpdp.detachFromMap();
+            } catch(ClassCastException ccx){
+                // ignore components of mismatching type
+            }
+        }
+        layerEditPanel.removeAll();
 		if(currentMap == null)
 			return;
 		
