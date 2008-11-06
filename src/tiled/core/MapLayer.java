@@ -316,7 +316,21 @@ public abstract class MapLayer implements Cloneable
      * @param dy     the shift in y direction
      */
     public abstract void resize(int width, int height, int dx, int dy);
-
+    
+    /// convenience method, calls resize() to set the new width with current
+    /// height, dx and dy.
+    public final void setWidth(int width){
+        Rectangle b = getBounds();
+        resize(width, b.height, b.x, b.y);
+    }
+    
+    /// convenience method, calls resize() to set the new height with current
+    /// width, dx and dy.
+    public final void setHeight(int height){
+        Rectangle b = getBounds();
+        resize(b.width, height, b.x, b.y);
+    }
+    
     /**
      * Get the locked status of the layer.
      *
