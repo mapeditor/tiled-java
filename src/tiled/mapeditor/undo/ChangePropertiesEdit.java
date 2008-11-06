@@ -27,12 +27,14 @@ public class ChangePropertiesEdit extends AbstractUndoableEdit {
     }
     
     public void undo(){
+        super.undo();
         assert !undone;
         swapProperties();
         undone = true;
     }
     
     public void redo(){
+        super.redo();
         assert undone;
         swapProperties();
         undone = false;

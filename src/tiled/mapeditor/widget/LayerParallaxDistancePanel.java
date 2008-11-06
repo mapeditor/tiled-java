@@ -9,6 +9,7 @@ package tiled.mapeditor.widget;
 import javax.swing.border.TitledBorder;
 import javax.swing.undo.UndoableEditSupport;
 import tiled.core.MapLayer;
+import tiled.mapeditor.undo.MapLayerViewportSettingsEdit;
 
 /**
  *
@@ -20,7 +21,9 @@ public class LayerParallaxDistancePanel extends javax.swing.JPanel {
 	private UndoableEditSupport undoSupport;
 	private float rangeMin;
 	private float rangeMax;
-	
+    
+    private boolean distanceSliderPreviouslyAdjusting = false;
+    private boolean nextEditIsSignificant = false;
 	
     /** Creates new form LayerParallaxDistancePanel */
     public LayerParallaxDistancePanel(MapLayer layer, UndoableEditSupport undoSupport, float rangeMin, float rangeMax) {
@@ -50,17 +53,21 @@ public class LayerParallaxDistancePanel extends javax.swing.JPanel {
 		int intMax = distanceSlider.getMaximum();
 		int intValue = distanceSlider.getValue();
 		float epsilon = (rangeMax-rangeMin) / (intMax-intMin);
-
+        
 		float value = layer.getViewPlaneDistance();
-
+        
 		float newValue = (intValue-intMin) * (rangeMax-rangeMin) / (intMax-intMin) + rangeMin;
 		if(java.lang.Math.abs(newValue-value) > epsilon){
+            // find out if we're looking at the first of a series in adjustments
+            
+            undoSupport.postEdit(new MapLayerViewportSettingsEdit(layer, nextEditIsSignificant));
+            nextEditIsSignificant = false;
 			layer.setViewPlaneDistance(newValue);
             distanceTextField.setText(String.format("%2.2f", newValue));
-		}
+		}     
 	}
 	
-	private void updateUIFromLayer(){
+	void updateUIFromLayer(){
 		int intMin = distanceSlider.getMinimum();
 		int intMax = distanceSlider.getMaximum();
 		float value = layer.getViewPlaneDistance();
@@ -76,6 +83,10 @@ public class LayerParallaxDistancePanel extends javax.swing.JPanel {
 		updateLayerFromDistanceSlider();
 		
 		boolean infinity = infinityCheckBox.isSelected();
+        if(layer.isViewPlaneInfinitelyFarAway() == infinity)
+            return;
+        
+        undoSupport.postEdit(new MapLayerViewportSettingsEdit(layer));    
 		layer.setViewPlaneInfinitelyFarAway(infinity);
 		
 	}
@@ -154,12 +165,20 @@ private void infinityCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//G
 }//GEN-LAST:event_infinityCheckBoxItemStateChanged
 
 private void zeroButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zeroButtonActionPerformed
+    undoSupport.postEdit(new MapLayerViewportSettingsEdit(layer));
     layer.setViewPlaneDistance(0);
 	updateUIFromLayer();
 }//GEN-LAST:event_zeroButtonActionPerformed
 
 private void distanceSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_distanceSliderStateChanged
-	updateLayerFromDistanceSlider();
+    // find out if the next edit is a significant one (important for the
+    // undo manager and the MapLayerViewportSettingsEdit to find out if
+    // edits need to be posted to the undo manager
+    if(!distanceSliderPreviouslyAdjusting && distanceSlider.getValueIsAdjusting())
+        nextEditIsSignificant = true;
+    distanceSliderPreviouslyAdjusting = distanceSlider.getValueIsAdjusting();
+    
+    updateLayerFromDistanceSlider();    
 }//GEN-LAST:event_distanceSliderStateChanged
 
 

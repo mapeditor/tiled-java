@@ -50,12 +50,14 @@ public class MapViewportSettingsEdit extends AbstractUndoableEdit {
     }
     
     public void undo(){
+        super.undo();
         assert !undone;
         swapViewportState();
         undone = true;
     }
     
     public void redo(){
+        super.redo();
         assert undone;
         swapViewportState();
         undone = false;

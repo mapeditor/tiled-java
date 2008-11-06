@@ -16,7 +16,6 @@ import tiled.core.MapParallaxChangeEvent;
 import tiled.core.MapParallaxChangeListener;
 import tiled.core.TileSet;
 import tiled.mapeditor.MapEditor;
-import tiled.mapeditor.undo.MapViewportSettingsEdit;
 
 /**
  *
@@ -59,9 +58,16 @@ public class ParallaxEditorPanel extends javax.swing.JPanel {
 	
 	private MapParallaxChangeListener mapParallaxChangeListener = new MapParallaxChangeListener() {
 		public void parallaxParameterChanged(MapParallaxChangeEvent e) {
-			if(e.getChangeType() != MapParallaxChangeEvent.ChangeType.EYE_VIEWPLANE_DISTANCE)
-				return;
-			eyeViewplaneDistanceTextField.setText(Float.toString(e.getMap().getEyeDistance()));
+            switch(e.getChangeType()){
+                case EYE_VIEWPLANE_DISTANCE:  {
+        			eyeViewplaneDistanceTextField.setText(Float.toString(e.getMap().getEyeDistance()));
+                }   break;
+                case LAYER_VIEWPLANE_DISTANCE:  {
+                    int index = e.getLayerIndex();
+                    LayerParallaxDistancePanel lpdp = (LayerParallaxDistancePanel)(layerEditPanel.getComponent(index));
+                    lpdp.updateUIFromLayer();
+                }   break;
+            }
 		}
 	};
     /** Creates new form ParallaxEditorPanel */
@@ -326,9 +332,6 @@ private void eyeViewplaneDistanceTextFieldActionPerformed(java.awt.event.ActionE
 			eyeDistance = Float.parseFloat(eyeViewplaneDistanceTextField.getText());
 		} catch(NumberFormatException nfx){
 		}
-        if(currentMap.getEyeDistance() == eyeDistance)
-            return;
-        editor.getUndoSupport().postEdit(new MapViewportSettingsEdit(currentMap));
 		currentMap.setEyeDistance(eyeDistance);
 	}
 
