@@ -16,6 +16,7 @@ import java.awt.*;
 import javax.swing.SwingConstants;
 
 import tiled.core.Map;
+import tiled.core.MapLayer;
 import tiled.core.ObjectGroup;
 import tiled.core.TileLayer;
 
@@ -81,6 +82,10 @@ public class ShiftedMapView extends MapView
     }
 
     protected void paintGrid(Graphics2D g2d) {
+        MapLayer currentLayer = getCurrentLayer();
+        if(currentLayer == null)
+            return;
+        
         // Determine tile size
         Dimension tsize = getTileSize();
         if (tsize.width <= 0 || tsize.height <= 0) return;
@@ -122,10 +127,10 @@ public class ShiftedMapView extends MapView
         throw new RuntimeException("Not yet implemented");    // todo
     }
 
-    public void repaintRegion(Rectangle region) {
+    public void repaintRegion(MapLayer layer,Rectangle region) {
     }
 
-    public Point screenToTileCoords(int x, int y) {
+    public Point screenToTileCoords(MapLayer layer,int x, int y) {
         return new Point(0, 0);
     }
 
@@ -140,11 +145,11 @@ public class ShiftedMapView extends MapView
                 (int)(map.getTileHeight() * zoom));
     }
 
-    protected Polygon createGridPolygon(int tx, int ty, int border) {
+    protected Polygon createGridPolygon(Dimension tileSize, int tx, int ty, int border) {
         return new Polygon();
     }
 
-    public Point tileToScreenCoords(int x, int y) {
+    public Point tileToScreenCoords(Point offset,Dimension tileDimension,int x, int y) {
         return new Point(0, 0);
     }
 }

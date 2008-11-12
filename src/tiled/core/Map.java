@@ -40,10 +40,14 @@ public class Map extends MultilayerPlane
 
     private int tileWidth, tileHeight;
     private int orientation = MDO_ORTHO;
-    private final List mapChangeListeners = new LinkedList();
+    private final List<MapChangeListener> mapChangeListeners = new LinkedList();
+    private final List<MapParallaxChangeListener> mapParallaxChangeListeners = new LinkedList();
     private Properties properties;
     private String filename;
-
+    private float eyeDistance = 100;
+    private int viewportWidth = 640;
+    private int viewportHeight = 480;
+        
     /**
      * @param width  the map width in tiles.
      * @param height the map height in tiles.
@@ -76,6 +80,15 @@ public class Map extends MultilayerPlane
         mapChangeListeners.remove(listener);
     }
 
+    public void addMapParallaxChangeListener(MapParallaxChangeListener listener){
+        mapParallaxChangeListeners.add(listener);
+    }
+    
+    public void removeMapParallaxChangeListener(MapParallaxChangeListener listener){
+        mapParallaxChangeListeners.remove(listener);
+    }
+    
+        
     /**
      * Notifies all registered map change listeners about a change.
      */
@@ -88,8 +101,28 @@ public class Map extends MultilayerPlane
             ((MapChangeListener) iterator.next()).mapChanged(event);
         }
     }
+    
+    protected void fireLayerRemoved(int layerIndex){
+        MapChangedEvent e = new MapChangedEvent(this, layerIndex); 
+        for(MapChangeListener l : mapChangeListeners){
+            l.layerRemoved(e);
+        }
+    }
 
-
+    protected void fireLayerAdded(int layerIndex){
+        MapChangedEvent e = new MapChangedEvent(this, layerIndex); 
+        for(MapChangeListener l : mapChangeListeners){
+            l.layerAdded(e);
+        }
+    }
+    
+    protected void fireLayerMoved(int oldLayerIndex, int newLayerIndex){
+        MapChangedEvent e = new MapChangedEvent(this, newLayerIndex, oldLayerIndex);
+        for(MapChangeListener l : mapChangeListeners){
+            l.layerMoved(e);
+        }
+    }
+    
     /**
      * Notifies all registered map change listeners about the removal of a
      * tileset.
@@ -149,10 +182,12 @@ public class Map extends MultilayerPlane
         fireMapChanged();
     }
 
+    @Override
     public MapLayer addLayer(MapLayer layer) {
         layer.setMap(this);
         super.addLayer(layer);
         fireMapChanged();
+        fireLayerAdded(getLayerVector().indexOf(layer));
         return layer;
     }
 
@@ -166,15 +201,22 @@ public class Map extends MultilayerPlane
         MapLayer layer = new TileLayer(this, bounds.width, bounds.height);
         layer.setName(Resources.getString("general.layer.layer") +
                       " " + super.getTotalLayers());
-        super.addLayer(layer);
-        fireMapChanged();
+        insertLayer(getTotalLayers(), layer);
         return layer;
+    }
+
+    public void insertLayer(int index, MapLayer layer) {
+        super.insertLayer(index, layer);
+        fireMapChanged();
+        fireLayerAdded(index);
     }
 
     public void setLayer(int index, MapLayer layer) {
         layer.setMap(this);
         super.setLayer(index, layer);
         fireMapChanged();
+        fireLayerRemoved(index);
+        fireLayerAdded(index);
     }
 
     /**
@@ -279,6 +321,7 @@ public class Map extends MultilayerPlane
     public MapLayer removeLayer(int index) {
         MapLayer layer = super.removeLayer(index);
         fireMapChanged();
+        fireLayerRemoved(index);
         return layer;
     }
 
@@ -299,8 +342,10 @@ public class Map extends MultilayerPlane
      * @see MultilayerPlane#removeAllLayers
      */
     public void removeAllLayers() {
-        super.removeAllLayers();
-        fireMapChanged();
+        while(getTotalLayers() > 0){
+            removeLayer(0);
+            fireLayerRemoved(0);
+        }
     }
 
     /**
@@ -321,6 +366,7 @@ public class Map extends MultilayerPlane
     public void swapLayerUp(int index) {
         super.swapLayerUp(index);
         fireMapChanged();
+        fireLayerMoved(index, index+1);
     }
 
     /**
@@ -331,6 +377,7 @@ public class Map extends MultilayerPlane
     public void swapLayerDown(int index) {
         super.swapLayerDown(index);
         fireMapChanged();
+        fireLayerMoved(index, index-1);
     }
 
     /**
@@ -545,4 +592,38 @@ public class Map extends MultilayerPlane
             getTotalLayers() + "][" + tileWidth + "x" +
             tileHeight + "]";
     }
+
+    public float getEyeDistance() {
+        return eyeDistance;
+    }
+
+    public void setEyeDistance(float eyeDistance) {
+        if(this.eyeDistance == eyeDistance)
+            return;
+        this.eyeDistance = eyeDistance;
+        fireParallaxChangeEvent(new MapParallaxChangeEvent(this, -1, MapParallaxChangeEvent.ChangeType.EYE_VIEWPLANE_DISTANCE));
+    }
+
+    public int getViewportWidth() {
+        return viewportWidth;
+    }
+    
+    public int getViewportHeight() {
+        return viewportHeight;
+    }
+    
+    public void setViewportWidth(int w) {
+        viewportWidth = w;
+    }
+    
+    public void setViewportHeight(int h) {
+        viewportHeight = h;
+    }
+    
+    void fireParallaxChangeEvent(MapParallaxChangeEvent mapParallaxChangeEvent) {
+        for(MapParallaxChangeListener l : mapParallaxChangeListeners){
+            l.parallaxParameterChanged(mapParallaxChangeEvent);
+        }
+    }
+    
 }

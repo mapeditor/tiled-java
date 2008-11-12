@@ -33,6 +33,6 @@ public class AddLayerAction extends AbstractLayerAction
     protected void doPerformAction() {
         Map currentMap = editor.getCurrentMap();
         currentMap.addLayer();
-        editor.setCurrentLayer(currentMap.getTotalLayers() - 1);
+        editor.setCurrentLayerIndex(currentMap.getTotalLayers() - 1);
     }
 }

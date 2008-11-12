@@ -19,7 +19,10 @@ import java.util.Properties;
 import javax.swing.*;
 import javax.swing.table.TableCellEditor;
 
+import javax.swing.undo.UndoableEdit;
+import javax.swing.undo.UndoableEditSupport;
 import tiled.mapeditor.Resources;
+import tiled.mapeditor.undo.ChangePropertiesEdit;
 import tiled.mapeditor.util.PropertiesTableModel;
 import tiled.mapeditor.widget.VerticalStaticJPanel;
 
@@ -32,19 +35,38 @@ public class PropertiesDialog extends JDialog
     protected final Properties properties;
     protected final PropertiesTableModel tableModel = new PropertiesTableModel();
     protected JPanel mainPanel;
-
+    private UndoableEditSupport undoSupport;
+    
     private static final String DIALOG_TITLE = Resources.getString("dialog.properties.title");
     private static final String OK_BUTTON = Resources.getString("general.button.ok");
     private static final String DELETE_BUTTON = Resources.getString("general.button.delete");
     private static final String CANCEL_BUTTON = Resources.getString("general.button.cancel");
 
 
-    public PropertiesDialog(JFrame parent, Properties p) {
+    /// Creates a new PropertiesDialog instance
+    /// @param    parent    the parent frame that will become the owner of this
+    ///    dialog
+    ///    @param    p    the properties to manage
+    public PropertiesDialog(JFrame parent, Properties p, UndoableEditSupport undoSupport) {
+        this(parent, p, undoSupport, true);
+    }
+    
+    /// Creates a new PropertiesDialog instance
+    /// @param    parent    the parent frame that will become the owner of this
+    ///    dialog
+    ///    @param    p    the properties to manage
+    /// @param    doInit    if false, the dialog will not initialise it's UI components,
+    ///    but rely on a subclass to to do call init() and pack() eventually after
+    /// the instance has been constructed.
+    protected PropertiesDialog(JFrame parent, Properties p, UndoableEditSupport undoSupport, boolean doInit) {
         super(parent, DIALOG_TITLE, true);
         properties = p;
-        init();
-        pack();
-        setLocationRelativeTo(getOwner());
+        this.undoSupport = undoSupport;
+        if(doInit){
+            init();
+            pack();
+            setLocationRelativeTo(getOwner());
+        }
     }
 
     protected void init() {
@@ -85,7 +107,10 @@ public class PropertiesDialog extends JDialog
         //create actionlisteners
         okButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
-                buildPropertiesAndDispose();
+                UndoableEdit ue = commit();
+                if(ue != null)
+                    undoSupport.postEdit(ue);
+                dispose();
             }
         });
 
@@ -110,19 +135,32 @@ public class PropertiesDialog extends JDialog
         updateInfo();
         setVisible(true);
     }
-
-    protected void buildPropertiesAndDispose() {
+    
+    public boolean havePropertiesChanged(){
+        TableCellEditor editor = propertiesTable.getCellEditor();
+        if (editor != null)
+            editor.stopCellEditing();
+        
+        return !properties.equals(tableModel.getProperties());
+    }
+    
+    protected UndoableEdit commit() {
         // Make sure there is no active cell editor anymore
         TableCellEditor editor = propertiesTable.getCellEditor();
         if (editor != null) {
             editor.stopCellEditing();
         }
-
-        // Apply possibly changed properties.
-        properties.clear();
-        properties.putAll(tableModel.getProperties());
-
-        dispose();
+        
+        if(havePropertiesChanged()){
+            Properties backup = (Properties)properties.clone();
+            
+            // Apply possibly changed properties.
+            properties.clear();
+            properties.putAll(tableModel.getProperties());
+            
+            return new ChangePropertiesEdit(properties, backup);
+        } else 
+            return null;
     }
 
     protected void deleteSelected() {

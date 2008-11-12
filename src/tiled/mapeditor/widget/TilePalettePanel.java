@@ -115,7 +115,7 @@ public class TilePalettePanel extends JPanel implements Scrollable,
      * @return the created tile layer
      */
     private TileLayer createTileLayerFromRegion(Rectangle rect) {
-        TileLayer layer = new TileLayer(rect.width + 1, rect.height + 1);
+        TileLayer layer = new TileLayer(rect.width + 1, rect.height + 1, tileset.getTileWidth(), tileset.getTileHeight());
 
         // Copy the tiles in the region to the tile layer
         for (int y = rect.y; y <= rect.y + rect.height; y++) {

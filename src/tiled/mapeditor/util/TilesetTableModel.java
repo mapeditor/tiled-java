@@ -114,6 +114,15 @@ public class TilesetTableModel extends AbstractTableModel implements MapChangeLi
     public void mapChanged(MapChangedEvent event) {
     }
 
+	public void layerAdded(MapChangedEvent e) {
+	}
+
+	public void layerRemoved(MapChangedEvent e) {
+	}
+	
+	public void layerMoved(MapChangedEvent e) {
+	}
+	
     public void tilesetAdded(MapChangedEvent event, TileSet tileset) {
         int index = map.getTilesets().indexOf(tileset);
 
