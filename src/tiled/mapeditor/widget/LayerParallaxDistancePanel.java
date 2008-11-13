@@ -19,10 +19,10 @@ import tiled.mapeditor.undo.MapLayerViewportSettingsEdit;
  */
 public class LayerParallaxDistancePanel extends javax.swing.JPanel {
 
-	private MapLayer layer;
-	private UndoableEditSupport undoSupport;
-	private float rangeMin;
-	private float rangeMax;
+    private MapLayer layer;
+    private UndoableEditSupport undoSupport;
+    private float rangeMin;
+    private float rangeMax;
     
     private boolean distanceSliderPreviouslyAdjusting = false;
     private boolean nextEditIsSignificant = false;
@@ -37,86 +37,99 @@ public class LayerParallaxDistancePanel extends javax.swing.JPanel {
             }
         }
     };
-	
+    
     /** Creates new form LayerParallaxDistancePanel */
     public LayerParallaxDistancePanel(MapLayer layer, UndoableEditSupport undoSupport, float rangeMin, float rangeMax) {
         initComponents();
-		this.layer = layer;
-		this.undoSupport = undoSupport;
+        this.layer = layer;
+        this.undoSupport = undoSupport;
         this.rangeMin = rangeMin;
         this.rangeMax = rangeMax;
-		
+        
         layer.getMap().addMapParallaxChangeListener(listener);
-		try {
-			((TitledBorder)getBorder()).setTitle(layer.getName());
-		} catch(ClassCastException ccx){
-		}
-		updateUIFromLayer();
-        		
+        try {
+            ((TitledBorder)getBorder()).setTitle(layer.getName());
+        } catch(ClassCastException ccx){
+        }
+        updateUIFromLayer();
+                
     }
-	
-	public void setEditRange(float min, float max){
-		
-		rangeMin = min;
-		rangeMax = max;
-		updateUIFromLayer();
-	}
+    
+    public void setEditRange(float min, float max){
+        
+        rangeMin = min;
+        rangeMax = max;
+        updateUIFromLayer();
+    }
 
     void detachFromMap() {
         layer.getMap().removeMapParallaxChangeListener(listener);
     }
 
-	private void updateLayerFromDistanceSlider() {
-		int intMin = distanceSlider.getMinimum();
-		int intMax = distanceSlider.getMaximum();
-		int intValue = distanceSlider.getValue();
-		float epsilon = (rangeMax-rangeMin) / (intMax-intMin);
+    private void updateLayerFromDistanceSlider() {
+        int intMin = distanceSlider.getMinimum();
+        int intMax = distanceSlider.getMaximum();
+        int intValue = distanceSlider.getValue();
+        float epsilon = (rangeMax-rangeMin) / (intMax-intMin);
         
-		float value = layer.getViewPlaneDistance();
+        float value = layer.getViewPlaneDistance();
         
-		float newValue = (intValue-intMin) * (rangeMax-rangeMin) / (intMax-intMin) + rangeMin;
-		if(java.lang.Math.abs(newValue-value) > epsilon){
+        float newValue = (intValue-intMin) * (rangeMax-rangeMin) / (intMax-intMin) + rangeMin;
+        if(java.lang.Math.abs(newValue-value) > epsilon){
             // find out if we're looking at the first of a series in adjustments
             
             undoSupport.postEdit(new MapLayerViewportSettingsEdit(layer, nextEditIsSignificant));
             nextEditIsSignificant = false;
-			layer.setViewPlaneDistance(newValue);
+            layer.setViewPlaneDistance(newValue);
             distanceTextField.setText(String.format("%2.2f", newValue));
-		}     
-	}
-	
-	void updateUIFromLayer(){
-		int intMin = distanceSlider.getMinimum();
-		int intMax = distanceSlider.getMaximum();
-		float value = layer.getViewPlaneDistance();
-		
-		int intValue = intMin + (int)((intMax-intMin) * (value-rangeMin)/(rangeMax-rangeMin));
-		distanceSlider.setValue(intValue);
-		distanceTextField.setText(String.format("%2.2f", value));
-		boolean infinity = layer.isViewPlaneInfinitelyFarAway();
-		infinityCheckBox.setSelected(infinity);
-	}
-	
-	private void updateLayerFromUI(){
-		updateLayerFromDistanceSlider();
-		
-		boolean infinity = infinityCheckBox.isSelected();
+        }     
+    }
+    
+    void updateUIFromLayer(){
+        int intMin = distanceSlider.getMinimum();
+        int intMax = distanceSlider.getMaximum();
+        float value = layer.getViewPlaneDistance();
+        
+        int intValue = intMin + (int)((intMax-intMin) * (value-rangeMin)/(rangeMax-rangeMin));
+        distanceSlider.setValue(intValue);
+        distanceTextField.setText(String.format("%2.2f", value));
+        boolean infinity = layer.isViewPlaneInfinitelyFarAway();
+        infinityCheckBox.setSelected(infinity);
+        
+        // update titled border if name changed
+        try{
+            TitledBorder b = ((TitledBorder)getBorder());
+            String t = b.getTitle();
+            if(!b.equals(layer.getName())){
+                b.setTitle(layer.getName());
+                // updating the TiledBorder apparently requires a repaint *sigh*
+                repaint();
+            }
+        }catch(ClassCastException ccx){
+            // in case someone changes the design, so that things don't go tits up..
+        }
+    }
+    
+    private void updateLayerFromUI(){
+        updateLayerFromDistanceSlider();
+        
+        boolean infinity = infinityCheckBox.isSelected();
         if(layer.isViewPlaneInfinitelyFarAway() == infinity)
             return;
         
         undoSupport.postEdit(new MapLayerViewportSettingsEdit(layer));    
-		layer.setViewPlaneInfinitelyFarAway(infinity);
-		
-	}
-	
-	private void updateUIState(){
-		boolean infinityOn = infinityCheckBox.isSelected();
-		
-		zeroButton.setEnabled(!infinityOn);
-		distanceSlider.setEnabled(!infinityOn);
-	}
-	
-	
+        layer.setViewPlaneInfinitelyFarAway(infinity);
+        
+    }
+    
+    private void updateUIState(){
+        boolean infinityOn = infinityCheckBox.isSelected();
+        
+        zeroButton.setEnabled(!infinityOn);
+        distanceSlider.setEnabled(!infinityOn);
+    }
+    
+    
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -178,14 +191,14 @@ public class LayerParallaxDistancePanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
 private void infinityCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_infinityCheckBoxItemStateChanged
-	updateUIState();
-	updateLayerFromUI();	
+    updateUIState();
+    updateLayerFromUI();    
 }//GEN-LAST:event_infinityCheckBoxItemStateChanged
 
 private void zeroButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zeroButtonActionPerformed
     undoSupport.postEdit(new MapLayerViewportSettingsEdit(layer));
     layer.setViewPlaneDistance(0);
-	updateUIFromLayer();
+    updateUIFromLayer();
 }//GEN-LAST:event_zeroButtonActionPerformed
 
 private void distanceSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_distanceSliderStateChanged

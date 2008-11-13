@@ -116,11 +116,11 @@ public class MapEditor implements ActionListener, MouseListener,
     //private JList       editHistoryList;
     private MiniMapViewer miniMap;
     private JPopupMenu    layerPopupMenu;
-	private ParallaxEditorPanel parallaxEditorPanel;
-	
-	private SmartSplitPane rightSplit;
-	private SmartSplitPane mainSplit;
-	private SmartSplitPane paletteSplit;
+    private ParallaxEditorPanel parallaxEditorPanel;
+    
+    private SmartSplitPane rightSplit;
+    private SmartSplitPane mainSplit;
+    private SmartSplitPane paletteSplit;
 
     private BrushPreview brushPreview;
     private JFrame      appFrame;
@@ -138,7 +138,7 @@ public class MapEditor implements ActionListener, MouseListener,
     private MapLayerEdit paintEdit;
 
     private FloatablePanel layersPanel;
-	private FloatablePanel parallaxPanel;
+    private FloatablePanel parallaxPanel;
     private FloatablePanel tilesetsPanel;
 
     //private TileInstancePropertiesDialog tileInstancePropertiesDialog;
@@ -168,8 +168,8 @@ public class MapEditor implements ActionListener, MouseListener,
 
     private static final String PANEL_TILE_PALETTE = Resources.getString("panel.tilepalette.title");
     private static final String PANEL_LAYERS = Resources.getString("panel.layers.title");
-	private static final String PANEL_PARALLAX = Resources.getString("panel.parallax.title");
-	
+    private static final String PANEL_PARALLAX = Resources.getString("panel.parallax.title");
+    
     private static final String TOOL_PAINT = Resources.getString("tool.paint.name");
     private static final String TOOL_ERASE = Resources.getString("tool.erase.name");
     private static final String TOOL_FILL = Resources.getString("tool.fill.name");
@@ -187,7 +187,9 @@ public class MapEditor implements ActionListener, MouseListener,
     private static final String STATUS_FILE_ERROR_LOAD_FAILURE = Resources.getString("status.file.error.load.failure");
     private static final String STATUS_LAYER_SELECTED_FORMAT = Resources.getString("status.layer.selectedformat_name_w_h_x_y_tilew_tileh");
     private static final String STATUS_LAYER_MOVED_FORMAT = Resources.getString("status.layer.movedformat_x_y");
-    public MapEditor() {
+    
+    
+    public MapEditor(){
         /*
         eraserBrush = new Eraser();
         brushes.add(eraserBrush());
@@ -281,10 +283,10 @@ public class MapEditor implements ActionListener, MouseListener,
         layersPanel.restore();
         tilesetsPanel.restore();
 
-		rightSplit.restore();
-		mainSplit.restore();
-		paletteSplit.restore();
-		
+        rightSplit.restore();
+        mainSplit.restore();
+        paletteSplit.restore();
+        
         // Load plugins
         pluginLoader  = PluginClassLoader.getInstance();
         try {
@@ -360,16 +362,16 @@ public class MapEditor implements ActionListener, MouseListener,
         
         createData();
         createStatusBar();
-		
-		parallaxEditorPanel = new ParallaxEditorPanel(this);
-		
+        
+        parallaxEditorPanel = new ParallaxEditorPanel(this);
+        
         // todo: Make continuouslayout an option. Because it can be slow, some
         // todo: people may prefer not to have that.
         layersPanel = new FloatablePanel(
                 getAppFrame(), dataPanel, PANEL_LAYERS, "layers");
-		parallaxPanel = new FloatablePanel(getAppFrame(), parallaxEditorPanel, PANEL_PARALLAX, "parallax");
-		
-		rightSplit = new SmartSplitPane(JSplitPane.VERTICAL_SPLIT, true, layersPanel, parallaxPanel, "rightSplit");
+        parallaxPanel = new FloatablePanel(getAppFrame(), parallaxEditorPanel, PANEL_PARALLAX, "parallax");
+        
+        rightSplit = new SmartSplitPane(JSplitPane.VERTICAL_SPLIT, true, layersPanel, parallaxPanel, "rightSplit");
         rightSplit.setOneTouchExpandable(true);
         rightSplit.setResizeWeight(0.5);
         rightSplit.setBorder(null);
@@ -1609,15 +1611,18 @@ public class MapEditor implements ActionListener, MouseListener,
         }
     }
 
-	public void layerAdded(MapChangedEvent e) {
-	}
+    public void layerAdded(MapChangedEvent e) {
+    }
 
-	public void layerRemoved(MapChangedEvent e) {
-	}
-	
-	public void layerMoved(MapChangedEvent e) {
-	}
-	
+    public void layerRemoved(MapChangedEvent e) {
+    }
+    
+    public void layerMoved(MapChangedEvent e) {
+    }
+    
+    public void layerChanged(MapChangedEvent e, MapLayerChangeEvent layerChangeEvent) {
+    }
+
     public void tilesetAdded(MapChangedEvent e, TileSet tileset) {
     }
 
@@ -1695,10 +1700,10 @@ public class MapEditor implements ActionListener, MouseListener,
         // Allow the floatable panels to save their position and size
         layersPanel.save();
         tilesetsPanel.save();
-		
-		mainSplit.save();
-		paletteSplit.save();
-		rightSplit.save();		
+        
+        mainSplit.save();
+        paletteSplit.save();
+        rightSplit.save();        
     }
 
     private void showAboutDialog() {
@@ -2266,8 +2271,8 @@ public class MapEditor implements ActionListener, MouseListener,
         setBrush(sb);
 
         tabbedTilesetsPane.setMap(currentMap);
-		parallaxEditorPanel.setCurrentMap(currentMap);
-		
+        parallaxEditorPanel.setCurrentMap(currentMap);
+        
         if (!mapLoaded) {
             mapEventAdapter.fireEvent(MapEventAdapter.ME_MAPINACTIVE);
             mapView = null;
@@ -2445,36 +2450,6 @@ public class MapEditor implements ActionListener, MouseListener,
                 case PS_EYED:
                     mapView.setCursor(curEyed);
                     break;
-            }
-        }
-    }
-
-    /**
-     * Starts Tiled.
-     *
-     * @param args the first argument may be a map file
-     */
-    public static void main(String[] args) {
-        MapEditor editor = new MapEditor();
-
-        if (args.length > 0) {
-            File file = new File(args[0]);
-
-            try {
-                editor.loadMap(file.getCanonicalPath());
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        else if (prefs.node("io").getBoolean("autoOpenLast", false)) {
-            // Load last map if it still exists
-            java.util.List<String> recent = TiledConfiguration.getRecentFiles();
-            if (!recent.isEmpty()) {
-                String filename = recent.get(0);
-                if (new File(filename).exists()) {
-                    editor.loadMap(filename);
-                }
             }
         }
     }

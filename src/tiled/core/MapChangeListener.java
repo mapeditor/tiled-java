@@ -23,28 +23,33 @@ import java.util.EventListener;
 public interface MapChangeListener extends EventListener
 {
     public void mapChanged(MapChangedEvent e);
-	
-	/// called after a layer has been added. the getLayerIndex() method
-	/// of the supplied MapChangedEvent will yield the index of the new layer
-	/// (where it has been inserted)
-	public void layerAdded(MapChangedEvent e);
-	
-	/// called after a layer has been removed. the getLayerIndex() method
-	/// of the supplied MapChangedEvent will yield the index of the layer that
-	/// was removed.
-	public void layerRemoved(MapChangedEvent e);
-	
-	/// called after a layer has been moved around. A move is basically the
-	/// same as removing the layer on one position and inserting it at another.
-	/// e.getLayerIndex() returns the layer's new index, e.getOldLayerIndex()
-	/// returns the layer's old index. Note that the indices calculate the
-	/// same way as for a an remove/add operation required to move the layer
-	/// around: remove(N) will remove the layer from position N. removal will
-	/// cause all subsequent layers to move one position down. After that, 
-	/// add(M) will add the layer at position M (counted from the state of the
-	/// sequence after remove(N)
-	public void layerMoved(MapChangedEvent e);
-	
+    
+    /// called after a layer has been added. the getLayerIndex() method
+    /// of the supplied MapChangedEvent will yield the index of the new layer
+    /// (where it has been inserted)
+    public void layerAdded(MapChangedEvent e);
+    
+    /// called after a layer has been removed. the getLayerIndex() method
+    /// of the supplied MapChangedEvent will yield the index of the layer that
+    /// was removed.
+    public void layerRemoved(MapChangedEvent e);
+    
+    /// called after a layer has been moved around in the map's list of
+    /// layers. This changes which layer is on top of which other layer. A move
+    /// is basically the
+    /// same as removing the layer on one position and inserting it at another.
+    /// e.getLayerIndex() returns the layer's new index, e.getOldLayerIndex()
+    /// returns the layer's old index. Note that the indices calculate the
+    /// same way as for a an remove/add operation required to move the layer
+    /// around: remove(N) will remove the layer from position N. removal will
+    /// cause all subsequent layers to move one position down. After that, 
+    /// add(M) will add the layer at position M (counted from the state of the
+    /// sequence after remove(N)
+    public void layerMoved(MapChangedEvent e);
+    
+    /// This event is fired every time the name of a layer is changed.
+    public void layerChanged(MapChangedEvent e, MapLayerChangeEvent layerChangeEvent);
+    
     public void tilesetAdded(MapChangedEvent e, TileSet tileset);
 
     public void tilesetRemoved(MapChangedEvent e, int index);

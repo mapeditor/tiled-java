@@ -39,7 +39,7 @@ public class FloatablePanel extends JPanel
     private final Frame parent;
     private final Preferences prefs;
     private int dividerSize;
-	
+    
     /**
      * Constructs a floatable panel with the given title. When the panel is
      * floated, it is placed in a {@link JDialog} with <code>parent</code> as

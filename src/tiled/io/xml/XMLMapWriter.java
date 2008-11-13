@@ -35,7 +35,17 @@ import tiled.util.TiledConfiguration;
 public class XMLMapWriter implements MapWriter
 {
     private static final int LAST_BYTE = 0x000000FF;
-
+    
+    private Preferences prefs = TiledConfiguration.node("saving");
+    
+    public Preferences getPreferences(){
+        return prefs;
+    }
+    
+    public void setPreferences(Preferences prefs){
+        this.prefs = prefs;
+    }
+        
     /**
      * Saves a map to an XML file.
      *
@@ -104,8 +114,7 @@ public class XMLMapWriter implements MapWriter
         writer.flush();
     }
 
-    private static void writeMap(Map map, XMLWriter w, String wp) throws IOException {
-        Preferences prefs = TiledConfiguration.node("saving");
+    private void writeMap(Map map, XMLWriter w, String wp) throws IOException {
         w.writeDocType("map", null, "http://mapeditor.org/dtd/1.0/map.dtd");
         w.startElement("map");
 
@@ -185,7 +194,7 @@ public class XMLMapWriter implements MapWriter
      * @param wp  the working directory of the map
      * @throws java.io.IOException
      */
-    private static void writeTilesetReference(TileSet set, XMLWriter w, String wp)
+    private void writeTilesetReference(TileSet set, XMLWriter w, String wp)
         throws IOException {
 
         String source = set.getSource();
@@ -203,10 +212,8 @@ public class XMLMapWriter implements MapWriter
         }
     }
 
-    private static void writeEmbeddedImage(int id, Image image, XMLWriter w) throws IOException 
+    private void writeEmbeddedImage(int id, Image image, XMLWriter w, String imageSource) throws IOException 
     {
-        Preferences prefs = TiledConfiguration.node("saving");
-        
         String imageFormatName = prefs.get("imageFormat", "PNG");
         String pixelFormatName = prefs.get("pixelFormat", "A8R8G8B8");
         boolean imageIsBigEndian = prefs.getBoolean("imageIsBigEndian", true);
@@ -217,6 +224,10 @@ public class XMLMapWriter implements MapWriter
         w.startElement("image");
         if(id != -1)
             w.writeAttribute("id", id);
+        
+        if(imageSource != null)
+            w.writeAttribute("source", imageSource);
+        
         w.writeAttribute("format", imageFormat.toString().toLowerCase());
 
         switch(imageFormat){
@@ -241,7 +252,7 @@ public class XMLMapWriter implements MapWriter
         w.endElement();
     }
     
-    private static void writeTileset(TileSet set, XMLWriter w, String wp)
+    private void writeTileset(TileSet set, XMLWriter w, String wp)
         throws IOException {
 
         String tilebmpFile = set.getTilebmpFile();
@@ -299,42 +310,45 @@ public class XMLMapWriter implements MapWriter
             }
         } else {
             // Embedded tileset
-            Preferences prefs = TiledConfiguration.node("saving");
-
-            boolean embedImages = prefs.getBoolean("embedImages", true);
+            
+            // this determines whether or not to encode the image data in base64 and write it directly into the <image> tag (under <data>
+            boolean embedImageData = prefs.getBoolean("embedImages", true);
+            
+            // determines if the tile set has a separate image list (true), or if each <image> appears inside the <tile> it belongs to
             boolean tileSetImages = prefs.getBoolean("tileSetImages", false);
             
             if (tileSetImages) {
+                
+                // in this section, a tileset in the form of
+                // <tileset ...>
+                //    <tile id='..'...>
+                //       <image>
+                //         ....
+                // is produced. embedImageData
                 Enumeration<String> ids = set.getImageIds();
                 while (ids.hasMoreElements()) {
                     String idString = ids.nextElement();
                     int id = Integer.parseInt(idString);
                     Image image = set.getImageById(id);
-                    writeEmbeddedImage(id, image, w);
+                    String imagePath = set.getImageSource(id);
+                    
+                    // if images are not to be embedded, we need the actual source
+                    // path for that image. If we can't get hold of that, we'll
+                    // need to embed it regardless...
+                    if(!embedImageData && imagePath != null){
+                        w.startElement("image");
+                        w.writeAttribute("source", getRelativePath(wp, imagePath));
+                        w.endElement();
+                    }else
+                        writeEmbeddedImage(id, image, w, set.getImageSource(id));
                 }
-            } else if (!embedImages) {
-                String imgSource =
-                        prefs.get("tileImagePrefix", "tile") + "set.png";
-
-                w.startElement("image");
-                w.writeAttribute("source", imgSource);
-
-                String tilesetFilename = wp.substring(0,
-                        wp.lastIndexOf(File.separatorChar) + 1) + imgSource;
-                FileOutputStream fw = new FileOutputStream(new File(
-                            tilesetFilename));
-                //byte[] data = ImageHelper.imageToPNG(setImage);
-                //fw.write(data, 0, data.length);
-                w.endElement();
-
-                fw.close();
             }
 
             // Check to see if there is a need to write tile elements
             Iterator tileIterator = set.iterator();
             boolean needWrite = !set.isOneForOne();
 
-            if (embedImages) {
+            if (!tileSetImages) {
                 needWrite = true;
             } else {
                 // As long as one has properties, they all need to be written.
@@ -354,7 +368,7 @@ public class XMLMapWriter implements MapWriter
                     Tile tile = (Tile)tileIterator.next();
                     // todo: move this check back into the iterator?
                     if (tile != null) {
-                        writeTile(tile, w);
+                        writeTile(tile, set, wp, w);
                     }
                 }
             }
@@ -376,8 +390,7 @@ public class XMLMapWriter implements MapWriter
      * first global ids for the tilesets are determined, in order for the right
      * gids to be written to the layer data.
      */
-    private static void writeMapLayer(MapLayer l, XMLWriter w, String wp) throws IOException {
-        Preferences prefs = TiledConfiguration.node("saving");
+    private void writeMapLayer(MapLayer l, XMLWriter w, String wp) throws IOException {
         boolean encodeLayerData =
                 prefs.getBoolean("encodeLayerData", true);
         boolean compressLayerData =
@@ -398,8 +411,8 @@ public class XMLMapWriter implements MapWriter
         w.writeAttribute("width", bounds.width);
         w.writeAttribute("height", bounds.height);
         w.writeAttribute("viewPlaneDistance", l.getViewPlaneDistance());
-		w.writeAttribute("viewPlaneInfinitelyFarAway", l.isViewPlaneInfinitelyFarAway());
-		
+        w.writeAttribute("viewPlaneInfinitelyFarAway", l.isViewPlaneInfinitelyFarAway());
+        
         if (bounds.x != 0) {
             w.writeAttribute("x", bounds.x);
         }
@@ -512,7 +525,7 @@ public class XMLMapWriter implements MapWriter
      * @param w the writer to write to
      * @throws IOException when an io error occurs
      */
-    private static void writeTile(Tile tile, XMLWriter w) throws IOException {
+    private void writeTile(Tile tile, TileSet set, String wp, XMLWriter w) throws IOException {
         w.startElement("tile");
         w.writeAttribute("id", tile.getId());
 
@@ -522,7 +535,6 @@ public class XMLMapWriter implements MapWriter
 
         writeProperties(tile.getProperties(), w);
 
-        Preferences prefs = TiledConfiguration.node("saving");
         boolean embedImages = prefs.getBoolean("embedImages", true);
         boolean tileSetImages = prefs.getBoolean("tileSetImages", false);
         Image tileImage = tile.getImage();
@@ -530,21 +542,28 @@ public class XMLMapWriter implements MapWriter
         // Write encoded data
         if (tileImage != null) {
             if (embedImages && !tileSetImages) {
-                writeEmbeddedImage(-1, tileImage, w);
+                writeEmbeddedImage(-1, tileImage, w, set.getImageSource(tile.getImageId()));
             } else if (embedImages && tileSetImages) {
                 w.startElement("image");
                 w.writeAttribute("id", tile.getImageId());
                 w.endElement();
             } else {
-                String prefix = prefs.get("tileImagePrefix", "tile");
-                String filename = prefix + tile.getId() + ".png";
-                String path = prefs.get("maplocation", "") + filename;
+                String imageSource = set.getImageSource(tile.getImageId());
                 w.startElement("image");
-                w.writeAttribute("source", filename);
-                FileOutputStream fw = new FileOutputStream(new File(path));
-                byte[] data = ImageHelper.imageToPNG(tileImage);
-                fw.write(data, 0, data.length);
-                fw.close();
+                if(imageSource != null){
+                    w.writeAttribute("source", getRelativePath(wp, imageSource));
+                } else {
+                    // if we have no source location given, write the images 
+                    // to where the map is
+                    String prefix = prefs.get("tileImagePrefix", "tile");                
+                    String filename = prefix + tile.getId() + ".png";
+                    String path = prefs.get("maplocation", "") + filename;
+                    w.writeAttribute("source", filename);
+                    FileOutputStream fw = new FileOutputStream(new File(path));
+                    byte[] data = ImageHelper.imageToPNG(tileImage);
+                    fw.write(data, 0, data.length);
+                    fw.close();
+                }
                 w.endElement();
             }
         }
@@ -612,6 +631,9 @@ public class XMLMapWriter implements MapWriter
      * @return     the relative path from origin to destination
      */
     public static String getRelativePath(String from, String to) {
+        if(!(new File(to)).isAbsolute())
+            return to;
+        
         // Make the two paths absolute and unique
         try {
             from = new File(from).getCanonicalPath();

@@ -23,7 +23,7 @@ import tiled.mapeditor.Resources;
  *
  * @version $Id$
  */
-public class Map extends MultilayerPlane
+public class Map extends MultilayerPlane implements MapLayerChangeListener
 {
     /** Orthogonal. */
     public static final int MDO_ORTHO   = 1;
@@ -93,12 +93,16 @@ public class Map extends MultilayerPlane
      * Notifies all registered map change listeners about a change.
      */
     protected void fireMapChanged() {
-        Iterator iterator = mapChangeListeners.iterator();
         MapChangedEvent event = null;
+        // clone mapChangeListeners first, because otherwise we'll get
+        // concurrent modification exceptions if a listener calls something
+        // that add or removes listeners
+        Iterable<MapChangeListener> mapChangeListenersClone = new Vector(mapChangeListeners);
 
-        while (iterator.hasNext()) {
-            if (event == null) event = new MapChangedEvent(this);
-            ((MapChangeListener) iterator.next()).mapChanged(event);
+        for(MapChangeListener l : mapChangeListenersClone) {
+            if (event == null)
+                event = new MapChangedEvent(this);
+            l.mapChanged(event);
         }
     }
     
@@ -123,6 +127,11 @@ public class Map extends MultilayerPlane
         }
     }
     
+    protected void fireLayerChanged(int layerIndex, MapLayerChangeEvent mlce){
+        MapChangedEvent e = new MapChangedEvent(this, layerIndex);
+        for(MapChangeListener l : mapChangeListeners)
+            l.layerChanged(e, mlce);
+    }
     /**
      * Notifies all registered map change listeners about the removal of a
      * tileset.
@@ -186,6 +195,7 @@ public class Map extends MultilayerPlane
     public MapLayer addLayer(MapLayer layer) {
         layer.setMap(this);
         super.addLayer(layer);
+        layer.addMapLayerChangeListener(this);
         fireMapChanged();
         fireLayerAdded(getLayerVector().indexOf(layer));
         return layer;
@@ -207,6 +217,7 @@ public class Map extends MultilayerPlane
 
     public void insertLayer(int index, MapLayer layer) {
         super.insertLayer(index, layer);
+        layer.addMapLayerChangeListener(this);
         fireMapChanged();
         fireLayerAdded(index);
     }
@@ -320,6 +331,7 @@ public class Map extends MultilayerPlane
      */
     public MapLayer removeLayer(int index) {
         MapLayer layer = super.removeLayer(index);
+        layer.removeMapLayerChangeListener(this);
         fireMapChanged();
         fireLayerRemoved(index);
         return layer;
@@ -343,6 +355,7 @@ public class Map extends MultilayerPlane
      */
     public void removeAllLayers() {
         while(getTotalLayers() > 0){
+            getLayer(0).removeMapLayerChangeListener(this);
             removeLayer(0);
             fireLayerRemoved(0);
         }
@@ -624,6 +637,10 @@ public class Map extends MultilayerPlane
         for(MapParallaxChangeListener l : mapParallaxChangeListeners){
             l.parallaxParameterChanged(mapParallaxChangeEvent);
         }
+    }
+
+    public void layerChanged(MapLayer layerIndex, MapLayerChangeEvent e) {
+        fireLayerChanged(findLayerIndex(layerIndex), e);
     }
     
 }

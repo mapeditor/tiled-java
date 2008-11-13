@@ -18,32 +18,32 @@ import tiled.mapeditor.Resources;
  * @author upachler
  */
 public class DeleteLayerEdit extends AbstractUndoableEdit {
-	private MapEditor editor;
-	
-	private Map map;
-	private int index;
-	private MapLayer layer = null;
-	
+    private MapEditor editor;
+    
+    private Map map;
+    private int index;
+    private MapLayer layer = null;
+    
     public DeleteLayerEdit(MapEditor editor, Map map, int index) {
-		this.editor = editor;
+        this.editor = editor;
         this.map = map;
         this.index = index;
-		this.layer = map.getLayer(index);
+        this.layer = map.getLayer(index);
     }
 
     public void undo() throws CannotUndoException {
-		assert layer != null;
+        assert layer != null;
         super.undo();
         map.insertLayer(index, layer);
-		if(editor.getCurrentLayerIndex() >= map.getTotalLayers())
-			editor.setCurrentLayerIndex(map.getTotalLayers()-1);
-		layer = null;
+        if(editor.getCurrentLayerIndex() >= map.getTotalLayers())
+            editor.setCurrentLayerIndex(map.getTotalLayers()-1);
+        layer = null;
     }
 
     public void redo() throws CannotRedoException {
-		assert layer == null;
+        assert layer == null;
         super.redo();
-		layer = map.getLayer(index);
+        layer = map.getLayer(index);
         map.removeLayer(index);
     }
 
@@ -51,5 +51,5 @@ public class DeleteLayerEdit extends AbstractUndoableEdit {
         return Resources.getString("action.layer.delete.name");
     }
 
-	
+    
 }

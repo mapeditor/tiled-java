@@ -142,6 +142,15 @@ public class XMLMapTransformer implements MapReader
         }
     }
 
+    private static String getAttribute(Node node, String attribname, String def) {
+        final String attr = getAttributeValue(node, attribname);
+        if (attr != null) {
+            return attr;
+        } else {
+            return def;
+        }
+    }
+
     private static float getAttribute(Node node, String attribname, float def) {
         final String attr = getAttributeValue(node, attribname);
         if (attr != null) {
@@ -408,7 +417,7 @@ public class XMLMapTransformer implements MapReader
                         Image image = unmarshalImage(child, tilesetBaseDir);
                         String idValue = getAttributeValue(child, "id");
                         int imageId = Integer.parseInt(idValue);
-                        set.addImage(image, imageId);
+                        set.addImage(image, imageId, imgSource);
                     }
                 }
                 else if (child.getNodeName().equalsIgnoreCase("tile")) {
@@ -534,9 +543,10 @@ public class XMLMapTransformer implements MapReader
             Node child = children.item(i);
             if ("image".equalsIgnoreCase(child.getNodeName())) {
                 int id = getAttribute(child, "id", -1);
+                String src = getAttribute(child, "source", null);
                 Image img = unmarshalImage(child, baseDir);
                 if (id < 0) {
-                    id = set.addImage(img);
+                    id = set.addImage(img, src);
                 }
                 tile.setImage(id);
             } else if ("animation".equalsIgnoreCase(child.getNodeName())) {
@@ -595,7 +605,7 @@ public class XMLMapTransformer implements MapReader
         final int offsetY = getAttribute(t, "y", 0);
         final int visible = getAttribute(t, "visible", 1);
         final float viewPlaneDistance = getAttribute(t, "viewPlaneDistance", 0.0f);
-		final boolean viewPlaneInfinitelyFarAway = getAttribute(t, "viewPlaneInfinitelyFarAway", false);
+        final boolean viewPlaneInfinitelyFarAway = getAttribute(t, "viewPlaneInfinitelyFarAway", false);
         final String opacity = getAttributeValue(t, "opacity");
 
         ml.setName(getAttributeValue(t, "name"));
@@ -703,7 +713,7 @@ public class XMLMapTransformer implements MapReader
         ml.setVisible(visible == 1);
         
         ml.setViewPlaneDistance(viewPlaneDistance);
-		ml.setViewPlaneInfinitelyFarAway(viewPlaneInfinitelyFarAway);
+        ml.setViewPlaneInfinitelyFarAway(viewPlaneInfinitelyFarAway);
         
         return ml;
     }

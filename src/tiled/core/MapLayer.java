@@ -15,6 +15,7 @@ package tiled.core;
 import java.awt.Rectangle;
 import java.awt.geom.Area;
 import java.util.Properties;
+import java.util.Vector;
 
 /**
  * A layer of a map.
@@ -40,11 +41,12 @@ public abstract class MapLayer implements Cloneable
     protected boolean isVisible = true;
     protected boolean bLocked = false;
     private float viewPlaneDistance = 0.0f;
-	private boolean viewPlaneInfinitelyFarAway = false;
+    private boolean viewPlaneInfinitelyFarAway = false;
     private Map myMap;
     protected float opacity = 1.0f;
     protected Rectangle bounds;
     private Properties properties = new Properties();
+    private Vector<MapLayerChangeListener> listeners = new Vector<MapLayerChangeListener>();
 
     public MapLayer() {
         bounds = new Rectangle();
@@ -115,7 +117,9 @@ public abstract class MapLayer implements Cloneable
      * @param name the new name
      */
     public void setName(String name) {
+        String oldName = this.name;
         this.name = name;
+        fireRenamed(oldName, name);
     }
 
     /**
@@ -278,7 +282,7 @@ public abstract class MapLayer implements Cloneable
         other.isVisible = isVisible;
         other.bLocked = bLocked;
         other.setViewPlaneDistance(getViewPlaneDistance());
-		other.setViewPlaneInfinitelyFarAway(isViewPlaneInfinitelyFarAway());
+        other.setViewPlaneInfinitelyFarAway(isViewPlaneInfinitelyFarAway());
         other.myMap = myMap;
         other.opacity = opacity;
         other.bounds.setBounds(bounds);
@@ -381,29 +385,42 @@ public abstract class MapLayer implements Cloneable
     }
 
     public void setViewPlaneDistance(float viewPlaneDistance) {
-		if(this.viewPlaneDistance == viewPlaneDistance)
-			return;
+        if(this.viewPlaneDistance == viewPlaneDistance)
+            return;
         this.viewPlaneDistance = viewPlaneDistance;
-		if(getMap()==null)
-			return;
-		getMap().fireParallaxChangeEvent(new MapParallaxChangeEvent(getMap(), getMap().getLayerVector().indexOf(this), MapParallaxChangeEvent.ChangeType.LAYER_VIEWPLANE_DISTANCE));
+        if(getMap()==null)
+            return;
+        getMap().fireParallaxChangeEvent(new MapParallaxChangeEvent(getMap(), getMap().getLayerVector().indexOf(this), MapParallaxChangeEvent.ChangeType.LAYER_VIEWPLANE_DISTANCE));
     }
 
     public float getViewPlaneDistance() {
         return viewPlaneDistance;
     }
-	
-	public void setViewPlaneInfinitelyFarAway(boolean inifitelyFarAway){
-		if(inifitelyFarAway == this.viewPlaneInfinitelyFarAway)
-			return;
-		this.viewPlaneInfinitelyFarAway = inifitelyFarAway;
-		if(getMap()==null)
-			return;
-		getMap().fireParallaxChangeEvent(new MapParallaxChangeEvent(getMap(), getMap().getLayerVector().indexOf(this), MapParallaxChangeEvent.ChangeType.LAYER_VIEWPLANE_DISTANCE));
-	}
+    
+    public void setViewPlaneInfinitelyFarAway(boolean inifitelyFarAway){
+        if(inifitelyFarAway == this.viewPlaneInfinitelyFarAway)
+            return;
+        this.viewPlaneInfinitelyFarAway = inifitelyFarAway;
+        if(getMap()==null)
+            return;
+        getMap().fireParallaxChangeEvent(new MapParallaxChangeEvent(getMap(), getMap().getLayerVector().indexOf(this), MapParallaxChangeEvent.ChangeType.LAYER_VIEWPLANE_DISTANCE));
+    }
 
-	public boolean isViewPlaneInfinitelyFarAway(){
-		return this.viewPlaneInfinitelyFarAway;
-	}
+    public boolean isViewPlaneInfinitelyFarAway(){
+        return this.viewPlaneInfinitelyFarAway;
+    }
 
+    private void fireRenamed(String newName, String oldName) {
+        MapLayerChangeEvent e = MapLayerChangeEvent.createNameChangeEvent(oldName, newName);
+        for(MapLayerChangeListener l : listeners)
+            l.layerChanged(this, e);
+    }
+    
+    void addMapLayerChangeListener(MapLayerChangeListener l){
+        listeners.add(l);
+    }
+    
+    void removeMapLayerChangeListener(MapLayerChangeListener l){
+        listeners.remove(l);
+    }
 }

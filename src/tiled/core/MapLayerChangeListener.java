@@ -9,6 +9,8 @@ package tiled.core;
  *
  * @author upachler
  */
-public interface MapParallaxChangeListener {
-    public void parallaxParameterChanged(MapParallaxChangeEvent e);
+interface MapLayerChangeListener {
+
+    public void layerChanged(MapLayer aThis, MapLayerChangeEvent e);
+    
 }

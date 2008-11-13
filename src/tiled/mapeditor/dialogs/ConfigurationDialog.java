@@ -114,8 +114,6 @@ public class ConfigurationDialog extends JDialog
         cbCompressLayerData.setEnabled(cbBinaryEncode.isSelected());
         
         boolean embed = cbEmbedImages.isSelected();
-        rbEmbedInTiles.setEnabled(embed);
-        rbEmbedInSet.setEnabled(embed);
 
         coImageFormat.setEnabled(embed);
 
@@ -192,6 +190,7 @@ public class ConfigurationDialog extends JDialog
                     BorderFactory.createTitledBorder(GENERAL_SAVING_OPTIONS_TITLE),
                     BorderFactory.createEmptyBorder(0, 5, 5, 5)));
         c = new GridBagConstraints();
+        Insets defaultInsets = c.insets;
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 1; c.gridy = 0; c.weightx = 1;
         generalSavingOps.add(cbUsefulComments, c);
@@ -202,11 +201,12 @@ public class ConfigurationDialog extends JDialog
         tilesetOps.setBorder(BorderFactory.createCompoundBorder(
                     BorderFactory.createTitledBorder(TILESET_OPTIONS_TITLE),
                     BorderFactory.createEmptyBorder(0, 5, 5, 5)));
-        tilesetOps.add(cbEmbedImages, c);
-        c.gridy = 1; c.insets = new Insets(0, 10, 0, 0);
+        c.gridy = 0; c.insets = new Insets(0, 10, 0, 0);
         tilesetOps.add(rbEmbedInTiles, c);
-        c.gridy = 2; c.insets = new Insets(0, 10, 0, 0);
+        c.gridy = 1; c.insets = new Insets(0, 10, 0, 0);
         tilesetOps.add(rbEmbedInSet, c);
+        c.gridy = 2; c.insets = defaultInsets;
+        tilesetOps.add(cbEmbedImages, c);
         c.gridy = 3; c.insets = new Insets(0, 10, 0, 0);
         tilesetOps.add(lbImageFormat, c);
         c.gridy = 4; c.insets = new Insets(0, 10, 0, 0);
@@ -404,8 +404,8 @@ public class ConfigurationDialog extends JDialog
             }
         });
 
-        rbEmbedInTiles.setEnabled(false);
-        rbEmbedInSet.setEnabled(false);
+//        rbEmbedInTiles.setEnabled(false);
+//        rbEmbedInSet.setEnabled(false);
 
         //gridColor.setName("tiled.grid.color");
     }
@@ -420,18 +420,15 @@ public class ConfigurationDialog extends JDialog
         gridOpacitySlider.setValue(displayPrefs.getInt("gridOpacity", 255));
 
         boolean embedImages = savingPrefs.getBoolean("embedImages", true);
-        if (embedImages) {
-            cbEmbedImages.setSelected(true);
+        cbEmbedImages.setSelected(embedImages);
 
-            if (savingPrefs.getBoolean("tileSetImages", false)) {
-                rbEmbedInSet.setSelected(true);
-            }
-            else {
-                rbEmbedInTiles.setSelected(true);
-            }
-            
-            
+        if (savingPrefs.getBoolean("tileSetImages", false)) {
+            rbEmbedInSet.setSelected(true);
         }
+        else {
+            rbEmbedInTiles.setSelected(true);
+        }
+            
 
         cbUsefulComments.setSelected(savingPrefs.getBoolean("usefulComments", false));
         cbBinaryEncode.setSelected(savingPrefs.getBoolean("encodeLayerData", true));

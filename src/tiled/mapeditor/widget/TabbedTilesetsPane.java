@@ -17,7 +17,6 @@ package tiled.mapeditor.widget;
 
 import java.awt.Component;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -60,6 +59,9 @@ public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionList
      * @param map the map of which to display the tilesets
      */
     public void setMap(Map map) {
+        if(this.map == map)
+            return;
+        
         if (this.map != null) {
             this.map.removeMapChangeListener(listener);
         }
@@ -131,8 +133,9 @@ public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionList
         mapEditor.setBrush(new CustomBrush(e.getTileRegion()));
     }
 
-    private class MyChangeListener implements MapChangeListener, TilesetChangeListener
+    private class MyChangeListener extends MapChangeAdapter implements TilesetChangeListener
     {
+        @Override
         public void mapChanged(MapChangedEvent e) {
         }
 
@@ -187,13 +190,13 @@ public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionList
         public void sourceChanged(TilesetChangedEvent event, String oldSource, String newSource) {
         }
 
-		public void layerAdded(MapChangedEvent e) {
-		}
+        public void layerAdded(MapChangedEvent e) {
+        }
 
-		public void layerRemoved(MapChangedEvent e) {
-		}
-		
-		public void layerMoved(MapChangedEvent e) {
-		}
+        public void layerRemoved(MapChangedEvent e) {
+        }
+        
+        public void layerMoved(MapChangedEvent e) {
+        }
     }
 }

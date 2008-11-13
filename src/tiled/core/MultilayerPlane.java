@@ -92,9 +92,9 @@ public class MultilayerPlane implements Iterable<MapLayer>
         return layer;
     }
 
-	void insertLayer(int index, MapLayer layer) {
-		layers.add(index, layer);
-	}
+    void insertLayer(int index, MapLayer layer) {
+        layers.add(index, layer);
+    }
     public void setLayer(int index, MapLayer layer) {
         layers.set(index, layer);
     }
@@ -201,7 +201,17 @@ public class MultilayerPlane implements Iterable<MapLayer>
         setLayer(index - 1, ntl);
         removeLayer(index);
     }
-
+    
+    /**
+     * Finds the index of the given MapLayer instance. If the given layer is
+     * not part of this Map, the function returns -1;
+     * @param ml    the layer to request the index of.
+     * @return  the layer index or -1 if the layer could not be found
+     */
+    protected int findLayerIndex(MapLayer ml){
+        return layers.indexOf(ml);
+    }
+    
     /**
      * Returns the layer at the specified vector index.
      *

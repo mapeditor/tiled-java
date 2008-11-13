@@ -71,14 +71,14 @@ public class SelectionLayer extends TileLayer
         else
             return parentLayer.isViewPlaneInfinitelyFarAway();
     }
-	
-	public float getViewPlaneDistance(){
+    
+    public float getViewPlaneDistance(){
         if(parentLayer == null)
             return super.getViewPlaneDistance();
         else
             return parentLayer.getViewPlaneDistance();
-	}
-	
+    }
+    
     @Override
     public int getTileHeight() {
         if(parentLayer == null)

@@ -12,6 +12,7 @@ import tiled.core.Map;
 import tiled.core.MapChangeListener;
 import tiled.core.MapChangedEvent;
 import tiled.core.MapLayer;
+import tiled.core.MapLayerChangeEvent;
 import tiled.core.MapParallaxChangeEvent;
 import tiled.core.MapParallaxChangeListener;
 import tiled.core.TileSet;
@@ -22,89 +23,98 @@ import tiled.mapeditor.MapEditor;
  * @author  upachler
  */
 public class ParallaxEditorPanel extends javax.swing.JPanel {
-	private Float[] minRanges = {-1000.f, -500.f, -200.f, -100.f, -50.f, -20.f, -10.f, 0.f};
-	private Float[] maxRanges = {10.f, 20.f, 50.f, 100.f, 200.f, 500.f, 1000.f};
+    private Float[] minRanges = {-1000.f, -500.f, -200.f, -100.f, -50.f, -20.f, -10.f, 0.f};
+    private Float[] maxRanges = {10.f, 20.f, 50.f, 100.f, 200.f, 500.f, 1000.f};
     private int minRangesIndex;
     private int maxRangesIndex;
-	
-	private MapEditor editor;
-	private Map currentMap;
-	private MapChangeListener mapChangeListener = new MapChangeListener() {
+    
+    private MapEditor editor;
+    private Map currentMap;
+    private MapChangeListener mapChangeListener = new MapChangeListener() {
 
-		public void layerAdded(MapChangedEvent e) {
-			int layerIndex = e.getLayerIndex();
-			MapLayer layer = currentMap.getLayer(layerIndex);
-			
-			LayerParallaxDistancePanel p = new LayerParallaxDistancePanel(layer, editor.getUndoSupport(), minRanges[minRangesIndex], maxRanges[maxRangesIndex]);
-			layerEditPanel.add(p, layerIndex);
-		}
+        public void layerAdded(MapChangedEvent e) {
+            int layerIndex = e.getLayerIndex();
+            MapLayer layer = currentMap.getLayer(layerIndex);
+            
+            LayerParallaxDistancePanel p = new LayerParallaxDistancePanel(layer, editor.getUndoSupport(), minRanges[minRangesIndex], maxRanges[maxRangesIndex]);
+            layerEditPanel.add(p, layerIndex);
+        }
 
-		public void layerRemoved(MapChangedEvent e) {
-			layerEditPanel.remove(e.getLayerIndex());
-		}
-		
-		public void layerMoved(MapChangedEvent e){
-			LayerParallaxDistancePanel p = (LayerParallaxDistancePanel)layerEditPanel.getComponent(e.getOldLayerIndex());
-			layerEditPanel.remove(e.getOldLayerIndex());
-			layerEditPanel.add(p, e.getLayerIndex());
-		}
-		
-		// empty methods
-		public void mapChanged(MapChangedEvent e) {}
-		public void tilesetAdded(MapChangedEvent e, TileSet tileset) {}
-		public void tilesetRemoved(MapChangedEvent e, int index) {}
-		public void tilesetsSwapped(MapChangedEvent e, int index0, int index1) {}
-	};
-	
-	private MapParallaxChangeListener mapParallaxChangeListener = new MapParallaxChangeListener() {
-		public void parallaxParameterChanged(MapParallaxChangeEvent e) {
-            switch(e.getChangeType()){
-                case EYE_VIEWPLANE_DISTANCE:  {
-        			eyeViewplaneDistanceTextField.setText(Float.toString(e.getMap().getEyeDistance()));
+        public void layerRemoved(MapChangedEvent e) {
+            layerEditPanel.remove(e.getLayerIndex());
+        }
+        
+        public void layerMoved(MapChangedEvent e){
+            LayerParallaxDistancePanel p = (LayerParallaxDistancePanel)layerEditPanel.getComponent(e.getOldLayerIndex());
+            layerEditPanel.remove(e.getOldLayerIndex());
+            layerEditPanel.add(p, e.getLayerIndex());
+        }
+        
+        // empty methods
+        public void mapChanged(MapChangedEvent e) {}
+        public void tilesetAdded(MapChangedEvent e, TileSet tileset) {}
+        public void tilesetRemoved(MapChangedEvent e, int index) {}
+        public void tilesetsSwapped(MapChangedEvent e, int index0, int index1) {}
+
+        public void layerChanged(MapChangedEvent e, MapLayerChangeEvent mlce) {
+            switch(mlce.getChangeType()){
+                case MapLayerChangeEvent.CHANGETYPE_NAME:{
+                    LayerParallaxDistancePanel p = (LayerParallaxDistancePanel)layerEditPanel.getComponent(e.getLayerIndex());
+                    p.updateUIFromLayer();
                 }   break;
             }
-		}
-	};
+        }
+    };
+    
+    private MapParallaxChangeListener mapParallaxChangeListener = new MapParallaxChangeListener() {
+        public void parallaxParameterChanged(MapParallaxChangeEvent e) {
+            switch(e.getChangeType()){
+                case EYE_VIEWPLANE_DISTANCE:  {
+                    eyeViewplaneDistanceTextField.setText(Float.toString(e.getMap().getEyeDistance()));
+                }   break;
+            }
+        }
+    };
     /** Creates new form ParallaxEditorPanel */
     public ParallaxEditorPanel(MapEditor editor) {
         initComponents();
-		this.editor = editor;
-		minRangeComboBox.setModel(new DefaultComboBoxModel(minRanges));
-		maxRangeComboBox.setModel(new DefaultComboBoxModel(maxRanges));
-		
-		setCurrentMap(editor.getCurrentMap());
+        this.editor = editor;
+        minRangeComboBox.setModel(new DefaultComboBoxModel(minRanges));
+        maxRangeComboBox.setModel(new DefaultComboBoxModel(maxRanges));
+        
+        setCurrentMap(editor.getCurrentMap());
         updateUIState();
     }
 
     private void calculateRangeIndicesFromLayer() {
             
-		float minValue = 0;
-		float maxValue = 0;
+        float minValue = 0;
+        float maxValue = 0;
         for(MapLayer l : currentMap.getLayerVector()){
             float d = 0;
             d = l.getViewPlaneDistance();
             minValue = java.lang.Math.min(minValue, d);
             maxValue = java.lang.Math.max(maxValue, d);
         }
-		
         
-		minRangesIndex = lower_bound(minRanges, minValue);
-		maxRangesIndex = lower_bound(maxRanges, maxValue);
-		if(minRanges[minRangesIndex] == maxRanges[maxRangesIndex])
-			maxRangesIndex = java.lang.Math.min(maxRanges.length-1, maxRangesIndex+1);
+        
+        minRangesIndex = lower_bound(minRanges, minValue);
+        maxRangesIndex = lower_bound(maxRanges, maxValue);
+        if(minRanges[minRangesIndex] == maxRanges[maxRangesIndex])
+            maxRangesIndex = java.lang.Math.min(maxRanges.length-1, maxRangesIndex+1);
         if(minRanges[minRangesIndex] > minValue)
             minRangesIndex = java.lang.Math.max(0, minRangesIndex-1);
-		minRangeComboBox.setSelectedIndex(minRangesIndex);
-		maxRangeComboBox.setSelectedIndex(maxRangesIndex);
+        minRangeComboBox.setSelectedIndex(minRangesIndex);
+        maxRangeComboBox.setSelectedIndex(maxRangesIndex);
     }
 
-	private int lower_bound(Float[] sortedRange, float value) {
-		for(int i=0; i<sortedRange.length; ++i){
-			if(!(sortedRange[i]<value))
-				return i;
-		}
-		return sortedRange.length;
-	}
+    private int lower_bound(Float[] sortedRange, float value) {
+        for(int i=0; i<sortedRange.length; ++i){
+            if(!(sortedRange[i]<value))
+                return i;
+        }
+        return sortedRange.length;
+    }
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -253,21 +263,21 @@ public class ParallaxEditorPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
 private void minRangeComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_minRangeComboBoxActionPerformed
-	minRangesIndex = minRangeComboBox.getSelectedIndex();
-	updateEditRanges();
+    minRangesIndex = minRangeComboBox.getSelectedIndex();
+    updateEditRanges();
 }//GEN-LAST:event_minRangeComboBoxActionPerformed
 
 private void maxRangeComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_maxRangeComboBoxActionPerformed
-	maxRangesIndex = maxRangeComboBox.getSelectedIndex();
-	updateEditRanges();
+    maxRangesIndex = maxRangeComboBox.getSelectedIndex();
+    updateEditRanges();
 }//GEN-LAST:event_maxRangeComboBoxActionPerformed
 
 private void eyeViewplaneDistanceTextFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_eyeViewplaneDistanceTextFieldFocusLost
-	updateMapFromUI();
+    updateMapFromUI();
 }//GEN-LAST:event_eyeViewplaneDistanceTextFieldFocusLost
 
 private void eyeViewplaneDistanceTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eyeViewplaneDistanceTextFieldActionPerformed
-	updateMapFromUI();
+    updateMapFromUI();
 }//GEN-LAST:event_eyeViewplaneDistanceTextFieldActionPerformed
 
 
@@ -288,60 +298,60 @@ private void eyeViewplaneDistanceTextFieldActionPerformed(java.awt.event.ActionE
     private javax.swing.JComboBox minRangeComboBox;
     // End of variables declaration//GEN-END:variables
 
-	public void setCurrentMap(Map m) {
-		if(currentMap == m)
-			return;
-		
-		if(currentMap!=null){	// unregister from old map
-			currentMap.removeMapChangeListener(mapChangeListener);			
-		}
+    public void setCurrentMap(Map m) {
+        if(currentMap == m)
+            return;
+        
+        if(currentMap!=null){    // unregister from old map
+            currentMap.removeMapChangeListener(mapChangeListener);            
+        }
 
-		currentMap = m;
-		
+        currentMap = m;
+        
 
-		if(currentMap!=null){
+        if(currentMap!=null){
             calculateRangeIndicesFromLayer();
             
-			m.addMapChangeListener(mapChangeListener);
-			m.addMapParallaxChangeListener(mapParallaxChangeListener);
-			eyeViewplaneDistanceTextField.setText(Float.toString(currentMap.getEyeDistance()));
+            m.addMapChangeListener(mapChangeListener);
+            m.addMapParallaxChangeListener(mapParallaxChangeListener);
+            eyeViewplaneDistanceTextField.setText(Float.toString(currentMap.getEyeDistance()));
         }
         
-		minRangeComboBox.setSelectedIndex(minRangesIndex);
-		maxRangeComboBox.setSelectedIndex(maxRangesIndex);
+        minRangeComboBox.setSelectedIndex(minRangesIndex);
+        maxRangeComboBox.setSelectedIndex(maxRangesIndex);
 
         recreateLayerPanelsFromMap(minRanges[minRangesIndex], maxRanges[maxRangesIndex]);
-		
+        
         updateUIState();
-	}
+    }
 
-	private void updateEditRanges() {
-		for(Component c : layerEditPanel.getComponents()){
-			try{
-				((LayerParallaxDistancePanel)c).setEditRange(minRanges[minRangesIndex], maxRanges[maxRangesIndex]);
-			}catch(ClassCastException ccx){
-			}
-		}
-	}
+    private void updateEditRanges() {
+        for(Component c : layerEditPanel.getComponents()){
+            try{
+                ((LayerParallaxDistancePanel)c).setEditRange(minRanges[minRangesIndex], maxRanges[maxRangesIndex]);
+            }catch(ClassCastException ccx){
+            }
+        }
+    }
 
-	private void updateMapFromUI() {
-		float eyeDistance = 0.0f;
-		try {
-			eyeDistance = Float.parseFloat(eyeViewplaneDistanceTextField.getText());
-		} catch(NumberFormatException nfx){
-		}
-		currentMap.setEyeDistance(eyeDistance);
-	}
+    private void updateMapFromUI() {
+        float eyeDistance = 0.0f;
+        try {
+            eyeDistance = Float.parseFloat(eyeViewplaneDistanceTextField.getText());
+        } catch(NumberFormatException nfx){
+        }
+        currentMap.setEyeDistance(eyeDistance);
+    }
 
-	private void updateUIState(){
-		boolean enabled = currentMap != null;
-		minRangeComboBox.setEnabled(enabled);
-		maxRangeComboBox.setEnabled(enabled);
-		eyeViewplaneDistanceTextField.setEnabled(enabled);
-	}
-	
-	private void recreateLayerPanelsFromMap(float rangeMin, float rangeMax){
-		for(Component c : layerEditPanel.getComponents()){
+    private void updateUIState(){
+        boolean enabled = currentMap != null;
+        minRangeComboBox.setEnabled(enabled);
+        maxRangeComboBox.setEnabled(enabled);
+        eyeViewplaneDistanceTextField.setEnabled(enabled);
+    }
+    
+    private void recreateLayerPanelsFromMap(float rangeMin, float rangeMax){
+        for(Component c : layerEditPanel.getComponents()){
             try{
                 LayerParallaxDistancePanel lpdp = (LayerParallaxDistancePanel)c;
                 lpdp.detachFromMap();
@@ -350,13 +360,13 @@ private void eyeViewplaneDistanceTextFieldActionPerformed(java.awt.event.ActionE
             }
         }
         layerEditPanel.removeAll();
-		if(currentMap == null)
-			return;
-		
-		for(MapLayer l : currentMap.getLayerVector())
-		{
-			LayerParallaxDistancePanel p = new LayerParallaxDistancePanel(l, editor.getUndoSupport(), rangeMin, rangeMax);
-			layerEditPanel.add(p);
-		}
-	}
+        if(currentMap == null)
+            return;
+        
+        for(MapLayer l : currentMap.getLayerVector())
+        {
+            LayerParallaxDistancePanel p = new LayerParallaxDistancePanel(l, editor.getUndoSupport(), rangeMin, rangeMax);
+            layerEditPanel.add(p);
+        }
+    }
 }

@@ -14,7 +14,12 @@ package tiled.mapeditor.util;
 
 import javax.swing.table.AbstractTableModel;
 
+import tiled.core.Map;
+import tiled.core.MapChangeAdapter;
+import tiled.core.MapChangeListener;
+import tiled.core.MapChangedEvent;
 import tiled.core.MapLayer;
+import tiled.core.MapLayerChangeEvent;
 import tiled.core.MultilayerPlane;
 import tiled.mapeditor.Resources;
 
@@ -30,18 +35,41 @@ public class LayerTableModel extends AbstractTableModel
             Resources.getString("dialog.main.layername.column")
     };
 
+    private MapChangeListener listener = new MapChangeAdapter(){
+        @Override
+        public void layerChanged(MapChangedEvent e, MapLayerChangeEvent mlce) {
+            if(e.getMap() != map)
+                return;
+            int layerIndex = e.getLayerIndex();
+            fireTableRowsUpdated(layerIndex, layerIndex);
+        }
+    };
+
+
     public LayerTableModel() {
     }
 
     public LayerTableModel(MultilayerPlane map) {
-        this.map = map;
+        map = null;
+        setMap(map);
     }
 
     public void setMap(MultilayerPlane map) {
+        if(this.map == map)
+            return;
+        if(this.map != null){
+            try {
+                ((Map)map).removeMapChangeListener(listener);
+            }catch(ClassCastException ccx){
+            }
+        }
+
         this.map = map;
+        if(map != null)
+            ((Map)map).addMapChangeListener(listener);
         fireTableDataChanged();
     }
-
+    
     public String getColumnName(int col) {
         return columnNames[col];
     }

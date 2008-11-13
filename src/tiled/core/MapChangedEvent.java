@@ -19,32 +19,32 @@ import java.util.EventObject;
  */
 public class MapChangedEvent extends EventObject
 {
-	private int layerIndex;
-	private int oldLayerIndex = -1;
-	
+    private int layerIndex;
+    private int oldLayerIndex = -1;
+    
     public MapChangedEvent(Map map) {
         this(map, -1);
-		layerIndex = -1;
+        layerIndex = -1;
     }
-	
-	public MapChangedEvent(Map map, int layerIndex){
-		this(map, layerIndex, -1);
-	}
-	
-	public MapChangedEvent(Map map, int layerIndex, int oldLayerIndex){
-		super(map);
-		this.layerIndex = layerIndex;
-		this.oldLayerIndex = oldLayerIndex;
-	}
-	
-	public int getLayerIndex(){
-		return layerIndex;
-	}
-	
-	public int getOldLayerIndex(){
-		return oldLayerIndex;
-	}
-	
+    
+    public MapChangedEvent(Map map, int layerIndex){
+        this(map, layerIndex, -1);
+    }
+    
+    public MapChangedEvent(Map map, int layerIndex, int oldLayerIndex){
+        super(map);
+        this.layerIndex = layerIndex;
+        this.oldLayerIndex = oldLayerIndex;
+    }
+    
+    public int getLayerIndex(){
+        return layerIndex;
+    }
+    
+    public int getOldLayerIndex(){
+        return oldLayerIndex;
+    }
+    
     public Map getMap() {
         return (Map) getSource();
     }
