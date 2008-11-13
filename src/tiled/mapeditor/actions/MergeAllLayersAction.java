@@ -15,6 +15,7 @@ package tiled.mapeditor.actions;
 import javax.swing.JOptionPane;
 
 import tiled.core.Map;
+import tiled.core.MapLayer;
 import tiled.core.TileLayer;
 import tiled.mapeditor.MapEditor;
 import tiled.mapeditor.Resources;
@@ -36,7 +37,15 @@ public class MergeAllLayersAction extends AbstractLayerAction
 
     protected void doPerformAction() {
         Map map = editor.getCurrentMap();
-
+        
+        // check if all layer's tiles have the same size as the map (otherwise, merging won't work and will be cancelled)
+        if(!TileMergeHelper.areTileSizesUniform(map))
+        {
+            JOptionPane.showMessageDialog(editor.getAppFrame(), "Layer tile sizes inconsistent", "The tile size of some layers is different to the default tile size of the map. Layers can't be merged.", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+            
+        
         int ret = JOptionPane.showConfirmDialog(editor.getAppFrame(),
                 "Do you wish to merge tile images, and create a new tile set?",
                 "Merge Tiles?", JOptionPane.YES_NO_CANCEL_OPTION);
@@ -50,13 +59,13 @@ public class MergeAllLayersAction extends AbstractLayerAction
             map.addLayer(newLayer);
             newLayer.setName("Merged Layer");
             map.addTileset(tmh.getSet());
-            editor.setCurrentLayer(0);
+            editor.setCurrentLayerIndex(0);
         }
         else if (ret == JOptionPane.NO_OPTION) {
             while (map.getTotalLayers() > 1) {
                 map.mergeLayerDown(editor.getCurrentLayerIndex());
             }
-            editor.setCurrentLayer(0);
+            editor.setCurrentLayerIndex(0);
         }
     }
 }

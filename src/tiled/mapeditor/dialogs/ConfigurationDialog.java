@@ -21,10 +21,12 @@ import java.util.prefs.Preferences;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileInputStream;
+import java.util.Vector;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import tiled.io.ImageHelper;
 import tiled.mapeditor.widget.IntegerSpinner;
 import tiled.mapeditor.widget.VerticalStaticJPanel;
 import tiled.mapeditor.Resources;
@@ -47,6 +49,12 @@ public class ConfigurationDialog extends JDialog
     private JCheckBox cbAutoOpenLastFile;
     private JRadioButton rbEmbedInTiles;
     private JRadioButton rbEmbedInSet;
+    private JLabel lbImageFormat;
+    private JLabel lbPixelFormat;
+    private JLabel lbByteOrder;
+    private JComboBox coImageFormat;
+    private JComboBox coPixelFormat;
+    private JComboBox coByteOrder;
     private JCheckBox cbGridAA;
     //private JColorChooser gridColor;
 
@@ -66,6 +74,10 @@ public class ConfigurationDialog extends JDialog
     private static final String AUTO_OPEN_LAST_FILE_CHECKBOX = Resources.getString("dialog.preferences.report.io.autoopenlast.checkbox");
     private static final String EMBED_IN_TILES_CHECKBOX = Resources.getString("dialog.preferences.embed.in.tiles.checkbox");
     private static final String EMBED_IN_SET_CHECKBOX = Resources.getString("dialog.preferences.embed.in.set.checkbox");
+    private static final String IMAGE_FORMAT_LABEL = Resources.getString("dialog.preferences.image.format.combobox");
+    private static final String PIXEL_FORMAT_LABEL = Resources.getString("dialog.preferences.pixel.format.combobox");
+    private static final String BYTE_ORDER_LABEL = Resources.getString("dialog.preferences.byte.order.combobox");
+    
     private static final String ANTIALIASING_CHECKBOX = Resources.getString("dialog.preferences.antialiasing.checkbox");
     private static final String GENERAL_SAVING_OPTIONS_TITLE = Resources.getString("dialog.preferences.general.tab");
     private static final String LAYER_OPTIONS_TITLE = Resources.getString("dialog.preferences.layer.options.title");
@@ -98,6 +110,18 @@ public class ConfigurationDialog extends JDialog
         setLocationRelativeTo(parent);
     }
 
+    private void updateUI() {
+        cbCompressLayerData.setEnabled(cbBinaryEncode.isSelected());
+        
+        boolean embed = cbEmbedImages.isSelected();
+
+        coImageFormat.setEnabled(embed);
+
+        boolean rawImageFormat = coImageFormat.getSelectedItem().equals(ImageHelper.ImageFormat.RAW);
+        coPixelFormat.setEnabled(embed && rawImageFormat);
+        coByteOrder.setEnabled(embed && rawImageFormat);
+    }
+
     private void init() {
         // Create primitives
 
@@ -109,6 +133,12 @@ public class ConfigurationDialog extends JDialog
         cbAutoOpenLastFile = new JCheckBox(AUTO_OPEN_LAST_FILE_CHECKBOX);
         rbEmbedInTiles = new JRadioButton(EMBED_IN_TILES_CHECKBOX);
         rbEmbedInSet = new JRadioButton(EMBED_IN_SET_CHECKBOX);
+        lbImageFormat = new JLabel(IMAGE_FORMAT_LABEL);
+        lbPixelFormat = new JLabel(PIXEL_FORMAT_LABEL);
+        lbByteOrder = new JLabel(BYTE_ORDER_LABEL);
+        coImageFormat = new JComboBox(ImageHelper.ImageFormat.values());
+        coPixelFormat = new JComboBox(ImageHelper.PixelFormat.values());
+        coByteOrder = new JComboBox(new String[]{"Big Endian", "Little Endian"});
         ButtonGroup bg = new ButtonGroup();
         bg.add(rbEmbedInTiles);
         bg.add(rbEmbedInSet);
@@ -160,6 +190,7 @@ public class ConfigurationDialog extends JDialog
                     BorderFactory.createTitledBorder(GENERAL_SAVING_OPTIONS_TITLE),
                     BorderFactory.createEmptyBorder(0, 5, 5, 5)));
         c = new GridBagConstraints();
+        Insets defaultInsets = c.insets;
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 1; c.gridy = 0; c.weightx = 1;
         generalSavingOps.add(cbUsefulComments, c);
@@ -170,11 +201,24 @@ public class ConfigurationDialog extends JDialog
         tilesetOps.setBorder(BorderFactory.createCompoundBorder(
                     BorderFactory.createTitledBorder(TILESET_OPTIONS_TITLE),
                     BorderFactory.createEmptyBorder(0, 5, 5, 5)));
-        tilesetOps.add(cbEmbedImages, c);
-        c.gridy = 1; c.insets = new Insets(0, 10, 0, 0);
+        c.gridy = 0; c.insets = new Insets(0, 10, 0, 0);
         tilesetOps.add(rbEmbedInTiles, c);
-        c.gridy = 2; c.insets = new Insets(0, 10, 0, 0);
+        c.gridy = 1; c.insets = new Insets(0, 10, 0, 0);
         tilesetOps.add(rbEmbedInSet, c);
+        c.gridy = 2; c.insets = defaultInsets;
+        tilesetOps.add(cbEmbedImages, c);
+        c.gridy = 3; c.insets = new Insets(0, 10, 0, 0);
+        tilesetOps.add(lbImageFormat, c);
+        c.gridy = 4; c.insets = new Insets(0, 10, 0, 0);
+        tilesetOps.add(coImageFormat, c);
+        c.gridy = 5; c.insets = new Insets(0, 10, 0, 0);
+        tilesetOps.add(lbPixelFormat, c);
+        c.gridy = 6; c.insets = new Insets(0, 10, 0, 0);
+        tilesetOps.add(coPixelFormat, c);
+        c.gridy = 7; c.insets = new Insets(0, 10, 0, 0);
+        tilesetOps.add(lbByteOrder, c);
+        c.gridy = 8; c.insets = new Insets(0, 10, 0, 0);
+        tilesetOps.add(coByteOrder, c);
 
         /* GRID OPTIONS */
         JPanel gridOps = new VerticalStaticJPanel();
@@ -288,11 +332,30 @@ public class ConfigurationDialog extends JDialog
             public void itemStateChanged(ItemEvent itemEvent) {
                 final boolean embed = cbEmbedImages.isSelected();
                 savingPrefs.putBoolean("embedImages", embed);
-                rbEmbedInTiles.setEnabled(embed);
-                rbEmbedInSet.setEnabled(embed);
+                updateUI();
             }
         });
-
+        
+        coImageFormat.addItemListener(new ItemListener(){
+            public void itemStateChanged(ItemEvent e) {
+                savingPrefs.put("imageFormat", coImageFormat.getSelectedItem().toString());
+                updateUI();
+            }
+        });
+        
+        coPixelFormat.addItemListener(new ItemListener(){
+            public void itemStateChanged(ItemEvent e) {
+                savingPrefs.put("pixelFormat", coPixelFormat.getSelectedItem().toString());
+            }
+        });
+        
+        coByteOrder.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent e) {
+                int index = coByteOrder.getSelectedIndex();
+                savingPrefs.putBoolean("imageIsBigEndian", index == 0);
+            }
+        });
+        
         cbReportIOWarnings.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent itemEvent) {
                 ioPrefs.putBoolean("reportWarnings",
@@ -341,8 +404,8 @@ public class ConfigurationDialog extends JDialog
             }
         });
 
-        rbEmbedInTiles.setEnabled(false);
-        rbEmbedInSet.setEnabled(false);
+//        rbEmbedInTiles.setEnabled(false);
+//        rbEmbedInSet.setEnabled(false);
 
         //gridColor.setName("tiled.grid.color");
     }
@@ -357,16 +420,15 @@ public class ConfigurationDialog extends JDialog
         gridOpacitySlider.setValue(displayPrefs.getInt("gridOpacity", 255));
 
         boolean embedImages = savingPrefs.getBoolean("embedImages", true);
-        if (embedImages) {
-            cbEmbedImages.setSelected(true);
+        cbEmbedImages.setSelected(embedImages);
 
-            if (savingPrefs.getBoolean("tileSetImages", false)) {
-                rbEmbedInSet.setSelected(true);
-            }
-            else {
-                rbEmbedInTiles.setSelected(true);
-            }
+        if (savingPrefs.getBoolean("tileSetImages", false)) {
+            rbEmbedInSet.setSelected(true);
         }
+        else {
+            rbEmbedInTiles.setSelected(true);
+        }
+            
 
         cbUsefulComments.setSelected(savingPrefs.getBoolean("usefulComments", false));
         cbBinaryEncode.setSelected(savingPrefs.getBoolean("encodeLayerData", true));
@@ -374,10 +436,13 @@ public class ConfigurationDialog extends JDialog
         cbGridAA.setSelected(displayPrefs.getBoolean("gridAntialias", true));
         cbReportIOWarnings.setSelected(ioPrefs.getBoolean("reportWarnings", false));
         cbAutoOpenLastFile.setSelected(ioPrefs.getBoolean("autoOpenLast", false));
-
-        cbCompressLayerData.setEnabled(cbBinaryEncode.isSelected());
-        rbEmbedInTiles.setEnabled(embedImages);
-        rbEmbedInSet.setEnabled(embedImages);
+        
+        coImageFormat.setSelectedItem(ImageHelper.ImageFormat.valueOf(savingPrefs.get("imageFormat", "PNG"), ImageHelper.ImageFormat.PNG));
+        coPixelFormat.setSelectedItem(ImageHelper.PixelFormat.valueOf(savingPrefs.get("pixelFormat", "A1R5G5B5"), ImageHelper.PixelFormat.A1R5G5B5));
+        boolean imageIsBigEndian = savingPrefs.getBoolean("imageIsBigEndian", true);
+        coByteOrder.setSelectedIndex(imageIsBigEndian ? 0 : 1);
+        
+        updateUI();
     }
 
     private void doExport() {

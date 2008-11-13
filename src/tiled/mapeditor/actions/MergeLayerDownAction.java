@@ -39,7 +39,7 @@ public class MergeLayerDownAction extends AbstractLayerAction
 
         if (layerIndex > 0) {
             map.mergeLayerDown(layerIndex);
-            editor.setCurrentLayer(layerIndex - 1);
+            editor.setCurrentLayerIndex(layerIndex - 1);
         }
     }
 }

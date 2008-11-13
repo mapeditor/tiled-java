@@ -88,31 +88,13 @@ public class MultilayerPlane implements Iterable<MapLayer>
      * @return the layer passed to the function
      */
     public MapLayer addLayer(MapLayer layer) {
-        layers.add(layer);
+        insertLayer(layers.size(), layer);
         return layer;
     }
 
-    /**
-     * Adds the MapLayer <code>l</code> after the MapLayer <code>after</code>.
-     *
-     * @param l the layer to add
-     * @param after specifies the layer to add <code>l</code> after
-     */
-    public void addLayerAfter(MapLayer l, MapLayer after) {
-        layers.add(layers.indexOf(after) + 1, l);
-    }
-
-    /**
-     * Add a layer at the specified index, which should be within
-     * the valid range.
-     *
-     * @param index the position at which to add the layer
-     * @param layer the layer to add
-     */
-    public void addLayer(int index, MapLayer layer) {
+    void insertLayer(int index, MapLayer layer) {
         layers.add(index, layer);
     }
-
     public void setLayer(int index, MapLayer layer) {
         layers.set(index, layer);
     }
@@ -249,6 +231,8 @@ public class MultilayerPlane implements Iterable<MapLayer>
      * plane should be positioned on the new area. Only layers that exactly
      * match the bounds of the map are resized, any other layers are moved by
      * the given shift.
+     * This method will resize all layers first (if there are any) and then
+     * call <code>resize(width,height)</code>
      *
      * @see MapLayer#resize
      *
@@ -267,11 +251,23 @@ public class MultilayerPlane implements Iterable<MapLayer>
                 layer.setOffset(layer.bounds.x + dx, layer.bounds.y + dy);
             }
         }
+        
+        resize(width, height);
+    }
 
+    /**
+     * Resizes this plane. The plane's layers will not be affected.
+     *
+     * @see MapLayer#resize
+     *
+     * @param width  The plane's new width
+     * @param height The plane's new height
+     */
+    public void resize(int width, int height) {
         bounds.width = width;
         bounds.height = height;
     }
-
+    
     /**
      * Determines wether the point (x,y) falls within the plane.
      *

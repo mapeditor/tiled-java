@@ -194,9 +194,9 @@ public class NewMapDialog extends JDialog implements ActionListener
             }
 
             newMap = new Map(w, h);
-            newMap.addLayer();
             newMap.setTileWidth(twidth);
             newMap.setTileHeight(theight);
+            newMap.addLayer();
             newMap.setOrientation(orientation);
 
             // Save dialog options

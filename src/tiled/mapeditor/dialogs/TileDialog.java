@@ -264,7 +264,7 @@ public class TileDialog extends JDialog
                     return;
                 }
 
-                tileset.addImage(image);
+                tileset.addImage(image, file.toString());
             }
 
             // Start here next time images are added

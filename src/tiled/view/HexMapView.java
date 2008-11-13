@@ -118,9 +118,9 @@ public class HexMapView extends MapView
      */
     public int getScrollableBlockIncrement(Rectangle visibleRect,
             int orientation, int direction) {
-        Dimension tsize = getEffectiveTileSize();
+        Dimension tsize = getEffectiveMapTileSize();
         int border = showGrid ? 1 : 0;
-        int tq = getThreeQuarterHex();
+        int tq = getThreeQuarterHex(tsize);
         int hWidth = (int)(tsize.width / 2 + 0.49) + border;
         int hHeight = (int)(tsize.height / 2 + 0.49) + border;
 
@@ -172,9 +172,9 @@ public class HexMapView extends MapView
             int orientation, int direction) {
         //TiledLogger.getLogger().info(
         //    "ScrollUnit " + orientation + "/" + direction);
-        Dimension tsize = getEffectiveTileSize();
+        Dimension tsize = getEffectiveMapTileSize();
         int border = showGrid ? 1 : 0;
-        int tq = getThreeQuarterHex();
+        int tq = getThreeQuarterHex(tsize);
         if (orientation == SwingConstants.VERTICAL ) {
             if ( hexEdgesToTheLeft ) {
                 return tsize.height + border;
@@ -197,12 +197,12 @@ public class HexMapView extends MapView
      * @return Width and Height as Dimension.
      */
     public Dimension getPreferredSize() {
-        Dimension tsize = getEffectiveTileSize();
+        Dimension tsize = getEffectiveMapTileSize();
         int w;
         int h;
         int border = showGrid ? 1 : 0;
-        int tq = getThreeQuarterHex();
-        int oq = getOneQuarterHex();
+        int tq = getThreeQuarterHex(tsize);
+        int oq = getOneQuarterHex(tsize);
 
         if ( hexEdgesToTheLeft ) {
             //TiledLogger.getLogger().info(
@@ -233,7 +233,7 @@ public class HexMapView extends MapView
      */
     protected void paintLayer(Graphics2D g2d, TileLayer layer) {
         // Determine area to draw from clipping rectangle
-        Dimension tsize = getEffectiveTileSize();
+        Dimension tsize = getEffectiveTileSize(layer);
         // int toffset = showGrid ? 1 : 0;
 
         Rectangle clipRect = g2d.getClipBounds();
@@ -242,9 +242,9 @@ public class HexMapView extends MapView
         //    + "-" + clipRect.width + "," + clipRect.height);
 
         Point topLeft = screenToTileCoords(
-                (int)clipRect.getMinX(), (int)clipRect.getMinY());
+                layer,(int)clipRect.getMinX(), (int)clipRect.getMinY());
         Point bottomRight = screenToTileCoords(
-                (int)clipRect.getMaxX(), (int)clipRect.getMaxY());
+                layer,(int)clipRect.getMaxX(), (int)clipRect.getMaxY());
         int startX = (int)topLeft.getX();
         int startY = (int)topLeft.getY();
         int endX = (int)(bottomRight.getX());
@@ -276,10 +276,10 @@ public class HexMapView extends MapView
                     if (layer.getClass() == SelectionLayer.class) {
                         //TiledLogger.getLogger().info(
                         //    "selection tile at " + x + "," + y);
-                        gridPoly = createGridPolygon(x, y, 0);
+                        gridPoly = createGridPolygon(tsize, x, y, 0);
                         g2d.fillPolygon(gridPoly);
                     } else {
-                        Point screenCoords = getTopLeftCornerOfTile(x, y);
+                        Point screenCoords = getTopLeftCornerOfTile(tsize, x, y);
                         gx = screenCoords.getX();
                         gy = screenCoords.getY();
                         //TiledLogger.getLogger().info(
@@ -307,12 +307,23 @@ public class HexMapView extends MapView
     /**
      * @return The tile size in the view without border as Dimension.
      */
-    private Dimension getEffectiveTileSize() {
+    private Dimension getEffectiveMapTileSize() {
         //TiledLogger.getLogger().info("size "
         //    + ((int)(map.getTileWidth() * zoom + 0.999)) + ","
         //    + ((int)(map.getTileHeight() * zoom + 0.999)));
         return new Dimension((int)(map.getTileWidth() * zoom + 0.999),
             (int)(map.getTileHeight() * zoom + 0.999));
+    }
+
+    /**
+     * @return The tile size in the view without border as Dimension.
+     */
+    private Dimension getEffectiveTileSize(MapLayer layer) {
+        //TiledLogger.getLogger().info("size "
+        //    + ((int)(map.getTileWidth() * zoom + 0.999)) + ","
+        //    + ((int)(map.getTileHeight() * zoom + 0.999)));
+        return new Dimension((int)(layer.getTileWidth() * zoom + 0.999),
+            (int)(layer.getTileHeight() * zoom + 0.999));
     }
 
     /**
@@ -326,12 +337,12 @@ public class HexMapView extends MapView
      * @return Three quarter of the tile size width or height (see above)
      * as integer.
      */
-    private int getThreeQuarterHex() {
+    private int getThreeQuarterHex(Dimension tileDimension) {
         int tq;
         if ( hexEdgesToTheLeft ) {
-            tq = (int)(getEffectiveTileSize().width * 3.0 / 4.0 + 0.49);
+            tq = (int)(tileDimension.width * 3.0 / 4.0 + 0.49);
         } else {
-            tq = (int)(getEffectiveTileSize().height * 3.0 / 4.0 + 0.49);
+            tq = (int)(tileDimension.height * 3.0 / 4.0 + 0.49);
         }
 
         return tq;
@@ -348,15 +359,15 @@ public class HexMapView extends MapView
      * @return One quarter of the tile size width or height (see above)
      * as integer.
      */
-    private int getOneQuarterHex() {
+    private int getOneQuarterHex(Dimension tileDimension) {
         int oq;
         if ( hexEdgesToTheLeft ) {
-            oq = getEffectiveTileSize().width;
+            oq = tileDimension.width;
         } else {
-            oq = getEffectiveTileSize().height;
+            oq = tileDimension.height;
         }
 
-        return oq - getThreeQuarterHex();
+        return oq - getThreeQuarterHex(tileDimension);
     }
 
     /**
@@ -366,14 +377,17 @@ public class HexMapView extends MapView
      */
     protected void paintGrid(Graphics2D g2d) {
         g2d.setColor(Color.black);
-        Dimension tileSize = getEffectiveTileSize();
+        MapLayer currentLayer = getCurrentLayer();
+        if(currentLayer == null)
+            return;
+        Dimension tileSize = getEffectiveTileSize(currentLayer);
 
         // Determine area to draw from clipping rectangle
         Rectangle clipRect = g2d.getClipBounds();
         Point topLeft = screenToTileCoords(
-                (int)clipRect.getMinX(), (int)clipRect.getMinY());
+                currentLayer,(int)clipRect.getMinX(), (int)clipRect.getMinY());
         Point bottomRight = screenToTileCoords(
-                (int)clipRect.getMaxX(), (int)clipRect.getMaxY());
+                currentLayer,(int)clipRect.getMaxX(), (int)clipRect.getMaxY());
         int startX = (int)topLeft.getX();
         int startY = (int)topLeft.getY();
         int endX = (int)(bottomRight.getX());
@@ -407,7 +421,7 @@ public class HexMapView extends MapView
 
         if ( hexEdgesToTheLeft ) {
             for (int x = startX; x <= endX; x++) {
-                grid = createGridPolygon(x, startY, 1);
+                grid = createGridPolygon(tileSize, x, startY, 1);
                 for (int y = startY; y <= endY; y++) {
                     g2d.drawPolygon(grid);
                     grid.translate(0, tileSize.height + 1);
@@ -415,7 +429,7 @@ public class HexMapView extends MapView
             }
         } else {
             for (int y = startY; y <= endY; y++) {
-                grid = createGridPolygon(startX, y, 1);
+                grid = createGridPolygon(tileSize, startX, y, 1);
                 for (int x = startX; x <= endX; x++) {
                     g2d.drawPolygon(grid);
                     grid.translate(tileSize.width + 1, 0);
@@ -447,14 +461,15 @@ public class HexMapView extends MapView
      *
      * @return The corresponding tile coords as Point.
      */
-    public Point screenToTileCoords(int screenX, int screenY) {
+    public Point screenToTileCoords(MapLayer layer,int screenX, int screenY) {
         //TiledLogger.getLogger().info(
           //  "screen coords " + screenX + "," + screenY);
 
         int tx = 0;
         int ty = 0;
         int border = showGrid ? 1 : 0;
-        Dimension tileSize = getEffectiveTileSize();
+        Dimension tileSize = getEffectiveTileSize(layer);
+        Point offset = calculateParallaxOffsetZoomed(layer);
         int tileWidth = tileSize.width + border;
         int tileHeight = tileSize.height + border;
         int hWidth = (int)(tileWidth / 2 + 0.49) + border;
@@ -475,7 +490,7 @@ public class HexMapView extends MapView
         } else {
             if ( hexEdgesToTheLeft ) {
                 col = (int)((x - hWidth)
-                    / (double)(getThreeQuarterHex() + border) + 0.001);
+                    / (double)(getThreeQuarterHex(tileSize) + border) + 0.001);
             } else {
                 col = (int)((x - hWidth) / (double)tileWidth + 0.001);
             }
@@ -490,7 +505,7 @@ public class HexMapView extends MapView
                 row = (int)((y - hHeight) / (double)tileHeight + 0.001);
             } else {
                 row = (int)((y - hHeight)
-                    / (double)(getThreeQuarterHex() + border) + 0.001);
+                    / (double)(getThreeQuarterHex(tileSize) + border) + 0.001);
             }
         }
 
@@ -504,10 +519,10 @@ public class HexMapView extends MapView
         fourTiles [2] = new Point(col + 1, row);
         fourTiles [3] = new Point(col + 1, row + 1);
 
-        fourPoints [0] = tileToScreenCoords(col, row);
-        fourPoints [1] = tileToScreenCoords(col, row + 1);
-        fourPoints [2] = tileToScreenCoords(col + 1, row);
-        fourPoints [3] = tileToScreenCoords(col + 1, row + 1);
+        fourPoints [0] = tileToScreenCoords(offset,tileSize, col, row);
+        fourPoints [1] = tileToScreenCoords(offset,tileSize, col, row + 1);
+        fourPoints [2] = tileToScreenCoords(offset,tileSize, col + 1, row);
+        fourPoints [3] = tileToScreenCoords(offset,tileSize, col + 1, row + 1);
 
         // find point with min.distance
         double minDist = 2 * (map.getTileWidth() + map.getTileHeight());
@@ -540,8 +555,8 @@ public class HexMapView extends MapView
      *
      * @param region The rectangle of the viewport to be repainted.
      */
-    public void repaintRegion(Rectangle region) {
-        super.repaintRegion(region);
+    public void repaintRegion(MapLayer layer,Rectangle region) {
+        super.repaintRegion(layer,region);
 
         //TiledLogger.getLogger().info(
         //    "region " + region.getMinX() + "," + region.getMinY()
@@ -574,17 +589,16 @@ public class HexMapView extends MapView
      *
      * @return A hexagon structure as Polygon.
      */
-    protected Polygon createGridPolygon(int tx, int ty, int border) {
-        Dimension tileSize = getEffectiveTileSize();
+    protected Polygon createGridPolygon(Dimension tileSize, int tx, int ty, int border) {
         Polygon poly = new Polygon();
-        Point p = getTopLeftCornerOfTile(tx, ty);
+        Point p = getTopLeftCornerOfTile(tileSize, tx, ty);
         int topLeftX = (int)(p.getX());
         int topLeftY = (int)(p.getY());
 
         //TiledLogger.getLogger().info("hex at " + topLeftX + "," + topLeftY);
 
-        int tq = getThreeQuarterHex();
-        int oq = getOneQuarterHex();
+        int tq = getThreeQuarterHex(tileSize);
+        int oq = getOneQuarterHex(tileSize);
 
         // Go round the sides clockwise
         if ( hexEdgesToTheLeft ) {
@@ -620,21 +634,20 @@ public class HexMapView extends MapView
      * @return The top left corner of the enclosing rectangle of the hex
      *         in screen coordinates as Point.
      */
-    private Point getTopLeftCornerOfTile(int x, int y) {
+    private Point getTopLeftCornerOfTile(Dimension tileSize, int x, int y) {
         //TiledLogger.getLogger().info("tile coords " + x + "," + y);
 
-        Dimension tileSize = getEffectiveTileSize();
         int w = tileSize.width;
         int h = tileSize.height;
         int xx;
         int yy;
 
         if ( hexEdgesToTheLeft ) {
-            xx = x * getThreeQuarterHex();
+            xx = x * getThreeQuarterHex(tileSize);
             yy = y * h;
         } else {
             xx = x * w;
-            yy = y * getThreeQuarterHex();
+            yy = y * getThreeQuarterHex(tileSize);
         }
 
         if ( showGrid ) {
@@ -667,12 +680,11 @@ public class HexMapView extends MapView
      *
      * @return The point at the centre of the Hex as Point.
      */
-    public Point tileToScreenCoords(int x, int y) {
-        Point p = getTopLeftCornerOfTile(x, y);
-        Dimension tileSize = getEffectiveTileSize();
+    public Point tileToScreenCoords(Point offset,Dimension tileSize,int x, int y) {
+        Point p = getTopLeftCornerOfTile(tileSize, x, y);
         return new Point(
-            (int)(p.getX()) + (int)(tileSize.width / 2 + 0.49),
-            (int)(p.getY()) + (int)(tileSize.height / 2 + 0.49));
+            offset.x + (int)(p.getX()) + (int)(tileSize.width / 2 + 0.49),
+            offset.y + (int)(p.getY()) + (int)(tileSize.height / 2 + 0.49));
     }
 
     public Point screenToPixelCoords(int x, int y) {

@@ -41,7 +41,7 @@ public class MoveLayerUpAction extends AbstractLayerAction
 
         if (layerIndex < totalLayers - 1) {
             map.swapLayerUp(layerIndex);
-            editor.setCurrentLayer(layerIndex + 1);
+            editor.setCurrentLayerIndex(layerIndex + 1);
         }
     }
 }

@@ -12,29 +12,37 @@
 
 package tiled.mapeditor.actions;
 
+import java.awt.event.ActionEvent;
+import javax.swing.AbstractAction;
+import javax.swing.undo.UndoableEdit;
 import tiled.mapeditor.MapEditor;
 import tiled.mapeditor.Resources;
 import tiled.core.Map;
+import tiled.mapeditor.undo.DeleteLayerEdit;
 
 /**
  * Deletes the selected layer and selects the layer that takes the same index.
  *
  * @version $Id$
  */
-public class DeleteLayerAction extends AbstractLayerAction
+public class DeleteLayerAction extends AbstractAction
 {
+    MapEditor editor;
+    
     public DeleteLayerAction(MapEditor editor) {
-        super(editor,
-              Resources.getString("action.layer.delete.name"),
-              Resources.getString("action.layer.delete.tooltip"),
+        super(Resources.getString("action.layer.delete.name"),
               Resources.getIcon("gnome-delete.png"));
+        this.editor = editor;
+        putValue(SHORT_DESCRIPTION, "action.layer.delete.name");
     }
 
-    protected void doPerformAction() {
+    public void actionPerformed(ActionEvent e) {
         Map map = editor.getCurrentMap();
         int layerIndex = editor.getCurrentLayerIndex();
         int totalLayers = map.getTotalLayers();
-
+        
+        UndoableEdit layerDeleteEdit = new DeleteLayerEdit(editor, map, layerIndex);
+        
         if (layerIndex >= 0) {
             map.removeLayer(layerIndex);
 
@@ -42,8 +50,10 @@ public class DeleteLayerAction extends AbstractLayerAction
             // after removing that layer. The right thing to do is to reset it
             // to the new topmost layer.
             if (layerIndex == totalLayers - 1) {
-                editor.setCurrentLayer(totalLayers - 2);
+                editor.setCurrentLayerIndex(totalLayers - 2);
             }
         }
+        
+        editor.getUndoSupport().postEdit(layerDeleteEdit);
     }
 }

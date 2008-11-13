@@ -186,5 +186,14 @@ public class TabbedTilesetsPane extends JTabbedPane implements TileSelectionList
 
         public void sourceChanged(TilesetChangedEvent event, String oldSource, String newSource) {
         }
+
+        public void layerAdded(MapChangedEvent e) {
+        }
+
+        public void layerRemoved(MapChangedEvent e) {
+        }
+        
+        public void layerMoved(MapChangedEvent e) {
+        }
     }
 }

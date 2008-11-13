@@ -53,6 +53,7 @@ public class TileSet
     private Properties defaultTileProperties;
     private Image tileSetImage;
     private LinkedList<TilesetChangeListener> tilesetChangeListeners;
+    private java.util.Map<Integer, String> imageSources = new HashMap<Integer, String>();
 
     /**
      * Default constructor
@@ -570,6 +571,18 @@ public class TileSet
     public Image getImageById(int id) {
         return (Image) images.get(id);
     }
+    
+    /**
+     * @return the source path registered with this image ID. May be null
+     * even if an image is registered for this ID, because a source does
+     * not need to be registered (this is especially true for imbedded
+     * images)
+     * @param id
+     * @return
+     */
+    public String getImageSource(int id){
+        return imageSources.get(id);
+    }
 
     /**
      * Overlays the image in the set referred to by the given key.
@@ -606,18 +619,31 @@ public class TileSet
      * exist, this function adds the image and returns the new id.
      *
      * @param image the java.awt.Image to add to the image cache
+     * @param imageSource the path of the source image or null if none
+     *  is to be specified.
      * @return the id as an <code>int</code> of the image in the cache
      */
-    public int addImage(Image image) {
-        return images.findOrAdd(image);
+    public int addImage(Image image, String imageSource) {
+        int id = images.findOrAdd(image);
+        if(imageSource != null)
+            imageSources.put(id, imageSource);
+        return id;
     }
 
-    public int addImage(Image image, int id) {
+    public int addImage(Image image) {
+        return addImage(image, null);
+    }
+    
+    public int addImage(Image image, int id, String imgSource) {
+        if(imgSource != null)
+            imageSources.put(id, imgSource);
+        
         return images.put(id, image);
     }
 
     public void removeImage(int id) {
         images.remove(id);
+        imageSources.remove(id);
     }
 
     /**

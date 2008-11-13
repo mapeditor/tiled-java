@@ -29,12 +29,8 @@ public class MapLayerEdit extends AbstractUndoableEdit
     private String name;
     private boolean inProgress;
 
-    public MapLayerEdit(MapLayer layer) {
-        editedLayer = layer;
-    }
-
     public MapLayerEdit(MapLayer layer, MapLayer before) {
-        this(layer);
+        editedLayer = layer;
         start(before);
     }
 
