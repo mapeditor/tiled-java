@@ -11,7 +11,6 @@ import java.awt.Insets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.BorderFactory;
-import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -22,6 +21,7 @@ import javax.swing.undo.UndoableEditSupport;
 import tiled.core.MapLayer;
 import tiled.core.TileLayer;
 import tiled.mapeditor.Resources;
+import tiled.mapeditor.undo.LayerResizeEdit;
 import tiled.mapeditor.undo.MapLayerEdit;
 import tiled.mapeditor.widget.IntegerSpinner;
 import tiled.mapeditor.widget.VerticalStaticJPanel;
@@ -151,17 +151,40 @@ public class LayerPropertiesDialog extends PropertiesDialog {
             ce.addEdit(propertyEdit);
         
         try {
-            MapLayer before = (MapLayer) layer.clone();
+            // determine changes
+            boolean layerResized =
+                layerHeight.intValue() != layer.getHeight()
+            ||  layerWidth.intValue() != layer.getWidth()
+            ;
 
-            layer.setName(layerName.getText());            
-            layer.resize(layerWidth.intValue(), layerHeight.intValue(), 0, 0);
-            if (isTileLayer) {
-                ((TileLayer) layer).setTileDimensions(layerTileWidth.intValue(), layerTileHeight.intValue());
+            boolean layerSettingsChanged = 
+                !layer.getName().equals(layerName.getText())
+            ||  layer.getTileWidth() != layerTileWidth.intValue()
+            ||  layer.getTileHeight() != layerTileHeight.intValue()
+            ;
+            
+            // apply changes and record edits for undo
+            if(layerResized){
+                LayerResizeEdit lre = new LayerResizeEdit(layer, 0, 0, layerWidth.intValue(), layerHeight.intValue());
+
+                layer.resize(layerWidth.intValue(), layerHeight.intValue(), 0, 0);
+                
+                ce.addEdit(lre);
             }
-            MapLayer after = (MapLayer) layer.clone();
-            MapLayerEdit mle = new MapLayerEdit(layer, before, after);
-            mle.setPresentationName(Resources.getString("edit.changelayerdimension.name"));
-            ce.addEdit(mle);
+                    
+            
+            if(layerSettingsChanged){
+                MapLayer before = (MapLayer) layer.clone();
+
+                layer.setName(layerName.getText());            
+                if (isTileLayer) {
+                    ((TileLayer) layer).setTileDimensions(layerTileWidth.intValue(), layerTileHeight.intValue());
+                }
+                MapLayer after = (MapLayer) layer.clone();
+                MapLayerEdit mle = new MapLayerEdit(layer, before, after);
+                mle.setPresentationName(Resources.getString("edit.changelayerdimension.name"));
+                ce.addEdit(mle);
+            }
         } catch (CloneNotSupportedException ex) {
             Logger.getLogger(LayerPropertiesDialog.class.getName()).log(Level.SEVERE, null, ex);
         }
