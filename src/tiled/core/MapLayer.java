@@ -279,13 +279,13 @@ public abstract class MapLayer implements Cloneable
     public void copyTo(MapLayer other){
         
         // undo/redo is using this, so it better be accurate...
-        other.name = name;
-        other.isVisible = isVisible;
-        other.bLocked = bLocked;
+        other.setName(name);
+        other.setVisible(isVisible);
+        other.setLocked(bLocked);
         other.setViewPlaneDistance(getViewPlaneDistance());
         other.setViewPlaneInfinitelyFarAway(isViewPlaneInfinitelyFarAway());
         other.myMap = myMap;
-        other.opacity = opacity;
+        other.setOpacity(opacity);
         other.bounds.setBounds(bounds);
         if(other.properties != properties){
             other.properties.clear();

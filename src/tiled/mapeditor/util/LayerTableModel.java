@@ -40,8 +40,8 @@ public class LayerTableModel extends AbstractTableModel
         public void layerChanged(MapChangedEvent e, MapLayerChangeEvent mlce) {
             if(e.getMap() != map)
                 return;
-            int layerIndex = e.getLayerIndex();
-            fireTableRowsUpdated(layerIndex, layerIndex);
+            int row = getRowCount()-e.getLayerIndex()-1;
+            fireTableRowsUpdated(row, row);
         }
     };
 
