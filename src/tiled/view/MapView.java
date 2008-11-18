@@ -52,7 +52,7 @@ public abstract class MapView extends JPanel implements Scrollable
     protected float viewportCenterY;
     
     // viewport display properties
-    private boolean viewportFrameVisible;
+    private boolean parallaxModeEnabled;
     protected Color viewportFrameColor = Color.yellow;
     
     // Grid properties
@@ -121,7 +121,7 @@ public abstract class MapView extends JPanel implements Scrollable
     }
     
     /// Calculates the parallax offset by which the layer is to be shifted for
-    /// drawing it. If the layer has parallax enabled, this function returns
+    /// drawing it. If parallax mode is enabled, this function returns
     /// a Point initialized with the offset to translate the layer by to
     /// represent the parallax, respective the current view center.
     /// Otherwise, the point will always be (0,0).
@@ -132,6 +132,7 @@ public abstract class MapView extends JPanel implements Scrollable
     /// @returns    The parallax offset to shift this layer by
     /// @see MapLayer#isParallaxEnabled()
     /// @see calculateParallaxOffsetZoomed()
+    /// @see isParallaxModeEnabled()
     /// @see setViewCenter()
     protected Point calculateParallaxOffset(MapLayer layer){
         // the parallax effect imitates a sense of depth by moving layers 
@@ -162,6 +163,9 @@ public abstract class MapView extends JPanel implements Scrollable
         // view plane distance setting.
         // The map's coordinate system is assumed to be the same as the view
         // plane's.
+        if(!isParallaxModeEnabled())
+            return new Point(0,0);
+        
         int mapWidthPx = map.getWidth()*map.getTileWidth();
         int mapHeightPx = map.getHeight()*map.getTileHeight();
         float originPosX = mapWidthPx/2;
@@ -441,7 +445,7 @@ public abstract class MapView extends JPanel implements Scrollable
         //    }
         //}
         
-        if(isViewportFrameVisible()){
+        if(isParallaxModeEnabled()){
             g2d.setColor(viewportFrameColor);
             float viewportCenterXPx = viewportCenterX*map.getWidth()*map.getTileWidth();
             float viewportCenterYPx = viewportCenterY*map.getHeight()*map.getTileHeight();
@@ -643,14 +647,14 @@ public abstract class MapView extends JPanel implements Scrollable
             repaint();
     }
 
-    public boolean isViewportFrameVisible() {
-        return viewportFrameVisible;
+    public boolean isParallaxModeEnabled() {
+        return parallaxModeEnabled;
     }
 
-    public void setViewportFrameVisible(boolean viewportFrameVisible) {
-        if(this.viewportFrameVisible == viewportFrameVisible)
+    public void setParallaxModeEnabled(boolean parallaxModeEnabled) {
+        if(this.parallaxModeEnabled == parallaxModeEnabled)
             return;
-        this.viewportFrameVisible = viewportFrameVisible;
+        this.parallaxModeEnabled = parallaxModeEnabled;
         repaint();
     }
 }

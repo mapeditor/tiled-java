@@ -26,6 +26,7 @@ import tiled.util.TiledConfiguration;
 public class SmartSplitPane extends JSplitPane {
     private final Preferences prefs;
     private int defaultDividerSize = getDividerSize();
+    private int lastLocation = Integer.MIN_VALUE;
     
     private void attachComponentListener(Component c) {
         if(c!=null)
@@ -59,6 +60,9 @@ public class SmartSplitPane extends JSplitPane {
 
     @Override
     public void setDividerLocation(int location) {
+        if(lastLocation==location)
+            return;
+        lastLocation = location;
         super.setDividerLocation(location);
     }
 

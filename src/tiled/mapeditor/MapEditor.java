@@ -162,7 +162,7 @@ public class MapEditor implements ActionListener, MouseListener,
     private final Action mergeLayerDownAction, mergeAllLayersAction;
     private final Action addObjectGroupAction;
     private final Action showLayerPropertiesAction;
-    private final Action toggleViewportFrameVisibleAction;
+    private final ToggleParallaxModeAction toggleParallaxModeAction;
     
     private static final String IMPORT_ERROR_MSG = Resources.getString("dialog.newtileset.import.error.message");
 
@@ -246,7 +246,7 @@ public class MapEditor implements ActionListener, MouseListener,
         mergeAllLayersAction = new MergeAllLayersAction(this);
         addObjectGroupAction = new AddObjectGroupAction(this);
         showLayerPropertiesAction = new ShowLayerPropertiesAction(this);
-        toggleViewportFrameVisibleAction = new ToggleViewportFrameVisibleAction();
+        toggleParallaxModeAction = new ToggleParallaxModeAction();
         
         // Create our frame
         appFrame = new JFrame(Resources.getString("dialog.main.title"));
@@ -267,7 +267,10 @@ public class MapEditor implements ActionListener, MouseListener,
 
         setCurrentMap(null);
         updateRecent(null);
-
+        
+        // apply state from settings for actions
+        toggleParallaxModeAction.applyState();
+        
         appFrame.setVisible(true);
 
         //tileInstancePropertiesDialog = new TileInstancePropertiesDialog(this);
@@ -371,7 +374,7 @@ public class MapEditor implements ActionListener, MouseListener,
                 getAppFrame(), dataPanel, PANEL_LAYERS, "layers");
         parallaxPanel = new FloatablePanel(getAppFrame(), parallaxEditorPanel, PANEL_PARALLAX, "parallax");
         
-        rightSplit = new SmartSplitPane(JSplitPane.VERTICAL_SPLIT, true, layersPanel, parallaxPanel, "rightSplit");
+        rightSplit = new SmartSplitPane(JSplitPane.VERTICAL_SPLIT, true, layersPanel.getContentPane(), parallaxPanel.getContentPane(), "rightSplit");
         rightSplit.setOneTouchExpandable(true);
         rightSplit.setResizeWeight(0.5);
         rightSplit.setBorder(null);
@@ -388,7 +391,7 @@ public class MapEditor implements ActionListener, MouseListener,
                 getAppFrame(), tabbedTilesetsPane, PANEL_TILE_PALETTE,
                 "tilesets");
         paletteSplit = new SmartSplitPane(
-                JSplitPane.VERTICAL_SPLIT, true, mainSplit, tilesetsPanel, "paletteSplit");
+                JSplitPane.VERTICAL_SPLIT, true, mainSplit, tilesetsPanel.getContentPane(), "paletteSplit");
         paletteSplit.setOneTouchExpandable(true);
         paletteSplit.setResizeWeight(1.0);
 
@@ -560,7 +563,7 @@ public class MapEditor implements ActionListener, MouseListener,
         viewMenu.addSeparator();
         viewMenu.add(gridMenuItem);
         viewMenu.add(cursorMenuItem);
-        viewMenu.add(new JCheckBoxMenuItem(toggleViewportFrameVisibleAction));
+        viewMenu.add(new JCheckBoxMenuItem(toggleParallaxModeAction));
         //TODO: Enable when boudary drawing code finished.
         //viewMenu.add(boundaryMenuItem);
         viewMenu.add(coordinatesMenuItem);
@@ -1824,26 +1827,33 @@ public class MapEditor implements ActionListener, MouseListener,
         }
     }
 
-    private class ToggleViewportFrameVisibleAction extends AbstractAction {
+    private class ToggleParallaxModeAction extends AbstractAction {
         private boolean retreive(){
-            return MapEditor.this.prefs.node("display").getBoolean("showViewportFrame", false);
+            return MapEditor.this.prefs.node("display").getBoolean("enableParallaxMode", false);
         }
         private void store(boolean b){
-            MapEditor.this.prefs.node("display").putBoolean("showViewportFrame", b);
+            MapEditor.this.prefs.node("display").putBoolean("enableParallaxMode", b);
         }
-        public ToggleViewportFrameVisibleAction(){
-            super(Resources.getString("action.viewport.frame.visible.name"));
+        public ToggleParallaxModeAction(){
+            super(Resources.getString("action.parallaxmode.toggle.name"));
             putValue(ACCELERATOR_KEY,
-                    KeyStroke.getKeyStroke("control shift V"));
+                    KeyStroke.getKeyStroke("control shift P"));
             putValue(SHORT_DESCRIPTION,
-                     Resources.getString("action.viewport.frame.visible.description"));
+                     Resources.getString("action.parallaxmode.toggle.description"));
             putValue(SELECTED_KEY, retreive());
         }
 
         public void actionPerformed(ActionEvent e) {
             boolean b = !retreive();
             store(b);
-            MapEditor.this.mapView.setViewportFrameVisible(b);
+            applyState();
+        }
+        
+        void applyState(){
+            boolean b = retreive();
+            if(MapEditor.this.mapView != null)
+                MapEditor.this.mapView.setParallaxModeEnabled(b);
+            parallaxPanel.setVisible(b);
             putValue(SELECTED_KEY, b);
         }
     }
@@ -2296,7 +2306,6 @@ public class MapEditor implements ActionListener, MouseListener,
             mapView.setGridColor(new Color(display.getInt("gridColor",
                     MapView.DEFAULT_GRID_COLOR.getRGB())));
             mapView.setShowGrid(display.getBoolean("showGrid", false));
-            mapView.setViewportFrameVisible(display.getBoolean("showViewportFrame", false));
             JViewport mapViewport = new JViewport();
             mapViewport.setView(mapView);
             mapViewport.addChangeListener(this);
@@ -2330,7 +2339,9 @@ public class MapEditor implements ActionListener, MouseListener,
                 }
             }
             setCurrentTile(firstTile);
-
+            
+            toggleParallaxModeAction.applyState();
+            
             currentMap.addLayerSpecial(cursorHighlight);
         }
 
@@ -2456,8 +2467,15 @@ public class MapEditor implements ActionListener, MouseListener,
 
     public void mouseWheelMoved(MouseWheelEvent e) {
         // only accept events from mapView. Ctrl key must be pressed as well.
-        if(e.getComponent() != mapView || (e.getModifiersEx() & e.CTRL_DOWN_MASK) == 0)
+        if(e.getComponent() != mapView)
             return;
+        
+        // if we're not processing event, pass it in to mapView's scroll pane
+        if((e.getModifiersEx() & e.CTRL_DOWN_MASK) == 0){
+             for(MouseWheelListener l : mapScrollPane.getMouseWheelListeners())
+                l.mouseWheelMoved(e);
+             return;
+        }
         int amount = e.getWheelRotation();
         mapView.setZoomLevel(mapView.getZoomLevel()-amount);
         zoomNormalAction.setEnabled(mapView.getZoomLevel() != MapView.ZOOM_NORMALSIZE);

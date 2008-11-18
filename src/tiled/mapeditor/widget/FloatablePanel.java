@@ -31,14 +31,15 @@ import tiled.util.TiledConfiguration;
  *
  * @version $Id$
  */
-public class FloatablePanel extends JPanel
+public class FloatablePanel
 {
     private final JLabel titleLabel;
     private JDialog frame;
     private final JComponent child;
     private final Frame parent;
     private final Preferences prefs;
-    private int dividerSize;
+    private JPanel contentPane = new JPanel();
+    private boolean visible = true;
     
     /**
      * Constructs a floatable panel with the given title. When the panel is
@@ -70,14 +71,17 @@ public class FloatablePanel extends JPanel
 
         // Start in non-floating state
         // todo: Immediately restore floating state when found in preferences
-        setLayout(new BorderLayout());
-        add(topPanel, BorderLayout.NORTH);
-        add(child, BorderLayout.CENTER);
-        dividerSize = 0;
+        contentPane.setLayout(new BorderLayout());
+        contentPane.add(topPanel, BorderLayout.NORTH);
+        contentPane.add(child, BorderLayout.CENTER);
         frame = null;
     }
-
-    private void setFloating(boolean floating) {
+    
+    public JPanel getContentPane(){
+        return contentPane;
+    }
+    
+    public void setFloating(boolean floating) {
         if (frame != null && !floating) {
             // Store the floating frame position and size
             prefs.putInt("width", frame.getWidth());
@@ -90,17 +94,14 @@ public class FloatablePanel extends JPanel
             frame.dispose();
             frame = null;
             child.setBorder(null);
-            add(child, BorderLayout.CENTER);
-            setVisible(true);
-
-            // Restore the old divider location
-            final int dividerLocation = prefs.getInt("dividerLocation", 0);
+            contentPane.add(child, BorderLayout.CENTER);
+            contentPane.setVisible(visible);
         }
         else if (frame == null && floating)
         {
             // Hide this panel and remove our child panel
-            setVisible(false);
-            remove(child);
+            contentPane.setVisible(false);
+            contentPane.remove(child);
 
             child.setBorder(new EmptyBorder(5, 5, 5, 5));
 
@@ -129,19 +130,36 @@ public class FloatablePanel extends JPanel
                 frame.pack();
                 frame.setLocationRelativeTo(parent);
             }
-            frame.setVisible(true);
+            frame.setVisible(visible);
         }
     }
-
+    
+    public void setVisible(boolean visible){
+        if(this.visible == visible)
+            return;
+        this.visible = visible;
+        if(frame != null)
+            frame.setVisible(visible);
+        else{
+            contentPane.setVisible(visible);
+            if(visible)
+                contentPane.add(child);
+            else
+                contentPane.remove(child);
+        }
+        prefs.putBoolean("visible", visible);
+    }
+    
     /**
      * Restore the state from the preferences.
      */
     public void restore() {
         final boolean floating = prefs.getBoolean("floating", false);
-
+        
         if (floating) {
             setFloating(true);
         }
+        setVisible(prefs.getBoolean("visible", visible));
     }
 
     /**
