@@ -271,11 +271,6 @@ public class IsoMapView extends MapView
                 (my < 0 ? my - tileSize.height : my) / tileSize.height);
     }
 
-    public Point screenToPixelCoords(int x, int y) {
-        // TODO: add proper implementation
-        return new Point();
-    }
-
     protected Polygon createGridPolygon(Dimension tileSize, int tx, int ty, int border) {
         tileSize.width -= border * 2;
         tileSize.height -= border * 2;

@@ -44,7 +44,9 @@ import tiled.mapeditor.brush.LayerLockedBrushException;
 import tiled.mapeditor.brush.ShapeBrush;
 import tiled.mapeditor.dialogs.*;
 import tiled.mapeditor.plugin.PluginClassLoader;
+import tiled.mapeditor.selection.ObjectSelectionToolSemantic;
 import tiled.mapeditor.selection.SelectionLayer;
+import tiled.mapeditor.selection.ToolSemantic;
 import tiled.mapeditor.undo.*;
 import tiled.mapeditor.util.*;
 import tiled.mapeditor.widget.*;
@@ -188,6 +190,9 @@ public class MapEditor implements ActionListener, MouseListener,
     private static final String STATUS_LAYER_SELECTED_FORMAT = Resources.getString("status.layer.selectedformat_name_w_h_x_y_tilew_tileh");
     private static final String STATUS_LAYER_MOVED_FORMAT = Resources.getString("status.layer.movedformat_x_y");
     
+    private ToolSemantic currentToolSemantic;
+    
+    private ObjectSelectionToolSemantic objectSelectionToolSemantic;
     
     public MapEditor(){
         /*
@@ -207,7 +212,9 @@ public class MapEditor implements ActionListener, MouseListener,
             e.printStackTrace();
         }
         */
-
+        
+        objectSelectionToolSemantic = new ObjectSelectionToolSemantic(this);
+        
         curEyed = new Cursor(Cursor.CROSSHAIR_CURSOR);
         curDefault = new Cursor(Cursor.DEFAULT_CURSOR);
 
@@ -682,6 +689,7 @@ public class MapEditor implements ActionListener, MouseListener,
         layerTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         layerTable.getSelectionModel().addListSelectionListener(this);
         layerTable.addMouseListener(new MouseAdapter(){
+            // mouse listener for popup menu in layerTable
             public void mousePressed(MouseEvent e){
                 if (!SwingUtilities.isRightMouseButton(e))
                     return;
@@ -838,7 +846,6 @@ public class MapEditor implements ActionListener, MouseListener,
         eraseButton.setEnabled(tileLayer);
         pourButton.setEnabled(tileLayer);
         eyedButton.setEnabled(tileLayer);
-        marqueeButton.setEnabled(tileLayer);
         moveButton.setEnabled(validSelection);
         objectAddButton.setEnabled(objectGroup);
         objectRemoveButton.setEnabled(objectGroup);
@@ -1002,7 +1009,7 @@ public class MapEditor implements ActionListener, MouseListener,
                 // Get the object on this location and display the relative options dialog
                 ObjectGroup group = (ObjectGroup) layer;
                 Point pos = mapView.screenToPixelCoords(
-                        event.getX(), event.getY());
+                        layer, event.getX(), event.getY());
                 MapObject obj = group.getObjectNear(pos.x, pos.y, mapView.getZoom());
                 if (obj != null) {
                     ObjectDialog od = new ObjectDialog(appFrame, obj, undoSupport);
@@ -1147,7 +1154,7 @@ public class MapEditor implements ActionListener, MouseListener,
                     if (layer instanceof ObjectGroup) {
                         ObjectGroup group = (ObjectGroup) layer;
                         Point pos = mapView.screenToPixelCoords(
-                                event.getX(), event.getY());
+                                layer, event.getX(), event.getY());
                         MapObject obj = group.getObjectNear(pos.x, pos.y, mapView.getZoom());
                         if (obj != null) {
                             undoSupport.postEdit(new RemoveObjectEdit(group, obj));
@@ -1160,7 +1167,7 @@ public class MapEditor implements ActionListener, MouseListener,
                 case PS_MOVEOBJ:
                     if (layer instanceof ObjectGroup) {
                         Point pos = mapView.screenToPixelCoords(
-                                event.getX(), event.getY());
+                                layer, event.getX(), event.getY());
                         if (currentObject == null) {
                             ObjectGroup group = (ObjectGroup) layer;
                             currentObject = group.getObjectNear(pos.x, pos.y, mapView.getZoom());
@@ -1714,6 +1721,26 @@ public class MapEditor implements ActionListener, MouseListener,
             aboutDialog = new AboutDialog(appFrame);
         }
         aboutDialog.setVisible(true);
+    }
+
+    private void updateToolSemantics() {
+        // FIXME: this is currently very simple, but should be replaced
+        // by something that is more powerful - when the tools are refactored
+        // and moved out of MapEditor altogether..
+        ToolSemantic ts;
+        if(currentPointerState == PS_MARQUEE && ObjectGroup.class.isAssignableFrom(getCurrentLayer().getClass()))
+            ts = objectSelectionToolSemantic;
+        else
+            ts = null;
+        if(ts == currentToolSemantic)
+            return;
+        if(currentToolSemantic != null)
+            currentToolSemantic.deactivate();
+
+        currentToolSemantic = ts;
+
+        if(currentToolSemantic != null)
+            currentToolSemantic.activate();
     }
 
     private class LayerTransformAction extends AbstractAction {
@@ -2405,6 +2432,8 @@ public class MapEditor implements ActionListener, MouseListener,
         Rectangle r = l.getBounds();
         statusLabel.setInfoText(String.format(STATUS_LAYER_SELECTED_FORMAT, l.getName(), r.width, r.height, r.x, r.y, l.getTileWidth(), l.getTileHeight()));
         cursorHighlight.setParent(getCurrentLayer());
+        
+        updateToolSemantics();
     }
 
     /**
@@ -2463,6 +2492,8 @@ public class MapEditor implements ActionListener, MouseListener,
                     break;
             }
         }
+        
+        updateToolSemantics();
     }
 
     public void mouseWheelMoved(MouseWheelEvent e) {

@@ -341,11 +341,6 @@ public class OrthoMapView extends MapView
         return new Point(offset.x + x * tileDimension.width, offset.y + y * tileDimension.height);
     }
     
-    public Point screenToPixelCoords(int x, int y) {
-        return new Point(
-                (int) (x / zoom), (int) (y / zoom));
-    }
-
     protected Dimension getLayerTileSize(MapLayer layer) {
         return new Dimension(
                 (int) (layer.getTileWidth() * zoom),

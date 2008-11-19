@@ -687,11 +687,6 @@ public class HexMapView extends MapView
             offset.y + (int)(p.getY()) + (int)(tileSize.height / 2 + 0.49));
     }
 
-    public Point screenToPixelCoords(int x, int y) {
-        return new Point(
-                (int) (x / zoom), (int) (y / zoom));
-    }
-
     protected void paintPropertyFlags(Graphics2D g2d, TileLayer layer) {
         // TODO: Implement property flags painting for HexMapView
     }

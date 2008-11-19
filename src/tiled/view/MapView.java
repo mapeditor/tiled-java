@@ -33,7 +33,10 @@ public abstract class MapView extends JPanel implements Scrollable
     public static final int PF_BOUNDARYMODE = 0x02;
     public static final int PF_COORDINATES  = 0x04;
     public static final int PF_NOSPECIAL    = 0x08;
-
+    
+    private static final float SELECTIONRUBBERBAND_OUTER_WIDTH = 3.0f;
+    private static final float SELECTIONRUBBERBAND_INNER_WIDTH = 1.0f;
+    
     public static int ZOOM_NORMALSIZE = 5;
 
     protected Map map;
@@ -70,6 +73,8 @@ public abstract class MapView extends JPanel implements Scrollable
     public static final Color DEFAULT_GRID_COLOR = Color.black;
 
     protected static Image propertyFlagImage;
+    private Rectangle selectionRubberBandRectangle;
+    private MapLayer selectionRubberBandLayer;
 
     /**
      * Creates a new <code>MapView</code> that displays the specified map.
@@ -95,6 +100,39 @@ public abstract class MapView extends JPanel implements Scrollable
             }
         });
         setOpaque(true);
+    }
+    
+    private Rectangle pixelToScreenCoords(MapLayer layer, Rectangle rect){
+        Point p0 = pixelToScreenCoords(layer, rect.x, rect.y);
+        Point p1 = pixelToScreenCoords(layer, rect.x+rect.width, rect.y+rect.height);
+        Rectangle r = new Rectangle(p0.x, p0.y, p1.x-p0.x, p1.y-p0.y);
+        return r;
+    }
+    
+    private Rectangle addMarginToRectangle(Rectangle r, int margin){
+        return new Rectangle(r.x-margin, r.y-margin, r.width+2*margin, r.height+2*margin);
+    }
+    
+    public void setSelectionRubberband(MapLayer selectedLayer, Rectangle selectionRubberband) {
+        // change selection rectangle
+        Rectangle previousSelectionRubberbandR = selectionRubberBandRectangle;
+        MapLayer previousSelectedRubberbandL = selectionRubberBandLayer;
+        
+        if(selectionRubberband != null)
+            selectionRubberBandRectangle = new Rectangle(selectionRubberband);
+        else
+            selectionRubberBandRectangle = null;
+        selectionRubberBandLayer = selectedLayer;
+        
+        // issue repaints
+        if(previousSelectionRubberbandR != null){
+            Rectangle r = addMarginToRectangle(previousSelectionRubberbandR, (int)SELECTIONRUBBERBAND_OUTER_WIDTH);
+            repaint(pixelToScreenCoords(previousSelectedRubberbandL, r));
+        }
+        if(selectionRubberBandRectangle != null){
+            Rectangle r = addMarginToRectangle(selectionRubberBandRectangle, (int)SELECTIONRUBBERBAND_OUTER_WIDTH);
+            repaint(pixelToScreenCoords(selectionRubberBandLayer, r));
+        }
     }
     
     /// Sets the current view center for the parallax view to render correctly
@@ -445,6 +483,33 @@ public abstract class MapView extends JPanel implements Scrollable
         //    }
         //}
         
+        // if there's a selection, draw it
+        if(selectionRubberBandRectangle != null){
+            // calculate rectangle to draw
+            Rectangle r = selectionRubberBandRectangle;
+            Point p0 = pixelToScreenCoords(selectionRubberBandLayer, r.x, r.y);
+            Point p1 = pixelToScreenCoords(selectionRubberBandLayer, r.x+r.width, r.y+r.height);
+            r = new Rectangle(p0.x, p0.y, p1.x-p0.x, p1.y-p0.y);
+            
+            // draw selection rectangle
+            Stroke previousStroke = g2d.getStroke();
+            Color previousColor = g2d.getColor();
+            
+            g2d.setComposite(AlphaComposite.SrcOver);
+            
+            g2d.setStroke(new BasicStroke(3));
+            g2d.setColor(Color.WHITE);
+            g2d.draw(r);
+            g2d.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, new float[]{0.0f, 3.0f, 6.0f}, 0.0f));
+            g2d.setColor(Color.BLACK);
+            g2d.draw(r);
+            
+            g2d.setColor(previousColor);
+            g2d.setStroke(previousStroke);
+        }
+        
+        // for parallax mode, draw the viewport rectangle around the
+        // current eye position
         if(isParallaxModeEnabled()){
             g2d.setColor(viewportFrameColor);
             float viewportCenterXPx = viewportCenterX*map.getWidth()*map.getTileWidth();
@@ -603,12 +668,23 @@ public abstract class MapView extends JPanel implements Scrollable
      * Returns the pixel coordinates on the map based on the given screen
      * coordinates. The map pixel coordinates may be different in more ways
      * than the zoom level, depending on the projection the view implements.
-     *
+     * @param the layer to calculate the coordinates for or null if 
+     * the coordinate transformation should be done in the map's coordinate
+     * system.
      * @param x x in screen coordinates
      * @param y y in screen coordinates
      * @return the position in map pixel coordinates
      */
-    public abstract Point screenToPixelCoords(int x, int y);
+    public Point screenToPixelCoords(MapLayer layer,int x, int y) {
+        Point p = new Point(
+                (int) (x / zoom), (int) (y / zoom));
+        if(layer != null){
+            Point o = calculateParallaxOffset(layer);
+            p.setLocation(p.x-o.x, p.y-o.y);
+        }
+        return p;
+    }
+
 
     /**
      * Returns the location on the screen of the top corner of a tile.
@@ -631,6 +707,25 @@ public abstract class MapView extends JPanel implements Scrollable
     public final Point tileToScreenCoords(MapLayer layer, int x, int y){
         Dimension zoomedTileSize = new Dimension((int)(layer.getTileWidth()*zoom), (int)(layer.getTileHeight()*zoom));
         return tileToScreenCoords(calculateParallaxOffsetZoomed(layer), zoomedTileSize, x, y);
+    }
+
+    /**
+     * Returns the screen coordinates on the map based on the given screen
+     * coordinates. The map pixel coordinates may be different in more ways
+     * than the zoom level, depending on the projection the view implements.
+     * @param layer the layer for which the pixel coordinates are given,
+     * or null if the pixel coordinates are given for the map
+     * @param x x in pixel coordinates
+     * @param y y in pixel coordinates
+     * @return the position in map pixel coordinates
+     */
+    public Point pixelToScreenCoords(MapLayer layer, int x, int y){
+        Point p = new Point(x, y);
+        if(layer != null){
+            Point o = calculateParallaxOffset(layer);
+            p.setLocation(p.x+o.x, p.y+o.y);
+        }
+        return new Point((int)(p.x*zoom), (int)(p.y*zoom));
     }
 
     public MapLayer getCurrentLayer() {
