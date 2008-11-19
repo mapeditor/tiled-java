@@ -684,7 +684,12 @@ public abstract class MapView extends JPanel implements Scrollable
         }
         return p;
     }
-
+    
+    public Rectangle screenToPixelCoords(MapLayer layer, Rectangle r){
+        Point p0 = screenToPixelCoords(layer, r.x, r.y);
+        Point p1 = screenToPixelCoords(layer, r.x+r.width, r.y+r.height);
+        return new Rectangle(p0.x, p0.y, p1.x-p0.x, p1.y-p0.y);
+    }
 
     /**
      * Returns the location on the screen of the top corner of a tile.

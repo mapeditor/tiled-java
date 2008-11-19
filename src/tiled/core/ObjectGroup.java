@@ -16,9 +16,11 @@ import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.util.LinkedList;
 import java.util.Iterator;
+import java.util.Vector;
 
 /**
  * A layer containing {@link MapObject map objects}.
@@ -163,7 +165,38 @@ public class ObjectGroup extends MapLayer
         }
         return null;
     }
-
+    
+    /**
+     * Finds the objects on this layer that intersect the given Rectangle.
+     * The order in which the objects are returned is not guaranteed
+     * @param rect  Rectangle in layer pixel coordinates.
+     * @return  objects that intersect the given rectangle
+     */
+    public MapObject[] findObjectsByOutline(Rectangle rect){
+        // FIXME: iterating over all objects is potentially very slow
+        // there's room for optimization here by using some sort of space
+        // partitioning for object storage
+        Vector<MapObject> result = new Vector<MapObject>();
+        Line2D l0 = new Line2D.Float();
+        Line2D l1 = new Line2D.Float();
+        Line2D l2 = new Line2D.Float();
+        Line2D l3 = new Line2D.Float();
+        for (MapObject obj : objects) {
+            Rectangle b = obj.getBounds();
+            float x0 = b.x;
+            float y0 = b.y;
+            float x1 = b.x+b.width;
+            float y1 = b.y+b.height;
+            l0.setLine(x0, y0, x1, y0);
+            l1.setLine(x1, y0, x1, y1);
+            l2.setLine(x1, y1, x0, y1);
+            l3.setLine(x0, y1, x0, y0);
+            if(l0.intersects(rect) || l1.intersects(rect) || l2.intersects(rect) || l3.intersects(rect))
+                result.add(obj);
+        }
+        return result.toArray(new MapObject[result.size()]);
+    }
+    
     // This method will work at any zoom level, provided you provide the correct zoom factor. It also adds a one pixel buffer (that doesn't change with zoom).
     public MapObject getObjectNear(int x, int y, double zoom) {
         Rectangle2D mouse = new Rectangle2D.Double(x - zoom - 1, y - zoom - 1, 2 * zoom + 1, 2 * zoom + 1);
