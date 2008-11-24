@@ -24,18 +24,110 @@ import tiled.view.MapView;
  * @author upachler
  */
 public class ObjectSelectionToolSemantic extends ToolSemantic{
+
     private enum Mode {
         IDLE,
         SELECT,
         MOVE_OBJECT,
         RESIZE_OBJECT,
     }
+    private enum Corner{
+        NONE,
+        X0Y0,
+        X0Y1,
+        X1Y0,
+        X1Y1;
+            
+        public static Corner findCorner(Rectangle r, Rectangle r2)
+        {
+            Point points[] = new Point[]{
+                new Point(r.x, r.y),
+                new Point(r.x, r.y+r.height),
+                new Point(r.x+r.width, r.y),
+                new Point(r.x+r.width, r.y+r.height),
+            };
+            int i;
+            for(i=0; i<4; ++i){
+                if(r2.contains(points[i]))
+                    break;
+            }
+            switch(i){
+                case 0:
+                    return X0Y0;
+                case 1:
+                    return X0Y1;
+                case 2:
+                    return X1Y0;
+                case 3:
+                    return X1Y1;
+                default:
+                    return NONE;
+            }
+        }
+        
+        public static Point getRectCorner(Rectangle r, Corner corner){
+            switch(corner){
+                case X0Y0:
+                    return new Point(r.x, r.y);
+                case X0Y1:
+                    return new Point(r.x, r.y+r.height);
+                case X1Y0:
+                    return new Point(r.x+r.width, r.y);
+                case X1Y1:
+                    return new Point(r.x+r.width, r.y+r.height);
+                default:
+                    return null;
+            }
+        }
+        
+        public static void setRectCorner(Rectangle r, Corner corner, int x, int y) {
+            int x0 = r.x;
+            int y0 = r.y;
+            int x1 = r.x+r.width;
+            int y1 = r.y+r.height;
+            // horizontal
+            switch(corner){
+                case X0Y0:
+                case X0Y1:
+                    x0 = x;
+                    if(x0>x1)
+                        x0 = x1;
+                    break;
+                case X1Y0:
+                case X1Y1:
+                    x1 = x;
+                    if(x1<x0)
+                        x1 = x0;
+                    break;
+            }
+            // vertical
+            switch(corner){
+                case X0Y0:
+                case X1Y0:
+                    y0 = y;
+                    if(y0>y1)
+                        y0=y1;
+                    break;
+                case X0Y1:
+                case X1Y1:
+                    y1 = y;
+                    if(y1<y0)
+                        y1 = y0;
+                    break;
+            }
+            r.x = x0;
+            r.y = y0;
+            r.width = x1-x0;
+            r.height = y1-y0;
+        }
+    };
     private Mode mode = Mode.IDLE;
     private Point selectionStart;
     private Rectangle selectionRubberband;
     private MapLayer selectedLayer;
     private Point objectStartPos;
     private MapObject object;
+    private Corner corner = Corner.NONE;
     
     public ObjectSelectionToolSemantic(MapEditor editor){
         super(editor);
@@ -67,11 +159,27 @@ public class ObjectSelectionToolSemantic extends ToolSemantic{
         return objects.length != 0 ? objects[0] : null;
     }
     
+    private Corner findObjectCorner(MapObject o, int x, int y) {
+        MapView mapView = getEditor().getMapView();
+        ObjectGroup og = (ObjectGroup)(getEditor().getCurrentLayer());
+        final int margin = 2;   // one pixel margin around selection point
+        
+        Rectangle r = new Rectangle(x-margin, y-margin, 1+2*margin, 1+2*margin);
+        r = mapView.screenToPixelCoords(og, r);
+        return Corner.findCorner(o.getBounds(), r);
+    }
+    
     private Mode determineMode(int x, int y) {
         MapObject o = findObject(x, y);
         if(o == null)
             return Mode.SELECT;
-        return Mode.MOVE_OBJECT;
+        
+        Corner corner = findObjectCorner(o, x, y);
+        if(corner == Corner.NONE)
+            return Mode.MOVE_OBJECT;
+        else
+            return Mode.RESIZE_OBJECT;
+        
     }
     
     private void startSelection(int x, int y) {
@@ -157,19 +265,56 @@ public class ObjectSelectionToolSemantic extends ToolSemantic{
         mode = Mode.IDLE;
     }
     
+    private void startResizeObject(int x, int y) {
+        MapObject o = findObject(x, y);
+        if(mode != Mode.IDLE)
+            return;
+        mode = Mode.RESIZE_OBJECT;
+        this.object = o;
+        MapView mapView = getEditor().getMapView();
+        selectedLayer = getEditor().getCurrentLayer();
+        selectionStart = mapView.screenToPixelCoords(selectedLayer, x, y);
+        corner = findObjectCorner(o, selectionStart.x, selectionStart.y);
+        objectStartPos = new Point(Corner.getRectCorner(o.getBounds(), corner));
+        
+        updateResizeObject(x, y);
+    }
+
+    private void finishResizeObject(int x, int y) {
+        if(mode != Mode.RESIZE_OBJECT)
+            return;
+        mode = Mode.IDLE;
+    }
+    
+    private void updateResizeObject(int x, int y) {
+        if(mode != Mode.RESIZE_OBJECT)
+            return;
+        MapView mapView = getEditor().getMapView();
+        Point p = mapView.screenToPixelCoords(selectedLayer, x, y);
+        int diffX = p.x - selectionStart.x;
+        int diffY = p.y - selectionStart.y;
+        Rectangle b = object.getBounds();
+        Corner.setRectCorner(b, corner, objectStartPos.x+diffX, objectStartPos.y+diffY);
+        
+        // FIXME: this is probably a bit too easy
+        mapView.repaint();
+    }
+
     private MouseMotionListener mouseMotionListener = new MouseMotionAdapter(){
 
         @Override
         public void mouseDragged(MouseEvent e) {
-            // FIXME: intersection tests with objects should be implemented here
-            // to show the object resize cursor
-            
+            int x = e.getX();
+            int y = e.getY();
             switch(mode){
                 case MOVE_OBJECT:
-                    updateMoveObject(e.getX(), e.getY());
+                    updateMoveObject(x, y);
                     break;
                 case SELECT:
-                    updateSelection(e.getX(), e.getY());
+                    updateSelection(x, y);
+                    break;
+                case RESIZE_OBJECT:
+                    updateResizeObject(x, y);
             }
         }
         
@@ -177,6 +322,9 @@ public class ObjectSelectionToolSemantic extends ToolSemantic{
         public void mouseMoved(MouseEvent e){
             MapView mapView = getEditor().getMapView();
             Mode m = determineMode(e.getX(), e.getY());
+            int x = e.getX();
+            int y = e.getY();
+            
             switch(m){
                 case SELECT:
                     mapView.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
@@ -184,6 +332,25 @@ public class ObjectSelectionToolSemantic extends ToolSemantic{
                 case MOVE_OBJECT:
                     mapView.setCursor(new Cursor(Cursor.MOVE_CURSOR));
                     break;
+                case RESIZE_OBJECT:{
+                    Corner c = findObjectCorner(findObject(x, y), x, y);
+                    mapView.setCursor(mapResizeCursor(c));
+                }   break;
+            }
+        }
+
+        private Cursor mapResizeCursor(Corner c) {
+            switch(c){
+                case X0Y0:
+                    return new Cursor(Cursor.NW_RESIZE_CURSOR);
+                case X0Y1:
+                    return new Cursor(Cursor.SW_RESIZE_CURSOR);
+                case X1Y0:
+                    return new Cursor(Cursor.NE_RESIZE_CURSOR);
+                case X1Y1:
+                    return new Cursor(Cursor.SE_RESIZE_CURSOR);
+                default:
+                    return null;
             }
         }
     };
@@ -193,24 +360,34 @@ public class ObjectSelectionToolSemantic extends ToolSemantic{
     private MouseListener mouseListener = new MouseAdapter() {
 
         public void mousePressed(MouseEvent e) {
-            Mode m = determineMode(e.getX(), e.getY());
+            int x = e.getX();
+            int y = e.getY();
+            Mode m = determineMode(x, y);
             switch(m){
                 case SELECT:
-                    startSelection(e.getX(), e.getY());
+                    startSelection(x, y);
                     break;
                 case MOVE_OBJECT:
-                    startMoveObject(e.getX(), e.getY());
+                    startMoveObject(x, y);
+                    break;
+                case RESIZE_OBJECT:
+                    startResizeObject(x, y);
                     break;
             }
         }
 
         public void mouseReleased(MouseEvent e) {
+            int x = e.getX();
+            int y = e.getY();
             switch(mode){
                 case SELECT:
-                    finishSelection(e.getX(), e.getY());
+                    finishSelection(x, y);
                     break;
                 case MOVE_OBJECT:
-                    finishMoveObject(e.getX(), e.getY());
+                    finishMoveObject(x, y);
+                    break;
+                case RESIZE_OBJECT:
+                    finishResizeObject(x, y);
                     break;
             }
         }
@@ -218,6 +395,5 @@ public class ObjectSelectionToolSemantic extends ToolSemantic{
         public void mouseExited(MouseEvent e) {
 //            finishSelection(e.getX(), e.getY());
         }
-
     };
 }
