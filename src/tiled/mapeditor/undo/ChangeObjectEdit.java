@@ -12,6 +12,7 @@
 
 package tiled.mapeditor.undo;
 
+import java.awt.Rectangle;
 import java.util.Properties;
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
@@ -26,66 +27,62 @@ import tiled.mapeditor.Resources;
 public class ChangeObjectEdit extends AbstractUndoableEdit
 {
     private final MapObject mapObject;
+    private State state;
 
-    private final String prevName;
-    private final String prevType;
-    private final String prevImageSource;
-    private final int prevWidth;
-    private final int prevHeight;
-    private final Properties prevProperties = new Properties();
-
-    private String newName;
-    private String newType;
-    private String newImageSource;
-    private int newWidth;
-    private int newHeight;
-    private final Properties newProperties = new Properties();
-
+    class State{
+        private String name;
+        private String type;
+        private String imageSource;
+        private Rectangle bounds;
+        private final Properties properties = new Properties();
+        
+        public void retreive(MapObject o){
+            name = mapObject.getName();
+            type = mapObject.getType();
+            imageSource = mapObject.getImageSource();
+            bounds = new Rectangle(mapObject.getBounds());
+            properties.clear();
+            properties.putAll(mapObject.getProperties());
+        }
+        
+        public void apply(MapObject mapObject){
+            mapObject.setName(name);
+            mapObject.setType(type);
+            mapObject.setImageSource(imageSource);
+            mapObject.setBounds(new Rectangle(bounds));
+            mapObject.getProperties().clear();
+            mapObject.getProperties().putAll(properties);
+        }
+    };
+    
     public ChangeObjectEdit(MapObject mapObject) {
         this.mapObject = mapObject;
 
         // Store the previous state so we can undo changes
-        prevName = mapObject.getName();
-        prevType = mapObject.getType();
-        prevImageSource = mapObject.getImageSource();
-        prevWidth = mapObject.getWidth();
-        prevHeight = mapObject.getHeight();
-        prevProperties.putAll(mapObject.getProperties());
+        state = new State();
+        state.retreive(mapObject);
     }
 
     public void undo() throws CannotUndoException {
         super.undo();
 
         // Store the current state so we can redo changes
-        newName = mapObject.getName();
-        newType = mapObject.getType();
-        newImageSource = mapObject.getImageSource();
-        newWidth = mapObject.getWidth();
-        newHeight = mapObject.getHeight();
-        newProperties.clear();
-        newProperties.putAll(mapObject.getProperties());
-
-        mapObject.setName(prevName);
-        mapObject.setType(prevType);
-        mapObject.setImageSource(prevImageSource);
-        mapObject.setWidth(prevWidth);
-        mapObject.setHeight(prevHeight);
-        mapObject.getProperties().clear();
-        mapObject.getProperties().putAll(prevProperties);
+        swap();
     }
 
     public void redo() throws CannotRedoException {
         super.redo();
 
-        mapObject.setName(newName);
-        mapObject.setType(newType);
-        mapObject.setImageSource(newImageSource);
-        mapObject.setWidth(newWidth);
-        mapObject.setHeight(newHeight);
-        mapObject.getProperties().clear();
-        mapObject.getProperties().putAll(newProperties);
+        swap();
     }
 
+    private void swap() {
+        State s = new State();
+        s.retreive(mapObject);
+        state.apply(mapObject);
+        state = s;
+    }
+    
     public String getPresentationName() {
         return Resources.getString("action.object.change.name");
     }

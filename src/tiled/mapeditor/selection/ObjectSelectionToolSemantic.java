@@ -13,10 +13,12 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
+import javax.swing.undo.UndoableEdit;
 import tiled.core.MapLayer;
 import tiled.core.MapObject;
 import tiled.core.ObjectGroup;
 import tiled.mapeditor.MapEditor;
+import tiled.mapeditor.undo.ChangeObjectEdit;
 import tiled.view.MapView;
 
 /**
@@ -24,6 +26,7 @@ import tiled.view.MapView;
  * @author upachler
  */
 public class ObjectSelectionToolSemantic extends ToolSemantic{
+    private UndoableEdit undoableEdit = null;;
 
     private enum Mode {
         IDLE,
@@ -236,6 +239,7 @@ public class ObjectSelectionToolSemantic extends ToolSemantic{
             return;
         mode = Mode.MOVE_OBJECT;
         this.object = o;
+        undoableEdit = new ChangeObjectEdit(object);
         MapView mapView = getEditor().getMapView();
         selectedLayer = getEditor().getCurrentLayer();
         selectionStart = mapView.screenToPixelCoords(selectedLayer, x, y);
@@ -262,6 +266,8 @@ public class ObjectSelectionToolSemantic extends ToolSemantic{
     private void finishMoveObject(int x, int y){
         if(mode != Mode.MOVE_OBJECT)
             return;
+        getEditor().getUndoSupport().postEdit(undoableEdit);
+        undoableEdit = null;
         mode = Mode.IDLE;
     }
     
@@ -271,6 +277,7 @@ public class ObjectSelectionToolSemantic extends ToolSemantic{
             return;
         mode = Mode.RESIZE_OBJECT;
         this.object = o;
+        undoableEdit = new ChangeObjectEdit(object);
         MapView mapView = getEditor().getMapView();
         selectedLayer = getEditor().getCurrentLayer();
         selectionStart = mapView.screenToPixelCoords(selectedLayer, x, y);
@@ -284,6 +291,7 @@ public class ObjectSelectionToolSemantic extends ToolSemantic{
         if(mode != Mode.RESIZE_OBJECT)
             return;
         mode = Mode.IDLE;
+        getEditor().getUndoSupport().postEdit(undoableEdit);
     }
     
     private void updateResizeObject(int x, int y) {
