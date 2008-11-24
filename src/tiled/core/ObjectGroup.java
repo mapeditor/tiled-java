@@ -197,6 +197,22 @@ public class ObjectGroup extends MapLayer
         return result.toArray(new MapObject[result.size()]);
     }
     
+    /**
+     * Finds objects that are contained in the given rectangle 
+     * @param rect  Rectangle given in layer pixel coordinates that marks the
+     * area that is searched for objects
+     * @return an array of MapObjects that are fully contained within the given
+     * rectangle.
+     */
+    public MapObject[] findObjects(Rectangle rect){
+        Vector<MapObject> result = new Vector<MapObject>();
+        for(MapObject o : objects){
+            if(rect.contains(o.getBounds()))
+                result.add(o);
+        }
+        return result.toArray(new MapObject[result.size()]);
+    }
+    
     // This method will work at any zoom level, provided you provide the correct zoom factor. It also adds a one pixel buffer (that doesn't change with zoom).
     public MapObject getObjectNear(int x, int y, double zoom) {
         Rectangle2D mouse = new Rectangle2D.Double(x - zoom - 1, y - zoom - 1, 2 * zoom + 1, 2 * zoom + 1);

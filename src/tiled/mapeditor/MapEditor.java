@@ -46,6 +46,7 @@ import tiled.mapeditor.dialogs.*;
 import tiled.mapeditor.plugin.PluginClassLoader;
 import tiled.mapeditor.selection.ObjectSelectionToolSemantic;
 import tiled.mapeditor.selection.SelectionLayer;
+import tiled.mapeditor.selection.SelectionSet;
 import tiled.mapeditor.selection.ToolSemantic;
 import tiled.mapeditor.undo.*;
 import tiled.mapeditor.util.*;
@@ -193,6 +194,7 @@ public class MapEditor implements ActionListener, MouseListener,
     private ToolSemantic currentToolSemantic;
     
     private ObjectSelectionToolSemantic objectSelectionToolSemantic;
+    private SelectionSet selectionSet = new SelectionSet();
     
     public MapEditor(){
         /*
@@ -334,6 +336,10 @@ public class MapEditor implements ActionListener, MouseListener,
                 }
             }
         });
+    }
+
+    public SelectionSet getSelectionSet() {
+        return selectionSet;
     }
 
     private JPanel createContentPane() {
@@ -2328,6 +2334,7 @@ public class MapEditor implements ActionListener, MouseListener,
             mapView.addMouseMotionListener(this);
             mapView.addMouseWheelListener(this);
             mapView.addComponentListener(this);
+            mapView.setSelectionSet(getSelectionSet());
             mapView.setGridOpacity(display.getInt("gridOpacity", 255));
             mapView.setAntialiasGrid(display.getBoolean("gridAntialias", true));
             mapView.setGridColor(new Color(display.getInt("gridColor",

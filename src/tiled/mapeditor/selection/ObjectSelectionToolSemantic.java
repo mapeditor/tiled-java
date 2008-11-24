@@ -223,10 +223,23 @@ public class ObjectSelectionToolSemantic extends ToolSemantic{
         mapView.setSelectionRubberband(selectedLayer, selectionRubberband);
     }
     
-    private void finishSelection(int x, int y){
+    private void finishSelection(int x, int y, boolean mergeSelection){
         if(mode != Mode.SELECT)
             return;
         
+        ObjectGroup og = (ObjectGroup)selectedLayer;
+        MapObject[] objects = og.findObjects(selectionRubberband);
+        if(objects.length>0){
+            Selection[] selection = new Selection[objects.length];
+            for(int i=0; i<objects.length; ++i)
+                selection[i] = new ObjectSelection(og, objects[i]);
+            SelectionSet ss = getEditor().getSelectionSet();
+            if(mergeSelection)
+                ss.addSelection(selection);
+            else
+                ss.setSelection(selection);
+        }
+            
         mode = Mode.IDLE;
         selectionRubberband = null;
         selectionStart = null;
@@ -367,6 +380,34 @@ public class ObjectSelectionToolSemantic extends ToolSemantic{
     
     private MouseListener mouseListener = new MouseAdapter() {
 
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            int x = e.getX();
+            int y = e.getY();
+            MapObject o = findObject(x, y);
+            ObjectGroup og;
+            try{
+                og = (ObjectGroup)getEditor().getCurrentLayer();
+            }catch(ClassCastException ccx){
+                return; // should never happen though, as ObjectSelectionToolSemantic should only ever be active when an ObjectGroup is the current layer...
+            }
+            SelectionSet ss = getEditor().getSelectionSet();
+            final int allMask = MouseEvent.SHIFT_DOWN_MASK;
+            final int addSelectionMask = MouseEvent.SHIFT_DOWN_MASK;
+            final int selectionClickMask = 0;
+            final int modifiers = e.getModifiersEx() & allMask;
+            if(o == null){  // o==null if mouse click did not hit a MapObject
+                if(modifiers == selectionClickMask)
+                    ss.clearSelection();
+            } else {
+                ObjectSelection newSelection = new ObjectSelection(og, o);
+                if(modifiers == addSelectionMask)
+                    ss.addSelection(newSelection);
+                else
+                    ss.setSelection(newSelection);
+            }
+        }
+
         public void mousePressed(MouseEvent e) {
             int x = e.getX();
             int y = e.getY();
@@ -388,9 +429,10 @@ public class ObjectSelectionToolSemantic extends ToolSemantic{
             int x = e.getX();
             int y = e.getY();
             switch(mode){
-                case SELECT:
-                    finishSelection(x, y);
-                    break;
+                case SELECT:{
+                    boolean mergeSelection = (e.getModifiersEx() & MouseEvent.SHIFT_DOWN_MASK) != 0;
+                    finishSelection(x, y, mergeSelection);
+                }   break;
                 case MOVE_OBJECT:
                     finishMoveObject(x, y);
                     break;

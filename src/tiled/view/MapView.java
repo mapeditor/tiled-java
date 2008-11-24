@@ -20,7 +20,11 @@ import javax.swing.Scrollable;
 import tiled.core.*;
 import tiled.mapeditor.Resources;
 import tiled.mapeditor.brush.Brush;
+import tiled.mapeditor.selection.ObjectSelection;
+import tiled.mapeditor.selection.Selection;
 import tiled.mapeditor.selection.SelectionLayer;
+import tiled.mapeditor.selection.SelectionSet;
+import tiled.mapeditor.selection.SelectionSetListener;
 
 /**
  * The base class for map views. This is meant to be extended for different
@@ -75,6 +79,7 @@ public abstract class MapView extends JPanel implements Scrollable
     protected static Image propertyFlagImage;
     private Rectangle selectionRubberBandRectangle;
     private MapLayer selectionRubberBandLayer;
+    private SelectionSet selectionSet;
 
     /**
      * Creates a new <code>MapView</code> that displays the specified map.
@@ -100,6 +105,47 @@ public abstract class MapView extends JPanel implements Scrollable
             }
         });
         setOpaque(true);
+    }
+
+    public void setSelectionSet(SelectionSet selectionSet) {
+        this.selectionSet = selectionSet;
+        SelectionSetListener l = new SelectionSetListener(){
+
+            public void selectionAdded(SelectionSet selectionSet, Selection[] selections) {
+                repaint();
+            }
+
+            public void selectionRemoved(SelectionSet selectionSet, Selection[] selections) {
+                repaint();
+            }
+            
+        };
+        selectionSet.addSelectionListener(l);
+    }
+    
+    /**
+     * takes a Graphics2D context and a rectangle in screen coordinates,
+     * and renders a rectangle on screen in a selection-rectangle style.
+     * Used for selection rubber band and selected objects
+     * @param g2d
+     * @param r
+     */
+    private void paintSelectionRectangle(Graphics2D g2d, Rectangle r) {
+        // draw selection rectangle
+        Stroke previousStroke = g2d.getStroke();
+        Color previousColor = g2d.getColor();
+
+        g2d.setComposite(AlphaComposite.SrcOver);
+
+        g2d.setStroke(new BasicStroke(3));
+        g2d.setColor(Color.WHITE);
+        g2d.draw(r);
+        g2d.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, new float[]{0.0f, 3.0f, 6.0f}, 0.0f));
+        g2d.setColor(Color.BLACK);
+        g2d.draw(r);
+
+        g2d.setColor(previousColor);
+        g2d.setStroke(previousStroke);
     }
     
     private Rectangle pixelToScreenCoords(MapLayer layer, Rectangle rect){
@@ -483,6 +529,17 @@ public abstract class MapView extends JPanel implements Scrollable
         //    }
         //}
         
+        // render selected objects
+        for(Selection s : selectionSet){
+            if(ObjectSelection.class.isAssignableFrom(s.getClass())){
+                ObjectSelection os = (ObjectSelection)s;
+                MapObject o = os.getObject();
+                MapLayer l = os.getLayer();
+                Rectangle r = pixelToScreenCoords(l, o.getBounds());
+                paintSelectionRectangle(g2d, r);
+            }
+        }
+        
         // if there's a selection, draw it
         if(selectionRubberBandRectangle != null){
             // calculate rectangle to draw
@@ -490,22 +547,7 @@ public abstract class MapView extends JPanel implements Scrollable
             Point p0 = pixelToScreenCoords(selectionRubberBandLayer, r.x, r.y);
             Point p1 = pixelToScreenCoords(selectionRubberBandLayer, r.x+r.width, r.y+r.height);
             r = new Rectangle(p0.x, p0.y, p1.x-p0.x, p1.y-p0.y);
-            
-            // draw selection rectangle
-            Stroke previousStroke = g2d.getStroke();
-            Color previousColor = g2d.getColor();
-            
-            g2d.setComposite(AlphaComposite.SrcOver);
-            
-            g2d.setStroke(new BasicStroke(3));
-            g2d.setColor(Color.WHITE);
-            g2d.draw(r);
-            g2d.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10, new float[]{0.0f, 3.0f, 6.0f}, 0.0f));
-            g2d.setColor(Color.BLACK);
-            g2d.draw(r);
-            
-            g2d.setColor(previousColor);
-            g2d.setStroke(previousStroke);
+            paintSelectionRectangle(g2d, r);
         }
         
         // for parallax mode, draw the viewport rectangle around the
