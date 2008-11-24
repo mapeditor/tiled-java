@@ -33,6 +33,7 @@ public class ParallaxEditorPanel extends javax.swing.JPanel {
     private Map currentMap;
     private MapChangeListener mapChangeListener = new MapChangeAdapter() {
 
+        @Override
         public void layerAdded(MapChangedEvent e) {
             int layerIndex = e.getLayerIndex();
             MapLayer layer = currentMap.getLayer(layerIndex);
@@ -41,16 +42,19 @@ public class ParallaxEditorPanel extends javax.swing.JPanel {
             layerEditPanel.add(p, layerIndex);
         }
 
+        @Override
         public void layerRemoved(MapChangedEvent e) {
             layerEditPanel.remove(e.getLayerIndex());
         }
         
+        @Override
         public void layerMoved(MapChangedEvent e){
             LayerParallaxDistancePanel p = (LayerParallaxDistancePanel)layerEditPanel.getComponent(e.getOldLayerIndex());
             layerEditPanel.remove(e.getOldLayerIndex());
             layerEditPanel.add(p, e.getLayerIndex());
         }
         
+        @Override
         public void layerChanged(MapChangedEvent e, MapLayerChangeEvent mlce) {
             switch(mlce.getChangeType()){
                 case MapLayerChangeEvent.CHANGETYPE_NAME:{
