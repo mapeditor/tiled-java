@@ -9,6 +9,7 @@ package tiled.mapeditor.widget;
 import java.awt.Component;
 import javax.swing.DefaultComboBoxModel;
 import tiled.core.Map;
+import tiled.core.MapChangeAdapter;
 import tiled.core.MapChangeListener;
 import tiled.core.MapChangedEvent;
 import tiled.core.MapLayer;
@@ -30,7 +31,7 @@ public class ParallaxEditorPanel extends javax.swing.JPanel {
     
     private MapEditor editor;
     private Map currentMap;
-    private MapChangeListener mapChangeListener = new MapChangeListener() {
+    private MapChangeListener mapChangeListener = new MapChangeAdapter() {
 
         public void layerAdded(MapChangedEvent e) {
             int layerIndex = e.getLayerIndex();
@@ -50,12 +51,6 @@ public class ParallaxEditorPanel extends javax.swing.JPanel {
             layerEditPanel.add(p, e.getLayerIndex());
         }
         
-        // empty methods
-        public void mapChanged(MapChangedEvent e) {}
-        public void tilesetAdded(MapChangedEvent e, TileSet tileset) {}
-        public void tilesetRemoved(MapChangedEvent e, int index) {}
-        public void tilesetsSwapped(MapChangedEvent e, int index0, int index1) {}
-
         public void layerChanged(MapChangedEvent e, MapLayerChangeEvent mlce) {
             switch(mlce.getChangeType()){
                 case MapLayerChangeEvent.CHANGETYPE_NAME:{
