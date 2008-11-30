@@ -5,8 +5,8 @@
 * Fixed unable to select small map objects
 * Fixed references to external tilesets that are not in the same directory
 * Fixed some files missing from tiled-core.jar
-* Updated The Mana World plugin to detect collision layer correctly
-* Updated minimum Java version to now 1.5
+* Updated The Mana World plugin to detect the collision layer correctly
+* Updated minimum Java version to 1.5
 
 0.7.1 - September 2nd, 2008
 
