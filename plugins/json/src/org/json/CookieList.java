@@ -51,7 +51,7 @@ public class CookieList {
      */
     public static String toString(JSONObject o) {
         boolean      b = false;
-        Iterator     keys = o.keys();
+        Iterator<String>     keys = o.keys();
         String       s;
         StringBuffer sb = new StringBuffer();
         while (keys.hasNext()) {
