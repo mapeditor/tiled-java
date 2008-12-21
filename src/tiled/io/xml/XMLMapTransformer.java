@@ -153,7 +153,7 @@ public class XMLMapTransformer implements MapReader
             e1.printStackTrace();
             return null;
         }
-        Object o = cons.newInstance(null);
+        Object o = cons.newInstance((Object)null);
         Node n;
 
         Method[] methods = reflector.getMethods();
@@ -759,7 +759,7 @@ public class XMLMapTransformer implements MapReader
             builder.setEntityResolver(entityResolver);
             InputSource insrc = new InputSource(in);
             insrc.setSystemId(xmlPath);
-            insrc.setEncoding("UTF8");
+            insrc.setEncoding("UTF-8");
             doc = builder.parse(insrc);
         } catch (SAXException e) {
             e.printStackTrace();
