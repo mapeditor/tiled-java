@@ -46,7 +46,7 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
     private JTextField tilebmpFile;
     private JLabel spacingLabel;
     private JLabel marginLabel;
-    private JLabel tilebmpFileLabel, cutterLabel;
+    private JLabel tilebmpFileLabel, cutterLabel, tileHeightLabel;
     private JCheckBox tilebmpCheck;
     private JCheckBox transCheck;
     private JComboBox cutterBox;
@@ -99,7 +99,7 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
 
         JLabel nameLabel = new JLabel(NAME_LABEL);
         JLabel tileWidthLabel = new JLabel(TILE_WIDTH_LABEL);
-        JLabel tileHeightLabel = new JLabel(TILE_HEIGHT_LABEL);
+        tileHeightLabel = new JLabel(TILE_HEIGHT_LABEL);
         spacingLabel = new JLabel(TILE_SPACING_LABEL);
         marginLabel = new JLabel(TILE_MARGIN_LABEL);
         tilebmpFileLabel = new JLabel(IMAGE_LABEL);
@@ -122,6 +122,8 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
 
         tileWidthLabel.setEnabled(false);
         tileWidth.setEnabled(false);
+        tileHeight.setEnabled(false);
+        tileWidthLabel.setEnabled(false);
 
         cutterBox = new JComboBox(new String[] {"Basic", "Border"});
         cutterBox.setEditable(false);
@@ -175,6 +177,8 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
         tilebmpPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder(FROM_TILESET_IMG_TITLE),
                 BorderFactory.createEmptyBorder(0, 5, 5, 5)));
+
+    	
         c.gridx = 0;
         c.gridy = 0;
         c.weightx = 0;
@@ -184,36 +188,46 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
         c.gridwidth = 4;
         tilebmpPanel.add(tilebmpCheck, c);
         c.gridy = 1;
+        tilebmpPanel.add(tileWidthLabel, c);
+        c.gridy = 2;
+        tilebmpPanel.add(tileHeightLabel, c);
+        c.gridx = 1;
+        c.gridy = 1;
+        tilebmpPanel.add(tileWidth, c);
+        c.gridy = 2;
+        tilebmpPanel.add(tileHeight, c);
+        c.gridx = 0;        
+        c.gridy = 3;
         c.gridwidth = 1;
         c.insets = new Insets(5, 0, 0, 5);
         c.fill = GridBagConstraints.NONE;
         tilebmpPanel.add(tilebmpFileLabel, c);
-        c.gridy = 2;
+        c.gridy = 4;
         tilebmpPanel.add(spacingLabel, c);
         /*
         c.gridy = 4;
         tilebmpPanel.add(cutterLabel, c);
         */
         c.gridx = 1;
-        c.gridy = 1;
+        c.gridy = 3;
         c.weightx = 1;
         c.insets = new Insets(5, 0, 0, 0);
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridwidth = 3;
         tilebmpPanel.add(tilebmpPathPanel, c);
         c.gridwidth = 1;
-        c.gridy = 2;
+        c.gridy = 4;
         tilebmpPanel.add(tileSpacing, c);
         /*
         c.gridy = 4;
         tilebmpPanel.add(cutterBox, c);
         */
         c.gridx = 0;
-        c.gridy = 4;
+        c.gridy = 5;
         c.gridwidth = 4;
         tilebmpPanel.add(tileColorPanel, c);
         c.gridx = 2;
-        c.gridy = 2;
+        c.gridy = 4;
         c.gridwidth = 1;
         c.weightx = 0;
         c.insets = new Insets(5, 5, 0, 0);
@@ -246,10 +260,6 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
         c.fill = GridBagConstraints.NONE;
         c.insets = new Insets(5, 0, 0, 5);
         miscPropPanel.add(nameLabel, c);
-        c.gridy = 1;
-        miscPropPanel.add(tileWidthLabel, c);
-        c.gridy = 2;
-        miscPropPanel.add(tileHeightLabel, c);
         c.insets = new Insets(5, 0, 0, 0);
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 1;
@@ -257,10 +267,6 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
         c.weightx = 1;
         miscPropPanel.add(tilesetName, c);
         c.gridy = 1;
-        miscPropPanel.add(tileWidth, c);
-        c.gridy = 2;
-        miscPropPanel.add(tileHeight, c);
-        c.gridy = 3;
         miscPropPanel.add(propsButton, c);
 
         // Main panel
@@ -407,6 +413,9 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
         browseButton.setEnabled(value);
         tileSpacing.setEnabled(value);
         tileMargin.setEnabled(value);
+        tileHeight.setEnabled(value);
+        tileHeightLabel.setEnabled(value);
+        
         spacingLabel.setEnabled(value);
         marginLabel.setEnabled(value);
         transCheck.setEnabled(value);
