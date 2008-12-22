@@ -148,7 +148,7 @@ public class MapEditor implements ActionListener, MouseListener,
     //private JButton tileInstancePropertiesButton;
 
     /** Available brushes */
-    private Vector brushes = new Vector();
+    private Vector<Brush> brushes = new Vector<Brush>();
     private Brush eraserBrush;
 
     // Actions
@@ -1444,6 +1444,8 @@ public class MapEditor implements ActionListener, MouseListener,
                     MapLayer layer = layers.next();
                     layer.setOffset(brushRedraw.x, brushRedraw.y);
                 }
+                redraw.width = currentBrush.getBounds().width;
+                redraw.height = currentBrush.getBounds().height;
             }
             mapView.repaintRegion(cursorHighlight,redraw);
             cursorHighlight.setOffset(brushRedraw.x, brushRedraw.y);
@@ -2028,7 +2030,7 @@ public class MapEditor implements ActionListener, MouseListener,
                 MapLayer cl = getCurrentLayer();
                 clipboardLayer = new TileLayer(
                         marqueeSelection.getSelectedAreaBounds(), cl.getTileWidth(), cl.getTileHeight());
-                ListIterator itr = currentMap.getLayers();
+                ListIterator<MapLayer> itr = currentMap.getLayers();
                 while(itr.hasNext()) {
                     MapLayer layer = (MapLayer) itr.next();
                     if (layer instanceof TileLayer) {
@@ -2509,7 +2511,7 @@ public class MapEditor implements ActionListener, MouseListener,
             return;
         
         // if we're not processing event, pass it in to mapView's scroll pane
-        if((e.getModifiersEx() & e.CTRL_DOWN_MASK) == 0){
+        if((e.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) == 0){
              for(MouseWheelListener l : mapScrollPane.getMouseWheelListeners())
                 l.mouseWheelMoved(e);
              return;
