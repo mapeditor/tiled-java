@@ -17,6 +17,7 @@ import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.Vector;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -63,6 +64,7 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
     /* LANGUAGE PACK */
     private static final String DIALOG_TITLE = Resources.getString("dialog.newtileset.title");
     private static final String NAME_LABEL = Resources.getString("dialog.newtileset.name.label");
+    private static final String TILESET_NAME_ERR = Resources.getString("dialog.newtileset.name.error");
     private static final String TILE_WIDTH_LABEL = Resources.getString("dialog.newtileset.tilewidth.label");
     private static final String TILE_HEIGHT_LABEL = Resources.getString("dialog.newtileset.tileheight.label");
     private static final String TILE_SPACING_LABEL = Resources.getString("dialog.newtileset.tilespacing.label");
@@ -81,6 +83,7 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
     private static final String COLOR_CHOOSE_ERROR_TITLE = Resources.getString("dialog.newtileset.colorchoose.error.title");
     private static final String PROPERTIES_TITLE = Resources.getString("dialog.properties.default.title");
     private static final String PROPERTIES_BUTTON = Resources.getString("dialog.newtileset.button.properties");
+
     /* -- */
 
     public NewTilesetDialog(JFrame parent, MapLayer layer, UndoableEditSupport undoSupport) {
@@ -350,6 +353,18 @@ public class NewTilesetDialog extends JDialog implements ChangeListener
     }
 
     private void createSetAndDispose() {
+       Vector<TileSet> tilesets =  layer.getMap().getTilesets();
+       for(TileSet tileset : tilesets)
+       {
+            if(tileset.getName().compareTo(tilesetName.getText()) == 0)
+            {
+                newTileset = null;
+                JOptionPane.showMessageDialog(this, TILESET_NAME_ERR,
+                       IMPORT_ERROR_MSG, JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+        }
+    	
         newTileset = new TileSet();
         newTileset.setName(tilesetName.getText());
         newTileset.setDefaultProperties(defaultSetProperties);
