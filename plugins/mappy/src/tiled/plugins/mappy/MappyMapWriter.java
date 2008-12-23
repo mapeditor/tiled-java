@@ -27,10 +27,10 @@ import tiled.core.TileSet;
  */
 public class MappyMapWriter implements MapWriter
 {
-    private final LinkedList chunks;
+    private final LinkedList<Chunk> chunks;
 
     public MappyMapWriter() {
-        chunks = new LinkedList();
+        chunks = new LinkedList<Chunk>();
     }
 
     /**
@@ -131,10 +131,11 @@ public class MappyMapWriter implements MapWriter
         chunks.add(chunk);
     }
 
+    @SuppressWarnings("unused")
     private void createBKDTChunk(Map map) {
         Chunk chunk = new Chunk("BKDT");
-        LinkedList blocks = findAllBlocks(map);
-        Iterator itr = blocks.iterator();
+        LinkedList<Object> blocks = findAllBlocks(map);
+        Iterator<Object> itr = blocks.iterator();
         while(itr.hasNext()) {
             MappyMapReader.BlkStr b = (BlkStr) itr.next();
             // TODO: write the block
@@ -142,7 +143,7 @@ public class MappyMapWriter implements MapWriter
         chunks.add(chunk);
     }
 
-    private LinkedList findAllBlocks(Map map) {
+    private LinkedList<Object> findAllBlocks(Map map) {
         // TODO: this
         return null;
     }

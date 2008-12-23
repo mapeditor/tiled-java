@@ -32,6 +32,7 @@ import tiled.core.*;
  */
 public class TMWServerMapWriter implements MapWriter
 {
+    @SuppressWarnings("unused")
     private static final int FIRST_BYTE = 0x000000FF;
 
     private PluginLogger logger;

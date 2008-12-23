@@ -146,7 +146,7 @@ public class LuaMapWriter implements MapWriter
     {
         if (!props.isEmpty()) {
             startTable( "properties" );
-            for (Enumeration keys = props.keys(); keys.hasMoreElements();) {
+            for (Enumeration<Object> keys = props.keys(); keys.hasMoreElements();) {
                 String key = (String)keys.nextElement();
                 writelnKeyAndValue( key, props.getProperty(key));
             }
@@ -272,7 +272,7 @@ public class LuaMapWriter implements MapWriter
             endTable();
 
             // Write tile properties when necessary.
-            Iterator tileIterator = set.iterator();
+            Iterator<Object> tileIterator = set.iterator();
 
             while (tileIterator.hasNext()) {
                 Tile tile = (Tile) tileIterator.next();

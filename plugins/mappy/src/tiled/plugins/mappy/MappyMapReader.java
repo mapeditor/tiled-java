@@ -27,8 +27,8 @@ import tiled.core.*;
  */
 public class MappyMapReader implements MapReader
 {
-    private LinkedList chunks;
-    private Vector blocks;
+    private LinkedList<Chunk> chunks;
+    private Vector<BlkStr> blocks;
     private static final int BLKSTR_WIDTH = 32;
     private int twidth, theight;
 
@@ -56,11 +56,12 @@ public class MappyMapReader implements MapReader
 
     public Map readMap(InputStream in) throws Exception {
         Map ret = null;
-        chunks = new LinkedList();
-        blocks = new Vector();
+        chunks = new LinkedList<Chunk>();
+        blocks = new Vector<BlkStr>();
         byte[] hdr = new byte[4];
 
         in.read(hdr);
+        @SuppressWarnings("unused")
         long size = Util.readLongReverse(in);
         in.read(hdr);
 
@@ -152,7 +153,7 @@ public class MappyMapReader implements MapReader
 
 
     private Chunk findChunk(String header) {
-        Iterator itr = chunks.iterator();
+        Iterator<Chunk> itr = chunks.iterator();
 
         while (itr.hasNext()) {
             Chunk c = (Chunk)itr.next();
@@ -227,6 +228,7 @@ public class MappyMapReader implements MapReader
         return ret;
     }
 
+    @SuppressWarnings("unused")
     private void readATHRChunk(Map m, InputStream in) {
 
     }
@@ -282,6 +284,7 @@ public class MappyMapReader implements MapReader
         Util.readRawImage(in, twidth, theight);   // skip the null-tile
         for (int i = 1; i < num; i++) {
             Tile t = new Tile();
+            @SuppressWarnings("unused")
             int image_id
               = set.addImage(Util.readRawImage(in, twidth, theight));
             //t.setAppearance(image_id, 0);
