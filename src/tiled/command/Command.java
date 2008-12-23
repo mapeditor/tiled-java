@@ -76,7 +76,7 @@ abstract class Command implements Cloneable {
         if (setter == null) {
             return false;
         }
-        Class ptype = setter.getParameterTypes()[0];
+        Class<?> ptype = setter.getParameterTypes()[0];
         Object p = null;
         if (ptype.equals(int.class)) {
             p = Integer.parseInt(value);
@@ -114,7 +114,7 @@ abstract class Command implements Cloneable {
             return null;
         }
         try {
-            return defaultValueGetter.invoke(this, null);
+            return defaultValueGetter.invoke(this, (Object)null);
         } catch (IllegalAccessException ex) {
             return null;
         } catch (IllegalArgumentException ex) {
@@ -138,9 +138,9 @@ abstract class Command implements Cloneable {
             if (m.getName().startsWith("set") && m.getParameterTypes().length == 1) {
                 String attributeName = m.getName().substring("set".length());
                 try {
-                    Method defaultGetter = getClass().getMethod("get" + attributeName + "Default", null);
+                    Method defaultGetter = getClass().getMethod("get" + attributeName + "Default", (Class<?>)null);
                     try {
-                        if (defaultGetter.invoke(this, null) == null) {
+                        if (defaultGetter.invoke(this, (Object)null) == null) {
                             return false;
                         }
                     } catch (IllegalAccessException ex) {

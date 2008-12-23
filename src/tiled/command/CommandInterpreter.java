@@ -5,16 +5,11 @@
 
 package tiled.command;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import tiled.io.xml.XMLMapTransformer;
-import tiled.io.xml.XMLMapWriter;
-import tiled.util.OverriddenPreferences;
 
 /**
  *
