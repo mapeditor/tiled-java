@@ -15,7 +15,6 @@ package tiled.mapeditor.actions;
 import javax.swing.JOptionPane;
 
 import tiled.core.Map;
-import tiled.core.MapLayer;
 import tiled.core.TileLayer;
 import tiled.mapeditor.MapEditor;
 import tiled.mapeditor.Resources;

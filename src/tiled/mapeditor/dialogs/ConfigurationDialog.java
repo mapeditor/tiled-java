@@ -21,7 +21,6 @@ import java.util.prefs.Preferences;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileInputStream;
-import java.util.Vector;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;

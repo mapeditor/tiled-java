@@ -16,6 +16,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.util.Iterator;
 
+import tiled.core.Sprite.KeyFrame;
 import tiled.util.TiledConfiguration;
 
 /**
@@ -74,10 +75,10 @@ public class AnimatedTile extends Tile {
      */
     public Image getScaledImage(double zoom) {
         try {
-            Iterator itr = sprite.getKeys();
+            Iterator<KeyFrame> itr = sprite.getKeys();
 
             while (itr.hasNext()) {
-                Sprite.KeyFrame key = (Sprite.KeyFrame) itr.next();
+                KeyFrame key = itr.next();
                 for (int i = 0;i < key.getTotalFrames(); i++) {
                     key.getFrame(i).getScaledImage(zoom);
                 }

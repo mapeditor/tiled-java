@@ -17,6 +17,7 @@ import java.awt.Rectangle;
 import java.awt.Shape;
 import java.util.ListIterator;
 
+import tiled.core.MapLayer;
 import tiled.core.MultilayerPlane;
 import tiled.core.TileLayer;
 import tiled.view.MapView;
@@ -77,7 +78,7 @@ public class CustomBrush extends AbstractBrush
 
         super.doPaint(x, y);
 
-        ListIterator itr = getLayers();
+        ListIterator<MapLayer> itr = getLayers();
         while (itr.hasNext()) {
             TileLayer tl = (TileLayer)itr.next();
             TileLayer tm = (TileLayer)affectedMp.getLayer(layer++);

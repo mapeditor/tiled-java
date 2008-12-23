@@ -252,7 +252,7 @@ public class MultilayerPlane implements Iterable<MapLayer>
      * @param dy     The shift in y direction in tiles.
      */
     public void resize(int width, int height, int dx, int dy) {
-        ListIterator itr = getLayers();
+        ListIterator<MapLayer> itr = getLayers();
         while (itr.hasNext()) {
             MapLayer layer = (MapLayer)itr.next();
             if (layer.bounds.equals(bounds)) {

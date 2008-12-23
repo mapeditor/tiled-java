@@ -26,13 +26,13 @@ import java.util.Vector;
  */
 public class NumberedSet
 {
-    private Vector data;
+    private Vector<Object> data;
 
     /**
      * Constructs a new empty NumberedSet.
      */
     public NumberedSet() {
-        data = new Vector();
+        data = new Vector<Object>();
     }
 
     /**
@@ -117,7 +117,7 @@ public class NumberedSet
      *
      * @return NumberedSetIterator
      */
-    public Iterator iterator() {
+    public Iterator<Object> iterator() {
         return data.iterator();
     }
 

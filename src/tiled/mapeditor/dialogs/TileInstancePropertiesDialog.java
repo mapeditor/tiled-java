@@ -170,7 +170,7 @@ public class TileInstancePropertiesDialog extends JDialog
                         p = tl.getTileInstancePropertiesAt(point.x, point.y);
 
                         if (p != null) {
-                            for (Enumeration e = mergedProperties.keys(); e.hasMoreElements();) {
+                            for (Enumeration<Object> e = mergedProperties.keys(); e.hasMoreElements();) {
                                 // We only care for properties that are already "known"...
                                 String key = (String) e.nextElement();
                                 String val = mergedProperties.getProperty(key);
@@ -240,7 +240,7 @@ public class TileInstancePropertiesDialog extends JDialog
         for (Point point : propertiesCoordinates) {
             Properties tp = getPropertiesAt(point);
             if (tp != null) {
-                for (Enumeration e = mergedProperties.keys();
+                for (Enumeration<Object> e = mergedProperties.keys();
                      e.hasMoreElements();) {
 
                     String key = (String) e.nextElement();
@@ -263,7 +263,7 @@ public class TileInstancePropertiesDialog extends JDialog
                 setPropertiesAt(point, tp);
             }
 
-            for (Enumeration e = properties.keys(); e.hasMoreElements();) {
+            for (Enumeration<Object> e = properties.keys(); e.hasMoreElements();) {
                 String key = (String) e.nextElement();
                 String val = properties.getProperty(key);
                 if (!"?".equals(val)) {

@@ -36,19 +36,18 @@ import tiled.util.TiledConfiguration;
  */
 public final class PluginClassLoader extends URLClassLoader
 {
-    private final Vector plugins;
-    private final Vector readers, writers;
+    private final Vector<PluggableMapIO> readers, writers;
     private final Hashtable<String, String> readerFormats;
     private final Hashtable<String, String> writerFormats;
     private static PluginClassLoader instance;
 
     private PluginClassLoader() {
         super(new URL[0]);
-        plugins = new Vector();
-        readers = new Vector();
-        writers = new Vector();
-        readerFormats = new Hashtable();
-        writerFormats = new Hashtable();
+        new Vector<Object>();
+        readers = new Vector<PluggableMapIO>();
+        writers = new Vector<PluggableMapIO>();
+        readerFormats = new Hashtable<String, String>();
+        writerFormats = new Hashtable<String, String>();
     }
 
     public static synchronized PluginClassLoader getInstance() {
@@ -117,8 +116,8 @@ public final class PluginClassLoader extends URLClassLoader
                     jf.getManifest().getMainAttributes().getValue(
                             "Writer-Class");
 
-                Class readerClass = null;
-                Class writerClass = null;
+                Class<Object> readerClass = null;
+                Class<Object> writerClass = null;
 
                 // Verify that the jar has the necessary files to be a
                 // plugin

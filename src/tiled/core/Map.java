@@ -40,8 +40,8 @@ public class Map extends MultilayerPlane implements MapLayerChangeListener
 
     private int tileWidth, tileHeight;
     private int orientation = MDO_ORTHO;
-    private final List<MapChangeListener> mapChangeListeners = new LinkedList();
-    private final List<MapParallaxChangeListener> mapParallaxChangeListeners = new LinkedList();
+    private final List<MapChangeListener> mapChangeListeners = new LinkedList<MapChangeListener>();
+    private final List<MapParallaxChangeListener> mapParallaxChangeListeners = new LinkedList<MapParallaxChangeListener>();
     private Properties properties;
     private String filename;
     private float eyeDistance = 100;
@@ -97,7 +97,7 @@ public class Map extends MultilayerPlane implements MapLayerChangeListener
         // clone mapChangeListeners first, because otherwise we'll get
         // concurrent modification exceptions if a listener calls something
         // that add or removes listeners
-        Iterable<MapChangeListener> mapChangeListenersClone = new Vector(mapChangeListeners);
+        Iterable<MapChangeListener> mapChangeListenersClone = new Vector<MapChangeListener>(mapChangeListeners);
 
         for(MapChangeListener l : mapChangeListenersClone) {
             if (event == null)
@@ -139,7 +139,7 @@ public class Map extends MultilayerPlane implements MapLayerChangeListener
      * @param index the index of the removed tileset
      */
     protected void fireTilesetRemoved(int index) {
-        Iterator iterator = mapChangeListeners.iterator();
+        Iterator<MapChangeListener> iterator = mapChangeListeners.iterator();
         MapChangedEvent event = null;
 
         while (iterator.hasNext()) {
@@ -155,7 +155,7 @@ public class Map extends MultilayerPlane implements MapLayerChangeListener
      * @param tileset the new tileset
      */
     protected void fireTilesetAdded(TileSet tileset) {
-        Iterator iterator = mapChangeListeners.iterator();
+        Iterator<MapChangeListener> iterator = mapChangeListeners.iterator();
         MapChangedEvent event = null;
 
         while (iterator.hasNext()) {
@@ -169,7 +169,7 @@ public class Map extends MultilayerPlane implements MapLayerChangeListener
      * tilesets.
      */
     protected void fireTilesetsSwapped(int index0, int index1) {
-        Iterator iterator = mapChangeListeners.iterator();
+        Iterator<MapChangeListener> iterator = mapChangeListeners.iterator();
         MapChangedEvent event = null;
 
         while (iterator.hasNext()) {
@@ -289,10 +289,10 @@ public class Map extends MultilayerPlane implements MapLayerChangeListener
             return;
 
         // Go through the map and remove any instances of the tiles in the set
-        Iterator tileIterator = tileset.iterator();
+        Iterator<Object> tileIterator = tileset.iterator();
         while (tileIterator.hasNext()) {
             Tile tile = (Tile)tileIterator.next();
-            Iterator layerIterator = getLayers();
+            Iterator<MapLayer> layerIterator = getLayers();
             while (layerIterator.hasNext()) {
                 MapLayer ml = (MapLayer) layerIterator.next();
                 if (ml instanceof TileLayer) {
@@ -446,7 +446,7 @@ public class Map extends MultilayerPlane implements MapLayerChangeListener
         return filename;
     }
 
-    public Iterator getLayersSpecial() {
+    public Iterator<MapLayer> getLayersSpecial() {
         return specialLayers.iterator();
     }
 

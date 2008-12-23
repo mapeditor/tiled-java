@@ -22,7 +22,7 @@ import java.util.Vector;
  */
 public class Sprite
 {
-    private Vector keys;
+    private Vector<KeyFrame> keys;
     private int borderWidth = 0;
     private int fpl = 0;
     private int totalKeys = -1;
@@ -126,7 +126,7 @@ public class Sprite
 
     public Sprite() {
         frameSize = new Rectangle();
-        keys = new Vector();
+        keys = new Vector<KeyFrame>();
     }
 
     public Sprite(Tile[] frames) {
@@ -218,7 +218,7 @@ public class Sprite
 
     public int getTotalFrames() {
         int total = 0;
-        Iterator itr = keys.iterator();
+        Iterator<KeyFrame> itr = keys.iterator();
         while (itr.hasNext()) {
             total += ((KeyFrame) itr.next()).getTotalFrames();
         }
@@ -235,7 +235,7 @@ public class Sprite
     }
 
     public KeyFrame getNextKey() {
-        Iterator itr = keys.iterator();
+        Iterator<KeyFrame> itr = keys.iterator();
         while (itr.hasNext()) {
             KeyFrame k = (KeyFrame) itr.next();
             if (k == currentKey) {
@@ -264,7 +264,7 @@ public class Sprite
     }
 
     public void setKeyFrameTo(String name) {
-        Iterator itr = keys.iterator();
+        Iterator<KeyFrame> itr = keys.iterator();
         while (itr.hasNext()) {
             KeyFrame k = (KeyFrame) itr.next();
             if (k.equalsIgnoreCase(name)) {
@@ -326,7 +326,7 @@ public class Sprite
     }
 
     public KeyFrame getKey(String keyName) {
-        Iterator itr = keys.iterator();
+        Iterator<KeyFrame> itr = keys.iterator();
         while (itr.hasNext()) {
             KeyFrame k = (KeyFrame) itr.next();
             if (k != null && k.equalsIgnoreCase(keyName)) {
@@ -340,7 +340,7 @@ public class Sprite
         return (KeyFrame) keys.get(i);
     }
 
-    public Iterator getKeys() throws Exception {
+    public Iterator<KeyFrame> getKeys() throws Exception {
         return keys.iterator();
     }
 

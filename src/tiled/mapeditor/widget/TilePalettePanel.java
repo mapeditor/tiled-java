@@ -43,7 +43,7 @@ public class TilePalettePanel extends JPanel implements Scrollable,
      * Constructs an empty tile palette panel.
      */
     public TilePalettePanel() {
-        tileSelectionListeners = new LinkedList();
+        tileSelectionListeners = new LinkedList<TileSelectionListener>();
 
         MouseInputAdapter mouseInputAdapter = new MouseInputAdapter() {
             private Point origin;

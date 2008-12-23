@@ -16,7 +16,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Iterator;
-import java.util.Vector;
 import javax.swing.*;
 
 import tiled.core.*;
@@ -140,7 +139,7 @@ public class SearchDialog extends JDialog implements ActionListener
         for (TileSet set : map.getTilesets()) {
             b.addItem(set);
 
-            final Iterator tileIterator = set.iterator();
+            final Iterator<Object> tileIterator = set.iterator();
             while (tileIterator.hasNext()) {
                 Tile tile = (Tile) tileIterator.next();
                 b.addItem(tile);

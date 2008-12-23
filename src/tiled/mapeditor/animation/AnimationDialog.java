@@ -20,6 +20,7 @@ import javax.swing.*;
 
 import tiled.core.Sprite;
 import tiled.core.MapObject;
+import tiled.core.Sprite.KeyFrame;
 import tiled.mapeditor.Resources;
 
 /**
@@ -183,7 +184,7 @@ public class AnimationDialog extends JDialog implements ActionListener
         if (currentSprite != null) {
             keyframe.removeAllItems();
             try {
-                Iterator itr = currentSprite.getKeys();
+                Iterator<KeyFrame> itr = currentSprite.getKeys();
                 while (itr.hasNext()) {
                     keyframe.addItem(((Sprite.KeyFrame) itr.next()).getName());
                 }

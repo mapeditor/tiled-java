@@ -5,7 +5,6 @@
 
 package tiled.mapeditor.selection;
 
-import java.awt.event.MouseMotionListener;
 import tiled.mapeditor.MapEditor;
 
 /**

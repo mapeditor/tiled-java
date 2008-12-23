@@ -13,6 +13,7 @@
 package tiled.io.xml;
 
 import java.lang.String;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.io.IOException;
 import java.util.Stack;
@@ -30,13 +31,13 @@ public class XMLWriter
     private String newLine = "\n";
     private final Writer w;
 
-    private final Stack openElements;
+    private final Stack<String> openElements;
     private boolean bStartTagOpen;
     private boolean bDocumentOpen;
 
 
     public XMLWriter(Writer writer) {
-        openElements = new Stack();
+        openElements = new Stack<String>();
         w = writer;
     }
 

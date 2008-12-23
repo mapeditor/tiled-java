@@ -117,7 +117,7 @@ public class TileImageDialog extends JDialog implements ListSelectionListener
     }
 
     public void queryImages() {
-        Vector listData = new Vector();
+        Vector<Image> listData = new Vector<Image>();
         int initialIndex = 0;
 
         Enumeration<String> ids = tileset.getImageIds();
