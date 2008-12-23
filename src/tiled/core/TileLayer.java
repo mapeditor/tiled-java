@@ -27,7 +27,7 @@ import java.util.Properties;
 public class TileLayer extends MapLayer
 {
     protected Tile[][] map;
-    protected HashMap tileInstanceProperties = new HashMap();
+    protected HashMap<Object, Properties> tileInstanceProperties = new HashMap<Object, Properties>();
     
     private int tileWidth;
     private int tileHeight;
@@ -299,11 +299,11 @@ public class TileLayer extends MapLayer
      * @param ti the tile object to place
      */
     public void setTileAt(int tx, int ty, Tile ti) {
-        if (bounds.contains(tx, ty) && canEdit()) {
+        if (bounds.contains(tx, ty) && !getLocked()) {
             map[ty - bounds.y][tx - bounds.x] = ti;
         }
     }
-
+    
     /**
      * Returns the tile at the specified position.
      *
@@ -478,7 +478,7 @@ public class TileLayer extends MapLayer
 
         // Clone the layer data
         clone.map = new Tile[map.length][];
-        clone.tileInstanceProperties = new HashMap();
+        clone.tileInstanceProperties = new HashMap<Object, Properties>();
 
         for (int i = 0; i < map.length; i++) {
             clone.map[i] = new Tile[map[i].length];
@@ -489,7 +489,7 @@ public class TileLayer extends MapLayer
 
                 if (p != null) {
                     Integer key = i + j * bounds.width;
-                    clone.tileInstanceProperties.put(key, p.clone());
+                    clone.tileInstanceProperties.put(key, (Properties) p.clone());
                 }
             }
         }
@@ -506,11 +506,11 @@ public class TileLayer extends MapLayer
      * @param dy     the shift in y direction
      */
     public void resize(int width, int height, int dx, int dy) {
-        if (!canEdit())
+        if (getLocked())
             return;
 
         Tile[][] newMap = new Tile[height][width];
-        HashMap newTileInstanceProperties = new HashMap();
+        HashMap<Object, Properties> newTileInstanceProperties = new HashMap<Object, Properties>();
 
         int maxX = Math.min(width, bounds.width + dx);
         int maxY = Math.min(height, bounds.height + dy);
