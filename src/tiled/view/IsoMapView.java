@@ -8,7 +8,8 @@
  *
  *  Adam Turk <aturk@biggeruniverse.com>
  *  Bjorn Lindeijer <bjorn@lindeijer.nl>
- *	screenToPixelCoords and paintObjectGroup 
+ *
+ *  screenToPixelCoords and paintObjectGroup
  *  implemented by: Alturos <alturos@gmail.com>
  */
 
@@ -25,7 +26,7 @@ import tiled.core.*;
 import tiled.mapeditor.selection.SelectionLayer;
 
 /**
- * @version $Id$
+ * Isometric map view implementation.
  */
 public class IsoMapView extends MapView
 {
@@ -118,63 +119,64 @@ public class IsoMapView extends MapView
         }
     }
 
-    protected void paintObjectGroup(Graphics2D g2d, ObjectGroup og) 
-	{
-		final Dimension tsize = getTileSize();
-		final Rectangle bounds = og.getBounds();
-		
-		Iterator<MapObject> itr = og.getObjects();
+    protected void paintObjectGroup(Graphics2D g2d, ObjectGroup og)
+    {
+        final Dimension tsize = getTileSize();
+        final Rectangle bounds = og.getBounds();
+
+        Iterator<MapObject> itr = og.getObjects();
         g2d.translate(bounds.x * tsize.width, bounds.y * tsize.height);
-		
-		while(itr.hasNext())
-		{
-			MapObject mo =itr.next();
-			double oxi = mo.getX() * zoom;
-			double oyi = mo.getY() * zoom;
-			
-			Point objTileCoords = pixelToTileCoords((int)oxi,(int)oyi);
-			Point objScreenCoords = tileToScreenCoords(objTileCoords.x,objTileCoords.y);
-			int ox = objScreenCoords.x;
-			int oy = objScreenCoords.y;
-				
-			Image objectImage = mo.getImage(zoom);
-			if(objectImage !=null)
-			{
-				g2d.drawImage(objectImage,(int)ox,(int)oy,null);
-			}
-			if (mo.getWidth() == 0 || mo.getHeight() == 0) 
-			{
-                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
+
+        while (itr.hasNext()) {
+            MapObject mo = itr.next();
+            final double oxi = mo.getX() * zoom;
+            final double oyi = mo.getY() * zoom;
+
+            Point objTileCoords = pixelToTileCoords((int) oxi, (int) oyi);
+            Point objScreenCoords = tileToScreenCoords(objTileCoords.x,
+                                                       objTileCoords.y);
+            int ox = objScreenCoords.x;
+            int oy = objScreenCoords.y;
+
+            Image objectImage = mo.getImage(zoom);
+            if (objectImage != null) {
+                g2d.drawImage(objectImage, (int) ox, (int) oy, null);
+            }
+            if (mo.getWidth() == 0 || mo.getHeight() == 0) {
+                g2d.setRenderingHint(
+                        RenderingHints.KEY_ANTIALIASING,
+                        RenderingHints.VALUE_ANTIALIAS_ON);
                 g2d.setColor(Color.black);
-                g2d.fillOval((int) ox + 1, (int) oy + 1, (int) (10 * zoom), (int) (10 * zoom));
+                g2d.fillOval(
+                        (int) ox + 1, (int) oy + 1,
+                        (int) (10 * zoom), (int) (10 * zoom));
                 g2d.setColor(Color.orange);
-                g2d.fillOval((int) ox, (int) oy,
+                g2d.fillOval(
+                        (int) ox, (int) oy,
                         (int) (10 * zoom), (int) (10 * zoom));
                 g2d.setRenderingHint(
                         RenderingHints.KEY_ANTIALIASING,
                         RenderingHints.VALUE_ANTIALIAS_OFF);
             }
-			else 
-			{
+            else {
                 g2d.setColor(Color.black);
-				objScreenCoords.x +=1;
-				objScreenCoords.y +=1;
-				g2d.drawPolygon(getObjectPolygon(mo,objScreenCoords));
-				objScreenCoords.x -=1;
-				objScreenCoords.y -=1;
+                objScreenCoords.x += 1;
+                objScreenCoords.y += 1;
+                g2d.drawPolygon(getObjectPolygon(mo,objScreenCoords));
+                objScreenCoords.x -= 1;
+                objScreenCoords.y -= 1;
                 g2d.setColor(Color.orange);
                 g2d.drawPolygon(getObjectPolygon(mo,objScreenCoords));
             }
-			if (zoom > 0.0625) {
+            if (zoom > 0.0625) {
                 final String s = mo.getName() != null ? mo.getName() : "(null)";
-				int XOffset = (s.length()/2)*6;
+                int XOffset = (s.length() / 2) * 6;
                 g2d.setColor(Color.black);
                 g2d.drawString(s, (int) (ox - XOffset) + 1, (int) (oy - 5) + 1);
                 g2d.setColor(Color.white);
                 g2d.drawString(s, (int) (ox - XOffset), (int) (oy - 5));
             }
-			
-		}
+        }
     }
 
     protected void paintGrid(Graphics2D g2d) {
@@ -313,35 +315,33 @@ public class IsoMapView extends MapView
                 (my < 0 ? my - tileSize.height : my) / tileSize.height);
     }
 
-	/**
-	* Returns the coordinates the mouse arrow in  MapPixel Coords	
-	*/
+    /**
+     * Returns the coordinates the mouse arrow in MapPixel Coords.
+     */
     public Point screenToPixelCoords(int x, int y)
-	{
+    {
         Dimension tileSize = getTileSize();
         double r = getTileRatio();
-		
+
         // Translate origin to top-center
         x -= map.getHeight() * (tileSize.width / 2);
-        int mx = y + (int)(x / r);
-        int my = y - (int)(x / r);
-			
-		my /=zoom;
-		mx /=zoom;
+        int mx = y + (int) (x / r);
+        int my = y - (int) (x / r);
+
+        my /= zoom;
+        mx /= zoom;
 
         // Calculate map coords and divide by tile size (tiles assumed to
         // be square in normal projection)
         return new Point(
-                (mx < 0 ? mx - tileSize.height : (int)(mx*r)),
+                (mx < 0 ? mx - tileSize.height : (int) (mx * r)),
                 (my < 0 ? my - tileSize.height : my));
-		//Point pos = screenToTileCoords(x, y);
-		//pos.x = ((pos.x * map.getTileWidth()));
-		//pos.y = ((pos.y * map.getTileHeight()));
-		//return pos;
+        //Point pos = screenToTileCoords(x, y);
+        //pos.x = ((pos.x * map.getTileWidth()));
+        //pos.y = ((pos.y * map.getTileHeight()));
+        //return pos;
     }
-	
-	
-	
+
     protected Polygon createGridPolygon(int tx, int ty, int border) {
         Dimension tileSize = getTileSize();
         tileSize.width -= border * 2;
@@ -366,49 +366,53 @@ public class IsoMapView extends MapView
         return (double)map.getTileWidth() / (double)map.getTileHeight();
     }
 
-	protected Point pixelToTileCoords(int x, int y)
-	{
-		Point TilePos = new Point();
-		Dimension tileSize = getTileSize();
-		//First, make sure we are at the top left corner
-		
-		x = x-(x%tileSize.width);
-		y = y-(x%tileSize.height);
-		
-		TilePos.x = (int)((x/tileSize.width));
-		TilePos.y = (int)((y/tileSize.height));
-		return TilePos;
-	}
-	
-	
-	protected Polygon getObjectPolygon(MapObject mo, Point TopLeftScr)
-	{
-		int XTiles, YTiles, XTOffset, YTOffset;
-		
-		//The number of pixels short of a full tile.
-		//This promotes drawing only a full tile worth of outline
-		XTOffset = (mo.getWidth()%map.getTileWidth());
-		YTOffset = (mo.getHeight()%map.getTileHeight());
-		
-		//The number of tilews wide and deep the object is
-		XTiles = ((mo.getWidth()+XTOffset)/map.getTileWidth());
-		YTiles = ((mo.getHeight()+YTOffset)/map.getTileHeight());
-		
-		int HalfWidth = (int)(map.getTileWidth()*zoom)/2;
-		int HalfHeight = (int)(map.getTileHeight()*zoom)/2;
-		
-		Polygon poly = new Polygon();
-		//Top left
-		poly.addPoint(TopLeftScr.x,TopLeftScr.y);
-		//Top Right
-		poly.addPoint((TopLeftScr.x+(HalfWidth*XTiles)),(TopLeftScr.y+(HalfHeight*XTiles)));
-		//Bottom Right
-		poly.addPoint((TopLeftScr.x+((XTiles-YTiles)*HalfWidth)),(TopLeftScr.y+((XTiles+YTiles)*HalfHeight)));
-		//Bottom Left
-		poly.addPoint((TopLeftScr.x-(YTiles*HalfWidth)),(TopLeftScr.y+(YTiles*HalfHeight)));
-		
-		return poly;
-	}
+    protected Point pixelToTileCoords(int x, int y)
+    {
+        Point TilePos = new Point();
+        Dimension tileSize = getTileSize();
+        // First, make sure we are at the top left corner
+
+        x = x - (x % tileSize.width);
+        y = y - (x % tileSize.height);
+
+        TilePos.x = (int) ((x / tileSize.width));
+        TilePos.y = (int) ((y / tileSize.height));
+        return TilePos;
+    }
+
+    protected Polygon getObjectPolygon(MapObject mo, Point topLeftScr)
+    {
+        // The number of pixels short of a full tile.
+        // This promotes drawing only a full tile worth of outline
+        final int xTOffset = (mo.getWidth() % map.getTileWidth());
+        final int yTOffset = (mo.getHeight() % map.getTileHeight());
+
+        // The number of tilews wide and deep the object is
+        final int xTiles = ((mo.getWidth() + xTOffset) / map.getTileWidth());
+        final int yTiles = ((mo.getHeight() + yTOffset) / map.getTileHeight());
+
+        final int halfWidth = (int) (map.getTileWidth() * zoom) / 2;
+        final int halfHeight = (int) (map.getTileHeight() * zoom) / 2;
+
+        Polygon poly = new Polygon();
+        // Top left
+        poly.addPoint(topLeftScr.x, topLeftScr.y);
+        // Top Right
+        poly.addPoint(
+                (topLeftScr.x + (halfWidth * xTiles)),
+                (topLeftScr.y + (halfHeight * xTiles)));
+        // Bottom Right
+        poly.addPoint(
+                (topLeftScr.x + ((xTiles - yTiles) * halfWidth)),
+                (topLeftScr.y + ((xTiles + yTiles) * halfHeight)));
+        // Bottom Left
+        poly.addPoint(
+                (topLeftScr.x - (yTiles * halfWidth)),
+                (topLeftScr.y + (yTiles * halfHeight)));
+
+        return poly;
+    }
+
     /**
      * Returns the location on the screen of the top corner of a tile.
      */
