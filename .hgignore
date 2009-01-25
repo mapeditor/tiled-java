@@ -2,4 +2,6 @@ syntax: glob
 *.class
 *.jar
 build/*
+docs/*
 intellij/*
+releases/*.zip
