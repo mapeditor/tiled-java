@@ -204,12 +204,11 @@ public class XMLMapWriter implements MapWriter
         String name = set.getName();
 
         w.startElement("tileset");
+        w.writeAttribute("firstgid", set.getFirstGid());
 
         if (name != null) {
             w.writeAttribute("name", name);
         }
-
-        w.writeAttribute("firstgid", set.getFirstGid());
 
         if (tilebmpFile != null) {
             w.writeAttribute("tilewidth", set.getTileWidth());
