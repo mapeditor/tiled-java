@@ -237,7 +237,7 @@ public class MapEditor implements ActionListener, MouseListener,
 
         final Preferences mainDialogPrefs = prefs.node("dialog/main");
         final int width = mainDialogPrefs.getInt("width", APP_WIDTH);
-        final int height = mainDialogPrefs.getInt("width", APP_HEIGHT);
+        final int height = mainDialogPrefs.getInt("height", APP_HEIGHT);
         appFrame.setSize(width, height);
 
         setCurrentMap(null);
