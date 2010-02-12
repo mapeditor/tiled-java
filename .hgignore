@@ -8,3 +8,4 @@ intellij/*
 \.chg\..*$
 \.rej$
 \.conflict\~$
+docs/api/*
