@@ -373,7 +373,7 @@ public class IsoMapView extends MapView
         // First, make sure we are at the top left corner
 
         x = x - (x % tileSize.width);
-        y = y - (x % tileSize.height);
+        y = y - (y % tileSize.height);
 
         TilePos.x = (int) ((x / tileSize.width));
         TilePos.y = (int) ((y / tileSize.height));
