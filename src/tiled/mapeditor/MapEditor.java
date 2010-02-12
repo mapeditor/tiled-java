@@ -36,7 +36,6 @@ import tiled.io.MapHelper;
 import tiled.io.MapReader;
 import tiled.mapeditor.actions.*;
 import tiled.mapeditor.brush.AbstractBrush;
-import tiled.mapeditor.brush.Brush;
 import tiled.mapeditor.brush.BrushException;
 import tiled.mapeditor.brush.CustomBrush;
 import tiled.mapeditor.brush.LayerInvisibleBrushException;
@@ -146,10 +145,6 @@ public class MapEditor implements ActionListener, MouseListener,
 
     //private TileInstancePropertiesDialog tileInstancePropertiesDialog;
     //private JButton tileInstancePropertiesButton;
-
-    /** Available brushes */
-    private Vector<Brush> brushes = new Vector<Brush>();
-    private Brush eraserBrush;
 
     // Actions
     private final SaveAction saveAction;
@@ -900,15 +895,6 @@ public class MapEditor implements ActionListener, MouseListener,
     }
 
     /**
-     * Returns the currently selected tile.
-     *
-     * @return the currently selected tile
-     */
-    public Tile getCurrentTile() {
-        return currentTile;
-    }
-
-    /**
      * Returns the current map.
      *
      * @return the currently selected map
@@ -975,11 +961,13 @@ public class MapEditor implements ActionListener, MouseListener,
         }
         
         MapLayer layer = getCurrentLayer();
-        Point tile = mapView.screenToTileCoords(layer, event.getX(), event.getY());
-
         if (layer == null) {
             return;
-        } else if (mouseButton == MouseEvent.BUTTON3) {
+        }
+
+        Point tile = mapView.screenToTileCoords(layer, event.getX(), event.getY());
+
+        if (mouseButton == MouseEvent.BUTTON3) {
             if (layer instanceof TileLayer) {
                 if (!bMouseIsDragging) {
                     // Click event is sent before the drag event
@@ -1289,7 +1277,7 @@ public class MapEditor implements ActionListener, MouseListener,
             //    tileInstancePropertiesDialog.setSelection(marqueeSelection);
             //}
         } else if (currentPointerState == PS_MOVE) {
-            if (layer != null && (moveDist.x != 0 || moveDist.x != 0)) {
+            if (layer != null && (moveDist.x != 0 || moveDist.y != 0)) {
                 undoSupport.postEdit(new MoveLayerEdit(layer, moveDist));
             }
         } else if (currentPointerState == PS_PAINT) {
@@ -1298,7 +1286,7 @@ public class MapEditor implements ActionListener, MouseListener,
             }
         } else if (currentPointerState == PS_MOVEOBJ) {
             if (layer instanceof ObjectGroup && currentObject != null &&
-                    (moveDist.x != 0 || moveDist.x != 0)) {
+                    (moveDist.x != 0 || moveDist.y != 0)) {
                 undoSupport.postEdit(
                         new MoveObjectEdit(currentObject, moveDist));
             }
@@ -1863,11 +1851,11 @@ public class MapEditor implements ActionListener, MouseListener,
     }
 
     private class ToggleParallaxModeAction extends AbstractAction {
-        private boolean retreive(){
-            return MapEditor.this.prefs.node("display").getBoolean("enableParallaxMode", false);
+        private boolean retrieve(){
+            return prefs.node("display").getBoolean("enableParallaxMode", false);
         }
         private void store(boolean b){
-            MapEditor.this.prefs.node("display").putBoolean("enableParallaxMode", b);
+            prefs.node("display").putBoolean("enableParallaxMode", b);
         }
         public ToggleParallaxModeAction(){
             super(Resources.getString("action.parallaxmode.toggle.name"));
@@ -1875,17 +1863,17 @@ public class MapEditor implements ActionListener, MouseListener,
                     KeyStroke.getKeyStroke("control shift P"));
             putValue(SHORT_DESCRIPTION,
                      Resources.getString("action.parallaxmode.toggle.description"));
-            putValue(SELECTED_KEY, retreive());
+            putValue(SELECTED_KEY, retrieve());
         }
 
         public void actionPerformed(ActionEvent e) {
-            boolean b = !retreive();
+            boolean b = !retrieve();
             store(b);
             applyState();
         }
         
         void applyState(){
-            boolean b = retreive();
+            boolean b = retrieve();
             if(MapEditor.this.mapView != null)
                 MapEditor.this.mapView.setParallaxModeEnabled(b);
             parallaxPanel.setVisible(b);
@@ -2163,10 +2151,6 @@ public class MapEditor implements ActionListener, MouseListener,
         MapLayerEdit mle = new MapLayerEdit(layer, before, after);
         mle.setPresentationName(TOOL_FILL);
         undoSupport.postEdit(mle);
-    }
-
-    public AbstractBrush getBrush() {
-        return currentBrush;
     }
 
     public void resetBrush() {
@@ -2501,19 +2485,19 @@ public class MapEditor implements ActionListener, MouseListener,
                     break;
             }
         }
-        
+
         updateToolSemantics();
     }
 
     public void mouseWheelMoved(MouseWheelEvent e) {
         // only accept events from mapView. Ctrl key must be pressed as well.
-        if(e.getComponent() != mapView)
+        if (e.getComponent() != mapView)
             return;
-        
+
         // if we're not processing event, pass it in to mapView's scroll pane
-        if((e.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) == 0){
-             for(MouseWheelListener l : mapScrollPane.getMouseWheelListeners())
-                l.mouseWheelMoved(e);
+        if ((e.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) == 0){
+             for (MouseWheelListener l : mapScrollPane.getMouseWheelListeners())
+                 l.mouseWheelMoved(e);
              return;
         }
         int amount = e.getWheelRotation();
