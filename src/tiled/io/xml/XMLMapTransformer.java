@@ -153,7 +153,7 @@ public class XMLMapTransformer implements MapReader
             e1.printStackTrace();
             return null;
         }
-        Object o = cons.newInstance((Object)null);
+        Object o = cons.newInstance(null);
         Node n;
 
         Method[] methods = reflector.getMethods();
