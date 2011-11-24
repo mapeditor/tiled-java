@@ -47,14 +47,14 @@ public class JSONArray {
     /**
      * The getArrayList where the JSONArray's properties are kept.
      */
-    private ArrayList myArrayList;
+    private ArrayList<Object> myArrayList;
 
 
     /**
      * Construct an empty JSONArray.
      */
     public JSONArray() {
-        myArrayList = new ArrayList();
+        myArrayList = new ArrayList<Object>();
     }
 
 
@@ -113,8 +113,8 @@ public class JSONArray {
      * Construct a JSONArray from a Collection.
      * @param collection     A Collection.
      */
-    public JSONArray(Collection collection) {
-        myArrayList = new ArrayList(collection);
+    public JSONArray(Collection<Object> collection) {
+        myArrayList = new ArrayList<Object>(collection);
     }
 
 
@@ -139,7 +139,7 @@ public class JSONArray {
      * Get the ArrayList which is holding the elements of the JSONArray.
      * @return      The ArrayList.
      */
-    ArrayList getArrayList() {
+    ArrayList<Object> getArrayList() {
         return myArrayList;
     }
 

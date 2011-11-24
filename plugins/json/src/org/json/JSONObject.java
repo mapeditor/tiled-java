@@ -92,7 +92,7 @@ public class JSONObject {
     /**
      * The hash map where the JSONObject's properties are kept.
      */
-    private HashMap myHashMap;
+    private HashMap<String, Object> myHashMap;
 
     /**
      * It is sometimes more convenient and less ambiguous to have a NULL
@@ -106,7 +106,7 @@ public class JSONObject {
      * Construct an empty JSONObject.
      */
     public JSONObject() {
-        myHashMap = new HashMap();
+        myHashMap = new HashMap<String, Object>();
     }
 
 
@@ -175,8 +175,8 @@ public class JSONObject {
      * @param map A map object that can be used to initialize the contents of
      *  the JSONObject.
      */
-    public JSONObject(Map map) {
-        myHashMap = new HashMap(map);
+    public JSONObject(Map<String, Object> map) {
+        myHashMap = new HashMap<String, Object>(map);
     }
 
 
@@ -278,7 +278,7 @@ public class JSONObject {
      * Get the HashMap the holds that contents of the JSONObject.
      * @return The getHashMap.
      */
-     HashMap getHashMap() {
+     HashMap<String, Object> getHashMap() {
         return myHashMap;
      }
 
@@ -373,7 +373,7 @@ public class JSONObject {
      *
      * @return An iterator of the keys.
      */
-    public Iterator keys() {
+    public Iterator<String> keys() {
         return myHashMap.keySet().iterator();
     }
 
@@ -396,7 +396,7 @@ public class JSONObject {
      */
     public JSONArray names() {
         JSONArray ja = new JSONArray();
-        Iterator  keys = keys();
+        Iterator<String>  keys = keys();
         while (keys.hasNext()) {
             ja.put(keys.next());
         }
@@ -805,7 +805,7 @@ public class JSONObject {
      *  with <code>}</code>&nbsp;<small>(right brace)</small>.
      */
     public String toString() {
-        Iterator     keys = keys();
+        Iterator<String>     keys = keys();
         Object       o = null;
         String       s;
         StringBuffer sb = new StringBuffer();
@@ -864,7 +864,7 @@ public class JSONObject {
      */
     String toString(int indentFactor, int indent) {
         int          i;
-        Iterator     keys = keys();
+        Iterator<String>     keys = keys();
         String       pad = "";
         StringBuffer sb = new StringBuffer();
         indent += indentFactor;

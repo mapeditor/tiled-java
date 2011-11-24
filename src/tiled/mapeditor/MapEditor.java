@@ -79,7 +79,7 @@ public class MapEditor implements ActionListener, MouseListener,
     private Cursor curEyed;
 
     /** Current release version. */
-    public static final String version = "0.7.1";
+    public static final String version = "0.7.2";
 
     private Map currentMap;
     private MapView mapView;

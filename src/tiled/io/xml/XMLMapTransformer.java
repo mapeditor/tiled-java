@@ -817,7 +817,7 @@ public class XMLMapTransformer implements MapReader
             builder.setEntityResolver(entityResolver);
             InputSource insrc = new InputSource(in);
             insrc.setSystemId(xmlPath);
-            insrc.setEncoding("UTF8");
+            insrc.setEncoding("UTF-8");
             doc = builder.parse(insrc);
         } catch (SAXException e) {
             e.printStackTrace();

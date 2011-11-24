@@ -16,6 +16,7 @@ import java.awt.Color;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.*;
 import java.util.prefs.Preferences;
 import java.util.zip.GZIPOutputStream;
@@ -58,7 +59,7 @@ public class XMLMapWriter implements MapWriter
             os = new GZIPOutputStream(os);
         }
 
-        Writer writer = new OutputStreamWriter(os);
+        Writer writer = new OutputStreamWriter(os, Charset.forName("UTF-8"));
         XMLWriter xmlWriter = new XMLWriter(writer);
 
         xmlWriter.startDocument();
@@ -81,7 +82,7 @@ public class XMLMapWriter implements MapWriter
      */
     public void writeTileset(TileSet set, String filename) throws Exception {
         OutputStream os = new FileOutputStream(filename);
-        Writer writer = new OutputStreamWriter(os);
+        Writer writer = new OutputStreamWriter(os, Charset.forName("UTF-8"));
         XMLWriter xmlWriter = new XMLWriter(writer);
 
         xmlWriter.startDocument();
@@ -93,7 +94,7 @@ public class XMLMapWriter implements MapWriter
 
 
     public void writeMap(Map map, OutputStream out) throws Exception {
-        Writer writer = new OutputStreamWriter(out);
+        Writer writer = new OutputStreamWriter(out,Charset.forName("UTF-8"));
         XMLWriter xmlWriter = new XMLWriter(writer);
 
         xmlWriter.startDocument();
@@ -104,7 +105,7 @@ public class XMLMapWriter implements MapWriter
     }
 
     public void writeTileset(TileSet set, OutputStream out) throws Exception {
-        Writer writer = new OutputStreamWriter(out);
+        Writer writer = new OutputStreamWriter(out, Charset.forName("UTF-8"));
         XMLWriter xmlWriter = new XMLWriter(writer);
 
         xmlWriter.startDocument();
@@ -164,7 +165,7 @@ public class XMLMapWriter implements MapWriter
             IOException
     {
         if (!props.isEmpty()) {
-            final SortedSet propertyKeys = new TreeSet();
+            final SortedSet<Object> propertyKeys = new TreeSet<Object>();
             propertyKeys.addAll(props.keySet());
             w.startElement("properties");
             for (Object propertyKey : propertyKeys) {
@@ -259,12 +260,11 @@ public class XMLMapWriter implements MapWriter
         String name = set.getName();
 
         w.startElement("tileset");
+        w.writeAttribute("firstgid", set.getFirstGid());
 
         if (name != null) {
             w.writeAttribute("name", name);
         }
-
-        w.writeAttribute("firstgid", set.getFirstGid());
 
         if (tilebmpFile != null) {
             w.writeAttribute("tilewidth", set.getTileWidth());
@@ -296,7 +296,7 @@ public class XMLMapWriter implements MapWriter
             w.endElement();
 
             // Write tile properties when necessary.
-            Iterator tileIterator = set.iterator();
+            Iterator<Object> tileIterator = set.iterator();
 
             while (tileIterator.hasNext()) {
                 Tile tile = (Tile) tileIterator.next();
@@ -345,7 +345,7 @@ public class XMLMapWriter implements MapWriter
             }
 
             // Check to see if there is a need to write tile elements
-            Iterator tileIterator = set.iterator();
+            Iterator<Object> tileIterator = set.iterator();
             boolean needWrite = !set.isOneForOne();
 
             if (!tileSetImages) {

@@ -2,10 +2,12 @@ syntax: glob
 *.class
 *.jar
 build/*
+docs/*
 intellij/*
+docs/api/*
+releases/*.zip
 \.orig\..*$
 \.orig$
 \.chg\..*$
 \.rej$
 \.conflict\~$
-docs/api/*

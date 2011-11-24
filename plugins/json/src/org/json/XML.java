@@ -266,7 +266,7 @@ public class XML {
         JSONArray    ja;
         JSONObject   jo;
         String       k;
-        Iterator     keys;
+        Iterator<String>     keys;
         int          len;
         String       s;
         Object       v;
